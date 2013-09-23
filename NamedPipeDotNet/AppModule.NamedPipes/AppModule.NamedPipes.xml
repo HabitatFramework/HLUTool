@@ -1,0 +1,910 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AppModule.NamedPipes</name>
+    </assembly>
+    <members>
+        <member name="T:AppModule.NamedPipes.PipeHandle">
+            <summary>
+            Holds the operating system native handle and the current state of the pipe connection.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.PipeHandle.Handle">
+            <summary>
+            The operating system native handle.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.PipeHandle.State">
+            <summary>
+            The current state of the pipe connection.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.PipeHandle.#ctor(System.Int32)">
+            <summary>
+            Creates a PipeHandle instance using the passed native handle.
+            </summary>
+            <param name="hnd">The native handle.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.PipeHandle.#ctor(System.Int32,AppModule.InterProcessComm.InterProcessConnectionState)">
+            <summary>
+            Creates a PipeHandle instance using the provided native handle and state.
+            </summary>
+            <param name="hnd">The native handle.</param>
+            <param name="state">The state of the pipe connection.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.PipeHandle.#ctor">
+            <summary>
+            Creates a PipeHandle instance with an invalid native handle.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.NamedPipeIOException">
+            <summary>
+            This exception is thrown by named pipes communication methods.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeIOException.#ctor(System.String)">
+            <summary>
+            Creates a NamedPipeIOException instance.
+            </summary>
+            <param name="text">The error message text.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeIOException.#ctor(System.String,System.UInt32)">
+            <summary>
+            Creates a NamedPipeIOException instance.
+            </summary>
+            <param name="text">The error message text.</param>
+            <param name="errorCode">The native error code.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeIOException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a NamedPipeIOException instance.
+            </summary>
+            <param name="info">The serialization information.</param>
+            <param name="context">The streaming context.</param>
+        </member>
+        <member name="T:AppModule.NamedPipes.ServerPipeConnection">
+            <summary>
+            Used by server applications to communicate with client ones by using named pipes.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.APipeConnection">
+            <summary>
+            An abstract class, which defines the methods for creating named pipes 
+            connections, reading and writing data.
+            </summary>
+            <remarks>
+            This class is inherited by 
+            <see cref="T:AppModule.NamedPipes.ClientPipeConnection">ClientPipeConnection</see> 
+            and <see cref="T:AppModule.NamedPipes.ServerPipeConnection">ServerPipeConnection</see> 
+            classes, used for client and server applications respectively, which communicate
+            using NamesPipes.
+            </remarks>
+        </member>
+        <member name="F:AppModule.NamedPipes.APipeConnection.Handle">
+            <summary>
+            A <see cref="T:AppModule.NamedPipes.PipeHandle">PipeHandle</see> object containing
+            the native pipe handle.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.APipeConnection.Name">
+            <summary>
+            The name of the named pipe.
+            </summary>
+            <remarks>
+            This name is used for creating a server pipe and connecting client ones to it.
+            </remarks>
+        </member>
+        <member name="F:AppModule.NamedPipes.APipeConnection.disposed">
+            <summary>
+            Boolean field used by the IDisposable implementation.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.APipeConnection.maxReadBytes">
+            <summary>
+            The maximum bytes that will be read from the pipe connection.
+            </summary>
+            <remarks>
+            This field could be used if the maximum length of the client message
+            is known and we want to implement some security, which prevents the
+            server from reading larger messages.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Read">
+            <summary>
+            Reads a message from the pipe connection and converts it to a string
+            using the UTF8 encoding.
+            </summary>
+            <remarks>
+            See the <see cref="M:AppModule.NamedPipes.NamedPipeWrapper.Read(AppModule.NamedPipes.PipeHandle,System.Int32)">NamedPipeWrapper.Read</see>
+            method for an explanation of the message format.
+            </remarks>
+            <returns>The UTF8 encoded string representation of the data.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.ReadBytes">
+            <summary>
+            Reads a message from the pipe connection.
+            </summary>
+            <remarks>
+            See the <see cref="M:AppModule.NamedPipes.NamedPipeWrapper.ReadBytes(AppModule.NamedPipes.PipeHandle,System.Int32)">NamedPipeWrapper.ReadBytes</see>
+            method for an explanation of the message format.
+            </remarks>
+            <returns>The bytes read from the pipe connection.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Write(System.String)">
+            <summary>
+            Writes a string to the pipe connection/
+            </summary>
+            <param name="text">The text to write.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.WriteBytes(System.Byte[])">
+            <summary>
+            Writes an array of bytes to the pipe connection.
+            </summary>
+            <param name="bytes">The bytes array.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Close">
+            <summary>
+            Closes the pipe connection.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Connect">
+            <summary>
+            Connects a pipe connection.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Dispose">
+            <summary>
+            Disposes a pipe connection by closing the underlying native handle.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.Dispose(System.Boolean)">
+            <summary>
+            Disposes a pipe connection by closing the underlying native handle.
+            </summary>
+            <param name="disposing">A boolean indicating how the method is called.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.CheckIfDisposed">
+            <summary>
+            Checks if the pipe connection is disposed.
+            </summary>
+            <remarks>
+            This check is done before performing any pipe operations.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.APipeConnection.GetState">
+            <summary>
+            Gets the pipe connection state from the <see cref="T:AppModule.NamedPipes.PipeHandle">PipeHandle</see> 
+            object.
+            </summary>
+            <returns>The pipe connection state.</returns>
+        </member>
+        <member name="P:AppModule.NamedPipes.APipeConnection.NativeHandle">
+            <summary>
+            Retrieved the operating system native handle for the pipe connection.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.Disconnect">
+            <summary>
+            Disconnects a client named pipe.
+            </summary>
+            <remarks>
+            When a client named pipe is disconnected, the server one is not closed. 
+            The latter can later be reused by starting to listen again.<br/><br/>
+            In a message oriented protocol the server will disconnect the client when the 
+            response is sent and all the data is flushed. The same server named pipe 
+            could then be reused by calling the 
+            <see cref="M:AppModule.NamedPipes.ServerPipeConnection.Connect">Connect</see> method.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.Close">
+            <summary>
+            Closes the operating system native handle of the named pipe.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.Connect">
+            <summary>
+            Starts listening to client pipe connections.
+            </summary>
+            <remarks>
+            This method will block the program execution until a client pipe attempts
+            to establish a connection.<br/><br/>
+            When a client named pipe is disconnected, the server one is not closed. 
+            The latter can later be reused by starting to listen again.<br/><br/>
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.#ctor(System.String,System.UInt32,System.UInt32,System.Int32)">
+            <summary>
+            Creates a ServerPipeConnection instance and the underlying operating system handle.
+            </summary>
+            <param name="name">The name of the pipe.</param>
+            <param name="outBuffer">The outbound buffer.</param>
+            <param name="inBuffer">The inbound buffer.</param>
+            <param name="maxReadBytes">The maximum bytes to read from clients.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.#ctor(System.String,System.UInt32,System.UInt32,System.Int32,System.Boolean)">
+            <summary>
+            Creates a ServerPipeConnection instance and the underlying operating system handle.
+            </summary>
+            <param name="name">The name of the pipe.</param>
+            <param name="outBuffer">The outbound buffer.</param>
+            <param name="inBuffer">The inbound buffer.</param>
+            <param name="secure">Specifies whether the pipe is secure.</param>
+            <param name="maxReadBytes">The maximum bytes to read from clients.</param>
+            <remarks>If the <b>secure</b> parameter is true the default security descriptor is used. The ACLs in the default security descriptor for a named pipe grant full control to the LocalSystem account, administrators, and the creator owner. They also grant read access to members of the Everyone group and the anonymous account.
+            <br/><br/>
+            If the <b>secure</b> parameter is false the method creates a security descriptor that grants full access to Everyone.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.ServerPipeConnection.Finalize">
+            <summary>
+            Object destructor.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.NamedPipeNative">
+            <summary>
+            This utility class exposes kernel32.dll methods for named pipes communication.
+            </summary>
+            <remarks>
+            Use the following links for complete information about the exposed methods:
+            <list type="bullet">
+            <item>
+            <description><a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/ipc/base/pipe_functions.asp" target="_blank">Named Pipe Functions</a></description>
+            </item>
+            <item>
+            <description><a href="http://msdn.microsoft.com/library/en-us/fileio/base/file_management_functions.asp" target="_blank">File Management Functions</a></description>
+            </item>
+            <item>
+            <description><a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/handle_and_object_functions.asp" target="_blank">Handle and Object Functions</a></description>
+            </item>
+            <item>
+            <description><a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp" target="_blank">System Error Codes</a></description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_ACCESS_OUTBOUND">
+            <summary>
+            Outbound pipe access.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_ACCESS_DUPLEX">
+            <summary>
+            Duplex pipe access.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_ACCESS_INBOUND">
+            <summary>
+            Inbound pipe access.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_WAIT">
+            <summary>
+            Pipe blocking mode.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_NOWAIT">
+            <summary>
+            Pipe non-blocking mode.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_READMODE_BYTE">
+            <summary>
+            Pipe read mode of type Byte.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_READMODE_MESSAGE">
+            <summary>
+            Pipe read mode of type Message.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_TYPE_BYTE">
+            <summary>
+            Byte pipe type.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_TYPE_MESSAGE">
+            <summary>
+            Message pipe type.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_CLIENT_END">
+            <summary>
+            Pipe client end.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_SERVER_END">
+            <summary>
+            Pipe server end.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.PIPE_UNLIMITED_INSTANCES">
+            <summary>
+            Unlimited server pipe instances.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.NMPWAIT_WAIT_FOREVER">
+            <summary>
+            Waits indefinitely when connecting to a pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.NMPWAIT_NOWAIT">
+            <summary>
+            Does not wait for the named pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.NMPWAIT_USE_DEFAULT_WAIT">
+            <summary>
+            Uses the default time-out specified in a call to the CreateNamedPipe method.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.GENERIC_READ">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.GENERIC_WRITE">
+            <summary>
+            Generic write access to the pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.GENERIC_EXECUTE">
+            <summary>
+            Generic execute access to the pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.GENERIC_ALL">
+            <summary>
+            Read, write, and execute access.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.CREATE_NEW">
+            <summary>
+            Create new file. Fails if the file exists.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.CREATE_ALWAYS">
+            <summary>
+            Create new file. Overrides an existing file.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.OPEN_EXISTING">
+            <summary>
+            Open existing file.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.OPEN_ALWAYS">
+            <summary>
+            Open existing file. If the file does not exist, creates it.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.TRUNCATE_EXISTING">
+            <summary>
+            Opens the file and truncates it so that its size is zero bytes.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.INVALID_HANDLE_VALUE">
+            <summary>
+            Invalid operating system handle.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_SUCCESS">
+            <summary>
+            The operation completed successfully.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_CANNOT_CONNECT_TO_PIPE">
+            <summary>
+            The system cannot find the file specified.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_PIPE_BUSY">
+            <summary>
+            All pipe instances are busy.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_NO_DATA">
+            <summary>
+            The pipe is being closed.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_PIPE_NOT_CONNECTED">
+            <summary>
+            No process is on the other end of the pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_MORE_DATA">
+            <summary>
+            More data is available.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_PIPE_CONNECTED">
+            <summary>
+            There is a process on other end of the pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeNative.ERROR_PIPE_LISTENING">
+            <summary>
+            Waiting for a process to open the other end of the pipe.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.CreateNamedPipe(System.String,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.IntPtr)">
+            <summary>
+            Creates an instance of a named pipe and returns a handle for 
+            subsequent pipe operations.
+            </summary>
+            <param name="lpName">Pointer to the null-terminated string that 
+            uniquely identifies the pipe.</param>
+            <param name="dwOpenMode">Pipe access mode, the overlapped mode, 
+            the write-through mode, and the security access mode of the pipe handle.</param>
+            <param name="dwPipeMode">Type, read, and wait modes of the pipe handle.</param>
+            <param name="nMaxInstances">Maximum number of instances that can be 
+            created for this pipe.</param>
+            <param name="nOutBufferSize">Number of bytes to reserve for the output buffer.</param>
+            <param name="nInBufferSize">Number of bytes to reserve for the input buffer.</param>
+            <param name="nDefaultTimeOut">Default time-out value, in milliseconds.</param>
+            <param name="pipeSecurityDescriptor">Pointer to a 
+            <see cref="T:AppModule.NamedPipes.SECURITY_ATTRIBUTES">SECURITY_ATTRIBUTES</see> 
+            object that specifies a security descriptor for the new named pipe.</param>
+            <returns>If the function succeeds, the return value is a handle 
+            to the server end of a named pipe instance.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.ConnectNamedPipe(System.IntPtr,AppModule.NamedPipes.Overlapped)">
+            <summary>
+            Enables a named pipe server process to wait for a client 
+            process to connect to an instance of a named pipe.
+            </summary>
+            <param name="hHandle">Handle to the server end of a named pipe instance.</param>
+            <param name="lpOverlapped">Pointer to an 
+            <see cref="T:AppModule.NamedPipes.Overlapped">Overlapped</see> object.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.CallNamedPipe(System.String,System.Byte[],System.UInt32,System.Byte[],System.UInt32,System.Byte[],System.Int32)">
+            <summary>
+            Connects to a message-type pipe (and waits if an instance of the 
+            pipe is not available), writes to and reads from the pipe, and then closes the pipe.
+            </summary>
+            <param name="lpNamedPipeName">Pointer to a null-terminated string 
+            specifying the pipe name.</param>
+            <param name="lpInBuffer">Pointer to the buffer containing the data written 
+            to the pipe.</param>
+            <param name="nInBufferSize">Size of the write buffer, in bytes.</param>
+            <param name="lpOutBuffer">Pointer to the buffer that receives the data 
+            read from the pipe.</param>
+            <param name="nOutBufferSize">Size of the read buffer, in bytes.</param>
+            <param name="lpBytesRead">Pointer to a variable that receives the number 
+            of bytes read from the pipe.</param>
+            <param name="nTimeOut">Number of milliseconds to wait for the 
+            named pipe to be available.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.CreateFile(System.String,System.UInt32,System.UInt32,AppModule.NamedPipes.SecurityAttributes,System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Creates or opens a file, directory, physical disk, volume, console buffer, 
+            tape drive, communications resource, mailslot, or named pipe.
+            </summary>
+            <param name="lpFileName">Pointer to a null-terminated string that 
+            specifies the name of the object to create or open.</param>
+            <param name="dwDesiredAccess">Access to the object (reading, writing, or both).</param>
+            <param name="dwShareMode">Sharing mode of the object (reading, writing, both, or neither).</param>
+            <param name="attr">Pointer to a 
+            <see cref="T:AppModule.NamedPipes.SecurityAttributes">SecurityAttributes</see> 
+            object that determines whether the returned handle can be inherited 
+            by child processes.</param>
+            <param name="dwCreationDisposition">Action to take on files that exist, 
+            and which action to take when files do not exist.</param>
+            <param name="dwFlagsAndAttributes">File attributes and flags.</param>
+            <param name="hTemplateFile">Handle to a template file, with the GENERIC_READ access right.</param>
+            <returns>If the function succeeds, the return value is an open handle to the specified file.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.ReadFile(System.IntPtr,System.Byte[],System.UInt32,System.Byte[],System.UInt32)">
+            <summary>
+            Reads data from a file, starting at the position indicated by the file pointer.
+            </summary>
+            <param name="hHandle">Handle to the file to be read.</param>
+            <param name="lpBuffer">Pointer to the buffer that receives the data read from the file.</param>
+            <param name="nNumberOfBytesToRead">Number of bytes to be read from the file.</param>
+            <param name="lpNumberOfBytesRead">Pointer to the variable that receives the number of bytes read.</param>
+            <param name="lpOverlapped">Pointer to an 
+            <see cref="T:AppModule.NamedPipes.Overlapped">Overlapped</see> object.</param>
+            <returns>The ReadFile function returns when one of the following 
+            conditions is met: a write operation completes on the write end of 
+            the pipe, the number of bytes requested has been read, or an error occurs.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.WriteFile(System.IntPtr,System.Byte[],System.UInt32,System.Byte[],System.UInt32)">
+            <summary>
+            Writes data to a file at the position specified by the file pointer.
+            </summary>
+            <param name="hHandle">Handle to the file.</param>
+            <param name="lpBuffer">Pointer to the buffer containing the data to be written to the file.</param>
+            <param name="nNumberOfBytesToWrite"></param>
+            <param name="lpNumberOfBytesWritten">Pointer to the variable that receives the number of bytes written.</param>
+            <param name="lpOverlapped">Pointer to an 
+            <see cref="T:AppModule.NamedPipes.Overlapped">Overlapped</see> object.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.GetNamedPipeHandleState(System.IntPtr,System.IntPtr,System.UInt32@,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)">
+            <summary>
+            Retrieves information about a specified named pipe.
+            </summary>
+            <param name="hHandle">Handle to the named pipe for which information is wanted.</param>
+            <param name="lpState">Pointer to a variable that indicates the current 
+            state of the handle.</param>
+            <param name="lpCurInstances">Pointer to a variable that receives the 
+            number of current pipe instances.</param>
+            <param name="lpMaxCollectionCount">Pointer to a variable that receives 
+            the maximum number of bytes to be collected on the client's computer 
+            before transmission to the server.</param>
+            <param name="lpCollectDataTimeout">Pointer to a variable that receives 
+            the maximum time, in milliseconds, that can pass before a remote named 
+            pipe transfers information over the network.</param>
+            <param name="lpUserName">Pointer to a buffer that receives the 
+            null-terminated string containing the user name string associated 
+            with the client application. </param>
+            <param name="nMaxUserNameSize">Size of the buffer specified by the 
+            lpUserName parameter.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.CancelIo(System.IntPtr)">
+            <summary>
+            Cancels all pending input and output (I/O) operations that were 
+            issued by the calling thread for the specified file handle.
+            </summary>
+            <param name="hHandle">Handle to a file.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.WaitNamedPipe(System.String,System.Int32)">
+            <summary>
+            Waits until either a time-out interval elapses or an instance 
+            of the specified named pipe is available for connection.
+            </summary>
+            <param name="name">Pointer to a null-terminated string that specifies 
+            the name of the named pipe.</param>
+            <param name="timeout">Number of milliseconds that the function will 
+            wait for an instance of the named pipe to be available.</param>
+            <returns>If an instance of the pipe is available before the 
+            time-out interval elapses, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.GetLastError">
+            <summary>
+            Retrieves the calling thread's last-error code value.
+            </summary>
+            <returns>The return value is the calling thread's last-error code value.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.FlushFileBuffers(System.IntPtr)">
+            <summary>
+            Flushes the buffers of the specified file and causes all buffered data to be written to the file.
+            </summary>
+            <param name="hHandle">Handle to an open file.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.DisconnectNamedPipe(System.IntPtr)">
+            <summary>
+            Disconnects the server end of a named pipe instance from a client process.
+            </summary>
+            <param name="hHandle">Handle to an instance of a named pipe.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.SetNamedPipeHandleState(System.IntPtr,System.UInt32@,System.IntPtr,System.IntPtr)">
+            <summary>
+            Sets the read mode and the blocking mode of the specified named pipe.
+            </summary>
+            <remarks>
+            If the specified handle is to the client end of a named pipe and if 
+            the named pipe server process is on a remote computer, the function 
+            can also be used to control local buffering.
+            </remarks>
+            <param name="hHandle">Handle to the named pipe instance.</param>
+            <param name="mode">Pointer to a variable that supplies the new mode.</param>
+            <param name="cc">Pointer to a variable that specifies the maximum 
+            number of bytes collected on the client computer before 
+            transmission to the server.</param>
+            <param name="cd">Pointer to a variable that specifies the 
+            maximum time, in milliseconds, that can pass before a remote 
+            named pipe transfers information over the network.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.CloseHandle(System.IntPtr)">
+            <summary>
+            Closes an open object handle.
+            </summary>
+            <param name="hHandle">Handle to an open object.</param>
+            <returns>If the function succeeds, the return value is nonzero.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.SetSecurityDescriptorDacl(AppModule.NamedPipes.SECURITY_DESCRIPTOR@,System.Boolean,System.IntPtr,System.Boolean)">
+            <summary>
+            Sets the security descriptor attributes
+            </summary>
+            <param name="sd">Reference to a SECURITY_DESCRIPTOR structure.</param>
+            <param name="bDaclPresent"></param>
+            <param name="Dacl"></param>
+            <param name="bDaclDefaulted"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.InitializeSecurityDescriptor(AppModule.NamedPipes.SECURITY_DESCRIPTOR@,System.Int32)">
+            <summary>
+            Initializes a SECURITY_DESCRIPTOR structure.
+            </summary>
+            <param name="sd"></param>
+            <param name="dwRevision"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeNative.#ctor">
+            <summary>
+            Private constructor.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.SECURITY_DESCRIPTOR">
+            <summary>
+            Security Descriptor structure
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.SECURITY_ATTRIBUTES">
+            <summary>
+            Security Attributes structure.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.Overlapped">
+            <summary>
+            This class is used as a dummy parameter only.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.SecurityAttributes">
+            <summary>
+            This class is used as a dummy parameter only.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.NamedPipeWrapper">
+            <summary>
+            A utility class that exposes named pipes operations.
+            </summary>
+            <remarks>
+            This class uses the exposed exposed kernel32.dll methods by the 
+            <see cref="T:AppModule.NamedPipes.NamedPipeNative">NamedPipeNative</see> class
+            to provided controlled named pipe functionality.
+            </remarks>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeWrapper.ATTEMPTS">
+            <summary>
+            The number of retries when creating a pipe or connecting to a pipe.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.NamedPipeWrapper.WAIT_TIME">
+            <summary>
+            Wait time for the 
+            <see cref="M:AppModule.NamedPipes.NamedPipeNative.WaitNamedPipe(System.String,System.Int32)">NamedPipeNative.WaitNamedPipe</see> 
+            operation.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Read(AppModule.NamedPipes.PipeHandle,System.Int32)">
+            <summary>
+            Reads a string from a named pipe using the UTF8 encoding.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+            <param name="maxBytes">The maximum bytes to read.</param>
+            <returns>A UTF8 string.</returns>
+            <remarks>This function uses 
+            <see cref="M:AppModule.NamedPipes.NamedPipeWrapper.ReadBytes(AppModule.NamedPipes.PipeHandle,System.Int32)">AppModule.NamedPipes.ReadBytes</see> 
+            to read the bytes from the pipe and then converts them to string.<br/><br/>
+            The first four bytes of the pipe data are expected to contain 
+            the data length of the message. This method first reads those four 
+            bytes and converts them to integer. It then continues to read from the pipe using 
+            the extracted data length.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.ReadBytes(AppModule.NamedPipes.PipeHandle,System.Int32)">
+            <summary>
+            Reads the bytes from a named pipe.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+            <param name="maxBytes">The maximum bytes to read.</param>
+            <returns>An array of bytes.</returns>
+            <remarks>This method expects that the first four bytes in the pipe define 
+            the length of the data to read. If the data length is greater than 
+            <b>maxBytes</b> the method returns null.<br/><br/>
+            The first four bytes of the pipe data are expected to contain 
+            the data length of the message. This method first reads those four 
+            bytes and converts them to integer. It then continues to read from the pipe using 
+            the extracted data length.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Write(AppModule.NamedPipes.PipeHandle,System.String)">
+            <summary>
+            Writes a string to a named pipe.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+            <param name="text">The text to write to the pipe.</param>
+            <remarks>This method converts the text into an array of bytes, using the 
+            UTF8 encoding and the uses 
+            <see cref="M:AppModule.NamedPipes.NamedPipeWrapper.WriteBytes(AppModule.NamedPipes.PipeHandle,System.Byte[])">AppModule.NamedPipes.WriteBytes</see>
+            to write to the pipe.<br/><br/>
+            When writing to a pipe the method first writes four bytes that define the data length.
+            It then writes the whole message.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.WriteBytes(AppModule.NamedPipes.PipeHandle,System.Byte[])">
+            <summary>
+            Writes an array of bytes to a named pipe.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+            <param name="bytes">The bytes to write.</param>
+            <remarks>If we try bytes array we attempt to write is empty then this method write a space character to the pipe. This is necessary because the other end of the pipe uses a blocking Read operation so we must write someting.<br/><br/>
+            The bytes length is restricted by the <b>maxBytes</b> parameter, which is done primarily for security reasons.<br/><br/>
+            When writing to a pipe the method first writes four bytes that define the data length.
+            It then writes the whole message.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.TryConnectToPipe(System.String,AppModule.NamedPipes.PipeHandle@)">
+            <summary>
+            Tries to connect to a named pipe on the same machine.
+            </summary>
+            <param name="pipeName">The name of the pipe.</param>
+            <param name="handle">The resulting pipe handle.</param>
+            <returns>Return true if the attempt succeeds.</returns>
+            <remarks>This method is used mainly when stopping the pipe server. It unblocks the existing pipes, which wait for client connection.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.TryConnectToPipe(System.String,System.String,AppModule.NamedPipes.PipeHandle@)">
+            <summary>
+            Tries to connect to a named pipe.
+            </summary>
+            <param name="pipeName">The name of the pipe.</param>
+            <param name="serverName">The name of the server.</param>
+            <param name="handle">The resulting pipe handle.</param>
+            <returns>Return true if the attempt succeeds.</returns>
+            <remarks>This method is used mainly when stopping the pipe server. It unblocks the existing pipes, which wait for client connection.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.ConnectToPipe(System.String)">
+            <summary>
+            Connects to a server named pipe on the same machine.
+            </summary>
+            <param name="pipeName">The pipe name.</param>
+            <returns>The pipe handle, which also contains the pipe state.</returns>
+            <remarks>This method is used by clients to establish a pipe connection with a server pipe.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.ConnectToPipe(System.String,System.String)">
+            <summary>
+            Connects to a server named pipe.
+            </summary>
+            <param name="pipeName">The pipe name.</param>
+            <param name="serverName">The server name.</param>
+            <returns>The pipe handle, which also contains the pipe state.</returns>
+            <remarks>This method is used by clients to establish a pipe connection with a server pipe.</remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Create(System.String,System.UInt32,System.UInt32)">
+            <summary>
+            Creates a server named pipe.
+            </summary>
+            <param name="name">The name of the pipe.</param>
+            <param name="outBuffer">The size of the outbound buffer.</param>
+            <param name="inBuffer">The size of the inbound buffer.</param>
+            <returns>The pipe handle.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Create(System.String,System.UInt32,System.UInt32,System.Boolean)">
+            <summary>
+            Creates a server named pipe.
+            </summary>
+            <param name="name">The name of the pipe.</param>
+            <param name="outBuffer">The size of the outbound buffer.</param>
+            <param name="inBuffer">The size of the inbound buffer.</param>
+            <param name="secure">Specifies whether to make the pipe secure.</param>
+            <returns>The pipe handle.</returns>
+            <remarks>You can specify a security descriptor for a named pipe when you call the CreateNamedPipe function. The security descriptor controls access to both client and server ends of the named pipe. If NULL is specified, the named pipe gets a default security descriptor. The ACLs in the default security descriptor for a named pipe grant full control to the LocalSystem account, administrators, and the creator owner. They also grant read access to members of the Everyone group and the anonymous account.
+            <br/><br/>
+            If the <b>secure</b> parameter is false the method creates a security descriptor that grants full access to Everyone.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.GetNullDaclSecurityDescriptor(AppModule.NamedPipes.SECURITY_DESCRIPTOR@)">
+            <summary>
+            Creates a SECURITY_DESCRIPTOR with DACL = null, which allows full access to Everyone.
+            </summary>
+            <param name="sd">The SECURITY_DESCRIPTOR structure.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Connect(AppModule.NamedPipes.PipeHandle)">
+            <summary>
+            Starts waiting for client connections.
+            </summary>
+            <remarks>
+            Blocks the current execution until a client pipe attempts to establish a connection.
+            </remarks>
+            <param name="handle">The pipe handle.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.NumberPipeInstances(AppModule.NamedPipes.PipeHandle)">
+            <summary>
+            Returns the number of instances of a named pipe.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+            <returns>The number of instances.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Close(AppModule.NamedPipes.PipeHandle)">
+            <summary>
+            Closes a named pipe and releases the native handle.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Flush(AppModule.NamedPipes.PipeHandle)">
+            <summary>
+            Flushes all the data in a named pipe.
+            </summary>
+            <param name="handle">The pipe handle.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.Disconnect(AppModule.NamedPipes.PipeHandle)">
+            <summary>
+            Disconnects a server named pipe from the client.
+            </summary>
+            <remarks>
+            Server pipes can be reused by first disconnecting them from the client and then
+            calling the <see cref="M:AppModule.NamedPipes.NamedPipeWrapper.Connect(AppModule.NamedPipes.PipeHandle)">Connect</see>
+            method to start listening. This improves the performance as it is not necessary
+            to create new pipe handles.
+            </remarks>
+            <param name="handle">The pipe handle.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.NamedPipeWrapper.#ctor">
+            <summary>
+            Private constructor.
+            </summary>
+        </member>
+        <member name="T:AppModule.NamedPipes.ClientPipeConnection">
+            <summary>
+            Used by client applications to communicate with server ones by using named pipes.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.ClientPipeConnection.Server">
+            <summary>
+            The network name of the server where the server pipe is created.
+            </summary>
+            <remarks>
+            If "." is used as a server name then the pipe is connected to the local machine.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.Close">
+            <summary>
+            Closes a client named pipe connection.
+            </summary>
+            <remarks>
+            A client pipe connection is closed by closing the underlying pipe handle.
+            </remarks>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.Connect">
+            <summary>
+            Connects a client pipe to an existing server one.
+            </summary>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.TryConnect">
+            <summary>
+            Attempts to establish a connection to the a server named pipe. 
+            </summary>
+            <remarks>
+            If the attempt is successful the method creates the 
+            <see cref="T:AppModule.NamedPipes.PipeHandle">PipeHandle</see> object
+            and assigns it to the <see cref="F:AppModule.NamedPipes.APipeConnection.Handle">Handle</see>
+            field.<br/><br/>
+            This method is used when it is not known whether a server pipe already exists.
+            </remarks>
+            <returns>True if a connection is established.</returns>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.#ctor(System.String)">
+            <summary>
+            Creates an instance of the ClientPipeConnection assuming that the server pipe
+            is created on the same machine.
+            </summary>
+            <remarks>
+            The maximum bytes to read from the client is set to be Int32.MaxValue.
+            </remarks>
+            <param name="name">The name of the server pipe.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.#ctor(System.String,System.String)">
+            <summary>
+            Creates an instance of the ClientPipeConnection specifying the network name
+            of the server.
+            </summary>
+            <remarks>
+            The maximum bytes to read from the client is set to be Int32.MaxValue.
+            </remarks>
+            <param name="name">The name of the server pipe.</param>
+            <param name="server">The network name of the machine, where the server pipe is created.</param>
+        </member>
+        <member name="M:AppModule.NamedPipes.ClientPipeConnection.Finalize">
+            <summary>
+            Object destructor.
+            </summary>
+        </member>
+    </members>
+</doc>

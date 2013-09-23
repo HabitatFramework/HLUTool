@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLUGISTool", "HLUGISTool\HLUGISTool.csproj", "{B0C62884-11C8-48FB-B486-C44E0831FC98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HluArcMapExtension", "HluArcMapExtension\HluArcMapExtension.csproj", "{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B0C62884-11C8-48FB-B486-C44E0831FC98} = {B0C62884-11C8-48FB-B486-C44E0831FC98}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.InterProcessComm", "NamedPipeDotNet\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj", "{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.NamedPipes", "NamedPipeDotNet\AppModule.NamedPipes\AppModule.NamedPipes.csproj", "{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HluSetup", "HluSetup\HluSetup.vdproj", "{92709169-0920-4DDE-AC76-AC03D58A86CE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0C62884-11C8-48FB-B486-C44E0831FC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C62884-11C8-48FB-B486-C44E0831FC98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C62884-11C8-48FB-B486-C44E0831FC98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C62884-11C8-48FB-B486-C44E0831FC98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92709169-0920-4DDE-AC76-AC03D58A86CE}.Debug|Any CPU.ActiveCfg = Debug
+		{92709169-0920-4DDE-AC76-AC03D58A86CE}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

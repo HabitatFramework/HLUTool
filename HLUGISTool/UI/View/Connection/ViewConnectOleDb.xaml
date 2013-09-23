@@ -1,0 +1,46 @@
+﻿<Window x:Class="HLU.UI.View.Connection.ViewConnectOleDb"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
+    Title="{Binding Path=WindowTitle}" 
+        Height="202" Width="392" WindowStartupLocation="CenterScreen" Visibility="Collapsed" SizeToContent="Height" 
+        ShowInTaskbar="False" ResizeMode="NoResize" Background="{DynamicResource WindowBackgroundBrush}" 
+        Icon="..\..\..\Icons\HLUIcon.png" Activated="Window_Activated" WindowStyle="SingleBorderWindow">
+<!--Height -22 when setting WindowStyle from SingleBorderWindow to None-->
+
+    <StackPanel Name="StackPanelMain" Margin="4">
+        <GroupBox Name="GroupBoxConnectionButtons" Header="Connection" Margin="0,4,0,0" Padding="0">
+            <Grid Margin="0,4,0,0" Height="50" Name="GridConnButtons" VerticalAlignment="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="23"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="76" />
+                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Name="ButtonBrowseConn" Grid.Row="2" Grid.Column="0" Command="{Binding Path=BrowseConnCommand}" Margin="6,0,0,0">_UDL File...</Button>
+                <Button Name="ButtonCreateConn" Grid.Row="2" Grid.Column="1" Command="{Binding Path=CreateConnCommand}" Margin="6,0,0,0">_New</Button>
+                <Button Name="ButtonEditConn" Grid.Row="2" Grid.Column="2" Command="{Binding Path=EditConnCommand}" Margin="6,0,0,0">_Edit</Button>
+                <TextBox Name="TextBoxConnString" Grid.Row="0" Grid.ColumnSpan="4"  Text="{Binding Path=ConnectionString, Mode=TwoWay, ValidatesOnDataErrors=True}" IsReadOnly="True" Margin="2" />
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Name="GroupBpxDefaultSchema" IsEnabled="{Binding Path=SupportsSchemata}" Header="Default Schema" Margin="0,4,0,0" Padding="0">
+            <ComboBox Name="ComboBoxDefaultSchema"  ItemsSource="{Binding Path=Schemata, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=DefaultSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedItem="{Binding Path=DefaultSchema}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+        </GroupBox>
+
+        <Grid Margin="0,4,0,0" Height="23" Name="GridButtons" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="115*" />
+                <ColumnDefinition Width="82" />
+                <ColumnDefinition Width="82" />
+            </Grid.ColumnDefinitions>
+            <Button Name="ButtonOk" Grid.Column="1" Command="{Binding Path=OkCommand}" ForceCursor="False" IsDefault="True" Margin="0,0,2,0">_OK</Button>
+            <Button Name="ButtonCancel" Grid.Column="2" Command="{Binding Path=CancelCommand}" IsCancel="True" Margin="2,0,0,0">_Cancel</Button>
+        </Grid>
+    </StackPanel>
+</Window>

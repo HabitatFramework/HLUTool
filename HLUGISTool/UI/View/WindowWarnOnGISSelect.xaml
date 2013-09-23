@@ -1,0 +1,50 @@
+﻿<Window x:Class="HLU.UI.View.WindowWarnOnGISSelect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" ResizeMode="CanResize" SizeToContent="WidthAndHeight"
+        Height="160" MinWidth="300" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
+
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4" Width="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="23" />
+            </Grid.RowDefinitions>
+            <GroupBox Name="GroupWarnOnGISSelect" Header="{Binding Path=GroupBoxWarnOnGISSelectHeader}">
+                <Grid Name="GridWarnOnGISSelect" Margin="2,2,2,2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="26"/>
+                    </Grid.ColumnDefinitions>
+                        <Label Name="LabelMessage" Grid.Row="0" Grid.ColumnSpan="2"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,4,0,4">
+                            <TextBlock Name="TextBlockMessage" TextWrapping="Wrap" Text="{Binding Path=LabelMessage}" />
+                        </Label>
+                    <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="0,8,0,8" BorderThickness="0.5" Padding="0" BorderBrush="Black" Opacity="0.5" />
+                    <Label Name="LabelDoNotAskAgain" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" 
+                           VerticalAlignment="Center" Margin="0,4,0,4">Don't ask again</Label>
+                    <CheckBox Name="CheckBoxExportDescriptions" Grid.Row="2" Grid.Column="1" 
+                              VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,4,0,4"
+                              IsChecked="{Binding Path=DoNotAskAgain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </GroupBox>
+            <Grid Name="GridButtons" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="82" />
+                </Grid.ColumnDefinitions>
+                <Button Name="ButtonYes" Grid.Column="1" IsDefault="True" Margin="0,0,2,0"
+                        Command="{Binding Path=YesCommand}" >_Yes</Button>
+                <Button Name="ButtonNo" Grid.Column="2" IsCancel="True" Margin="2,0,0,0"
+                        Command="{Binding Path=NoCommand}" >_No</Button>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

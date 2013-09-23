@@ -1,0 +1,56 @@
+﻿<Window x:Class="HLU.UI.View.WindowMergeFeatures"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    Height="250" Width="400" WindowStyle="SingleBorderWindow" ResizeMode="CanResize" SizeToContent="Height"
+        ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png" Title="{Binding Path=WindowTitle}">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\MergeFeaturesWindowDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="23"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Name="GroupBoxFeatures" Grid.Column="0" Grid.Row="0" Header="Feature Attributes">
+            <tkit:DataGrid Name="DataGridQueryBuilder" Grid.Row="0" Grid.Column="0"
+                         AutoGenerateColumns="True" SelectionUnit="FullRow" 
+                         ItemsSource="{Binding Path=MergeFeatures, NotifyOnTargetUpdated=True}"
+                         SelectedItem="{Binding Path=ResultFeature, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" 
+                         CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
+                         CanUserResizeColumns="True" CanUserSortColumns="True"
+                         HeadersVisibility="All" RowHeaderWidth="20" Margin="4,0,4,4" 
+                         RowDetailsVisibilityMode="Visible" BorderBrush="Black" 
+                         BorderThickness="1" RowHeight="20" Padding="2,0"
+                         SelectedIndex="{Binding Path=SelectedIndex, NotifyOnTargetUpdated=True}" 
+                         MouseUp="DataGridQueryBuilder_MouseUp">
+                <tkit:DataGrid.RowValidationRules>
+                    <DataErrorValidationRule />
+                </tkit:DataGrid.RowValidationRules>
+            </tkit:DataGrid>
+        </GroupBox>
+        
+        <Grid Name="GridButtons" Grid.Row="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="82"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="82"/>
+                <ColumnDefinition Width="82"/>
+            </Grid.ColumnDefinitions>
+            <Button Name="ButtonFlashFeature" Grid.Row="0" Grid.Column="0" Visibility="Collapsed" Margin="0,0,2,0"
+                    Command="{Binding Path=FlashFeatureCommand}" IsEnabled="{Binding Path=CanFlashFeature}">_Flash Feature</Button>
+            <Button Name="ButtonOK" Grid.Row="0" Grid.Column="2" IsDefault="True" Margin="0,0,2,0" 
+                    Command="{Binding Path=OkCommand}" IsEnabled="{Binding Path=CanOk}">_OK</Button>
+            <Button Name="ButtonCancel" Grid.Row="0" Grid.Column="3" IsCancel="True" Margin="2,0,0,0"
+                    Command="{Binding Path=CancelCommand}">_Cancel</Button>
+        </Grid>
+    </Grid>
+</Window>

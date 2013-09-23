@@ -1,0 +1,748 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MapinfoDotNetWrapper</name>
+    </assembly>
+    <members>
+        <member name="T:MapinfoWrapper.CommandBuilders.ICommandStringBuilder">
+            <summary>
+            An interface for objects needing to build a command string to send to mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.ICommandStringBuilder.BuildCommandString">
+            <summary>
+            Retruns a concatinated command string build up in the correct order
+            to be sent to mapinfo.
+            </summary>
+            <returns>Returns a correctly formated string to be executed in Mapinfo</returns>
+        </member>
+        <member name="T:MapinfoWrapper.Geometries.GeometryFactory">
+            <summary>
+            A geometry factory that can be used to create new geometry objects.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:MapinfoWrapper.Geometries.GeometryFactory.CreateLine(MapinfoWrapper.Geometries.Coordinate,MapinfoWrapper.Geometries.Coordinate)" -->
+        <member name="M:MapinfoWrapper.Geometries.GeometryFactory.CreatePoint(MapinfoWrapper.Geometries.Coordinate)">
+            <summary>
+            Creates a new point object in Mapinfo. 
+            Returns a <see cref="T:MapinfoWrapper.Geometries.Points.Point"/> which can be inserted into a
+            <see cref="T:MapinfoWrapper.DataAccess.Table"/>
+            <para>This function will create a new object variable in Mapinfo with a modified GUID as its name.</para>
+            </summary>
+            <param name="location">A <see cref="T:MapinfoWrapper.Geometries.Coordinate"/> that contains coordinates at
+            which to create the point.</param>
+            <returns>A new point object.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Geometries.GeometryFactory.GetGeometryFromVariable(MapinfoWrapper.MapbasicOperations.IVariable)">
+            <summary>
+            Returns the a <see cref="T:MapinfoWrapper.Geometries.Geometry"/> for the 
+            supplied <see cref="T:MapinfoWrapper.MapbasicOperations.IVariable"/>.
+            </summary>
+            <param name="variable"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder">
+            <summary>
+            Contains methods for constructing a the Open Table mapinfo command string.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.CommandStringBuilder.BuildCommandString">
+            <summary>
+            Creates a correctly formatted Mapbasic command string from the Template property which can be used to send to MapInfo.
+            </summary>
+            <returns>A correctly formatted Mapbasic command string.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:MapinfoWrapper.CommandBuilders.CommandStringBuilder.Template" -->
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the open table command builder.
+            </summary>
+            <param name="tablePath">The path or name of the table to use in the open table command.</param>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.SetTablePath(System.String)">
+            <summary>
+            Sets the table path for the open table command string.
+            </summary>
+            <param name="tablePath">The table path/name to use.</param>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.HasName(System.String)">
+            <summary>
+            Sets the name of the table to a specified alias.
+            </summary>
+            <param name="tableName">The alias by which the table should be indentifed.</param>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.IsHidden">
+            <summary>
+            Sets the flag to open the table as hidden from the user.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.IsReadOnly">
+            <summary>
+            Sets the flag to open the table as read only, so that no write changes maybe made.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.OpenAsInteractive">
+            <summary>
+            Sets the flag to open the table as interactive, so that if the table can
+            not be found the user will be asked to locate.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.Password(System.String)">
+            <summary>
+            Sets the password flag and value to open the table with.  Only needs to be used when using MS Access based tables.
+            </summary>
+            <param name="password">The password to use with the table.</param>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.CreateNoIndex">
+            <summary>
+            Sets a flag to not create a index for MS Access tables when opened.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.AutomaticView">
+            <summary>
+            Sets the flag to tell Mapinfo when it opens mapinfo to reuse already open
+            map windows or open a new one if there arn't any open at the time.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.DenyWrite">
+            <summary>
+            Sets the flag so that Mapinfo will stop other users if they have the same table
+            open from making edits.
+            </summary>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.GridHadler(MapinfoWrapper.DataAccess.GridHandleEnum)">
+            <summary>
+            Sets a flag with how mapinfo should handle opening grid files.
+            </summary>
+            <param name="gridHandleEnum"></param>
+            <returns>The current instance of the OpenTableCommandBuilder.</returns>
+        </member>
+        <member name="P:MapinfoWrapper.CommandBuilders.OpenTableCommandBuilder.Template">
+            <summary>
+            Gets the open table template which is used to build the open table command string.
+            </summary>
+            <remarks>At the moment right after construction this string will contain the full template including the tokens,
+            if any attributes have been set in the instance of <see cref="T:OpenTableCommandBuilder"/> it will contain the template
+            string,the values of any replaced tokens, also any remaining tokens.
+            </remarks>
+            <example>
+            <code>
+            OpenTableCommandBuilder commmandbuilder = new OpenTableCommandBuilder(@"C:\Temp\Test.Tab");
+            Console.WriteLine(commandbuilder.BuildCommandString());
+            
+            //Returns "Open Table {FileName} {TableName}"
+            //Then doing:
+            commandbuilder.HasName("Test");
+            Console.WriteLine(commandbuilder.BuildCommandString());
+            
+            //Returns "Open Table "C:\Temp\Test" As Test"
+            </code>
+            </example>
+        </member>
+        <member name="F:MapinfoWrapper.Embedding.NextDocumentEnum.WIN_STYLE_STANDARD">
+            <summary>
+            Resets the style of the window back to its default.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.Embedding.NextDocumentEnum.WIN_STYLE_CHILD">
+            <summary>
+            Next window is created as a child window.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.Embedding.NextDocumentEnum.WIN_STYLE_POPUP_FULLCAPTION">
+            <summary>
+            Next window is created as a popup window
+            with a full-height title bar caption.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.Embedding.NextDocumentEnum.WIN_STYLE_POPUP">
+            <summary>
+            Next window is created as a popup window with a half-height
+            title bar caption.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.ITableFactory.OpenTable(System.String)">
+            <summary>
+            Opens the supplied table in Mapinfo
+            </summary>
+            <param name="tablePath"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MapinfoWrapper.Geometries.MapbasicObject">
+            <summary>
+            Provides a wrapper around a mapbasic object type, allows access to basic information about the object.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Geometries.MapbasicObject.ObjectInfo(MapinfoWrapper.MapbasicOperations.IVariable,MapinfoWrapper.Geometries.ObjectInfoEnum)">
+            <summary>
+            Run the ObjectInfo mapbasic command in Mapinfo, and returns a string containing the result.
+            </summary>
+            <param name="variable">The variable used by the ObjectInfo call.</param>
+            <param name="attribute">The attribute specifying which information to return.</param>
+            <returns>A string containing the retured result from calling the ObjectInfo command in Mapinfo.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Geometries.MapbasicObject.ObjectInfo(MapinfoWrapper.Geometries.ObjectInfoEnum)">
+            <summary>
+            Runs the ObjectInfo mapbasic command in Mapinfo, and returns a string containing the result.
+            </summary>
+            <param name="attribute">The attribute specifying which information to return.</param>
+            <returns>A string containing the returned result from calling the ObjectInfo command in Mapinfo.</returns>
+        </member>
+        <member name="P:MapinfoWrapper.Geometries.MapbasicObject.ObjectType">
+            <summary>
+            Gets the type of the object in Mapinfo.
+            </summary>
+            <returns>The type of the object.</returns>
+        </member>
+        <member name="T:MapinfoWrapper.DataAccess.Table`1">
+            <summary>
+            A Mapinfo table object, allows access to properties for the table
+            opened in Mapinfo. 
+            </summary>
+            <typeparam name="TEntity">The entity type to use with the table, as it row entity.</typeparam>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.InsertRow(`0)">
+            <summary>
+            Inserts a new row into the table.
+            </summary>
+            <param name="newRow"></param>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.DeleteRowAt(System.Int32)">
+            <summary>
+            Deletes a row from the table at the specified index.
+            </summary>
+            <param name="index"></param>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.DeleteRow(`0)">
+            <summary>
+            Deletes the selected row from the current table.
+            </summary>
+            <param name="entity">The row that will be deleted.</param>
+            <exception cref="T:ArgumentNullException"/>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.GetNumberOfColumns">
+            <summary>
+            Returns the number of columns in the current table.
+            </summary>
+            <returns>The number of columns in the current table.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.SaveChanges">
+            <summary>
+            Commits any pending changes for the current table.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.SaveChanges(System.Boolean)">
+            <summary>
+            Commits any pending changes for the current table.
+            </summary>
+            <param name="interactive">If set to true in the event of a conflict, MapInfo Professional displays the Conflict Resolution dialog box.
+            <para>After a successful Commit Table Interactive statement, MapInfo Professional displays a dialog box allowing the user to refresh.</para>
+            </param>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.DiscardChanges">
+            <summary>
+            Discards the changes made to a Mapinfo table, this is the same as calling the revert command in Mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table`1.Close">
+            <summary>
+            Close the current table in Mapinfo.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.Rows">
+            <summary>
+            Returns a <see cref="T:RowList&lt;TEntity&gt;"/> where each row is a new
+            <typeparam name="TEntity"/>.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.Item(System.Int32)">
+            <summary>
+            Returns a <see cref="T:TEntity"/> at the supplied index in the table.
+            </summary>
+            <param name="index">The index at which to get the <see cref="T:TEntity"/></param>
+            <returns>An instace of <see cref="T:TEntity"/> for the supplied index.</returns>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.Name">
+            <summary>
+            Returns the name of the current table.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.TablePath">
+            <summary>
+            Returns the path of the tab file for the underlying table,
+            if the table is a query table it will retrun null.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.Number">
+            <summary>
+            Returns the number of the current table.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.DataAccess.Table`1.IsMappable">
+            <summary>
+            Returns if the table is mappable or not.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.MapOperations.MapWindow.GetFrontWindowID">
+            <summary>
+            Returns a window ID of the formost window in Mapinfo.
+            </summary>
+            <param name="wrapper">An instance of Mapinfo.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MapinfoWrapper.MapOperations.MapWindow.GetFrontWindow">
+            <summary>
+            Gets the front window from Mapinfo.
+            </summary>
+            <param name="wrapper">An instance of Mapinfo.</param>
+            <returns>An instance of <see cref="T:MapWindow"/> containing the front window.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.MapOperations.MapWindow.CloseWindow">
+            <summary>
+            Closes the current Map window in Mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.MapOperations.MapWindow.MapTables(System.Collections.Generic.IEnumerable{MapinfoWrapper.DataAccess.ITable})">
+            <summary>
+            Opens a new Map window in Mapinfo using the tables supplied as the layers for that map.
+            </summary>
+            <param name="wrapper">An instance of Mapinfo.</param>
+            <param name="tablelist">A collection of tables which will be used in the new map window.</param>
+            <returns>A map containing a referance to the newly opened map window.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.MapOperations.MapWindow.MapTable(MapinfoWrapper.DataAccess.ITable)">
+            <summary>
+            Opens a new Map window in Mapinfo using the table supplied as the first layer. 
+            </summary>
+            <param name="table">The table which will be opened in a new map window.</param>
+            <returns>A map containing a referance to the newly opened map window. </returns>
+        </member>
+        <member name="P:MapinfoWrapper.MapOperations.MapWindow.WindowId">
+            <summary>
+            Returns the window id for the current window.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.MapOperations.MapWindow.Hwnd">
+            <summary>
+            Returns the handle for the current Map window.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Core.Extensions.StringExtensions.InQuotes(System.String)">
+            <summary>
+            Wraps a string in quotes.
+            </summary>
+            <param name="value">The string to wrap in quotes.</param>
+            <returns>A string wrapped in double quotes.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Core.Extensions.StringExtensions.FormatWith(System.String,System.Object[])">
+            <summary>
+            Formats a string with a list of literal placeholders.
+            </summary>
+            <param name="text">The extension text</param>
+            <param name="args">The argument list</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Core.Extensions.StringExtensions.FormatWith(System.String,System.Object)">
+            <summary>
+            Formats a string with one literal placeholder.
+            </summary>
+            <param name="text">The extension text</param>
+            <param name="arg0">Argument 0</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Core.Extensions.StringExtensions.FormatWith(System.String,System.Object,System.Object)">
+            <summary>
+            Formats a string with two literal placeholders.
+            </summary>
+            <param name="text">The extension text</param>
+            <param name="arg0">Argument 0</param>
+            <param name="arg1">Argument 1</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Core.Extensions.StringExtensions.FormatWith(System.String,System.Object,System.Object,System.Object)">
+            <summary>
+            Formats a string with tree literal placeholders.
+            </summary>
+            <param name="text">The extension text</param>
+            <param name="arg0">Argument 0</param>
+            <param name="arg1">Argument 1</param>
+            <param name="arg2">Argument 2</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="T:MapinfoWrapper.Embedding.SystemInfo">
+            <summary>
+            Contains methods for retiving application information about
+            the current running instance of Mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Embedding.SystemInfo.#ctor(MapinfoWrapper.Mapinfo.IMapinfoWrapper)">
+            <summary>
+            Creates a new SystemInfo object used to retive information
+            about the current instace of mapinfo.
+            </summary>
+            <param name="mapinfoWrapper">A wrapper object containing the running instace of mapinfo.</param>
+        </member>
+        <member name="P:MapinfoWrapper.Embedding.SystemInfo.MapinfoFrameHandle">
+            <summary>
+            Returns a <see cref="T:System.IntPtr"/> for the current Mapinfo application frame.
+            </summary>
+        </member>
+        <member name="P:MapinfoWrapper.Embedding.SystemInfo.MdiHandle">
+            <summary>
+            Returns a <see cref="T:System.IntPtr"/> for the current Mapinfo Mdi client window.
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.Embedding.ControlExtensions">
+            <summary>
+            A collection of Mapinfo control based extensions.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Embedding.ControlExtensions.SetAsMapinfoApplicationWindow(System.Windows.Forms.Control)">
+            <summary>
+            Sets the control as the parent for any dialog boxs that are created in the specifed Mapinfo instance.
+            If you need to re-parent a document window use <see cref="M:MapinfoWrapper.Embedding.ControlExtensions.SetAsNextDocumentParent(System.Windows.Forms.Control,MapinfoWrapper.Embedding.NextDocumentEnum)"/> instead.
+            </summary>
+            <param name="value">The control to which will be the parent.</param>
+        </member>
+        <member name="M:MapinfoWrapper.Embedding.ControlExtensions.SetAsNextDocumentParent(System.Windows.Forms.Control,MapinfoWrapper.Embedding.NextDocumentEnum)">
+            <summary>
+            Sets the control as the parent for the next document window that is opened in Mapinfo.
+            </summary>
+            <param name="value">The control to which the next document will be the parent.</param>
+            <param name="windowStyle">The style of window when opened.</param>
+        </member>
+        <member name="T:MapinfoWrapper.Mapinfo.COMMapinfo">
+            <summary>
+            Object used to hold or create an instace of Mapinfo's COM object.
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.Mapinfo.IMapinfoWrapper">
+            <summary>
+            Contains only the basic functions
+            needed to communicate with Mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.IMapinfoWrapper.RunCommand(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.IMapinfoWrapper.Evaluate(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo and retruns the result as a string.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+            <returns>A string containing the value of the return from the command string just excuted.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.IMapinfoWrapper.GetUnderlyingMapinfoInstance">
+            <summary>
+            Returns the underlying type of Mapinfo, this can be used to access to methods exposed by 
+            Mapinfo's COM API but not contained in the wrapper or the <see cref="T:MapinfoWrapper.Mapinfo.IMapinfoWrapper"/> interface.
+            </summary>
+            <returns>The underlying type of Mapinfo.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.COMMapinfo.#ctor(MapinfoWrapper.Mapinfo.Internals.DMapInfo)">
+            <summary>
+            <b>NOTE!</b> This is only provided to allow for testing and should not be used outside of a test, if you need to
+            create a new instance of Mapinfo please use <see cref="T:Wrapper.Mapinfo.Factory.MapinfoFactory"/>
+            
+            <para>Initializes a new instance of the <see cref="T:COMMapinfo"/> class, which holds 
+            an instance of a currently running instance of Mapinfo's COM object.</para>
+            <para>If you use this method you must wire up the needed dependencies, see example section:</para>
+            <para><b>IT IS HIGHLY RECOMMANDED TO USE THE <see cref="T:Wrapper.Mapinfo.Factory.MapinfoFactory"/> TO CREATE
+            AN INSTANCE OF MAPINFO.</b></para>
+            </summary>
+            <param name="mapinfoInstance">A currently running instance of Mapinfo's COM object.</param>
+            <example>
+            <code>
+            COMMapinfo olemapinfo = new COMMapinfo(exsitingMapinfoInstance);
+            DependencyResolver resolver = new DependencyResolver();
+            resolver.Register(typeof(IMapinfoWrapper), olemapinfo);
+            IoC.Initialize(resolver);
+            </code>
+            </example>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.COMMapinfo.CreateInstance">
+            <summary>
+            Creates an instance of Mapinfo's COM object.
+            </summary>
+            <returns>An instance of Mapinfo's COM object wrapped in <see cref="T:COMMapinfo"/></returns>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.COMMapinfo.RunCommand(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.COMMapinfo.Evaluate(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo and retruns the result as a string.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+            <returns>A string containing the value of the return from the command string just excuted.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.COMMapinfo.GetUnderlyingMapinfoInstance">
+            <summary>
+            Returns the underlying type of Mapinfo, this can be used to access to methods exposed by 
+            Mapinfo's COM API but not contained in the wrapper or the <see cref="T:MapinfoWrapper.Mapinfo.IMapinfoWrapper"/> interface.
+            </summary>
+            <returns>The underlying type of Mapinfo.</returns>
+        </member>
+        <member name="T:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo">
+            <summary>
+            Holds an instance of Mapinfo which has been created in the miadm.dll 
+            when calling a .Net assembly from Mapbasic(MBX).
+            <para>NOTE! This object uses reflection to invoke the Do and Eval commands of the Mapinfo instance, to allow this assembly to
+            be Mapinfo version independent.</para>
+            <para>If you are using a version of Mapinfo less then 9.5 you will need to use the <see cref="T:COMMapinfo"/> class/.</para>
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo.#ctor(MapinfoWrapper.Mapinfo.Internals.IMapInfo2)">
+            <summary>
+            Initializes a new instance of the <see cref="T:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo"/> class.
+            </summary>
+            <param name="mapinfoInstance">The current running instance</param>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo.RunCommand(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo.Evaluate(System.String)">
+            <summary>
+            Runs a specified Mapinfo command string in Mapinfo and retruns the result as a string.
+            </summary>
+            <param name="commandString">The Mapbasic command string to send to Mapinfo.</param>
+            <returns>A string containing the value of the return from the command string just excuted.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.MapbasicInvokedMapinfo.GetUnderlyingMapinfoInstance">
+            <summary>
+            Returns the underlying type of Mapinfo, this can be used to access to methods exposed by 
+            Mapinfo's COM API but not contained in the wrapper or the <see cref="T:MapinfoWrapper.Mapinfo.IMapinfoWrapper"/> interface.
+            </summary>
+            <returns>The underlying type of Mapinfo.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:MapinfoWrapper.Geometries.Lines.Line.CreateLine(MapinfoWrapper.Geometries.Coordinate,MapinfoWrapper.Geometries.Coordinate)" -->
+        <member name="T:MapinfoWrapper.DataAccess.TableFactory">
+            <summary>
+            A factory that is used to Create or Open tables in Mapinfo.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.TableFactory.OpenTable(System.String)">
+            <summary>
+            Opens a new table in Mapinfo and returns the opened table.
+            </summary>
+            <param name="tablePath">The path to the Mapinfo tab file to open.</param>
+            <returns>An instance of <see cref="T:MapinfoWrapper.DataAccess.ITable"/></returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.TableFactory.OpenTable``1(System.String)">
+            <summary>
+            Opens a new table in Mapinfo, using the <typeparamref name="TEntity"/> as the entity type
+            for the table and returns the opened table.
+            </summary>
+            <typeparam name="TEntity">The entity type to use a the entity for the table,
+            this will allow strong typed access to the columns in the table and LINQ support.</typeparam>
+            <param name="tablePath"></param>
+            <returns>An instance of <see cref="T:MapinfoWrapper.TableOperations.ITable&lt;TEntity&gt;"/></returns>
+        </member>
+        <member name="T:MapinfoWrapper.MapinfoCallback">
+            <summary>
+            A base callback class which can be used with Mapinfo,
+            provides StatusText changed event and WindowContentsChanged event.
+            
+            <para>If you need to implement you own callback event, inherit from this class and implement any events you need.
+            You can also override the defult implementation of the base events if need be. </para>
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.DataAccess.Table">
+            <summary>
+            A Mapinfo Table container which can be used when the
+            table definition is not known. This will still give you strong access
+            to the RowId column.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table.OpenTable(System.String)">
+            <summary>
+            Opens a new table in Mapinfo and returns the opened table.
+            </summary>
+            <param name="path">The path to the Mapinfo tab file to open.</param>
+            <returns>An instance of <see cref="T:MapinfoWrapper.DataAccess.ITable"/></returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table.OpenTable``1(System.String)">
+            <summary>
+            Opens a new table in Mapinfo, using the <typeparamref name="TEntity"/> as the entity type
+            for the table and returns the opened table.
+            </summary>
+            <typeparam name="TEntity">The entity type to use a the entity for the table,
+            this will allow strong typed access to the columns in the table and LINQ support.</typeparam>
+            <param name="path"></param>
+            <returns>An instance of <see cref="T:MapinfoWrapper.TableOperations.ITable&lt;TEntity&gt;"/></returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table.GetTable``1(System.String)">
+            <summary>
+            Gets an already open table in Mapinfo.
+            </summary>
+            <typeparam name="TEntity">The entity object to use as the tables entity type.</typeparam>
+            <param name="tableName">The name of the table to get from Mapinfo.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table.CloseTables(System.Collections.Generic.IEnumerable{MapinfoWrapper.DataAccess.ITable})">
+            <summary>
+            Close a collection of tables in Mapinfo.
+            </summary>
+            <param name="tables">A <see cref="T:IEnumerable&lt;ITable&gt;"/> containing the tables that need to be closed.</param>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.Table.CloseTable(MapinfoWrapper.DataAccess.ITable)">
+            <summary>
+            Close the supplied table in Mapinfo.
+            </summary>
+            <param name="table">The table that will be closed.</param>
+        </member>
+        <member name="T:MapinfoWrapper.Embedding.MapinfoWindowHandle">
+            <summary>
+            A container to hold the handle for a mapinfo window.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Embedding.MapinfoWindowHandle.#ctor(System.IntPtr)">
+            <summary>
+            Creates a object which holds a handle to a Mapinfo window. 
+            </summary>
+            <param name="mapinfoHandle"></param>
+        </member>
+        <member name="P:MapinfoWrapper.Embedding.MapinfoWindowHandle.System#Windows#Forms#IWin32Window#Handle">
+            <summary>
+            Returns the handle of the mapinfo window in the form of a <see cref="!:System.IntPrt"/>
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Geometries.Points.Point.CreatePoint(MapinfoWrapper.Geometries.Coordinate)">
+            <summary>
+            Creates a new point object in Mapinfo. 
+            Returns a <see cref="T:MapinfoWrapper.Geometries.Points.Point"/> which can be inserted into a
+            <see cref="T:MapinfoWrapper.DataAccess.Table"/>
+            <para>This function will create a new object variable in Mapinfo with a modified GUID as its name.</para>
+            </summary>
+            <param name="location">A <see cref="T:MapinfoWrapper.Geometries.Coordinate"/> that contains coordinates at
+            which to create the point.</param>
+            <returns>A new point object.</returns>
+        </member>
+        <member name="T:MapinfoWrapper.Mapinfo.MapinfoLogger">
+             <summary>
+             Allows Mapinfo commands that are being run against Mapinfo to be logged.
+             
+             <para>As this call just fowards commands to the underlying <see cref="T:IMapinfoWrapper"/> calls should be
+             made against this object.</para>
+             
+             <para>This class fowards the calls to the underlying Mapinfo wrapper object, before and after the logging actions have
+             been preformed. Due to this there maybe some overhead and should really only be used to see what commands are getting excuted
+             and removed at release.</para>
+             <example>
+             Example:
+             <code>
+             Action&lt;String&gt; doaction = (command) =&gt; Console.WriteLine("Run -&gt; {0}", command);
+             Action&lt;String&gt; evalaction = (command) =&gt; Console.WriteLine("Eval -&gt; {0}", command);
+             Action&lt;String&gt; returnaction = (command) =&gt; Console.WriteLine("   &lt;- {0}", command);
+             IMapinfoWrapper mapinfo = new MapinfoLogger(COMMapinfo.CreateInstance(), doaction, evalaction, returnaction);        
+            </code>
+            </example>
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Mapinfo.MapinfoLogger.#ctor(MapinfoWrapper.Mapinfo.IMapinfoWrapper,System.Action{System.String},System.Action{System.String},System.Action{System.String})">
+            <summary>
+            Creates a new instace of the <see cref="T:MapinfoLogger"/> object.
+            </summary>
+            <param name="mapinfoInstance">The instance of Mapinfo to log against.</param>
+            <param name="doCommandLogAction">The action that will be invoked before the RunCommand is run.</param>
+            <param name="evalCommandLogAction">The action that will be invoked before the Evaluate command is run.</param>
+            <param name="evalReturnLogAction">The action that will be invoked after the Evaluate command in run, this action is passed the result
+            of the Evaluate command.</param>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.LINQ.SQLBuilders.Evaluator.PartialEval(System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.Expression,System.Boolean})">
+            <summary>
+            Performs evaluation and replacement of independent sub-trees
+            </summary>
+            <param name="expression">The root of the expression tree.</param>
+            <param name="fnCanBeEvaluated">A function that decides whether a given expression node can be part of the local function.</param>
+            <returns>A new tree with sub-trees evaluated and replaced.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.DataAccess.LINQ.SQLBuilders.Evaluator.PartialEval(System.Linq.Expressions.Expression)">
+            <summary>
+            Performs evaluation and replacement of independent sub-trees
+            </summary>
+            <param name="expression">The root of the expression tree.</param>
+            <returns>A new tree with sub-trees evaluated and replaced.</returns>
+        </member>
+        <member name="T:MapinfoWrapper.DataAccess.LINQ.SQLBuilders.Evaluator.SubtreeEvaluator">
+            <summary>
+            Evaluates and replaces sub-trees when first candidate is reached (top-down)
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.DataAccess.LINQ.SQLBuilders.Evaluator.Nominator">
+            <summary>
+            Performs bottom-up analysis to determine which nodes can possibly
+            be part of an evaluated sub-tree.
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.Workspace">
+            <summary>
+            Contains methods for working with workspaces.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.Workspace.OpenWorkspace(System.String)">
+            <summary>
+            Opens a workspace in a instance of Mapinfo.
+            </summary>
+            <param name="workspacePath">The path to the workspace which needs to be opened.</param>
+            <returns>A instance of a <see cref="T:MapinfoWrapper.Workspace"/> which can be used to get infomation about the opened workspace.</returns>
+        </member>
+        <member name="T:MapinfoWrapper.DataAccess.GridHandleEnum">
+            <summary>
+            An enum containing different methods for opening VM GRD files.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.DataAccess.GridHandleEnum.VMGrid">
+            <summary>
+            Treats all VM GRD files a Grid Layers when opened.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.DataAccess.GridHandleEnum.VMRaster">
+            <summary>
+            Treats all VM GRD files as Raster Layers when opened.
+            </summary>
+        </member>
+        <member name="F:MapinfoWrapper.DataAccess.GridHandleEnum.VMDefault">
+            <summary>
+            Treats all VM GRD files as Raster or Grid depending on existence of RasterStyle 6.1 tag in TAB file.
+            </summary>
+        </member>
+        <member name="T:MapinfoWrapper.LayerOperations.Layer">
+            <summary>
+            A wrapper object around a Mapinfo layer, contains methods used to get information about the specifed
+            layer.
+            </summary>
+        </member>
+        <member name="M:MapinfoWrapper.LayerOperations.Layer.GetLayerFromNumber(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:Layer"/> using the layer number.
+            </summary>
+            <param name="layerNumber">The number of the layer.</param>
+            <returns>An instance of <see cref="T:Layer"/>.</returns>
+        </member>
+        <member name="M:MapinfoWrapper.LayerOperations.Layer.GetLayerFromName(System.String)">
+            <summary>
+            Creates a new <see cref="T:Layer"/> using the layer name.
+            </summary>
+            <param name="layerName">The name of the layer.</param>
+            <returns>An instance of <see cref="T:Layer"/>.</returns>
+        </member>
+    </members>
+</doc>
