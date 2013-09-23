@@ -1,0 +1,8 @@
+﻿<Application x:Class="HLU.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Activated="Application_Activated" ShutdownMode="OnMainWindowClose" Exit="Application_Exit">
+    <Application.Resources>
+        <ResourceDictionary Source="UI\View\Dictionary\HluTheme.xaml" />
+    </Application.Resources>
+</Application>

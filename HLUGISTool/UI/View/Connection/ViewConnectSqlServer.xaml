@@ -1,0 +1,51 @@
+﻿<Window x:Class="HLU.UI.View.Connection.ViewConnectSqlServer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
+    Title="{Binding Path=WindowTitle}" 
+        Height="325" Width="392" WindowStartupLocation="CenterScreen" Visibility="Collapsed" SizeToContent="Height" 
+        ShowInTaskbar="False" ResizeMode="NoResize" Background="{DynamicResource WindowBackgroundBrush}" 
+        Icon="..\..\..\Icons\HLUIcon.png" Activated="Window_Activated">
+    
+    <StackPanel Margin="4">
+        <GroupBox Name="GroupBoxServer" Margin="0,4,0,0" Padding="0" Header="Server">
+            <StackPanel>
+                <ComboBox Name="ComboBoxServer" ItemsSource="{Binding Path=Servers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=Server, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedValue="{Binding Path=Server}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" />
+                <RadioButton Name="RadioButtonWindowsAuthentication" GroupName="AuthenticationMode" IsChecked="{Binding Path=WindowsAuthentication}" Margin="0,4,0,0">Use _Windows authentication</RadioButton>
+                <RadioButton Name="RadioButtonSQLAuthentication" GroupName="AuthenticationMode" IsChecked="{Binding Path=SQLServerAuthentication}" Margin="0,4,0,0">Use _SQL Server authentication</RadioButton>
+                <Grid Name="GridSQLAuthentication" IsEnabled="{Binding Path=SQLServerAuthentication}" Margin="16,4,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Margin="0,0,4,0">User name</Label>
+                    <Label Grid.Row="1" VerticalAlignment="Center" Margin="0,0,4,0">Password</Label>
+                    <TextBox Name="TextBoxUsername" Grid.Column="1" Text="{Binding Path=Username, Mode=TwoWay, ValidatesOnDataErrors=True}" Margin="0,4,0,2" />
+                    <PasswordBox Name="TextBoxPassword" Grid.Row="1" Grid.Column="1" hlu:PasswordBoxAssistant.BindPassword="true" hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="0,4,0,2" ></PasswordBox>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Name="GroupBoxDatabase" Margin="0,4,0,0" Padding="0" Header="Database">
+            <ComboBox Name="ComboBoxDatabase" ItemsSource="{Binding Path=Databases, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Path=Database, ValidatesOnDataErrors=True}" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+        </GroupBox>
+
+        <GroupBox Name="GroupBoxSchema" Margin="0,4,0,0" Padding="0" Header="Default Schema">
+            <ComboBox Name="ComboBoxSchema" ItemsSource="{Binding Path=Schemata, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Path=DefaultSchema, ValidatesOnDataErrors=True}" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+        </GroupBox>
+
+        <Grid Margin="0,4,0,0" Height="23" Name="GridButtons" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="115*" />
+                <ColumnDefinition Width="82" />
+                <ColumnDefinition Width="82" />
+            </Grid.ColumnDefinitions>
+            <Button Name="ButtonOk" Grid.Column="1" Command="{Binding Path=OkCommand}" ForceCursor="False" IsDefault="True" Margin="0,0,2,0">_OK</Button>
+            <Button Name="ButtonCancel" Grid.Column="2" Command="{Binding Path=CancelCommand}" IsCancel="True" Margin="2,0,0,0">_Cancel</Button>
+        </Grid>
+    </StackPanel>
+</Window>

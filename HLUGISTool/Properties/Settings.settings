@@ -1,0 +1,172 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HLU.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="HluConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionString&gt;Data Source=L2400HT\SQLEXPRESS;Initial Catalog=hlu;Integrated Security=True&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Data Source=L2400HT\SQLEXPRESS;Initial Catalog=hlu;Integrated Security=True</Value>
+    </Setting>
+    <Setting Name="ArcGISValidWorkspaces" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;esriDataSourcesGDB.AccessWorkspaceFactory&lt;/string&gt;
+  &lt;string&gt;esriDataSourcesGDB.FileGDBWorkspaceFactory&lt;/string&gt;
+  &lt;string&gt;esriDataSourcesGDB.SdeWorkspaceFactory&lt;/string&gt;
+  &lt;string&gt;esriDataSourcesFile.ShapefileWorkspaceFactory&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="DbConnectionTimeout" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="DbConnectionPersistSecurityInfo" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DbDefaultSchema" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DbPromptPwd" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DbConnectionString" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DbIsUnicode" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DbUseTimeZone" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DbTextLength" Roaming="true" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="DbBinaryLength" Roaming="true" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="DbTimePrecision" Roaming="true" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="DbNumericPrecision" Roaming="true" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="DbNumericScale" Roaming="true" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="DbConnectionType" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="LogoPath" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Documents and Settings\hartmutt\My Documents\Visual Studio 2008\Projects\HBICGISTool\HBICGISTool\Logo.png</Value>
+    </Setting>
+    <Setting Name="LogoHeight" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="MapPath" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PreferredGis" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="UseAutomaticCommandBuilders" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ConverterParameterSeparator" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">^</Value>
+    </Setting>
+    <Setting Name="SeasonNames" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;Spring&lt;/string&gt;
+  &lt;string&gt;Summer&lt;/string&gt;
+  &lt;string&gt;Autumn&lt;/string&gt;
+  &lt;string&gt;Winter&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="VagueDateDelimiter" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-</Value>
+    </Setting>
+    <Setting Name="StartupTimeout" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="PipeFieldDelimiter" Type="System.Char" Scope="Application">
+      <Value Profile="(Default)">|</Value>
+    </Setting>
+    <Setting Name="PipeTransmissionEnd" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">@</Value>
+    </Setting>
+    <Setting Name="PipeTransmissionInterrupt" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">%</Value>
+    </Setting>
+    <Setting Name="HistoryGeometry1ColumnName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">geom1</Value>
+    </Setting>
+    <Setting Name="HistoryGeometry2ColumnName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">geom2</Value>
+    </Setting>
+    <Setting Name="IncidTablePageSize" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="PipeMaxReadBytes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">131072</Value>
+    </Setting>
+    <Setting Name="PipeStringContinue" Type="System.Char" Scope="Application">
+      <Value Profile="(Default)">$</Value>
+    </Setting>
+    <Setting Name="UseObjectFactory" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HistoryColumnOrdinals" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;4&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="GisIDColumnOrdinals" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;0&lt;/string&gt;
+  &lt;string&gt;1&lt;/string&gt;
+  &lt;string&gt;2&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="LutDescriptionFieldName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">description</Value>
+    </Setting>
+    <Setting Name="LutDescriptionFieldOrdinal" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="HistoryDisplayLastN" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="BulkUpdateBlankRowMeansDelete" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CodeDeleteRow" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;clear&gt;</Value>
+    </Setting>
+    <Setting Name="BulkUpdateUsesAdo" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BulkUpdatePotentialBap" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PipeBaseName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">HluPipe</Value>
+    </Setting>
+    <Setting Name="PipeErrorInit" Type="System.Char" Scope="Application">
+      <Value Profile="(Default)">~</Value>
+    </Setting>
+    <Setting Name="WarnOnGISSelect" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HistoryAdditionalFieldsDelimiter" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">~~~</Value>
+    </Setting>
+    <Setting Name="BAPDeterminationQualiltyUserAdded" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">NP</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

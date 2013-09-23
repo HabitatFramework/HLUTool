@@ -1,0 +1,41 @@
+﻿<Window x:Class="HLU.UI.View.WindowSelectGIS"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"
+        Height="160" MinWidth="300" ShowInTaskbar="False" Topmost="True" Icon="..\..\Icons\HLUIcon.png">
+
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4" Width="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="23" />
+            </Grid.RowDefinitions>
+            <GroupBox Name="GroupBoxSelectGIS" Header="Available GIS Applications" TabIndex="3">
+                <Grid Name="GridGISApplications" Margin="2,8,2,8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Name="ComboBoxGISApps" Grid.Row="0" Grid.Column="0" TabIndex="0" VerticalAlignment="Center" Margin="8,8,8,8"
+                              IsEditable="True" IsReadOnly="True"
+                              ItemsSource="{Binding Path=GISApps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                              SelectedValue="{Binding Path=SelectedGISApp, ValidatesOnDataErrors=True}" />
+                </Grid>
+            </GroupBox>
+            <Grid Name="GridButtons" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="82" />
+                </Grid.ColumnDefinitions>
+                <Button Name="ButtonOk" Grid.Column="1" TabIndex="1" IsDefault="True" Margin="0,0,2,0"
+                        Command="{Binding Path=OkCommand}" >_OK</Button>
+                <Button Name="ButtonCancel" Grid.Column="2" TabIndex="2" IsCancel="True" Margin="2,0,0,0"
+                        Command="{Binding Path=CancelCommand}" >_Cancel</Button>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
