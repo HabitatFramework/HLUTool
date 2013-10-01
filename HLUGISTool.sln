@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLUGISTool", "HLUGISTool\HLUGISTool.csproj", "{B0C62884-11C8-48FB-B486-C44E0831FC98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HluArcMapExtension", "HluArcMapExtension\HluArcMapExtension.csproj", "{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}"
@@ -12,12 +12,47 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.InterProcessComm"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.NamedPipes", "NamedPipeDotNet\AppModule.NamedPipes\AppModule.NamedPipes.csproj", "{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HluSetup", "HluSetup\HluSetup.vdproj", "{92709169-0920-4DDE-AC76-AC03D58A86CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcObjectsInstaller", "ArcObjectsInstaller\ArcObjectsInstaller.csproj", "{06FBEE64-C699-43D6-A731-F1AB01611107}"
+EndProject
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "HluSetup_ISLE", "HluSetup_ISLE\HluSetup_ISLE.isproj", "{8D54204B-1783-4926-94DD-B03219660B0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{06FBEE64-C699-43D6-A731-F1AB01611107} = {06FBEE64-C699-43D6-A731-F1AB01611107}
+		{B0C62884-11C8-48FB-B486-C44E0831FC98} = {B0C62884-11C8-48FB-B486-C44E0831FC98}
+		{077B53BB-404A-4B2F-BA17-AAE98C5E9C66} = {077B53BB-404A-4B2F-BA17-AAE98C5E9C66}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|Any CPU = CD_ROM|Any CPU
+		CD_ROM|Mixed Platforms = CD_ROM|Mixed Platforms
+		CD_ROM|x86 = CD_ROM|x86
+		Custom|Any CPU = Custom|Any CPU
+		Custom|Mixed Platforms = Custom|Mixed Platforms
+		Custom|x86 = Custom|x86
 		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		DVD-10|Any CPU = DVD-10|Any CPU
+		DVD-10|Mixed Platforms = DVD-10|Mixed Platforms
+		DVD-10|x86 = DVD-10|x86
+		DVD-18|Any CPU = DVD-18|Any CPU
+		DVD-18|Mixed Platforms = DVD-18|Mixed Platforms
+		DVD-18|x86 = DVD-18|x86
+		DVD-5|Any CPU = DVD-5|Any CPU
+		DVD-5|Mixed Platforms = DVD-5|Mixed Platforms
+		DVD-5|x86 = DVD-5|x86
+		DVD-9|Any CPU = DVD-9|Any CPU
+		DVD-9|Mixed Platforms = DVD-9|Mixed Platforms
+		DVD-9|x86 = DVD-9|x86
 		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+		SingleImage|Any CPU = SingleImage|Any CPU
+		SingleImage|Mixed Platforms = SingleImage|Mixed Platforms
+		SingleImage|x86 = SingleImage|x86
+		WebDeployment|Any CPU = WebDeployment|Any CPU
+		WebDeployment|Mixed Platforms = WebDeployment|Mixed Platforms
+		WebDeployment|x86 = WebDeployment|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B0C62884-11C8-48FB-B486-C44E0831FC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
