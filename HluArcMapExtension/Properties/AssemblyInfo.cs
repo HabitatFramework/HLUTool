@@ -1,4 +1,22 @@
-﻿using System.Reflection;
+﻿// HLUTool is used to view and maintain habitat and land use GIS data.
+// Copyright © 2013 Andy Foy
+// 
+// This file is part of HLUTool.
+// 
+// HLUTool is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// HLUTool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,11 +24,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HluArcMapExtension")]
-[assembly: AssemblyDescription("HLU GIS Tool ArcMap Extension")]
+[assembly: AssemblyDescription("HLUTool ArcMap Extension")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HluArcMapExtension")]
-[assembly: AssemblyCopyright("Copyright ©  2010")]
+[assembly: AssemblyCopyright("Copyright © 2013 Andy Foy")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +49,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.*")]
-//[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
+//[assembly: AssemblyFileVersion("1.0.*")]
