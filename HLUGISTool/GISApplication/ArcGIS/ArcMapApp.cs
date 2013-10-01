@@ -1,4 +1,6 @@
-﻿//#define ARC10
+﻿//Comment out the line below if compiling for versions of ArcGIS older than 10.0
+//and remove the comments for versions of ArcGIS 10.0 or later.
+//#define ARC10
 
 using System;
 using System.Collections.Generic;
