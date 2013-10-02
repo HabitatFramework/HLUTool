@@ -630,7 +630,7 @@
 		<row><td>ReadmeInformation</td><td>DlgLine</td><td>Line</td><td>48</td><td>234</td><td>326</td><td>0</td><td>3</td><td/><td/><td/><td/><td>0</td><td>0</td><td/><td/></row>
 		<row><td>ReadmeInformation</td><td>DlgTitle</td><td>Text</td><td>13</td><td>6</td><td>193</td><td>13</td><td>65539</td><td/><td>##IDS__IsReadmeDlg_ReadMeInfo##</td><td>DlgDesc</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>ReadmeInformation</td><td>Next</td><td>PushButton</td><td>230</td><td>243</td><td>66</td><td>17</td><td>1048579</td><td/><td>##IDS_NEXT##</td><td>Cancel</td><td/><td>0</td><td/><td/><td/></row>
-		<row><td>ReadmeInformation</td><td>Readme</td><td>ScrollableText</td><td>10</td><td>55</td><td>353</td><td>166</td><td>3</td><td/><td/><td>Banner</td><td/><td>0</td><td/><td>&lt;ISProductFolder&gt;\Redist\0409\Readme.rtf</td><td/></row>
+		<row><td>ReadmeInformation</td><td>Readme</td><td>ScrollableText</td><td>10</td><td>55</td><td>353</td><td>166</td><td>3</td><td/><td/><td>Banner</td><td/><td>0</td><td/><td>D:\GitHub\HLUTool\ReadMe.rtf</td><td/></row>
 		<row><td>ReadyToInstall</td><td>Back</td><td>PushButton</td><td>164</td><td>243</td><td>66</td><td>17</td><td>3</td><td/><td>##IDS_BACK##</td><td>GroupBox1</td><td/><td>0</td><td/><td/><td/></row>
 		<row><td>ReadyToInstall</td><td>Banner</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td>NewBinary1</td></row>
 		<row><td>ReadyToInstall</td><td>BannerLine</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>0</td><td>1</td><td/><td/><td/><td/><td>0</td><td/><td/><td/></row>
@@ -936,7 +936,7 @@
 		<row><td>DatabaseFolder</td><td>ChangeFolder</td><td>SpawnDialog</td><td>InstallChangeFolder</td><td>1</td><td>1</td></row>
 		<row><td>DatabaseFolder</td><td>ChangeFolder</td><td>[_BrowseProperty]</td><td>DATABASEDIR</td><td>1</td><td>2</td></row>
 		<row><td>DatabaseFolder</td><td>Next</td><td>NewDialog</td><td>SetupType</td><td>1</td><td>1</td></row>
-		<row><td>DestinationFolder</td><td>Back</td><td>NewDialog</td><td>LicenseAgreement</td><td>NOT Installed</td><td>0</td></row>
+		<row><td>DestinationFolder</td><td>Back</td><td>NewDialog</td><td>ReadmeInformation</td><td>NOT Installed</td><td>0</td></row>
 		<row><td>DestinationFolder</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>SpawnDialog</td><td>InstallChangeFolder</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>[_BrowseProperty]</td><td>INSTALLDIR</td><td>1</td><td>2</td></row>
@@ -957,7 +957,7 @@
 		<row><td>LicenseAgreement</td><td>Back</td><td>NewDialog</td><td>InstallWelcome</td><td>NOT Installed</td><td>0</td></row>
 		<row><td>LicenseAgreement</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>0</td></row>
 		<row><td>LicenseAgreement</td><td>ISPrintButton</td><td>DoAction</td><td>ISPrint</td><td>1</td><td>0</td></row>
-		<row><td>LicenseAgreement</td><td>Next</td><td>NewDialog</td><td>DestinationFolder</td><td>AgreeToLicense = "Yes"</td><td>0</td></row>
+		<row><td>LicenseAgreement</td><td>Next</td><td>NewDialog</td><td>ReadmeInformation</td><td>AgreeToLicense = "Yes"</td><td>0</td></row>
 		<row><td>MaintenanceType</td><td>Back</td><td>NewDialog</td><td>MaintenanceWelcome</td><td>1</td><td>0</td></row>
 		<row><td>MaintenanceType</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>0</td></row>
 		<row><td>MaintenanceType</td><td>Next</td><td>NewDialog</td><td>CustomSetup</td><td>_IsMaintenance = "Change"</td><td>12</td></row>
@@ -984,9 +984,9 @@
 		<row><td>PatchWelcome</td><td>Next</td><td>EndDialog</td><td>Return</td><td>1</td><td>3</td></row>
 		<row><td>PatchWelcome</td><td>Next</td><td>Reinstall</td><td>ALL</td><td>PATCH And REINSTALL=""</td><td>1</td></row>
 		<row><td>PatchWelcome</td><td>Next</td><td>ReinstallMode</td><td>omus</td><td>PATCH And REINSTALLMODE=""</td><td>2</td></row>
-		<row><td>ReadmeInformation</td><td>Back</td><td>NewDialog</td><td>LicenseAgreement</td><td>1</td><td>1</td></row>
+		<row><td>ReadmeInformation</td><td>Back</td><td>NewDialog</td><td>LicenseAgreement</td><td>NOT Installed</td><td>1</td></row>
 		<row><td>ReadmeInformation</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>1</td></row>
-		<row><td>ReadmeInformation</td><td>Next</td><td>NewDialog</td><td>CustomerInformation</td><td>1</td><td>1</td></row>
+		<row><td>ReadmeInformation</td><td>Next</td><td>NewDialog</td><td>DestinationFolder</td><td>1</td><td>1</td></row>
 		<row><td>ReadyToInstall</td><td>Back</td><td>NewDialog</td><td>CustomSetup</td><td>Installed OR _IsSetupTypeMin = "Custom"</td><td>2</td></row>
 		<row><td>ReadyToInstall</td><td>Back</td><td>NewDialog</td><td>DestinationFolder</td><td>NOT Installed</td><td>1</td></row>
 		<row><td>ReadyToInstall</td><td>Back</td><td>NewDialog</td><td>MaintenanceType</td><td>Installed AND _IsMaintenance = "Reinstall"</td><td>3</td></row>
@@ -1916,12 +1916,14 @@
 		<row><td>hluarcmapextension.dll</td><td>HluArcMapExtension.dll</td><td>HLUARC~1.DLL|HluArcMapExtension.dll</td><td>0</td><td/><td/><td>0</td><td>1</td><td>D:\HLUTool\Code\HLUGISTool\HluArcMapExtension\bin\x86\Release\HluArcMapExtension.dll</td><td>1</td><td/></row>
 		<row><td>hlugistool.primary_output</td><td>HLUGISTool.Primary_output</td><td>HLUGISTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUGISTool&gt;|Built</td><td>3</td><td/></row>
 		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
+		<row><td>license.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\License.txt</td><td>1</td><td/></row>
 		<row><td>mapinfodotnetwrapper.dll</td><td>MapinfoDotNetWrapper.dll</td><td>MAPINF~1.DLL|MapinfoDotNetWrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\MapinfoDotNetWrapper.dll</td><td>1</td><td/></row>
 		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
 		<row><td>npgsql.dll</td><td>Npgsql.dll</td><td>Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\Npgsql.dll</td><td>1</td><td/></row>
 		<row><td>oracle.dataaccess.dll</td><td>Oracle.DataAccess.dll</td><td>ORACLE~1.DLL|Oracle.DataAccess.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\Oracle.DataAccess.dll</td><td>1</td><td/></row>
 		<row><td>policy.2.0.npgsql.config</td><td>ISX_DEFAULTCOMPONENT</td><td>POLICY~1.CON|policy.2.0.Npgsql.config</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\policy.2.0.Npgsql.config</td><td>1</td><td/></row>
 		<row><td>policy.2.0.npgsql.dll</td><td>policy.2.0.Npgsql.dll</td><td>POLICY~1.DLL|policy.2.0.Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\policy.2.0.Npgsql.dll</td><td>1</td><td/></row>
+		<row><td>readme.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>ReadMe.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\ReadMe.txt</td><td>1</td><td/></row>
 		<row><td>wpftoolkit.dll</td><td>WPFToolkit.dll</td><td>WPFTOO~1.DLL|WPFToolkit.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\HLUTool\Code\HLUGISTool\lib\WPFToolkit.dll</td><td>1</td><td/></row>
 	</table>
 
@@ -3978,6 +3980,7 @@
 		<row><td>ID_STRING14</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>-1675551025</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675516177</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
+		<row><td>ID_STRING17</td><td>1033</td><td>License.txt</td><td>0</td><td/><td>354519820</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082589397</td></row>
@@ -4691,6 +4694,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="i2">InstallMode</col>
 		<row><td>NewShortcut1</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
 		<row><td>NewShortcut2</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
+		<row><td>NewShortcut3</td><td>ISX_DEFAULTCOMPONENT</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4778,6 +4782,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I4">ISAttributes</col>
 		<row><td>NewShortcut1</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING14##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>NewShortcut1_8F576916A29649CAA6469A9D11575E41.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>NewShortcut2</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING15##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td>/c</td><td/><td/><td>NewShortcut2_F1A733A5B8D4495893497D2B2EE2C5B3.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>NewShortcut3</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING17##</td><td>ISX_DEFAULTCOMPONENT</td><td>[INSTALLDIR]License.txt</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
