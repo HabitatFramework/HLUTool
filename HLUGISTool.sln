@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.InterProcessComm"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModule.NamedPipes", "NamedPipeDotNet\AppModule.NamedPipes\AppModule.NamedPipes.csproj", "{077B53BB-404A-4B2F-BA17-AAE98C5E9C66}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HluSetup", "HluSetup\HluSetup.vdproj", "{92709169-0920-4DDE-AC76-AC03D58A86CE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
