@@ -1,7 +1,0 @@
-﻿<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:as="clr-namespace:ESDM.ArcSquirrel"
-     >
-    <as:SpatialReferenceConverter x:Key="spatialReferenceConverter"/>
-</ResourceDictionary> 

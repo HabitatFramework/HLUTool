@@ -1,7 +1,8 @@
-#################
-## Eclipse
-#################
+# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
+bin
+obj
 
+<<<<<<< HEAD
 *.pydevproject
 .project
 .metadata
@@ -216,3 +217,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+=======
+# mstest test results
+TestResults
+>>>>>>> parent of bbc5b03... Load source code
