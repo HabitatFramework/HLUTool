@@ -1,4 +1,4 @@
-﻿// HLUTool is used to view and maintain habitat and land use GIS data.
+// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
 // 
 // This file is part of HLUTool.
@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
+//Comment out the line below if compiling for versions of ArcGIS older than 10.0
+//and remove the comments for versions of ArcGIS 10.0 or later.
 //#define ARC10
 
 using System;

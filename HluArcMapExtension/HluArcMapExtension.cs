@@ -18,6 +18,13 @@
 
 using System;
 using System.Collections.Generic;
+//Comment out the line below if compiling for versions of ArcGIS older than 10.0
+//and remove the comments for versions of ArcGIS 10.0 or later.
+//#define ARC10
+
+using System;
+using System.Collections.Generic;
+using System.Configuration.Install;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -25,6 +32,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AppModule.InterProcessComm;
 using ESRI.ArcGIS.ADF.CATIDs;
 using ESRI.ArcGIS.ArcMapUI;
@@ -41,6 +49,7 @@ using HLU.Data.Model;
 using HLU.GISApplication;
 using HLU.GISApplication.ArcGIS;
 using HLU.UI.ViewModel;
+using Microsoft.Win32;
 using Server;
 
 namespace HLU
@@ -162,6 +171,10 @@ namespace HLU
         {
             // Required for ArcGIS Component Category Registrar support
             ArcGISCategoryRegistration(registerType);
+            #if ARC10
+            #else
+                EsriRegasm(true, registerType);
+            #endif
         }
 
         [ComUnregisterFunction()]
@@ -170,6 +183,10 @@ namespace HLU
         {
             // Required for ArcGIS Component Category Registrar support
             ArcGISCategoryUnregistration(registerType);
+            #if ARC10
+            #else
+                EsriRegasm(false, registerType);
+            #endif
         }
 
         #region ArcGIS Component Category Registrar generated code
@@ -193,6 +210,40 @@ namespace HLU
             string regKey = string.Format("HKEY_CLASSES_ROOT\\CLSID\\{{{0}}}", registerType.GUID);
             MxExtension.Unregister(regKey);
         }
+
+        private static void EsriRegasm(bool install, Type registerType)
+        {
+            try
+            {
+                int arcVersion = -1;
+                string regCmd = String.Empty, args = String.Empty;
+
+                RegistryKey rk = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ESRI\ArcGIS");
+                object rkVal = rk.GetValue("RealVersion");
+                if ((rkVal == null) || !Int32.TryParse(rkVal.ToString().Split('.')[0], out arcVersion)) arcVersion = -1;
+
+                if (arcVersion > 9)
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo(System.IO.Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.CommonProgramFiles), @"ArcGIS\bin\ESRIRegasm.exe"));
+                    psi.Arguments = String.Format(@"{0} /p:Desktop{1} /s",
+                        System.IO.Path.GetFileName(registerType.Assembly.Location), install ? String.Empty : @" /u");
+                    psi.WorkingDirectory = System.IO.Path.GetDirectoryName(registerType.Assembly.Location);
+                    psi.CreateNoWindow = true;
+                    psi.UseShellExecute = false;
+
+                    Process p = new Process();
+                    p.StartInfo = psi;
+                    p.Start();
+                    p.WaitForExit();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU GIS Tool Installer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
         #endregion
 
@@ -296,7 +347,7 @@ namespace HLU
 
         public string Description
         {
-            get { return "HLU ArcMap Extension\r\n"; }
+            get { return "HLU ArcMap Extension\r\n\r\nProvides interface to HLU GIS Tool."; }
         }
 
         /// <summary>

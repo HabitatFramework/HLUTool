@@ -55,11 +55,39 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>mycertdotnet.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <RegisterForComInterop>true</RegisterForComInterop>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>true</RegisterForComInterop>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--
+    <Reference Include="ESRI.ArcGIS.ADF.Local, Version=10.1.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\ESRI.ArcGIS.ADF.Local\10.1.0.0__8fc3cc631e44ad86\ESRI.ArcGIS.ADF.Local.dll</HintPath>
+    </Reference>
+    -->
     <Reference Include="ESRI.ArcGIS.ADF, Version=9.3.0.1770, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -182,5 +210,26 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
+  -->
+       Other similar extension points exist, see Microsoft.Common.targets. -->
+
+  <!--
+  Comment out the Targets below (BeforeClean and AfterBuild) if compiling for versions of ArcGIS prior to 10.0.
+  -->
+  <!--
+  <Target Name="BeforeClean">
+  <Exec
+    WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin"
+    Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /u /s"
+    Condition="Exists('$(TargetPath)')"/>
+  </Target>
+  <Target Name="AfterBuild">
+  <Exec
+    WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin"
+    Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /s"/>
+  </Target>
+  -->
+  <!--
+  Comment out down to here.
   -->
 </Project>
