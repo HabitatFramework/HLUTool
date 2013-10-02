@@ -12,7 +12,8 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>AppModule.NamedPipes</AssemblyName>
-    <AssemblyOriginatorKeyFile>mycertdotnet.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -147,9 +148,6 @@
       <Project>{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}</Project>
       <Name>AppModule.InterProcessComm</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mycertdotnet.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

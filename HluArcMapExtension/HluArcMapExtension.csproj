@@ -57,7 +57,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>mycertdotnet.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -80,15 +81,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <!--
     <Reference Include="ESRI.ArcGIS.ADF.Local, Version=10.1.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\assembly\GAC_MSIL\ESRI.ArcGIS.ADF.Local\10.1.0.0__8fc3cc631e44ad86\ESRI.ArcGIS.ADF.Local.dll</HintPath>
     </Reference>
-    -->
+    <!--
     <Reference Include="ESRI.ArcGIS.ADF, Version=9.3.0.1770, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    -->
     <Reference Include="ESRI.ArcGIS.ArcMapUI, Version=9.3.0.1770, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -195,7 +196,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="mycertdotnet.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -204,23 +204,15 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets. -->
-
   <!--
   Comment out the Targets below (BeforeClean and AfterBuild) if compiling for versions of ArcGIS prior to 10.0.
   -->
-  <!--
   <Target Name="BeforeClean">
-  <Exec
-    WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin"
-    Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /u /s"
-    Condition="Exists('$(TargetPath)')"/>
+    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /u /s" Condition="Exists('$(TargetPath)')" />
   </Target>
   <Target Name="AfterBuild">
-  <Exec
-    WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin"
-    Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /s"/>
+    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /s" />
   </Target>
-  -->
   <!--
   Comment out down to here.
   -->

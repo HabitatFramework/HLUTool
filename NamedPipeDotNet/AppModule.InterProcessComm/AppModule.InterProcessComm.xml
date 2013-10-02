@@ -4,116 +4,6 @@
         <name>AppModule.InterProcessComm</name>
     </assembly>
     <members>
-        <member name="T:AppModule.InterProcessComm.InterProcessIOException">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:AppModule.InterProcessComm.InterProcessIOException.IsServerAvailable">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:AppModule.InterProcessComm.InterProcessIOException.ErrorCode">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:AppModule.InterProcessComm.InterProcessIOException.#ctor(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="text"></param>
-        </member>
-        <member name="M:AppModule.InterProcessComm.InterProcessIOException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            
-            </summary>
-            <param name="info"></param>
-            <param name="context"></param>
-        </member>
-        <member name="T:AppModule.InterProcessComm.IInterProcessConnection">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Connect">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Close">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Read">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.ReadBytes">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Write(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="text"></param>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.WriteBytes(System.Byte[])">
-            <summary>
-            
-            </summary>
-            <param name="bytes"></param>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.GetState">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:AppModule.InterProcessComm.IInterProcessConnection.NativeHandle">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="T:AppModule.InterProcessComm.IClientChannel">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="request"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.IO.Stream)">
-            <summary>
-            
-            </summary>
-            <param name="request"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="request"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AppModule.InterProcessComm.IClientChannel.Create">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:AppModule.InterProcessComm.IChannelManager">
             <summary>
             Interface, which defines methods for a Channel Manager class.
@@ -172,6 +62,88 @@
         <member name="E:AppModule.InterProcessComm.IChannelManager.IncomingDataReady">
             <summary>
             Event raised when a batch of incoming data has been received.
+            </summary>
+        </member>
+        <member name="T:AppModule.InterProcessComm.IClientChannel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.IO.Stream)">
+            <summary>
+            
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IClientChannel.HandleRequest(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IClientChannel.Create">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:AppModule.InterProcessComm.IInterProcessConnection">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Connect">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Close">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Read">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.ReadBytes">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.Write(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.WriteBytes(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:AppModule.InterProcessComm.IInterProcessConnection.GetState">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:AppModule.InterProcessComm.IInterProcessConnection.NativeHandle">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:AppModule.InterProcessComm.InterProcessConnectionState">
@@ -268,6 +240,34 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="T:AppModule.InterProcessComm.InterProcessIOException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:AppModule.InterProcessComm.InterProcessIOException.IsServerAvailable">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:AppModule.InterProcessComm.InterProcessIOException.ErrorCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AppModule.InterProcessComm.InterProcessIOException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:AppModule.InterProcessComm.InterProcessIOException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
         </member>
     </members>
 </doc>
