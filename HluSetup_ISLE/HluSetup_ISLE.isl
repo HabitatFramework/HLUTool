@@ -3977,6 +3977,7 @@
 		<row><td>ID_STRING13</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675546001</td></row>
 		<row><td>ID_STRING14</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>-1675551025</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675516177</td></row>
+		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082589397</td></row>
@@ -4233,7 +4234,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{8B23027E-8FC4-4BE5-9BDE-45AFB8EC8151}</td></row>
 		<row><td>ISUSSignature</td><td>{4089835E-B983-4C42-8BEC-11C3BDE3AE74}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions,viewRegistry</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4612,7 +4613,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{6D135669-F774-44DD-8AC7-237B514E3BD5}</td><td/></row>
 		<row><td>ProductName</td><td>HLU GIS Tool</td><td/></row>
-		<row><td>ProductVersion</td><td>1.0.0</td><td/></row>
+		<row><td>ProductVersion</td><td>1.0.2.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
