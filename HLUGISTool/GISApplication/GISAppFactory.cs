@@ -89,7 +89,7 @@ namespace HLU.GISApplication
             catch (Exception ex)
             {
                 if (!_cancelled)
-                    MessageBox.Show(ex.Message, "HBIC: Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, "HLU: Fatal Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
