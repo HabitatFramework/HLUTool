@@ -26,6 +26,7 @@ using System.Windows;
 using System.Windows.Input;
 using HLU.UI.View;
 using HLU.UI.ViewModel;
+using HLU.Properties;
 
 namespace HLU
 {
@@ -77,6 +78,9 @@ namespace HLU
                 _mainWindow = new WindowMain();
                 _mainViewModel = new ViewModelWindowMain();
 #else
+
+                UpgradeSettings();
+
                 _threadSplashScreen = new Thread(ExecuteSplashScreen);
                 _threadSplashScreen.SetApartmentState(ApartmentState.STA);
                 _threadSplashScreen.Start();
@@ -128,6 +132,16 @@ namespace HLU
             {
                 if ((_threadSplashScreen != null) && _threadSplashScreen.IsAlive)
                     _threadSplashScreen.Abort();
+            }
+        }
+
+        private void UpgradeSettings()
+        {
+            if (Settings.Default.CallUpgrade)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.CallUpgrade = false;
+                Settings.Default.Save();
             }
         }
 
