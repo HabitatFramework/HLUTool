@@ -1970,7 +1970,7 @@ namespace HLU.GISApplication.MapInfo
         /// <summary>
         /// Checks whether the layer/table that field _hluLayer points to is an HLU layer, 
         /// as determined by its data structure. The data structure must follow the template of the 
-        /// HBIC.Data.Model.HluGISLayer.incid_mm_polygonsDataTable (same column names and data types, 
+        /// HLU.Data.Model.HluGISLayer.incid_mm_polygonsDataTable (same column names and data types, 
         /// as per type maps _typeMapSystemToSQL and _typeMapSQLToSystem).
         /// If _hluLayer points to a proper HLU layer _hluLayer, _hluFieldNames and _hluFieldMap 
         /// are initialized to their correct values; otherwise they are set to null.
