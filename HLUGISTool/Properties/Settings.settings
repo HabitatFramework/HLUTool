@@ -168,5 +168,8 @@
     <Setting Name="BAPDeterminationQualiltyUserAdded" Type="System.String" Scope="Application">
       <Value Profile="(Default)">NP</Value>
     </Setting>
+    <Setting Name="CallUpgrade" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
