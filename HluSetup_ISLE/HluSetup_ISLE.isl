@@ -3984,7 +3984,6 @@
 		<row><td>ID_STRING14</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>-1675551025</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675516177</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
-		<row><td>ID_STRING17</td><td>1033</td><td>License.txt</td><td>0</td><td/><td>354519820</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082589397</td></row>
@@ -4704,7 +4703,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="i2">InstallMode</col>
 		<row><td>NewShortcut1</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
 		<row><td>NewShortcut2</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
-		<row><td>NewShortcut3</td><td>ISX_DEFAULTCOMPONENT</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4792,7 +4790,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="I4">ISAttributes</col>
 		<row><td>NewShortcut1</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING14##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>NewShortcut1_8F576916A29649CAA6469A9D11575E41.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>NewShortcut2</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING15##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td>/c</td><td/><td/><td>NewShortcut2_F1A733A5B8D4495893497D2B2EE2C5B3.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>NewShortcut3</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING17##</td><td>ISX_DEFAULTCOMPONENT</td><td>[INSTALLDIR]License.txt</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
