@@ -42,7 +42,7 @@ namespace HLU.GISApplication.MapInfo
     {
         #region Private Fields
 
-        private COMMapinfo _mapInfoComObj;
+        //private COMMapinfo _mapInfoComObj;
         
         private DMapInfo _mapInfoApp;
 
@@ -207,7 +207,7 @@ namespace HLU.GISApplication.MapInfo
 
         public override object ApplicationObject
         {
-            get { return _mapInfoComObj; }
+            get { return _mapInfoApp; }
         }
 
         public override GISApplications ApplicationType
@@ -223,7 +223,7 @@ namespace HLU.GISApplication.MapInfo
                 {
                     if (!WinAPI.IsWindow(_mapInfoParentWindow))
                     {
-                        _mapInfoComObj = null;
+                        _mapInfoApp = null;
                         return false;
                     }
                     else
@@ -233,7 +233,7 @@ namespace HLU.GISApplication.MapInfo
                 }
                 catch
                 {
-                    _mapInfoComObj = null;
+                    _mapInfoApp = null;
                     return false;
                 }
             }
@@ -945,7 +945,7 @@ namespace HLU.GISApplication.MapInfo
                 double geom1;
                 double geom2;
                 string fetchCommand = String.Format("Fetch Next From {0}", outTable);
-                _mapInfoComObj.RunCommand(String.Format("Fetch First From {0}", outTable));
+                _mapInfoApp.Do(String.Format("Fetch First From {0}", outTable));
 
                 for (int i = 1; i <= numRows; i++)
                 {
@@ -954,7 +954,7 @@ namespace HLU.GISApplication.MapInfo
                     _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
                         outTable, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, i));
 
-                    _mapInfoComObj.RunCommand(fetchCommand);
+                    _mapInfoApp.Do(fetchCommand);
                 }
 
                 _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
@@ -1112,52 +1112,56 @@ namespace HLU.GISApplication.MapInfo
                 // get any running MapInfo processes
                 _mapInfoProcsPreStart = GetMapInfoProcesses();
 
-                // create a MapInfo instance
-                _mapInfoComObj = COMMapinfo.CreateInstance();
-                _mapInfoApp = (DMapInfo)_mapInfoComObj.GetUnderlyingMapinfoInstance();
-                //_mapInfoApp = (DMapInfo)Activator.CreateInstance(Type.GetTypeFromProgID("MapInfo.Application"));
+                // if there are already any MapInfo processes running then tell the
+                // user that they must close all instanced before starting the tool
+                if (_mapInfoProcsPreStart.Count() != 0)
+                {
+                    MessageBox.Show("MapInfo is already running. All existing instances of MapInfo must be stopped before the tool can be launched.", "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
 
-                // wire up callback
-                MapInfoCustomCallback miCallback = new MapInfoCustomCallback();
-                miCallback.OnStatusChanged += new Action<string>(miCallback_OnStatusChanged);
-                miCallback.OnMenuItemClick += new Action<string>(miCallback_OnMenuItemClick);
-                miCallback.OnWindowChanged += new Action<int>(miCallback_OnWindowChanged);
-                _mapInfoComObj.Callback = miCallback;
+                // Determine the default version of MapInfo
+                String miver = GetDefaultOLE_MIVer();
 
-                double mapInfoVersion;
-                double.TryParse(_mapInfoApp.Version, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out mapInfoVersion);
+                // Start the default version of MapInfo
+                LaunchMI(miver);
+        
+                // Connect to the running version of MapInfo
+                _mapInfoApp = (DMapInfo)ConnectToRunningMI(miver);
 
-                // open the HLU workspace
+                // open the HLU workspace (returns false if it is not found or not valid)
                 if (!OpenWorkspace(_mapPath)) return false;
 
                 // size MapInfo window 
                 Window(windowStyle, IntPtr.Zero);
 
-                // MapInfo 10 won't display toolbars when started programmatically
-                if (mapInfoVersion >= 1000)
-                {
-                    if (!File.Exists(String.Format("{0}{1}MapInfo{1}MapInfo{1}Professional{1}{2}{1}MICommandBarStateAutomation.xml",
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.DirectorySeparatorChar, _mapInfoApp.Version)))
-                    {
-                        EnableStandardTools();
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        string prefFolder = _mapInfoApp.Eval(String.Format("GetFolderPath$({0})",
-                            (int)MapInfoConstants.GetFolderPath.FOLDER_MI_PREFERENCE));
-                        string startupWS = Path.Combine(prefFolder, "Startup.wor"); // "MAPINFOW.WOR");
-                        if (File.Exists(startupWS))
-                        {
-                            _mapInfoApp.Do(String.Format("Run Application {0}", QuoteValue(startupWS)));
-                        }
-                    }
-                    catch { }
-                    EnableStandardTools();
-                    SizeWindow(_hluMapWindowID, false);
-                }
+                //// MapInfo 10 won't display toolbars when started programmatically
+                //double mapInfoVersion;
+                //double.TryParse(_mapInfoApp.Version, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out mapInfoVersion);
+                //if (mapInfoVersion >= 1000)
+                //{
+                //    if (!File.Exists(String.Format("{0}{1}MapInfo{1}MapInfo{1}Professional{1}{2}{1}MICommandBarStateAutomation.xml",
+                //        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.DirectorySeparatorChar, _mapInfoApp.Version)))
+                //    {
+                //        EnableStandardTools();
+                //    }
+                //}
+                //else
+                //{
+                //    try
+                //    {
+                //        string prefFolder = _mapInfoApp.Eval(String.Format("GetFolderPath$({0})",
+                //            (int)MapInfoConstants.GetFolderPath.FOLDER_MI_PREFERENCE));
+                //        string startupWS = Path.Combine(prefFolder, "Startup.wor"); // "MAPINFOW.WOR");
+                //        if (File.Exists(startupWS))
+                //        {
+                //            _mapInfoApp.Do(String.Format("Run Application {0}", QuoteValue(startupWS)));
+                //        }
+                //    }
+                //    catch { }
+                //    EnableStandardTools();
+                //    SizeWindow(_hluMapWindowID, false);
+                //}
 
                 return true;
             }
@@ -1166,6 +1170,101 @@ namespace HLU.GISApplication.MapInfo
                 MessageBox.Show(ex.Message, "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Get the default OLE version of MapInfo from the registry
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDefaultOLE_MIVer()
+        {
+            string ver = "";
+
+            using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application\\CurVer"))
+            {
+                ver = prokey.GetValue("").ToString();
+            }
+
+            var verSplit = ver.Split('.');
+            ver = verSplit[verSplit.GetUpperBound(0)];
+
+            return ver;
+
+        }
+
+        /// <summary>
+        /// Start a new process of MapInfo
+        /// </summary>
+        public void LaunchMI(string ver)
+        {
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo procInfo = new System.Diagnostics.ProcessStartInfo();
+            procInfo.UseShellExecute = true;
+            procInfo.WindowStyle = ProcessWindowStyle.Normal;
+            procInfo.FileName = "MapInfoW.exe";
+            procInfo.Arguments = "D:\\Andy\\MapInfo\\Empty.wor";
+            proc.StartInfo = procInfo;
+            proc.Start();
+
+            //int miProcID = Shell(GetMIPath(ver) + "\\mapinfow.exe", Microsoft.VisualBasic.AppWinStyle.NormalFocus, false, -1);
+        }
+
+        /// <summary>
+        /// Connects to an existing instance of MapInfo
+        /// </summary>
+        /// <remarks>Doesn't find instances started with /Automation parameter...
+        /// Also only recognises the CLSID associated with ProgID MapInfo.Application, this is overwritten by different versions
+        /// every time one is run (certainly true in MI 8.5, but not in more recent versions!)</remarks>
+        public static object ConnectToRunningMI(string ver)
+        {
+            object MIObj1 = null;
+            int stoploop = 0;
+            int countloop = 0;
+            while (stoploop != 1 || countloop > 10)
+            {
+                try
+                {
+                    MIObj1 = System.Runtime.InteropServices.Marshal.GetActiveObject("MapInfo.Application." + ver);
+                    stoploop = 1;
+                    //MIObj1.Visible = true;
+                    //MIObj1.Do("print \"OLE connection to existing instance\" & chr$(13) & \"Hello World\"");
+                }
+                catch (COMException)
+                {
+                    if (MIObj1 == null)
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        countloop += 1;
+                    }
+
+                }
+            }
+
+            if (MIObj1 == null)
+            {
+                MessageBox.Show("No Running instances of MapInfo version " + ver);
+            }
+
+            return MIObj1;
+
+        }
+
+        /// <summary>
+        /// Finding installed version of MI
+        /// </summary>
+        /// <returns>Path to latest installed version of MI</returns>
+        /// <remarks></remarks>
+        public static string GetMIPath(string ver)
+        {
+            string miPath = null;
+
+            using (Microsoft.Win32.RegistryKey prodirKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\MapInfo\\MapInfo\\Professional\\" + ver))
+            {
+                miPath = prodirKey.GetValue("ProgramDirectory").ToString() + "\\";
+            }
+
+            return miPath;
+
         }
 
         private void EnableStandardTools()
@@ -1189,6 +1288,11 @@ namespace HLU.GISApplication.MapInfo
                    winID, 20, 15, QuoteValue("cm")));
         }
 
+        /// <summary>
+        /// Returns the MapInfo process that wasn't running already when the tool started
+        /// </summary>
+        /// <param name="miProcs"></param>
+        /// <returns></returns>
         private Process GetMapInfoProcess(Process[] miProcs)
         {
             if (miProcs == null) return null;
@@ -1339,7 +1443,7 @@ namespace HLU.GISApplication.MapInfo
         public override DataTable SqlSelect(bool selectDistinct, 
             DataColumn[] targetList, List<SqlFilterCondition> whereConds)
         {
-            if ((_mapInfoComObj == null) || (targetList == null) || (targetList.Length == 0)) 
+            if ((_mapInfoApp == null) || (targetList == null) || (targetList.Length == 0)) 
                 return new DataTable();
 
             try
@@ -1372,7 +1476,7 @@ namespace HLU.GISApplication.MapInfo
         public override DataTable SqlSelect(bool selectDistinct,
             DataTable[] targetTables, List<SqlFilterCondition> whereConds)
         {
-            if ((_mapInfoComObj == null) || (targetTables == null) || (targetTables.Length == 0) ||
+            if ((_mapInfoApp == null) || (targetTables == null) || (targetTables.Length == 0) ||
                 (targetTables[0].Columns.Count == 0)) return new DataTable();
 
             try
@@ -1402,7 +1506,7 @@ namespace HLU.GISApplication.MapInfo
         private DataTable SqlSelect(bool replaceSelection, bool closePreviousSelection, DataColumn[] targetList, string tableName,
             bool addGeometryInfo, bool negateWhereClause, List<SqlFilterCondition> whereConds, DataColumn[] orderBy)
         {
-            if ((_mapInfoComObj == null) || (targetList == null) || (targetList.Length == 0))
+            if ((_mapInfoApp == null) || (targetList == null) || (targetList.Length == 0))
                 return new DataTable();
 
             try
@@ -1474,9 +1578,9 @@ namespace HLU.GISApplication.MapInfo
             if (replaceSelection)
             {
                 if (closePreviousSelection) ClosePreviousSelection();
-                if ((numSelected = Int32.Parse(_mapInfoComObj.Evaluate(String.Format(
+                if ((numSelected = Int32.Parse(_mapInfoApp.Eval(String.Format(
                     "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_NROWS)))) == 0) return;
-                readSelName = _mapInfoComObj.Evaluate(String.Format("SelectionInfo({0})",
+                readSelName = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
                 _selName = readSelName;
             }
@@ -1502,7 +1606,7 @@ namespace HLU.GISApplication.MapInfo
                 .Select(c => c.Ordinal < nonGeomfieldCount ? (qualifyColumns ? ColumnAlias(c) :
                     GetFieldName(_hluLayerStructure.Columns[c.ColumnName].Ordinal)) : c.ColumnName).ToArray();
 
-            _mapInfoComObj.RunCommand(String.Format("Fetch First From {0}", readSelName));
+            _mapInfoApp.Do(String.Format("Fetch First From {0}", readSelName));
 
             string fetchCommand = String.Format("Fetch Next From {0}", readSelName);
 
@@ -1510,7 +1614,7 @@ namespace HLU.GISApplication.MapInfo
             {
                 object[] itemArray = new object[resultTable.Columns.Count];
                 for (int j = 0; j < nonGeomfieldCount; j++)
-                    itemArray[j] = _mapInfoComObj.Evaluate(
+                    itemArray[j] = _mapInfoApp.Eval(
                         String.Format("{0}.{1}", readSelName, resultTableColumnNames[j]));
                 if (addGeometryInfo)
                 {
@@ -1519,7 +1623,7 @@ namespace HLU.GISApplication.MapInfo
                     itemArray[ixGeom2] = geom2;
                 }
                 resultTable.Rows.Add(itemArray);
-                _mapInfoComObj.RunCommand(fetchCommand);
+                _mapInfoApp.Do(fetchCommand);
             }
         }
 
@@ -1622,7 +1726,7 @@ namespace HLU.GISApplication.MapInfo
                 {
                     _mapInfoApp.RunMenuCommand((int)MapInfoConstants.MenuDef95File.M_FILE_EXIT);
                     _mapInfoApp = null;
-                    _mapInfoComObj = null;
+                    //_mapInfoComObj = null;
                 }
                 return true;
             }
@@ -1633,9 +1737,9 @@ namespace HLU.GISApplication.MapInfo
 
         public override void Window(ProcessWindowStyle windowStyle, IntPtr sideBySideWith)
         {
-            if ((_mapInfoParentWindow == null) || !WinAPI.IsWindow(_mapInfoParentWindow) || !_mapInfoComObj.Visible)
+            if ((_mapInfoParentWindow == null) || !WinAPI.IsWindow(_mapInfoParentWindow) || !_mapInfoApp.Visible)
             {
-                _mapInfoComObj.Visible = true;
+                _mapInfoApp.Visible = true;
                 _mapInfoProcess = GetMapInfoProcess(_mapInfoProcsPreStart);
                 if (_mapInfoProcess == null) return;
                 _mapInfoParentWindow = _mapInfoProcess.MainWindowHandle;
@@ -1651,13 +1755,14 @@ namespace HLU.GISApplication.MapInfo
             winfo.cbSize = (uint)Marshal.SizeOf(winfo);
             WinAPI.GetWindowInfo(_mapInfoParentWindow, ref winfo);
 
+            // Set the window style based on the parameter passed to the procedure
             switch (windowStyle)
             {
                 case ProcessWindowStyle.Hidden:
-                    _mapInfoComObj.Visible = false;
+                    _mapInfoApp.Visible = false;
                     break;
                 case ProcessWindowStyle.Maximized:
-                    _mapInfoComObj.Visible = true;
+                    _mapInfoApp.Visible = true;
                     if ((winfo.rcClient.Width < mapInfoScreen.WorkingArea.Width) ||
                          (winfo.rcClient.Bottom < mapInfoScreen.WorkingArea.Height))
                     {
@@ -1666,11 +1771,11 @@ namespace HLU.GISApplication.MapInfo
                     }
                     break;
                 case ProcessWindowStyle.Minimized:
-                    _mapInfoComObj.Visible = true;
+                    _mapInfoApp.Visible = true;
                     WinAPI.ShowWindow(_mapInfoParentWindow, (int)WinAPI.WindowStates.SW_SHOWMINIMIZED);
                     break;
                 case ProcessWindowStyle.Normal:
-                    _mapInfoComObj.Visible = true;
+                    _mapInfoApp.Visible = true;
                     if (sideBySideWith != IntPtr.Zero)
                     {
                         WinAPI.RECT sideBySideRect;
@@ -1700,9 +1805,15 @@ namespace HLU.GISApplication.MapInfo
         {
             if (_mapInfoApp == null) return false;
 
+            // Open the workspace passed to the function
             string browsePath = path;
             OpenWorkspaceDocument("Select HLU Workspace", ref browsePath);
+
+            // Check the workspace is valid (i.e. it contains a valid HLU layer)
             bool ok = IsHluWorkspace();
+
+            // If the workspace is valid and is different to the last used workspace
+            // then save the new workspace in the settings
             if (ok && browsePath != path)
             {
                 Settings.Default.MapPath = browsePath;
@@ -1919,29 +2030,42 @@ namespace HLU.GISApplication.MapInfo
 
                 int windowID;
 
+                // Loop through all windows
                 for (int i = 1; i <= numWindows; i++)
                 {
                     windowID = Int32.Parse(_mapInfoApp.Eval(String.Format("WindowID({0})", i)));
 
+                    // If this is a mapper window
                     if (Int32.Parse(_mapInfoApp.Eval(String.Format("WindowInfo({0}, {1})", i,
                         (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
                         (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
                     {
+                        // Store the number of layers in the window
                         int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
                             windowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_LAYERS)));
 
+                        // Loop through all the layers in the current window
                         for (int j = 1; j <= numLayers; j++)
                         {
+                            // If this is not a cosmetic layer
                             if (_mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})", windowID, 
                                 j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_COSMETIC)) == "F")
                             {
+                                // Store the name of the layer
                                 _hluLayer = _mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})", 
                                     windowID, j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_NAME));
 
+                                // Check to see if this layer is a HLU layer
                                 if (IsHluLayer())
                                 {
                                     _hluMapWindowID = windowID;
+                                    // Disable the Close command in the window's system menu.
                                     _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose Off", _hluMapWindowID));
+                                    // Note: Before version 10.5, you could enable or disable the Close
+                                    // button regardless of the toolbar’s floating or docking state.
+                                    // As of version 10.5, you cannot enable or disable the Close
+                                    // button when the toolbar is docked. You can only change the
+                                    // state when it is floating or floating and hidden.
                                     return true;
                                 }
                             }
@@ -1986,6 +2110,7 @@ namespace HLU.GISApplication.MapInfo
                 if (String.IsNullOrEmpty(_hluLayer))
                     throw new Exception("No HLU layer.");
 
+                // Check various characteristics of the layer and throw exceptions if not valid
                 if (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
                     (int)MapInfoConstants.TableInfo.TAB_INFO_TYPE))) != (int)MapInfoConstants.TableInfoType.TAB_TYPE_BASE)
                     throw new Exception(String.Format("Table {0} is not a base table.", _hluLayer));
@@ -1998,6 +2123,7 @@ namespace HLU.GISApplication.MapInfo
                     (int)MapInfoConstants.TableInfo.TAB_INFO_MAPPABLE)) == "F")
                     throw new Exception(String.Format("Table {0} is not mappable.", _hluLayer));
 
+                // Store the number of columns in the layer
                 int numColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     _hluLayer, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
 
@@ -2007,8 +2133,10 @@ namespace HLU.GISApplication.MapInfo
                 _hluFieldMap = _hluLayerStructure.Columns.Cast<DataColumn>().Select(c => -1).ToArray();
                 _hluFieldNames = new string[numColumns];
 
+                // Loop through all the columns in the layer
                 for (int i = 1; i <= numColumns; i++)
                 {
+                    // Store the column field name
                     _hluFieldNames[i - 1] = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
                         _hluLayer, QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
 
@@ -2019,6 +2147,7 @@ namespace HLU.GISApplication.MapInfo
                     {
                         _hluFieldMap[hluColumn.Ordinal] = i;
 
+                        // Check the field type and length
                         Type colSysType;
                         if (!_typeMapSQLToSystem.TryGetValue(Int32.Parse(_mapInfoApp.Eval(String.Format(
                             "ColumnInfo({0}, {1}, {2})", _hluLayer, QuoteValue(String.Format("Col{0}", i)), 
@@ -2036,6 +2165,8 @@ namespace HLU.GISApplication.MapInfo
                 if (!_hluFieldMap.All(o => o != -1))
                     throw new Exception("Layer is missing some fields of the HLU GIS layer structure.");
 
+                // The layer is a valid HLU layer so speed up edits ('Undo Off' and 'FastEdit Off')
+                // and stop the user from being able to remove the layer from the map or close if.
                 _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", _hluLayer));
                 _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayer));
                 _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap Off", _hluLayer));

@@ -197,9 +197,8 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\WPFToolkit.dll</HintPath>
+    <Reference Include="WPFToolkit">
+      <HintPath>lib\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -638,6 +637,20 @@
     <EmbeddedResource Include="GISApplication\ArcGIS\lib\sg.dll" />
     <Resource Include="Icons\HLUSplashBg.png" />
     <Resource Include="Icons\websedit-ag-bar.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MapInfo">
+      <Guid>{1D42EC60-7B28-11CE-B83D-00AA002C4F58}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
