@@ -641,6 +641,7 @@ namespace HLU.GISApplication.MapInfo
         {
             string editability = "F";
 
+            // Determine which layer is currently editable in MapInfo
             int editableLayerNo = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
                 _hluMapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_EDIT_LAYER)));
 
@@ -661,6 +662,7 @@ namespace HLU.GISApplication.MapInfo
                     }
                     break;
                 default:
+                    // Determine the name of the currently editable layer
                     string editableLayerName = _mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})",
                         _hluMapWindowID, editableLayerNo, (int)MapInfoConstants.LayerInfo.LAYER_INFO_NAME));
                     if (editableLayerName == layerName)
@@ -702,6 +704,7 @@ namespace HLU.GISApplication.MapInfo
 
             try
             {
+                // Get the name of the table that the current selection is based on
                 if (String.IsNullOrEmpty(_selName)) _selName = _mapInfoApp.Eval(String.Format(
                     "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
                 if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
@@ -713,6 +716,7 @@ namespace HLU.GISApplication.MapInfo
                 { new KeyValuePair<DataTable, DataTable>(_hluLayerStructure, selTable) },
                     ref resultWhereClause);
 
+                // Select the result feature as the target
                 DataTable resultTable = SqlSelect(false, false, selColumns, _selName, false, 
                     false, resultWhereClause, null);
                 if (String.IsNullOrEmpty(_selName)) return null;
@@ -731,19 +735,29 @@ namespace HLU.GISApplication.MapInfo
                 // set HLU layer editable
                 ToggleLayerEditability(true, _hluLayer);
                 
+                // Set the column expression for the 'Objects Combine ...' statement below
+                // to set the toid_fragment_id as required
                 string toidFragIdClause = String.Format("{0} = {1}",
                     GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal), 
                     QuoteValue(newToidFragmentID));
 
                 rollbackChanges = true;
 
-                // merge features
+                // merge selected features into the target feature
                 _mapInfoApp.Do(String.Format("Objects Combine Into Target Data {0}", toidFragIdClause));
 
                 rollbackChanges = false;
 
-                // set HLU layer non editable
-                ToggleLayerEditability(false, _hluLayer);
+                //---------------------------------------------------------------------
+                // ISSUE: KI100 (Physical Merge)
+
+                // Clear the target feature
+                _mapInfoApp.Do("Set Target Off");
+
+                // Don't set the HLU layer as non editable after a physical merge
+                    // set HLU layer non editable
+                    //ToggleLayerEditability(false, _hluLayer);
+                //---------------------------------------------------------------------
                 
                 _mapInfoApp.Do(String.Format("Close Table {0}", _selName));
 
@@ -781,6 +795,12 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
+        /// <summary>
+        /// Merges the features logically.
+        /// </summary>
+        /// <param name="keepIncid">The incid to keep.</param>
+        /// <param name="historyColumns">The history columns.</param>
+        /// <returns></returns>
         public override DataTable MergeFeaturesLogically(string keepIncid, DataColumn[] historyColumns)
         {
             string[] indexColumns = null;
@@ -1116,18 +1136,24 @@ namespace HLU.GISApplication.MapInfo
                 // user that they must close all instanced before starting the tool
                 if (_mapInfoProcsPreStart.Count() != 0)
                 {
-                    MessageBox.Show("MapInfo is already running. All existing instances of MapInfo must be stopped before the tool can be launched.", "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("MapInfo is already running.\n\nAll existing instances of MapInfo must be stopped before the tool can be launched.",
+                        "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return false;
                 }
+
+                //---------------------------------------------------------------------
+                // ISSUE: KI94 (MapInfo Layer Control)
+                // ISSUE: KI98 (MapInfo user interface)
 
                 // Determine the default version of MapInfo
                 String miver = GetDefaultOLE_MIVer();
 
                 // Start the default version of MapInfo
                 LaunchMI(miver);
-        
+
                 // Connect to the running version of MapInfo
                 _mapInfoApp = (DMapInfo)ConnectToRunningMI(miver);
+                //---------------------------------------------------------------------
 
                 // open the HLU workspace (returns false if it is not found or not valid)
                 if (!OpenWorkspace(_mapPath)) return false;
@@ -1242,7 +1268,8 @@ namespace HLU.GISApplication.MapInfo
 
             if (MIObj1 == null)
             {
-                MessageBox.Show("No Running instances of MapInfo version " + ver);
+                MessageBox.Show("No Running instances of MapInfo version " + ver, "Connect to MapInfo",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return MIObj1;
