@@ -79,19 +79,29 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                // find next available toid_fragment_id for selected toid
+                // find the last used toid_fragment_id for the selected toid
                 string lastToidFragmentID = _viewModelMain.RecIDs.MaxToidFragmentId(_viewModelMain.ToidsSelectedMap.ElementAt(0));
+
+                //---------------------------------------------------------------------
+                // FIXED: KI110 (Physical split)
+                // Skip all but one of the GIS select criteria as they are all the same in the case of a physical split anyway
+                int skipCount = _viewModelMain.GisSelection.Rows.Count - 1;
 
                 // get a filter from the GIS selection
                 List<List<SqlFilterCondition>> featuresFilter = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
-                    _viewModelMain.GisSelection.AsEnumerable().Skip(1).ToArray(), _viewModelMain.GisIDColumnOrdinals,
+                    _viewModelMain.GisSelection.AsEnumerable().Skip(skipCount).ToArray(), _viewModelMain.GisIDColumnOrdinals,
                     ViewModelWindowMain.IncidPageSize, _viewModelMain.HluDataset.incid_mm_polygons);
+                //---------------------------------------------------------------------
 
                 if (featuresFilter.Count != 1)
                     throw new Exception("Error finding features in database.");
 
+                // Find the current toid_fragment_id for the selected toid (there should be only one)
+                string currentToidFragmentID = _viewModelMain.FragsSelectedMap.ElementAt(0);
+
                 // update records in GIS and collect new features resulting from split
-                DataTable newFeatures = _viewModelMain.GISApplication.SplitFeature(lastToidFragmentID, featuresFilter[0],
+                DataTable newFeatures = _viewModelMain.GISApplication.SplitFeature(currentToidFragmentID,
+                    lastToidFragmentID, featuresFilter[0],
                     _viewModelMain.HluDataset.incid_mm_polygons.Columns.Cast<DataColumn>().Where(c =>
                         c.ColumnName != _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.ColumnName &&
                         c.ColumnName != _viewModelMain.HluDataset.incid_mm_polygons.shape_areaColumn.ColumnName).ToArray());

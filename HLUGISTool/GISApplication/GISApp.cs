@@ -110,12 +110,18 @@ namespace HLU.GISApplication
         /// the newly created feature(s), incrementing from the highest toid_fragment_id for that toid passed as 
         /// parameter lastToidFragmentID.
         /// </summary>
+        /// <param name="currentToidFragmentID">Current toid_fragment_id for the selected toid.</param>
         /// <param name="lastToidFragmentID">Highest toid_fragment_id for the selected toid.</param>
         /// <param name="selectionWhereClause">Where clause underlying the current selection set.</param>
         /// <param name="historyColumns">All columns of the GIS layer structure except the geomtry property columns.</param>
         /// <returns>DataTable of all the features resulting from the split, with all the columns in historyColumns parameter
         /// and the original feature in the first row.</returns>
-        public abstract DataTable SplitFeature(string lastToidFragmentID,
+        //---------------------------------------------------------------------
+        // FIXED: KI110 (Physical split)
+        // Pass the currentToidFragmentID (pre-split) to the function so that
+        // it can re-select it, and the new ToidFragmentIDs, after the split.
+        //---------------------------------------------------------------------
+        public abstract DataTable SplitFeature(string currentToidFragmentID, string lastToidFragmentID,
             List<SqlFilterCondition> selectionWhereClause, DataColumn[] historyColumns);
 
         public abstract DataTable SplitFeaturesLogically(string newIncid, DataColumn[] historyColumns);
