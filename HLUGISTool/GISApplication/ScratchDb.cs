@@ -223,7 +223,15 @@ namespace HLU.GISApplication
                 cond.Column = _incidMMTable.incidColumn;
                 cond.Table = _incidMMTable;
                 cond.ColumnSystemType = _incidTable.incidColumn.DataType;
-                cond.Operator = "IN ()";
+                //---------------------------------------------------------------------
+                // FIX: Improve speed of 'Select current Incid on Map'
+                // Use " INCID =" in SQL statement instrad of "INCID IN ()"
+                // if there is only on item in the list (as it is much quicker)
+                if (inList.Count == 1)
+                    cond.Operator = "=";
+                else
+                    cond.Operator = "IN ()";
+                //---------------------------------------------------------------------
                 cond.Value = String.Join(",", oneList);
                 cond.CloseParentheses = ")";
                 whereClause.Add(cond);
