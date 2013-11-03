@@ -186,19 +186,36 @@ namespace HLU.UI.ViewModel
                 List<List<SqlFilterCondition>> whereClause = 
                     ViewModelWindowMainHelpers.GisSelectionToWhereClause(new R[] { _resultFeature },
                     _keyOrdinals, 10, _selectedFeatures);
+
+                // Flash all the features relating to the where clause together.
                 if (whereClause.Count == 1)
                     _gisApp.FlashSelectedFeature(whereClause[0]);
             }
             else if ((_currChildRows != null) && (_currChildRows.Length > 0))
             {
-                foreach (HluDataSet.incid_mm_polygonsRow r in _currChildRows)
-                {
-                    List<List<SqlFilterCondition>> whereClause =
-                        ViewModelWindowMainHelpers.GisSelectionToWhereClause(new HluDataSet.incid_mm_polygonsRow[] { r },
-                        _keyOrdinals, 100, _selectedFeatures);
-                    if (whereClause.Count == 1)
-                        _gisApp.FlashSelectedFeature(whereClause[0]);
-                }
+                //---------------------------------------------------------------------
+                // CHANGED: CR23 (Merged features)
+
+                //foreach (HluDataSet.incid_mm_polygonsRow r in _currChildRows)
+                //{
+                //    List<List<SqlFilterCondition>> whereClause =
+                //        ViewModelWindowMainHelpers.GisSelectionToWhereClause(new HluDataSet.incid_mm_polygonsRow[] { r },
+                //        _keyOrdinals, 100, _selectedFeatures);
+                //    if (whereClause.Count == 1)
+                //        _gisApp.FlashSelectedFeature(whereClause[0]);
+                //}
+                List<List<SqlFilterCondition>> whereClauses =
+                    ViewModelWindowMainHelpers.GisSelectionToWhereClause(_currChildRows,
+                    _keyOrdinals, 100, _selectedFeatures);
+
+                // Flash all the features relating to the where clause together
+                // or in groups if there are too many features to fit within a single
+                // item in the where clauses list.
+                if (whereClauses.Count == 1)
+                    _gisApp.FlashSelectedFeature(whereClauses[0]);
+                else
+                    _gisApp.FlashSelectedFeatures(whereClauses);
+                //---------------------------------------------------------------------
             }
         }
 
