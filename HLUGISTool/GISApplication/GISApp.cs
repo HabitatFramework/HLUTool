@@ -94,6 +94,8 @@ namespace HLU.GISApplication
 
         public abstract void FlashSelectedFeature(List<SqlFilterCondition> whereClause);
 
+        public abstract void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses);
+
         public abstract void ZoomSelected();
 
         public abstract DataTable UpdateFeatures(DataColumn[] updateColumns, 

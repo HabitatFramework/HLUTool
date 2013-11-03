@@ -290,9 +290,14 @@ namespace HLU.GISApplication.MapInfo
         }
 
         /// <summary>
-        /// Flashes one selected feature whose UID is passed in.
+        /// Flashes a single list of selected features whose UIDs are passed in.
         /// </summary>
-        /// <param name="whereClause">Where clause identifying the feature to be flashed.</param>
+        /// <param name="whereClause">Where clause identifying the features to be flashed.</param>
+        //---------------------------------------------------------------------
+        // CHANGED: CR23 (Merged features)
+        // Flash all the features relating to the selected incid at once.  In this case
+        // their criteria will fit within a single item in the outer list so they will
+        // all flash at once.
         public override void FlashSelectedFeature(List<SqlFilterCondition> whereClause)
         {
             if (String.IsNullOrEmpty(_selName)) return;
@@ -333,8 +338,103 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do(String.Format("Close Table {0}", flashLayer));
             }
             catch { }
-            finally { _selName = String.Copy(prevSelName); }
+            finally
+            {
+                // Reset the original selection table name
+                _selName = String.Copy(prevSelName);
+
+                // Re-select all the features in the original selection
+                DataTable resetTable = _hluLayerStructure.Clone();
+                resetTable.TableName = _selName;
+                List<SqlFilterCondition> reSelectionWhereClause;
+                reSelectionWhereClause = new List<SqlFilterCondition>();
+                SqlFilterCondition cond = whereClause[0];
+                cond.Operator = "IS NOT NULL";
+                cond.BooleanOperator = "AND";
+                cond.OpenParentheses = String.Empty;
+                cond.CloseParentheses = String.Empty;
+                cond.Table = resetTable;
+                reSelectionWhereClause.Add(cond);
+                SqlSelect(false, false, resetTable.Columns.Cast<DataColumn>().ToArray(),
+                    _selName, false, false, reSelectionWhereClause, null);
+            }
         }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Flashes multiple lists of selected features whose UIDs are passed in.
+        /// </summary>
+        /// <param name="whereClauses">Where clauses identifying the features to be flashed.</param>
+        //---------------------------------------------------------------------
+        // CHANGED: CR23 (Merged features)
+        // Flash all the features relating to the selected incid at once.  In this case
+        // they will flash in groups if there are too many criteria to fit within a single
+        // item in the outer list).
+        public override void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses)
+        {
+            if (String.IsNullOrEmpty(_selName)) return;
+
+            string prevSelName = String.Copy(_selName);
+
+            try
+            {
+                DataTable selTable = _hluLayerStructure.Clone();
+                selTable.TableName = _selName;
+
+                foreach (List<SqlFilterCondition> whereClause in whereClauses)
+                {
+                    for (int i = 0; i < whereClause.Count; i++)
+                    {
+                        SqlFilterCondition cond = whereClause[i];
+                        cond.Table = selTable;
+                        whereClause[i] = cond;
+                    }
+
+                    if (SqlSelect(false, false, selTable.Columns.Cast<DataColumn>().ToArray(),
+                        _selName, false, false, whereClause, null) == null) return;
+
+                    string flashLayer = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
+                        (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
+
+                    _mapInfoApp.Do(String.Format("Add Map Window {0} Layer {1}", _hluMapWindowID, flashLayer));
+                    _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Global " +
+                        "Global Pen(1, 2, {2}) Global Brush(2, {2}, {3})", _hluMapWindowID, flashLayer,
+                        (int)MapInfoConstants.Colors.RED, (int)MapInfoConstants.Colors.WHITE));
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Off", _hluMapWindowID, flashLayer));
+                        Thread.Sleep(200);
+                        _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Global", _hluMapWindowID, flashLayer));
+                    }
+
+                    _mapInfoApp.Do(String.Format("Remove Map Window {0} Layer {1}", _hluMapWindowID, flashLayer));
+                    _mapInfoApp.Do(String.Format("Close Table {0}", flashLayer));
+                }
+            }
+            catch { }
+            finally
+            {
+                // Reset the original selection table name
+                _selName = String.Copy(prevSelName);
+
+                // Re-select all the features in the original selection
+                DataTable resetTable = _hluLayerStructure.Clone();
+                resetTable.TableName = _selName;
+                List<SqlFilterCondition> reSelectionWhereClause;
+                reSelectionWhereClause = new List<SqlFilterCondition>();
+                SqlFilterCondition cond = whereClauses[0][0];
+                cond.Operator = "IS NOT NULL";
+                cond.BooleanOperator = "AND";
+                cond.OpenParentheses = String.Empty;
+                cond.CloseParentheses = String.Empty;
+                cond.Table = resetTable;
+                reSelectionWhereClause.Add(cond);
+                SqlSelect(false, false, resetTable.Columns.Cast<DataColumn>().ToArray(),
+                    _selName, false, false, reSelectionWhereClause, null);
+            }
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Following a feature split performed by the user with regular GIS tools, updates the toid_fragment_id of 
@@ -1220,8 +1320,10 @@ namespace HLU.GISApplication.MapInfo
                 }
 
                 //---------------------------------------------------------------------
-                // ISSUE: KI94 (MapInfo Layer Control)
-                // ISSUE: KI98 (MapInfo user interface)
+                // FIXED: KI94 (MapInfo Layer Control)
+                // FIXED: KI98 (MapInfo user interface)
+                // Start MapInfo as a process rather than as a COM object so that it
+                // starts correctly (e.g. all the menu bars, etc. where the user wants).
 
                 // Determine the default version of MapInfo
                 String miver = GetDefaultOLE_MIVer();
@@ -1238,34 +1340,6 @@ namespace HLU.GISApplication.MapInfo
 
                 // size MapInfo window 
                 Window(windowStyle, IntPtr.Zero);
-
-                //// MapInfo 10 won't display toolbars when started programmatically
-                //double mapInfoVersion;
-                //double.TryParse(_mapInfoApp.Version, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture, out mapInfoVersion);
-                //if (mapInfoVersion >= 1000)
-                //{
-                //    if (!File.Exists(String.Format("{0}{1}MapInfo{1}MapInfo{1}Professional{1}{2}{1}MICommandBarStateAutomation.xml",
-                //        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Path.DirectorySeparatorChar, _mapInfoApp.Version)))
-                //    {
-                //        EnableStandardTools();
-                //    }
-                //}
-                //else
-                //{
-                //    try
-                //    {
-                //        string prefFolder = _mapInfoApp.Eval(String.Format("GetFolderPath$({0})",
-                //            (int)MapInfoConstants.GetFolderPath.FOLDER_MI_PREFERENCE));
-                //        string startupWS = Path.Combine(prefFolder, "Startup.wor"); // "MAPINFOW.WOR");
-                //        if (File.Exists(startupWS))
-                //        {
-                //            _mapInfoApp.Do(String.Format("Run Application {0}", QuoteValue(startupWS)));
-                //        }
-                //    }
-                //    catch { }
-                //    EnableStandardTools();
-                //    SizeWindow(_hluMapWindowID, false);
-                //}
 
                 return true;
             }
