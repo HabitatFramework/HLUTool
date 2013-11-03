@@ -619,13 +619,17 @@ namespace HLU.GISApplication.MapInfo
                 int ixGeom1 = historyColumns.Length;
                 int ixGeom2 = historyColumns.Length + 1;
 
+                //---------------------------------------------------------------------
+                // FIXED: KI107 (GIS layer column names)
+                // Ignore case when comparing column names so that GIS layer names may be mixed/upper case
                 string[] historyColumnNames = historyTable.Columns.Cast<DataColumn>()
-                    .Select(c => _hluFieldNames.Contains(c.ColumnName) ? 
-                    GetFieldName(_hluLayerStructure.Columns[c.ColumnName].Ordinal) : c.ColumnName).ToArray();
+                    .Select(c => _hluFieldNames.ToList().Contains(c.ColumnName, StringComparer.OrdinalIgnoreCase) ?
+                    GetFieldName(_hluLayerStructure.Columns[c.ColumnName].Ordinal).ToLower() : c.ColumnName.ToLower()).ToArray();
 
-                var q = historyColumns.Where(c => !_hluFieldNames.Contains(c.ColumnName));
+                var q = historyColumns.Where(c => !_hluFieldNames.ToList().Contains(c.ColumnName, StringComparer.OrdinalIgnoreCase));
                 string newToidFragmentColumnName = q.Count() == 1 ? 
                     q.ElementAt(0).ColumnName.Replace(GISApp.HistoryAdditionalFieldsDelimiter, String.Empty) : null;
+                //---------------------------------------------------------------------
 
                 int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
@@ -670,8 +674,12 @@ namespace HLU.GISApplication.MapInfo
             object[] itemArray = new object[historyTable.Columns.Count];
             for (int i = 0; i < ixGeom1; i++)
             {
-                if (_hluFieldNames.Contains(historyColumnNames[i]))
+                //---------------------------------------------------------------------
+                // FIXED: KI107 (GIS layer column names)
+                // Ignore case when comparing column names so that GIS layer names may be mixed/upper case
+                if (_hluFieldNames.ToList().Contains(historyColumnNames[i], StringComparer.OrdinalIgnoreCase))
                     itemArray[i] = _mapInfoApp.Eval(String.Format(readCommandTemplate, historyColumnNames[i]));
+                //---------------------------------------------------------------------
             }
             GetGeometryInfo(_selName, out geom1, out geom2);
             itemArray[ixGeom1] = geom1;
