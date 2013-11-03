@@ -61,6 +61,7 @@ namespace HLU.UI.ViewModel
                 if (!fixedValueDict.ContainsKey(_viewModelMain.HluDataset.history.modified_user_idColumn.Ordinal))
                     fixedValueDict.Add(_viewModelMain.HluDataset.history.modified_user_idColumn.Ordinal, _viewModelMain.UserID);
                 if (!fixedValueDict.ContainsKey(_viewModelMain.HluDataset.history.modified_dateColumn.Ordinal))
+                // QUERY: Is this where CR4 needs to change?
                     fixedValueDict.Add(_viewModelMain.HluDataset.history.modified_dateColumn.Ordinal, DateTime.Today);
                 if (!fixedValueDict.ContainsKey(_viewModelMain.HluDataset.history.modified_reasonColumn.Ordinal))
                     fixedValueDict.Add(_viewModelMain.HluDataset.history.modified_reasonColumn.Ordinal, _viewModelMain.Reason);

@@ -98,6 +98,8 @@ namespace HLU
 #endif
 
                 DispatcherHelper.DoEvents();
+
+                // Initialise the main view (start the tool)
                 if (!_mainViewModel.Initialize())
                 {
                     _mainWindow.Close();

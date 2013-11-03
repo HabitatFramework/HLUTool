@@ -321,6 +321,8 @@ namespace HLU.UI.ViewModel
                     App.SplashViewModel.ProgressText = "Opening GIS application...";
                     DispatcherHelper.DoEvents();
                 }
+
+                // ?
                 _gisApp = GISAppFactory.CreateGisApp();
                 if (_gisApp == null)
                 {
@@ -342,6 +344,7 @@ namespace HLU.UI.ViewModel
 
                 _viewModelUpd = new ViewModelWindowMainUpdate(this);
 
+                // Read the selected features from the map
                 if (haveSplashWin)
                 {
                     App.SplashViewModel.ProgressText = "Reading map selection...";
@@ -349,6 +352,7 @@ namespace HLU.UI.ViewModel
                 }
                 ReadMapSelection(false);
 
+                // Clear the splash window status bar (or reset the cursor to an arrow)
                 if (haveSplashWin)
                     App.SplashViewModel.ProgressText = String.Empty;
                 else
@@ -609,6 +613,11 @@ namespace HLU.UI.ViewModel
         internal IEnumerable<string> ToidsSelectedMap
         {
             get { return _toidsSelectedMap; }
+        }
+
+        internal IEnumerable<string> FragsSelectedMap
+        {
+            get { return _fragsSelectedMap; }
         }
 
         internal int IncidsSelectedMapCount
