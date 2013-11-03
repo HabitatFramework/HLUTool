@@ -342,13 +342,14 @@ namespace HLU.GISApplication.MapInfo
         /// passed in as parameter lastToidFragmentID. toid_fragment_id is an integer stored as varchar(5) with 
         /// leading zeros (.ToString("D5")).
         /// </summary>
+        /// <param name="currentToidFragmentID">Current toid_fragment_id for the selected toid.</param>
         /// <param name="lastToidFragmentID">Highest toid_fragment_id for the selected toid.</param>
         /// <param name="selectionWhereClause">Where clause underlying the current selection set.</param>
         /// <param name="historyColumns">All columns of the GIS layer structure except the geometry property columns.</param>
         /// <returns>DataTable with the columns in the historyColumns parameter, containing the attributes of all 
         /// the features resulting from the split. 
         /// The first row corresponds to the original feature (the one that was split).</returns>
-        public override DataTable SplitFeature(string lastToidFragmentID,
+        public override DataTable SplitFeature(string currentToidFragmentID, string lastToidFragmentID,
             List<SqlFilterCondition> selectionWhereClause, DataColumn[] historyColumns)
         {
             bool rollbackChanges = false;
@@ -374,19 +375,58 @@ namespace HLU.GISApplication.MapInfo
                     _selName, true, false, selectionWhereClause, null);
                 if ((historyTable == null) || (historyTable.Rows.Count < 2)) return null;
 
-                // update toid_fragment_id
+                // Get the number of selected rows from MapInfo
                 int selNum = Int32.Parse(_mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_NROWS)));
 
+                // Set the new ToidFragmentID
                 string numFormat = String.Format("D{0}", lastToidFragmentID.Length);
                 int newToidFragmentIDnum = Int32.Parse(lastToidFragmentID);
                 string toidFragFieldName = GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal);
 
                 rollbackChanges = true;
 
-                for (int i = 2; i <= selNum; i++)
-                    _mapInfoApp.Do(String.Format("Update {0} Set {1} = {2} Where RowID = {3}", _selName,
-                        toidFragFieldName, QuoteValue((++newToidFragmentIDnum).ToString(numFormat)), i));
+                //---------------------------------------------------------------------
+                // FIXED: KI106 (Shape area and length values)
+                // Includes updates for the geom1 and geom2 columns as the features
+                // have changed in size
+                string lastColName = GetFieldName(_hluLayerStructure.ihs_summaryColumn.Ordinal);
+                int ixGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                    QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
+                int ixGeom2 = ixGeom1 + 1;
+                string geomCol1Name = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                    QuoteValue(String.Format("Col{0}", ixGeom1)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+                string geomCol2Name = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                    QuoteValue(String.Format("Col{0}", ixGeom2)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+
+                double geom1;
+                double geom2;
+                string fetchCommand = String.Format("Fetch Next From {0}", _selName);
+                _mapInfoApp.Do(String.Format("Fetch First From {0}", _selName));
+
+                // For each of the selected rows (there will be more than one if the feature
+                // was split into more than two parts)
+                for (int i = 1; i <= selNum; i++)
+                {
+                    // Get the geometry values from the layer
+                    GetGeometryInfo(_selName, out geom1, out geom2);
+
+                    // Update the geometry values
+                    _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
+                        _selName, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, i));
+
+                    // Update the toid_fragment_id for all but the first feature (which can keep the existing
+                    // value)
+                    if (i > 1)
+                    {
+                        _mapInfoApp.Do(String.Format("Update {0} Set {1} = {2} Where RowID = {3}", _selName,
+                            toidFragFieldName, QuoteValue((++newToidFragmentIDnum).ToString(numFormat)), i));
+                    }
+                    
+                    // Fetch the next row
+                    _mapInfoApp.Do(fetchCommand);
+                }
+                //---------------------------------------------------------------------
 
                 rollbackChanges = false;
 
@@ -421,14 +461,23 @@ namespace HLU.GISApplication.MapInfo
                     cond.Table = selTable;
                     reSelectionWhereClause = new List<SqlFilterCondition>();
                     reSelectionWhereClause.Add(cond);
+                    //---------------------------------------------------------------------
+                    // FIXED: KI110 (Physical split)
+                    // The filter should search for the currentToidFragmentID (pre-split)
+                    // and the newTOIDFragmentID that was created (post-split).
                     cond = new SqlFilterCondition("AND", selTable,
-                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], lastToidFragmentID);
-                    cond.Operator = ">=";
+                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), "(", String.Empty, currentToidFragmentID);
+                    cond.Operator = "=";
                     reSelectionWhereClause.Add(cond);
-                    cond = new SqlFilterCondition("AND", selTable, selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName],
-                        newToidFragmentIDnum.ToString(numFormat));
+                    cond = new SqlFilterCondition("OR", selTable,
+                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), "(", String.Empty, lastToidFragmentID);
+                    cond.Operator = ">";
+                    reSelectionWhereClause.Add(cond);
+                    cond = new SqlFilterCondition("AND", selTable,
+                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), String.Empty, "))", newToidFragmentIDnum.ToString(numFormat));
                     cond.Operator = "<=";
                     reSelectionWhereClause.Add(cond);
+                    //---------------------------------------------------------------------
                     SqlSelect(true, true, selTable.Columns.Cast<DataColumn>().ToArray(),
                         _hluLayer, false, false, reSelectionWhereClause, null);
                 }
@@ -722,6 +771,7 @@ namespace HLU.GISApplication.MapInfo
                 if (String.IsNullOrEmpty(_selName)) return null;
                 _mapInfoApp.Do("Set Target On");
 
+                // Select all the other features (excluding the target)
                 DataTable historyTable = SqlSelect(false, false, selColumns, _selName, true, 
                     true, resultWhereClause, null);
                 if (historyTable == null) return null;
@@ -749,7 +799,7 @@ namespace HLU.GISApplication.MapInfo
                 rollbackChanges = false;
 
                 //---------------------------------------------------------------------
-                // ISSUE: KI100 (Physical Merge)
+                // FIXED: KI100 (Physical Merge)
 
                 // Clear the target feature
                 _mapInfoApp.Do("Set Target Off");
@@ -759,6 +809,7 @@ namespace HLU.GISApplication.MapInfo
                     //ToggleLayerEditability(false, _hluLayer);
                 //---------------------------------------------------------------------
                 
+                // Close the table containing the old (pre-merge) selection
                 _mapInfoApp.Do(String.Format("Close Table {0}", _selName));
 
                 // add result feature to history (for updating incid_mm_polygon geometry data)
@@ -775,10 +826,34 @@ namespace HLU.GISApplication.MapInfo
                     .Select(c => _hluFieldNames.Contains(c.ColumnName) ?
                     GetFieldName(_hluLayerStructure.Columns[c.ColumnName].Ordinal) : c.ColumnName).ToArray();
 
+                // There should be only one row in the table after the merge
                 if (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                    _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS))) == 1)
                 {
                     _mapInfoApp.RunCommand(String.Format(fetchCommand, 1));
+                    
+                    //---------------------------------------------------------------------
+                    // FIXED: KI106 (Shape area and length values)
+                    // Include updates for the geom1 and geom2 columns automatically
+                    string lastColName = GetFieldName(_hluLayerStructure.ihs_summaryColumn.Ordinal);
+                    int indGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                        QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
+                    int indGeom2 = indGeom1 + 1;
+                    string geomCol1Name = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                        QuoteValue(String.Format("Col{0}", indGeom1)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+                    string geomCol2Name = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
+                        QuoteValue(String.Format("Col{0}", indGeom2)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+
+                    // Get the geometry values from the layer
+                    double geom1;
+                    double geom2;
+                    GetGeometryInfo(_selName, out geom1, out geom2);
+
+                    // Update the geometry values of the new merged feature
+                    _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
+                        _selName, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, 1));
+                    //---------------------------------------------------------------------
+
                     CollectHistory(ixGeom1, ixGeom2, readCommandTemplate, historyColumnNames, ref historyTable);
                 }
 
@@ -1069,6 +1144,9 @@ namespace HLU.GISApplication.MapInfo
                 throw new Exception("Error selecting update features from MapInfo layer.");
 
             if (String.IsNullOrEmpty(_selName)) return null;
+
+            // QUERY: KI106 (Shape area and length values)
+            // Should this include updates for the geom1 and geom2 columns automatically?
 
             // update selection
             _mapInfoApp.Do(String.Format("Update {0} Set {1}", _selName,
