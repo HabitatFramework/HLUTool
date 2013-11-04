@@ -42,6 +42,7 @@ namespace HLU
         {
             base.Install(stateSaver);
 
+            MessageBox.Show("Install");
             Assembly regAssembly = base.GetType().Assembly;
             string tlbPath = Path.Combine(Path.GetDirectoryName(regAssembly.Location),
                 Path.GetFileNameWithoutExtension(regAssembly.Location) + ".tlb");
@@ -76,6 +77,7 @@ namespace HLU
 
         private bool Regasm(bool register, string file)
         {
+            MessageBox.Show("Regasm");
             if (String.IsNullOrEmpty(file)) throw new InstallException("Assembly not defined");
             if (!File.Exists(file)) throw new InstallException("Assembly not found");
 
@@ -120,6 +122,7 @@ namespace HLU
 
         private void EsriRegasm(bool install)
         {
+            MessageBox.Show("ESRIRegasm");
             try
             {
                 int arcVersion = -1;
@@ -131,12 +134,16 @@ namespace HLU
 
                 string regKey = string.Format("HKEY_CLASSES_ROOT\\CLSID\\{{{0}}}", "c61db89f-7118-4a10-a5c1-d4a375867a02");
                 if (install)
+                {
+                    MessageBox.Show("MxExtension");
                     MxExtension.Register(regKey);
+                }
                 else
                     MxExtension.Unregister(regKey);
 
                 if (arcVersion > 9)
                 {
+                    MessageBox.Show("ESRIRegasm.exe");
                     ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(
                         Environment.SpecialFolder.CommonProgramFiles), @"ArcGIS\bin\ESRIRegasm.exe"));
                     //psi.Arguments = String.Format(@"{0} /p:Desktop{1} /s",

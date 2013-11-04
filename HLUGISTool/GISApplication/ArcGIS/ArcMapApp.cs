@@ -633,12 +633,21 @@ namespace HLU.GISApplication.ArcGIS
                 WhereClause(false, false, false, MapWhereClauseFields(_hluLayerStructure, whereClause)) });
         }
 
-        public override DataTable SplitFeature(string newToidFragmentID,
+        public override void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses)
+        {
+            foreach (List<SqlFilterCondition> whereClause in whereClauses)
+            {
+                List<string> resultList = IpcArcMap(new string[] { "fl", 
+                    WhereClause(false, false, false, MapWhereClauseFields(_hluLayerStructure, whereClause)) });
+            }
+        }
+
+        public override DataTable SplitFeature(string currentToidFragmentID, string lastToidFragmentID,
             List<SqlFilterCondition> selectionWhereClause, DataColumn[] historyColumns)
         {
             return ResultTableFromList(IpcArcMap(new string[] { "sp", 
                 WhereClause(false, false, false, MapWhereClauseFields(_hluLayerStructure, selectionWhereClause)), 
-                newToidFragmentID, String.Join(",", historyColumns.Select(c => c.ColumnName).ToArray()) }));
+                lastToidFragmentID, String.Join(",", historyColumns.Select(c => c.ColumnName).ToArray()) }));
         }
 
         public override DataTable SplitFeaturesLogically(string newIncid, DataColumn[] historyColumns)
