@@ -208,10 +208,10 @@
   Comment out the Targets below (BeforeClean and AfterBuild) if compiling for versions of ArcGIS prior to 10.0.
   -->
   <Target Name="BeforeClean">
-    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /u /s" Condition="Exists('$(TargetPath)')" />
+    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /u" Condition="Exists('$(TargetPath)')" />
   </Target>
   <Target Name="AfterBuild">
-    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop /s" />
+    <Exec WorkingDirectory="$(CommonProgramFiles)\ArcGIS\bin" Command="esriRegasm.exe &quot;$(TargetPath)&quot; /p:Desktop" />
   </Target>
   <!--
   Comment out down to here.

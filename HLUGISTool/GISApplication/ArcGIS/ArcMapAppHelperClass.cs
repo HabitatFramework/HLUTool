@@ -119,7 +119,13 @@ namespace HLU.GISApplication.ArcGIS
                         throw (new Exception("Field length does not match the HLU GIS layer structure."));
 
                     hluFieldMap[i] = ordinal;
-                    hluFieldNames[i] = fixedField.Name;
+                    //---------------------------------------------------------------------
+                    // FIXED: KI107 (GIS layer column names)
+                    // Use the field names from the GIS layer so that they can be found
+                    // when performing any SELECT statements.
+                    hluFieldNames[i] = fcField.Name;
+                    //hluFieldNames[i] = fixedField.Name;
+                    //---------------------------------------------------------------------
                 }
             }
             catch { return false; }
