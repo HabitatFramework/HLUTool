@@ -1,4 +1,4 @@
-HLU GIS Tool, v1.0.2.0
+HLU GIS Tool, v1.0.3.0
 Copyright © 2013 Andy Foy
 
 Overview
@@ -15,7 +15,7 @@ tested.
 
 Features
 --------
-	The HLU GIS Tool provides the following features:
+The HLU GIS Tool provides the following features:
 	Ensures that all attributes selected by users are valid and compatible
 	Improved data retrieval/update response times over single GIS layers
 	Maintains a brief history of all changes made to every habitat polygon

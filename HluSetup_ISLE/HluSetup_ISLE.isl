@@ -4601,9 +4601,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{3076D4E8-A1FD-4859-9471-E5233B0A8E3B}</td><td/></row>
+		<row><td>ProductCode</td><td>{B7B38290-0CBC-455C-AAC9-0ACF3DACD37F}</td><td/></row>
 		<row><td>ProductName</td><td>HLU GIS Tool</td><td/></row>
-		<row><td>ProductVersion</td><td>1.0.2.0</td><td/></row>
+		<row><td>ProductVersion</td><td>1.0.3.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
