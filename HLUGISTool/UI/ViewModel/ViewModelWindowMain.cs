@@ -3555,6 +3555,7 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IhsHabitatCodes");
                 OnPropertyChanged("IhsHabitatListEnabled");
                 OnPropertyChanged("IhsCategory");
+                OnPropertyChanged("NvcCodes");
             }
         }
 
@@ -3564,7 +3565,12 @@ namespace HLU.UI.ViewModel
             {
                 if (String.IsNullOrEmpty(_incidIhsHabitat)) return null;
 
-                var q = _ihsHabitatCodes.Where(h => !h.IsNull(HluDataset.lut_ihs_habitat.nvc_codesColumn));
+                //---------------------------------------------------------------------
+                // FIXED: KI102 (NVC Codes)
+                // Select NVC code based on current IHS habitat
+                var q = _ihsHabitatCodes.Where(h => h.code == _incidIhsHabitat);
+                //var q = _ihsHabitatCodes.Where(h => !h.IsNull(HluDataset.lut_ihs_habitat.nvc_codesColumn));
+                //---------------------------------------------------------------------
                 if (q.Count() > 0)
                     return q.ElementAt(0).nvc_codes;
                 else
