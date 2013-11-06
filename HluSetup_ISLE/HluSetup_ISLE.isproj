@@ -42,5 +42,13 @@
 			<Name>HLUGISTool</Name>
 			<Project>{B0C62884-11C8-48FB-B486-C44E0831FC98}</Project>
 		</ProjectReference>
+		<ProjectReference Include="..\NamedPipeDotNet\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj">
+			<Name>AppModule.InterProcessComm</Name>
+			<Project>{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\HluArcMapExtension\HluArcMapExtension.csproj">
+			<Name>HluArcMapExtension</Name>
+			<Project>{0B6FFBDC-B850-427E-9A80-89FB586C4BF0}</Project>
+		</ProjectReference>
 	</ItemGroup>
 </Project>

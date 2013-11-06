@@ -1346,7 +1346,7 @@ namespace HLU.GISApplication.MapInfo
                 // open the HLU workspace (returns false if it is not found or not valid)
                 if (!OpenWorkspace(_mapPath)) return false;
 
-                // size MapInfo window 
+                // size MapInfo window
                 Window(windowStyle, IntPtr.Zero);
 
                 return true;
@@ -1388,7 +1388,16 @@ namespace HLU.GISApplication.MapInfo
             procInfo.UseShellExecute = true;
             procInfo.WindowStyle = ProcessWindowStyle.Normal;
             procInfo.FileName = "MapInfoW.exe";
-            procInfo.Arguments = "D:\\Andy\\MapInfo\\Empty.wor";
+
+            // Pass the name of an empty workspace in the same directory as the executing assembly
+            // so that MapInfo opens it automatically (and hence doesn't display the quickstart
+            // window.
+            string assemblyPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+            string assemblyDir = Path.GetDirectoryName(assemblyPath);
+            string wksPath = new Uri(assemblyDir).LocalPath + "\\Empty.wor";
+            //procInfo.Arguments = @"""C:\Program Files (x86)\HLU\HLU GIS Tool\Empty.wor""";
+            procInfo.Arguments = @"""" + wksPath + @"""";
+
             proc.StartInfo = procInfo;
             proc.Start();
 
