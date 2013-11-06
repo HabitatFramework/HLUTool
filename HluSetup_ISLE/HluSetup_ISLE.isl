@@ -1080,7 +1080,7 @@
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
 		<row><td>LaunchReadmeFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchReadMe</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
-		<row><td>SetARPReadme</td><td>51</td><td>ARPREADME</td><td>D:\GitHub\HLUTool\ReadMe.rtf</td><td/><td/></row>
+		<row><td>SetARPReadme</td><td>51</td><td>ARPREADME</td><td>[INSTALLDIR]\ReadMe.txt</td><td/><td/></row>
 		<row><td>SetAllUsersProfileNT</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%SystemRoot]\Profiles\All Users</td><td/><td/></row>
 		<row><td>ShowMsiLog</td><td>226</td><td>SystemFolder</td><td>[SystemFolder]notepad.exe "[MsiLogFileLocation]"</td><td/><td>Shows Property-driven MSI Log</td></row>
 		<row><td>setAllUsersProfile2K</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%ALLUSERSPROFILE]</td><td/><td/></row>
@@ -1899,6 +1899,7 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
+		<row><td>empty.wor</td><td>ISX_DEFAULTCOMPONENT</td><td>Empty.wor</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\Empty.wor</td><td>1</td><td/></row>
 		<row><td>hlu32.ico</td><td>ISX_DEFAULTCOMPONENT</td><td>HLU32.ico</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>1</td><td/></row>
 		<row><td>hlugistool.primary_output</td><td>HLUGISTool.Primary_output</td><td>HLUGISTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUGISTool&gt;|Built</td><td>3</td><td/></row>
 		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
@@ -2853,7 +2854,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>HabitatFramework</td><td>0</td><td/><td>1428235113</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>HLU</td><td>0</td><td/><td>899804746</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>HLU GIS Tool</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>2082542517</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3963,7 +3964,8 @@
 		<row><td>ID_STRING15</td><td>1033</td><td>HLUGIS~1|HLU GIS Tool - Reconfigure</td><td>0</td><td/><td>-450768752</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>License.txt</td><td>0</td><td/><td>354519820</td></row>
-		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework</td><td>0</td><td/><td>1428280233</td></row>
+		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>899753546</td></row>
+		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>899769930</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>1428272041</td></row>
@@ -4529,10 +4531,11 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<row><td>ALLUSERS</td><td>1</td><td/></row>
 		<row><td>ARPCONTACT</td><td>##ID_STRING2##</td><td/></row>
+		<row><td>ARPHELPLINK</td><td>##ID_STRING19##</td><td/></row>
 		<row><td>ARPINSTALLLOCATION</td><td/><td/></row>
 		<row><td>ARPNOMODIFY</td><td>1</td><td/></row>
 		<row><td>ARPPRODUCTICON</td><td>ARPPRODUCTICON.exe</td><td/></row>
-		<row><td>ARPREADME</td><td>D:\GitHub\HLUTool\ReadMe.rtf</td><td/></row>
+		<row><td>ARPREADME</td><td>[INSTALLDIR]\ReadMe.txt</td><td/></row>
 		<row><td>ARPSIZE</td><td/><td/></row>
 		<row><td>ARPURLINFOABOUT</td><td>##ID_STRING18##</td><td/></row>
 		<row><td>AgreeToLicense</td><td>No</td><td/></row>
@@ -4617,7 +4620,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SERIALNUMBER</td><td/><td/></row>
 		<row><td>SERIALNUMVALSUCCESSRETVAL</td><td>1</td><td/></row>
 		<row><td>SHOWLAUNCHREADME</td><td>-1</td><td/></row>
-		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;DOTNETVERSION35SP1;ISACTIONPROP5;ISACTIONPROP1</td><td/></row>
+		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;DOTNETVERSION35SP1;ISACTIONPROP5</td><td/></row>
 		<row><td>SelectedSetupType</td><td>##IDS__DisplayName_Typical##</td><td/></row>
 		<row><td>SetupType</td><td>Typical</td><td/></row>
 		<row><td>UpgradeCode</td><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td/></row>
@@ -4893,8 +4896,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0</td><td>1.0.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP5</td><td>UpgradeFrom1.0.0</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.1.0</td><td>1.0.1.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP1</td><td>UpgradeFrom1.0.1</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>1.0.2.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP5</td><td>UpgradeFrom1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">
