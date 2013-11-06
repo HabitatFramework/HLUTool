@@ -1291,18 +1291,52 @@ namespace HLU
                         int originalFeatureIx = -1;
                         int i = 0;
                         IFeature updateFeature;
-                        
+
+                        //---------------------------------------------------------------------
+                        // FIXED: KI106 (Shape area and length values)
+                        // Includes updates for the geom1 and geom2 columns as the features
+                        // have changed in size
+
+                        // Check if the current layer is a shapefile
+                        bool isShp = IsShp(_hluWS as IWorkspace);
+                        //---------------------------------------------------------------------
+
                         while ((updateFeature = updateCursor.NextFeature()) != null)
                         {
                             if (updateFeature.OID != minOID)
                             {
+                                // Set the toid_fragment_id to the next available number
                                 updateFeature.set_Value(toidFragOrdinal, (++newToidFragmentIDnum).ToString(numFormat));
-                                updateFeature.Store();
                             }
                             else
                             {
+                                // Store the original feature number
                                 originalFeatureIx = i;
                             }
+
+                            //---------------------------------------------------------------------
+                            // FIXED: KI106 (Shape area and length values)
+                            // Includes updates for the geom1 and geom2 columns as the features
+                            // have changed in size
+
+                            // If it is a shapefile then update the geometry fields
+                            if (isShp)
+                            {
+                                double geom1;
+                                double geom2;
+                                GetGeometryProperties(updateFeature, out geom1, out geom2);
+
+                                int ixGeom1 = updateFeature.Fields.FindField("shape_leng");
+                                int ixGeom2 = updateFeature.Fields.FindField("shape_area");
+                                updateFeature.set_Value(ixGeom1, geom1);
+                                updateFeature.set_Value(ixGeom2, geom2);
+                            }
+
+                            // Update the feature
+                            updateCursor.UpdateFeature(updateFeature);
+                            //updateFeature.Store();
+                            //---------------------------------------------------------------------
+
                             historyList.Add(History(updateFeature, historyFieldOrdinals, null));
                             i++;
                         }
@@ -1472,10 +1506,39 @@ namespace HLU
                             updateCursor = _hluFeatureClass.Update(resultFeatureQueryFilter, false);
 
                             resultFeature = updateCursor.NextFeature();
+
+                            // Update the shape to the new merged geometry
                             resultFeature.Shape = resultGeom;
+
+                            // Set the toid_fragment_id to the same value (passed to this function) for all fragments
                             resultFeature.set_Value(
                                 _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal], newToidFragmentID);
-                            resultFeature.Store();
+
+                            //---------------------------------------------------------------------
+                            // FIXED: KI106 (Shape area and length values)
+                            // Includes updates for the geom1 and geom2 columns as the features
+                            // have changed in size
+
+                            // Check if the current layer is a shapefile
+                            bool isShp = IsShp(_hluWS as IWorkspace);
+
+                            // If it is a shapefile then update the geometry fields
+                            if (isShp)
+                            {
+                                double geom1;
+                                double geom2;
+                                GetGeometryProperties(resultFeature, out geom1, out geom2);
+
+                                int ixGeom1 = resultFeature.Fields.FindField("shape_leng");
+                                int ixGeom2 = resultFeature.Fields.FindField("shape_area");
+                                resultFeature.set_Value(ixGeom1, geom1);
+                                resultFeature.set_Value(ixGeom2, geom2);
+                            }
+
+                            // Update the feature
+                            updateCursor.UpdateFeature(resultFeature);
+                            //resultFeature.Store();
+                            //---------------------------------------------------------------------
 
                             // add result feature to history (for updating incid_mm_polygon geometry data)
                             _pipeData.Add(History(resultFeature, historyFieldOrdinals, null));
