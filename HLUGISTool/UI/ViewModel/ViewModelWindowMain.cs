@@ -3948,6 +3948,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4010,6 +4017,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4064,6 +4078,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4287,6 +4308,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4340,6 +4368,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4563,6 +4598,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4616,6 +4658,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4841,6 +4890,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
@@ -4894,6 +4950,13 @@ namespace HLU.UI.ViewModel
                 GetBapEnvironments();
                 OnPropertyChanged("IncidBapHabitatsPotential");
                 OnPropertyChanged("IncidBapHabitatsUser");
+                //---------------------------------------------------------------------
+                // FIXED: KI96 (BAP Habitats)
+                // Enable editing of bap habitats when they are only associated
+                // with matrix, formation, management or complex codes (rather
+                // than habitat codes.
+                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
         }
