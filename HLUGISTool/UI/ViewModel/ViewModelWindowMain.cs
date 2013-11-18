@@ -3567,7 +3567,7 @@ namespace HLU.UI.ViewModel
 
                 //---------------------------------------------------------------------
                 // FIXED: KI102 (NVC Codes)
-                // Select NVC code based on current IHS habitat
+                // Select NVC codes based on current IHS habitat
                 var q = _ihsHabitatCodes.Where(h => h.code == _incidIhsHabitat);
                 //var q = _ihsHabitatCodes.Where(h => !h.IsNull(HluDataset.lut_ihs_habitat.nvc_codesColumn));
                 //---------------------------------------------------------------------
@@ -3741,12 +3741,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
-                else if (_lutIhsMatrixCodes.Length == 1)
-                {
-                    ihsMatrix1Codes = _lutIhsMatrixCodes;
-                    IncidIhsMatrix1 = _lutIhsMatrixCodes[0].code;
-                    OnPropertyChanged("IncidIhsMatrix1");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first matrix code if there
+                // is only one in the list.
+                //
+                //else if (_lutIhsMatrixCodes.Length == 1)
+                //{
+                //    ihsMatrix1Codes = _lutIhsMatrixCodes;
+                //    IncidIhsMatrix1 = _lutIhsMatrixCodes[0].code;
+                //    OnPropertyChanged("IncidIhsMatrix1");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsMatrix1))
@@ -3782,12 +3788,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
-                else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1))
-                {
-                    ihsMatrix2Codes = _lutIhsMatrixCodes;
-                    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
-                    OnPropertyChanged("IncidIhsMatrix2");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first matrix code if there
+                // is only one in the list.
+                //
+                //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1))
+                //{
+                //    ihsMatrix2Codes = _lutIhsMatrixCodes;
+                //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
+                //    OnPropertyChanged("IncidIhsMatrix2");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsMatrix2))
@@ -3826,13 +3838,19 @@ namespace HLU.UI.ViewModel
                 {
                     ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
-                else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1) && 
-                    (_lutIhsMatrixCodes[0].code != IncidIhsMatrix2))
-                {
-                    ihsMatrix3Codes = _lutIhsMatrixCodes;
-                    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
-                    OnPropertyChanged("IncidIhsMatrix2");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first matrix code if there
+                // is only one in the list.
+                //
+                //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1) && 
+                //    (_lutIhsMatrixCodes[0].code != IncidIhsMatrix2))
+                //{
+                //    ihsMatrix3Codes = _lutIhsMatrixCodes;
+                //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
+                //    OnPropertyChanged("IncidIhsMatrix2");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsMatrix3))
@@ -4122,12 +4140,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
                 }
-                else if (_lutIhsFormationCodes.Length == 1)
-                {
-                    ihsFormation1Codes = _lutIhsFormationCodes;
-                    IncidIhsFormation1 = _lutIhsFormationCodes[0].code;
-                    OnPropertyChanged("IncidIhsFormation1");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first formation code if there
+                // is only one in the list.
+                //
+                //else if (_lutIhsFormationCodes.Length == 1)
+                //{
+                //    ihsFormation1Codes = _lutIhsFormationCodes;
+                //    IncidIhsFormation1 = _lutIhsFormationCodes[0].code;
+                //    OnPropertyChanged("IncidIhsFormation1");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsFormation1))
@@ -4163,12 +4187,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
                 }
-                else if ((_lutIhsFormationCodes.Length == 1) && (_lutIhsFormationCodes[0].code != IncidIhsFormation1))
-                {
-                    ihsFormation2Codes = _lutIhsFormationCodes;
-                    IncidIhsFormation2 = _lutIhsFormationCodes[0].code;
-                    OnPropertyChanged("IncidIhsFormation2");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first formation code if there
+                // is only one in the list.
+                //
+                //else if ((_lutIhsFormationCodes.Length == 1) && (_lutIhsFormationCodes[0].code != IncidIhsFormation1))
+                //{
+                //    ihsFormation2Codes = _lutIhsFormationCodes;
+                //    IncidIhsFormation2 = _lutIhsFormationCodes[0].code;
+                //    OnPropertyChanged("IncidIhsFormation2");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsFormation2))
@@ -4385,12 +4415,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
                 }
-                else if (_lutIhsManagementCodes.Length == 1)
-                {
-                    ihsManagement1Codes = _lutIhsManagementCodes;
-                    IncidIhsManagement1 = _lutIhsManagementCodes[0].code;
-                    OnPropertyChanged("IncidIhsManagement1");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first management code if there
+                // is only one in the list.
+                //
+                //else if (_lutIhsManagementCodes.Length == 1)
+                //{
+                //    ihsManagement1Codes = _lutIhsManagementCodes;
+                //    IncidIhsManagement1 = _lutIhsManagementCodes[0].code;
+                //    OnPropertyChanged("IncidIhsManagement1");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsManagement1))
@@ -4426,12 +4462,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
                 }
-                else if ((_lutIhsManagementCodes.Length == 1) && (_lutIhsManagementCodes[0].code != IncidIhsManagement1))
-                {
-                    ihsManagement2Codes = _lutIhsManagementCodes;
-                    IncidIhsManagement2 = _lutIhsManagementCodes[0].code;
-                    OnPropertyChanged("IncidIhsManagement2");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first management code if there
+                // is only one in the list.
+                //
+                //else if ((_lutIhsManagementCodes.Length == 1) && (_lutIhsManagementCodes[0].code != IncidIhsManagement1))
+                //{
+                //    ihsManagement2Codes = _lutIhsManagementCodes;
+                //    IncidIhsManagement2 = _lutIhsManagementCodes[0].code;
+                //    OnPropertyChanged("IncidIhsManagement2");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsManagement2))
@@ -4650,12 +4692,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
                 }
-                else if (_lutIhsComplexCodes.Length == 1)
-                {
-                    ihsComplex1Codes = _lutIhsComplexCodes;
-                    IncidIhsComplex1 = _lutIhsComplexCodes[0].code;
-                    OnPropertyChanged("IncidIhsComplex1");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first complex code if there
+                // is only one in the list.
+                //
+                //else if (_lutIhsComplexCodes.Length == 1)
+                //{
+                //    ihsComplex1Codes = _lutIhsComplexCodes;
+                //    IncidIhsComplex1 = _lutIhsComplexCodes[0].code;
+                //    OnPropertyChanged("IncidIhsComplex1");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsComplex1))
@@ -4691,12 +4739,18 @@ namespace HLU.UI.ViewModel
                 {
                     ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
                 }
-                else if ((_lutIhsComplexCodes.Length == 1) && (_lutIhsComplexCodes[0].code != IncidIhsComplex1))
-                {
-                    ihsComplex2Codes = _lutIhsComplexCodes;
-                    IncidIhsComplex2 = _lutIhsComplexCodes[0].code;
-                    OnPropertyChanged("IncidIhsComplex2");
-                }
+                //---------------------------------------------------------------------
+                // FIXED: KI105 (Mandatory multiplex codes)
+                // Don't automatically select the first complex code if there
+                // is only one in the list.
+                //
+                //else if ((_lutIhsComplexCodes.Length == 1) && (_lutIhsComplexCodes[0].code != IncidIhsComplex1))
+                //{
+                //    ihsComplex2Codes = _lutIhsComplexCodes;
+                //    IncidIhsComplex2 = _lutIhsComplexCodes[0].code;
+                //    OnPropertyChanged("IncidIhsComplex2");
+                //}
+                //---------------------------------------------------------------------
                 else
                 {
                     if (!String.IsNullOrEmpty(IncidIhsComplex2))
