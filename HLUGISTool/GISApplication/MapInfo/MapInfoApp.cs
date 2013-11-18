@@ -1415,7 +1415,8 @@ namespace HLU.GISApplication.MapInfo
             object MIObj1 = null;
             int stoploop = 0;
             int countloop = 0;
-            while (stoploop != 1 || countloop > 10)
+            // Wait up to 30 seconds for MapInfo to start.
+            while (stoploop != 1 || countloop > 30)
             {
                 try
                 {
