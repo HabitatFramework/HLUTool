@@ -3165,6 +3165,16 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidSource1HabitatClass");
             OnPropertyChanged("IncidSource1HabitatType");
             OnPropertyChanged("Source1HabitatTypeCodes");
+            //---------------------------------------------------------------------
+            // FIXED: KI103 (Record selectors)
+            // FIXED: KI109 (Source habitat types)
+            // Both issues seem to relate to the source habitat type value
+            // not being displayed after the list of source habitat types
+            // has been refreshed following a change of habitat class.
+            // So the 'OnPropertyChanged' method is called again to
+            // trigger a display refresh.
+            OnPropertyChanged("IncidSource1HabitatType");
+            //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource1BoundaryImportance");
             OnPropertyChanged("IncidSource1HabitatImportance");
         }
@@ -3177,6 +3187,16 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidSource2HabitatClass");
             OnPropertyChanged("IncidSource2HabitatType");
             OnPropertyChanged("Source2HabitatTypeCodes");
+            //---------------------------------------------------------------------
+            // FIXED: KI103 (Record selectors)
+            // FIXED: KI109 (Source habitat types)
+            // Both issues seem to relate to the source habitat type value
+            // not being displayed after the list of source habitat types
+            // has been refreshed following a change of habitat class.
+            // So the 'OnPropertyChanged' method is called again to
+            // trigger a display refresh.
+            OnPropertyChanged("IncidSource2HabitatType");
+            //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource2BoundaryImportance");
             OnPropertyChanged("IncidSource2HabitatImportance");
         }
@@ -3189,6 +3209,16 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidSource3HabitatClass");
             OnPropertyChanged("IncidSource3HabitatType");
             OnPropertyChanged("Source3HabitatTypeCodes");
+            //---------------------------------------------------------------------
+            // FIXED: KI103 (Record selectors)
+            // FIXED: KI109 (Source habitat types)
+            // Both issues seem to relate to the source habitat type value
+            // not being displayed after the list of source habitat types
+            // has been refreshed following a change of habitat class.
+            // So the 'OnPropertyChanged' method is called again to
+            // trigger a display refresh.
+            OnPropertyChanged("IncidSource3HabitatType");
+            //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource3BoundaryImportance");
             OnPropertyChanged("IncidSource3HabitatImportance");
         }
