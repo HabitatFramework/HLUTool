@@ -5509,12 +5509,26 @@ namespace HLU.UI.ViewModel
 
         private void _incidBapRowsUser_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                (from r in _incidBapRows
-                 join be in e.OldItems.Cast<BapEnvironment>() on r.bap_id equals be.bap_id
-                 select r).ToList().ForEach(delegate(HluDataSet.incid_bapRow row) { row.Delete(); });
-            }
+            //---------------------------------------------------------------------
+            // FIXED: KI108 (Deleting potential BAP habitats)
+            // Deleting the rows from the _incidBapRows datatable here causes
+            // problems if the same row number is deleted twice as the row is
+            // marked as deleted (RowState = Deleted) and hence the bap_id
+            // cannot be read.  The rows are deleted later anyway when the
+            // record is updated so they are left alone here.
+            //
+            // The user interface source for the potential BAP habtiats is
+            // _incidBapRowsUser which is updated automatically when a row
+            // is deleted so the row deleted automatically disappears in
+            // the user interface.
+            //
+            //if (e.Action == NotifyCollectionChangedAction.Remove)
+            //{
+            //    (from r in _incidBapRows
+            //     join be in e.OldItems.Cast<BapEnvironment>() on r.bap_id equals be.bap_id
+            //     select r).ToList().ForEach(delegate(HluDataSet.incid_bapRow row) { row.Delete(); });
+            //}
+            //---------------------------------------------------------------------
 
             OnPropertyChanged("Error");
         }
