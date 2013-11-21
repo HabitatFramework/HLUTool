@@ -50,6 +50,9 @@ using HLU.UI.ViewModel;
 using Microsoft.Win32;
 using Server;
 
+using ESRI.ArcGIS.ADF;
+using ESRI.ArcGIS.Display;
+
 namespace HLU
 {
     [Guid("c61db89f-7118-4a10-a5c1-d4a375867a02")]
@@ -1207,32 +1210,170 @@ namespace HLU
 
             try
             {
-                ICursor cursor;
-                _hluFeatureSelection = (IFeatureSelection)_hluLayer;
-
-                _hluFeatureSelection.SelectionSet.Search(queryFilter, true, out cursor);
-                IFeatureCursor featCursor = (IFeatureCursor)cursor;
-
-                IFeature feature = featCursor.NextFeature();
                 //---------------------------------------------------------------------
                 // CHANGED: CR23 (Merged features)
-                // Temporarily fix the affect of the changes in ViewModelMergeFeatures
-                // (which now only passes a single queryFilter) by loop through all
-                // the features selected and flashing each one individually.
-                while (feature != null)
+                // Flash all the features relating to the selected incid at once.
+                // This method may be triggered more than once if there are too
+                // many to pass via the Named Pipes in one go.
+                //
+                IEnumGeometryBind enumGeometryBind = new EnumFeatureGeometryClass();
+                enumGeometryBind.BindGeometrySource(null, _hluFeatureSelection.SelectionSet.Select(queryFilter, esriSelectionType.esriSelectionTypeHybrid, esriSelectionOption.esriSelectionOptionNormal, null));
+                IGeometryFactory geometryFactory = new GeometryEnvironmentClass();
+                IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
+
+                IMxDocument mxDoc = (IMxDocument)_application.Document;
+                IActiveView activeView = mxDoc.FocusMap as IActiveView;
+                IScreenDisplay screenDisplay = activeView.ScreenDisplay;
+                FlashGeometry(geom, screenDisplay, 300, 2);
+                //---------------------------------------------------------------------
+            }
+            catch { }
+        }
+
+
+        ///<summary>Flash geometry on the display.</summary>
+        ///<param name="geometry"> The input IGeometry to flash.  Supported geometry types are GeometryBag, Polygon, Polyline, Point and Multipoint.</param>
+        ///<param name="screenDisplay">An IScreenDisplay reference</param>
+        ///<param name="delay">An integer that is the time in milliseconds to wait.</param>
+        public static void FlashGeometry(IGeometry geometry, IScreenDisplay screenDisplay, int delay, int times)
+        {
+            if (geometry == null || screenDisplay == null)
+            {
+                return;
+            }
+            bool continueFlashing = true;
+
+            using (ComReleaser comReleaser = new ComReleaser())
+            {
+                ITrackCancel cancelTracker = new CancelTrackerClass();
+                comReleaser.ManageLifetime(cancelTracker);
+                screenDisplay.CancelTracker = cancelTracker;
+                short cacheID = screenDisplay.AddCache();
+                int cacheMemDC = screenDisplay.get_CacheMemDC(cacheID);
+                
+                IRgbColor fillColor = new RgbColorClass();
+                comReleaser.ManageLifetime(fillColor);
+                fillColor.Green = 128;
+                IRgbColor lineColor = new RgbColorClass();
+                comReleaser.ManageLifetime(lineColor);
+
+                screenDisplay.StartDrawing(cacheMemDC, cacheID);
+                DrawGeometry(geometry, fillColor, lineColor, (IDisplay)screenDisplay, cancelTracker);
+                ESRI.ArcGIS.esriSystem.tagRECT RECT = new tagRECT();
+                screenDisplay.FinishDrawing();
+
+                for (int j = 0; j < times; j++)
                 {
-                    IFeatureIdentifyObj featureIdObj = new FeatureIdentifyObjectClass();
-                    featureIdObj.Feature = feature;
-                    IIdentifyObj idObj = (IIdentifyObj)featureIdObj;
-                    idObj.Flash(((IMxApplication)_application).Display);
-                    feature = featCursor.NextFeature();
+                    if (continueFlashing == true)
+                    {
+                        screenDisplay.DrawCache(screenDisplay.hDC, cacheID, ref RECT, ref RECT);
+                        if (delay > 0)
+                        {
+                            System.Threading.Thread.Sleep(delay);
+                            screenDisplay.Invalidate(null, true, cacheID);
+                            screenDisplay.UpdateWindow();
+                            System.Threading.Thread.Sleep(delay);
+                        }
+                    }
                 }
                 //---------------------------------------------------------------------
 
-                Marshal.ReleaseComObject(featCursor);
-                Marshal.ReleaseComObject(cursor);
+                screenDisplay.RemoveCache(cacheID);
+                cancelTracker.Reset();
             }
-            catch { }
+        }
+
+        /// <summary>
+        /// Draws the input geometry using the specified colors.
+        /// </summary>
+        /// <param name="geometry">The input IGeometry to draw. Supported geometry types are GeometryBag, Polygon, Polyline, Point and Multipoint.</param>
+        /// <param name="fillColor">An IRgbColor reference for the fill color</param>
+        /// <param name="lineColor">An IRgbColor reference for the line or outline color</param>
+        /// <param name="display">An IDisplay reference</param>
+        /// <param name="cancelTracker">An ITrackCancel reference</param>
+        private static void DrawGeometry(IGeometry geometry, IRgbColor fillColor, IRgbColor lineColor, IDisplay display, ITrackCancel cancelTracker)
+        {
+            bool continueDrawing = true;
+            switch (geometry.GeometryType)
+            {
+                case esriGeometryType.esriGeometryBag:
+                    {
+                        IEnumGeometry enumGeometry = (IEnumGeometry)geometry;
+                        IGeometry innerGeometry = enumGeometry.Next();
+                        while (innerGeometry != null && continueDrawing == true)
+                        {
+                            DrawGeometry(innerGeometry, fillColor, lineColor, display, cancelTracker); // Recursive method call
+                            innerGeometry = enumGeometry.Next();
+                            if (cancelTracker != null)
+                            {
+                                continueDrawing = cancelTracker.Continue();
+                            }
+                        }
+                        break;
+                    }
+                case esriGeometryType.esriGeometryPolygon:
+                    {
+                        // Set the input polygon geometry's symbol.
+                        ISimpleFillSymbol fillSymbol = new SimpleFillSymbolClass();
+                        fillSymbol.Color = (IColor)fillColor;
+                        ILineSymbol lineSymbol = new SimpleLineSymbolClass();
+                        lineSymbol.Color = lineColor;
+                        fillSymbol.Outline = lineSymbol;
+
+                        // Draw the input polygon geometry.
+                        display.SetSymbol((ISymbol)fillSymbol);
+                        display.DrawPolygon(geometry);
+                        break;
+                    }
+                case esriGeometryType.esriGeometryPolyline:
+                    {
+                        // Set the input polyline geometry's symbol.
+                        IMultiLayerLineSymbol multiLineSymbol = new MultiLayerLineSymbolClass();
+                        ISimpleLineSymbol simpleLineSymbol1 = new SimpleLineSymbolClass();
+                        ISimpleLineSymbol simpleLineSymbol2 = new SimpleLineSymbolClass();
+                        simpleLineSymbol1.Width = 3;
+                        simpleLineSymbol1.Color = fillColor;
+                        simpleLineSymbol2.Width = 5;
+                        simpleLineSymbol2.Color = lineColor;
+                        multiLineSymbol.AddLayer((ILineSymbol)simpleLineSymbol2);
+                        multiLineSymbol.AddLayer((ILineSymbol)simpleLineSymbol1);
+
+                        // Draw the input polyline geometry.
+                        display.SetSymbol((ISymbol)multiLineSymbol);
+                        display.DrawPolyline(geometry);
+                        break;
+                    }
+                case esriGeometryType.esriGeometryPoint:
+                    {
+                        // Set the input point geometry's symbol.
+                        ISimpleMarkerSymbol simpleMarkerSymbol = new SimpleMarkerSymbolClass();
+                        simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
+                        simpleMarkerSymbol.Size = 12;
+                        simpleMarkerSymbol.Color = fillColor;
+                        simpleMarkerSymbol.Outline = true;
+                        simpleMarkerSymbol.OutlineColor = lineColor;
+
+                        // Draw the input point geometry.
+                        display.SetSymbol((ISymbol)simpleMarkerSymbol);
+                        display.DrawPoint(geometry);
+                        break;
+                    }
+                case esriGeometryType.esriGeometryMultipoint:
+                    {
+                        // Set the input multipoint geometry's symbol.
+                        ISimpleMarkerSymbol simpleMarkerSymbol = new SimpleMarkerSymbolClass();
+                        simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
+                        simpleMarkerSymbol.Size = 8;
+                        simpleMarkerSymbol.Color = fillColor;
+                        simpleMarkerSymbol.Outline = true;
+                        simpleMarkerSymbol.OutlineColor = lineColor;
+
+                        // Draw the input multipoint geometry.
+                        display.SetSymbol((ISymbol)simpleMarkerSymbol);
+                        display.DrawMultipoint(geometry);
+                        break;
+                    }
+            }
         }
 
         #endregion
