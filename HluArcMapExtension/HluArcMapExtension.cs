@@ -1214,13 +1214,20 @@ namespace HLU
                 IFeatureCursor featCursor = (IFeatureCursor)cursor;
 
                 IFeature feature = featCursor.NextFeature();
-                if (feature != null)
+                //---------------------------------------------------------------------
+                // CHANGED: CR23 (Merged features)
+                // Temporarily fix the affect of the changes in ViewModelMergeFeatures
+                // (which now only passes a single queryFilter) by loop through all
+                // the features selected and flashing each one individually.
+                while (feature != null)
                 {
                     IFeatureIdentifyObj featureIdObj = new FeatureIdentifyObjectClass();
                     featureIdObj.Feature = feature;
                     IIdentifyObj idObj = (IIdentifyObj)featureIdObj;
                     idObj.Flash(((IMxApplication)_application).Display);
+                    feature = featCursor.NextFeature();
                 }
+                //---------------------------------------------------------------------
 
                 Marshal.ReleaseComObject(featCursor);
                 Marshal.ReleaseComObject(cursor);
