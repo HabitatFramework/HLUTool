@@ -1,4 +1,4 @@
-HLU GIS Tool, v1.0.3.0
+HLU GIS Tool, v1.0.4.0
 Copyright © 2013 Andy Foy
 
 Overview
@@ -15,36 +15,36 @@ tested.
 
 Features
 --------
-The HLU GIS Tool provides the following features:
-	Ensures that all attributes selected by users are valid and compatible
-	Improved data retrieval/update response times over single GIS layers
-	Maintains a brief history of all changes made to every habitat polygon
-	Stores the data in a relational structure to reduce GIS data volumes
-	Enables queries to be produced for a range of purposes using the
+ - The HLU GIS Tool provides the following features:
+ - Ensures that all attributes selected by users are valid and compatible
+ - Improved data retrieval/update response times over single GIS layers
+ - Maintains a brief history of all changes made to every habitat polygon
+ - Stores the data in a relational structure to reduce GIS data volumes
+ - Enables queries to be produced for a range of purposes using the
 		relational database
-	Enables data to be extracted according to user requirements
-	Standardises the format of habitat data enabling local, regional or
+ - Enables data to be extracted according to user requirements
+ - Standardises the format of habitat data enabling local, regional or
 		national datasets to be combined
 
 Requirements
 ------------
 The HLU GIS Tool requires the following:
-	Microsoft Windows XP/2003/2008/Vista/Windows 7 or Windows 8 
-	3 GHz or higher processor
-	2 GB RAM
-	3 GB of free hard disk space
-	(For increased performance a multiple core processor with as much RAM
+ - Microsoft Windows XP/2003/2008/Vista/Windows 7 or Windows 8 
+ - 3 GHz or higher processor
+ - 2 GB RAM
+ - 3 GB of free hard disk space
+      (For increased performance a multiple core processor with as much RAM
 		as possible is recommended)
 
-	Microsoft .NET Framework 3.5 SP1, 4.0, or 4.5 installed. 
-	(You can download .NET Framework 3.5 and its Service Pack here)
+ - Microsoft .NET Framework 3.5 SP1, 4.0, or 4.5 installed. 
+      (You can download .NET Framework 3.5 and its Service Pack here)
 
-	Microsoft Access 2000 or later, OR
-	Microsoft SQL Server 2008 Express Edition or later, OR
-	Microsoft SQL Server 2008 or later
+ - Microsoft Access 2000 or later, OR
+ - Microsoft SQL Server 2008 Express Edition or later, OR
+ - Microsoft SQL Server 2008 or later
 
-	ArcGIS 9.3 or ArcGIS 10.1, OR
-	MapInfo 8.0 or MapInfo 10.0
+ - ArcGIS 9.3 or ArcGIS 10.1, OR
+ - MapInfo 8.0 or MapInfo 10.0
 
 Installation
 ------------
