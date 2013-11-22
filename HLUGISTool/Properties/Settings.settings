@@ -171,5 +171,17 @@
     <Setting Name="CallUpgrade" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="SourceImportanceSkip" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">N</Value>
+    </Setting>
+    <Setting Name="SourceImportanceApply1" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">P</Value>
+    </Setting>
+    <Setting Name="SourceImportanceApply2" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">S</Value>
+    </Setting>
+    <Setting Name="SourceImportanceApply3" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

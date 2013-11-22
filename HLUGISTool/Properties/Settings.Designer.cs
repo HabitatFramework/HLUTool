@@ -580,5 +580,57 @@ namespace HLU.Properties {
                 this["CallUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("N")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SourceImportanceSkip {
+            get {
+                return ((string)(this["SourceImportanceSkip"]));
+            }
+            set {
+                this["SourceImportanceSkip"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("P")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SourceImportanceApply1 {
+            get {
+                return ((string)(this["SourceImportanceApply1"]));
+            }
+            set {
+                this["SourceImportanceApply1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("S")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SourceImportanceApply2 {
+            get {
+                return ((string)(this["SourceImportanceApply2"]));
+            }
+            set {
+                this["SourceImportanceApply2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SourceImportanceApply3 {
+            get {
+                return ((string)(this["SourceImportanceApply3"]));
+            }
+            set {
+                this["SourceImportanceApply3"] = value;
+            }
+        }
     }
 }

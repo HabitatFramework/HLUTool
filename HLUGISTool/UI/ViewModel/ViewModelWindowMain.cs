@@ -6672,13 +6672,24 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource1HabitatClass", "Habitat class is mandatory for each source" });
                 else if ((IncidSource1HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource1HabitatType))
                     errors.Add(new string[] { "IncidSource1HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+
+                //---------------------------------------------------------------------
+                // FIX: Use skip value from settings rather than hard-coded value
+                string skipVal = Settings.Default.SourceImportanceSkip;
+                //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource1BoundaryImportance))
                 {
                     errors.Add(new string[] { "IncidSource1BoundaryImportance", "Boundary importance is mandatory for each source" });
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "1", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "1", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+BoundaryImportance", @"\d+", "1", errors);
+                    //---------------------------------------------------------------------
                 }
                 if (String.IsNullOrEmpty(IncidSource1HabitatImportance))
                 {
@@ -6687,7 +6698,13 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "1", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "1", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+HabitatImportance", @"\d+", "1", errors);
+                    //---------------------------------------------------------------------
                 }
             }
             else
@@ -6726,13 +6743,24 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource2HabitatClass", "Habitat class is mandatory for each source" });
                 else if ((IncidSource2HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource2HabitatType))
                     errors.Add(new string[] { "IncidSource2HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+
+                //---------------------------------------------------------------------
+                // FIX: Use skip value from settings rather than hard-coded value
+                string skipVal = Settings.Default.SourceImportanceSkip;
+                //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource2BoundaryImportance))
                 {
                     errors.Add(new string[] { "IncidSource2BoundaryImportance", "Boundary importance is mandatory for each source" });
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "2", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "2", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+BoundaryImportance", @"\d+", "2", errors);
+                    //---------------------------------------------------------------------
                 }
                 if (String.IsNullOrEmpty(IncidSource2HabitatImportance))
                 {
@@ -6741,7 +6769,13 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "2", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "2", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+HabitatImportance", @"\d+", "2", errors);
+                    //---------------------------------------------------------------------
                 }
             }
             else
@@ -6780,13 +6814,24 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource3HabitatClass", "Habitat class is mandatory for each source" });
                 else if ((IncidSource3HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource3HabitatType))
                     errors.Add(new string[] { "IncidSource3HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+
+                //---------------------------------------------------------------------
+                // FIX: Use skip value from settings rather than hard-coded value
+                string skipVal = Settings.Default.SourceImportanceSkip;
+                //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource3BoundaryImportance))
                 {
                     errors.Add(new string[] { "IncidSource3BoundaryImportance", "Boundary importance is mandatory for each source" });
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "3", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+BoundaryImportance", @"\d+", "3", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+BoundaryImportance", @"\d+", "3", errors);
+                    //---------------------------------------------------------------------
                 }
                 if (String.IsNullOrEmpty(IncidSource3HabitatImportance))
                 {
@@ -6795,7 +6840,13 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "3", "N", errors);
+                    ValidateSourceDuplicates(@"IncidSource\d+HabitatImportance", @"\d+", "3", skipVal, errors);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR1 (Boundary and Habitat Importance)
+                    /// Validates the source importances by ensuring that boundary and habitat importance
+                    /// values are applied in order (as specified in the settings).
+                    ValidateSourceImportances(@"IncidSource\d+HabitatImportance", @"\d+", "3", errors);
+                    //---------------------------------------------------------------------
                 }
             }
             else
@@ -6819,6 +6870,75 @@ namespace HLU.UI.ViewModel
 
             return errors;
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR1 (Boundary and Habitat Importance)
+        //
+        /// <summary>
+        /// Validates the source importances by ensuring that boundary and habitat importance
+        /// values are applied in order (as specified in the settings).
+        /// </summary>
+        /// <param name="propNamePat">Pattern for regular expression match of property name in current class.</param>
+        /// <param name="propNamePatWildcard">Wildcard element in propNamePat.</param>
+        /// <param name="propNameWildcardValCurrProp">Value of propNamePatWildcard for current property to be validated.</param>
+        /// <param name="errors">List of errors, composed of name of property in error and error message.
+        /// The error message is built by splitting propNamePat on propNamePatWildcard and prepending the 
+        /// last element of the split array with blanks added in front of capital letters to the string
+        /// "of two sources cannot be equal for the same INCID".</param>
+        private void ValidateSourceImportances(string propNamePat, string propNamePatWildcard,
+            string propNameWildcardValCurrProp, List<string[]> errors)
+        {
+            string propNameCheck = propNamePat.Replace(propNamePatWildcard, propNameWildcardValCurrProp);
+            PropertyInfo propInf = this.GetType().GetProperty(propNameCheck);
+            if (propInf == null) return;
+
+            string skipVal = Settings.Default.SourceImportanceSkip;
+            string ord1val = Settings.Default.SourceImportanceApply1;
+            string ord2val = Settings.Default.SourceImportanceApply2;
+            string ord3val = Settings.Default.SourceImportanceApply3;
+            
+            object checkVal = propInf.GetValue(this, null);
+            if ((checkVal == null) || checkVal.Equals(skipVal)) return;
+
+            string[] split = propNamePat.Split(new string[] { propNamePatWildcard }, StringSplitOptions.None);
+            string errMsg = split[split.Length - 1];
+
+            errMsg = Regex.Matches(errMsg, @"[A-Z][^A-Z\s]*").Cast<Match>()
+                .Aggregate(new StringBuilder(), (sb, m) => sb.Append(errMsg.Substring(m.Index, m.Length)).Append(" "))
+                .AppendFormat("must be applied in the order {0}, {1} then {2}", ord1val, ord2val, ord3val).ToString();
+
+            if (!String.IsNullOrEmpty(ord1val))
+            {
+                int ord1Sources = 0;
+                foreach (PropertyInfo pi in this.GetType().GetProperties().Where(pn => Regex.IsMatch(pn.Name, propNamePat)))
+                {
+                    object compVal = pi.GetValue(this, null);
+                    if ((compVal != null) && !compVal.Equals(skipVal) && compVal.Equals(ord1val))
+                    {
+                        ord1Sources += 1;
+                    }
+                }
+                if (ord1Sources == 0 && checkVal.Equals(ord2val))
+                        errors.Add(new string[] { propNameCheck, errMsg });
+            }
+
+            if (!String.IsNullOrEmpty(ord2val))
+            {
+                int ord2Sources = 0;
+                foreach (PropertyInfo pi in this.GetType().GetProperties().Where(pn => Regex.IsMatch(pn.Name, propNamePat)))
+                {
+                    object compVal = pi.GetValue(this, null);
+                    if ((compVal != null) && !compVal.Equals(skipVal) && compVal.Equals(ord2val))
+                    {
+                        ord2Sources += 1;
+                    }
+                }
+                if (ord2Sources == 0 && checkVal.Equals(ord3val))
+                    errors.Add(new string[] { propNameCheck, errMsg });
+            }
+
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Checks all properties of current class whose names follow a specified pattern for duplicate values.
