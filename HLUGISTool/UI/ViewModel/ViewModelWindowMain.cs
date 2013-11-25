@@ -6443,6 +6443,14 @@ namespace HLU.UI.ViewModel
                             {
                                 modified_date = !r.Ismodified_dateNull() ?
                                     r.modified_date.ToShortDateString() : String.Empty,
+                                //---------------------------------------------------------------------
+                                // CHANGED: CR4 (Modified date)
+                                // Display the modified_date column from the history wth both the
+                                // date and time to avoid separate updates with identical details
+                                // (except the time) being merged together when displayed.
+                                modified_time = (!r.Ismodified_dateNull() && r.modified_date != r.modified_date.Date) ?
+                                    @" at " + r.modified_date.ToLongTimeString() : String.Empty,
+                                //---------------------------------------------------------------------
                                 modified_user_id = r.lut_userRow != null ? r.lut_userRow.user_name :
                                     !r.Ismodified_user_idNull() ? r.modified_user_id : String.Empty,
                                 modifid_process = r.lut_processRow != null ? r.lut_processRow.description : String.Empty,
@@ -6456,7 +6464,14 @@ namespace HLU.UI.ViewModel
                                     hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "").Replace("_", " "),
                                     r[hr.ColumnName].ToString()))).ToString()
                             } into g
-                            select String.Format("Modified {0} by {1}:", g.Key.modified_date, g.Key.modified_user_id) +
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR4 (Modified date)
+                            // Display the modified_date column from the history wth both the
+                            // date and time to avoid separate updates with identical details
+                            // (except the time) being merged together when displayed.
+                            select String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
+                                g.Key.modified_time, g.Key.modified_user_id) +
+                            //---------------------------------------------------------------------
                                 String.Format("\n\tProcess: {0}", g.Key.modifid_process) +
                                 String.Format("\n\tReason: {0}", g.Key.modified_reason) +
                                 String.Format("\n\tOperation: {0}", g.Key.modified_operation) +
