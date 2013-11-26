@@ -322,7 +322,7 @@ namespace HLU.UI.ViewModel
 
         public string HistoryColumnsLabel
         {
-            get { return "History\nColumns"; }
+            get { return "History\nDisplay\nColumns"; }
             set { }
         }
 
