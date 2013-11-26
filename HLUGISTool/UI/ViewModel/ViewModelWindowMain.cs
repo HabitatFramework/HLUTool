@@ -514,6 +514,12 @@ namespace HLU.UI.ViewModel
             set { _incidLastModifiedDate = value; }
         }
 
+        internal string IncidLastModifiedUserId
+        {
+            get { return _incidLastModifiedUser; }
+            set { if ((IncidCurrentRow != null) && (value != null)) _incidLastModifiedUser = value; }
+        }
+
         internal HluDataSet.lut_ihs_matrixRow[] IhsMatrixCodes
         {
             get { return _lutIhsMatrixCodes; }
@@ -3408,8 +3414,15 @@ namespace HLU.UI.ViewModel
         {
             get
             {
+                //---------------------------------------------------------------------
+                // FIX: Display user's name instead of their user_id
+                // Display the created user's name from the lut_user table
+                // (if found) instead of the user_id
+                //
                 if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.created_user_idColumn))
-                    return IncidCurrentRow.created_user_id;
+                    return String.IsNullOrEmpty(IncidCurrentRow.lut_userRowByfk_incid_user_created.user_name)
+                        ? IncidCurrentRow.created_user_id : IncidCurrentRow.lut_userRowByfk_incid_user_created.user_name;
+                //---------------------------------------------------------------------
                 else
                     return null;
             }
@@ -3418,7 +3431,17 @@ namespace HLU.UI.ViewModel
 
         public string IncidLastModifiedUser
         {
-            get { return _incidLastModifiedUser; }
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: Display user's name instead of their user_id
+                // Display the last modified user's name from the lut_user table
+                // (if found) instead of the user_id
+                //
+                return String.IsNullOrEmpty(IncidCurrentRow.lut_userRowByfk_incid_user_modified.user_name)
+                        ? IncidCurrentRow.last_modified_user_id : IncidCurrentRow.lut_userRowByfk_incid_user_modified.user_name;
+                //---------------------------------------------------------------------
+            }
             set { if ((IncidCurrentRow != null) && (value != null)) _incidLastModifiedUser = value; }
         }
 
