@@ -181,6 +181,7 @@ namespace HLU.UI.ViewModel
         private Dictionary<Type, string> _childRowOrderByDict;
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
         private List<string> _exportMdbs = new List<string>();
+        private string _userName;
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
@@ -728,6 +729,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        public string UserName
+        {
+            get { return _userName; }
+        }
+
         public bool IsAuthorisedUser
         {
             get
@@ -737,6 +743,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Checks the current userid is found in the lut_table, determines
+        /// if the user has bulk update authority and retrieves the user's
+        /// name.
+        /// </summary>
         private void GetUserInfo()
         {
             try
@@ -756,6 +767,26 @@ namespace HLU.UI.ViewModel
                     _isAuthorisedUser = false;
                     _canBulkUpdate = false;
                 }
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR9 (Current userid)
+                // Get the current user's username from the lut_table to display with
+                // the userid in the 'About' box.
+                //
+                result = _db.ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2} = {3}",
+                    _db.QuoteIdentifier(_hluDS.lut_user.user_nameColumn.ColumnName),
+                    _db.QualifyTableName(_hluDS.lut_user.TableName),
+                    _db.QuoteIdentifier(_hluDS.lut_user.user_idColumn.ColumnName),
+                    _db.QuoteValue(this.UserID)), _db.Connection.ConnectionTimeout, CommandType.Text);
+                if (result != null)
+                {
+                    _userName = (string)result;
+                }
+                else
+                {
+                    _userName = "(guest)";
+                }
+                //---------------------------------------------------------------------
             }
             catch
             {
@@ -1446,11 +1477,41 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR9 (Current userid)
+        // Retrieve the copyright notice for the assembly to display with the
+        // current userid and name in the 'About' box.
+        //
+        /// <summary>
+        /// Gets the assembly copyright notice.
+        /// </summary>
+        /// <value>The assembly copyright.</value>
+        public string AssemblyCopyright
+        {
+            get
+            {
+                // Get all Copyright attributes on this assembly
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                // If there aren't any Copyright attributes, return an empty string
+                if (attributes.Length == 0)
+                    return null;
+                // If there is a Copyright attribute, return its value
+                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            }
+        }
+        //---------------------------------------------------------------------
+
         private void AboutClicked(object param)
         {
-            MessageBox.Show(App.Current.MainWindow, String.Format("HLU GIS Tool\n\nVersion {0}.", 
-                Assembly.GetExecutingAssembly().GetName().Version.ToString()), 
-                "About HLU", MessageBoxButton.OK, MessageBoxImage.Information);
+            //---------------------------------------------------------------------
+            // CHANGED: CR9 (Current userid)
+            // Show the current userid and username together with the version
+            // and copyright notice in the 'About' box.
+            //
+            MessageBox.Show(App.Current.MainWindow, String.Format("   {0} Version:  {1}.\n\n   Userid:   {2}.\n   Username: {3}.\n\n   {4}.",
+                _displayName, Assembly.GetExecutingAssembly().GetName().Version.ToString(), UserID, UserName, AssemblyCopyright), 
+                String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
+            //---------------------------------------------------------------------
         }
 
         #endregion
