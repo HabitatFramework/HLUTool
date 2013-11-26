@@ -380,12 +380,19 @@ namespace HLU.UI.ViewModel
         {
             try
             {
-                int result;
-                return _gisIDColumns.Concat((from s in Settings.Default.HistoryColumnOrdinals.Cast<string>()
-                                             where Int32.TryParse(s, out result) && (result >= 0) &&
-                                                  (result < _hluDS.incid_mm_polygons.Columns.Count) &&
-                                                  !_gisIDColumnOrdinals.Contains(result)
-                                             select _hluDS.incid_mm_polygons.Columns[Int32.Parse(s)])).ToArray();
+                //---------------------------------------------------------------------
+                // FIX: Always save all (both) of the history columns
+                // Make sure that all the available history columns are updated when
+                // creating history even if the user only wants to display some of them.
+                return _gisIDColumns.Concat(_hluDS.incid_mm_polygons.Columns.Cast<DataColumn>()
+                    .Where(c => !_gisIDColumnOrdinals.Contains(c.Ordinal) && !c.ColumnName.StartsWith("shape_"))).ToArray();
+                //int result;
+                //return _gisIDColumns.Concat((from s in Settings.Default.HistoryColumnOrdinals.Cast<string>()
+                //                                              where Int32.TryParse(s, out result) && (result >= 0) &&
+                //                                                   (result < _hluDS.incid_mm_polygons.Columns.Count) &&
+                //                                                   !_gisIDColumnOrdinals.Contains(result)
+                //                                              select _hluDS.incid_mm_polygons.Columns[Int32.Parse(s)])).ToArray();
+                //---------------------------------------------------------------------
             }
             catch { return historyColumns; }
         }
@@ -6438,6 +6445,21 @@ namespace HLU.UI.ViewModel
                 if (_incidHistoryRows == null)
                     return null;
                 else
+                {
+                    //---------------------------------------------------------------------
+                    // FIX: Always save all (both) of the history columns
+                    // Figure out which history columns to display based on the user options
+                    // now that all the available history columns are always update when
+                    // creating history even if the user only wants to display some of them.
+                    DataColumn[] displayHistoryColumns;
+                    int result;
+                    displayHistoryColumns = _gisIDColumns.Concat((from s in Settings.Default.HistoryColumnOrdinals.Cast<string>()
+                                             where Int32.TryParse(s, out result) && (result >= 0) &&
+                                                  (result < _hluDS.incid_mm_polygons.Columns.Count) &&
+                                                  !_gisIDColumnOrdinals.Contains(result)
+                                             select _hluDS.incid_mm_polygons.Columns[Int32.Parse(s)])).ToArray();
+                    //---------------------------------------------------------------------
+
                     return (from r in _incidHistoryRows.OrderByDescending(r => r.history_id)
                             group r by new
                             {
@@ -6450,25 +6472,22 @@ namespace HLU.UI.ViewModel
                                 // (except the time) being merged together when displayed.
                                 modified_time = (!r.Ismodified_dateNull() && r.modified_date != r.modified_date.Date) ?
                                     @" at " + r.modified_date.ToLongTimeString() : String.Empty,
-                                //---------------------------------------------------------------------
                                 modified_user_id = r.lut_userRow != null ? r.lut_userRow.user_name :
                                     !r.Ismodified_user_idNull() ? r.modified_user_id : String.Empty,
                                 modifid_process = r.lut_processRow != null ? r.lut_processRow.description : String.Empty,
                                 modified_reason = r.lut_reasonRow != null ? r.lut_reasonRow.description : String.Empty,
                                 modified_operation = r.lut_operationRow != null ? r.lut_operationRow.description : String.Empty,
                                 modified_incid = !r.Ismodified_incidNull() ? r.modified_incid : String.Empty,
+                                //---------------------------------------------------------------------
+                                // FIX: Always save all (both) of the history columns
                                 modified_ihs = r.Table.Columns.Cast<DataColumn>().Where(rc =>
-                                    _historyColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
+                                    displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
                                     _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
                                     .Aggregate(new StringBuilder(), (sb, hr) => sb.Append(String.Format("\n\t{0}: {1}",
                                     hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "").Replace("_", " "),
                                     r[hr.ColumnName].ToString()))).ToString()
+                                //---------------------------------------------------------------------
                             } into g
-                            //---------------------------------------------------------------------
-                            // CHANGED: CR4 (Modified date)
-                            // Display the modified_date column from the history wth both the
-                            // date and time to avoid separate updates with identical details
-                            // (except the time) being merged together when displayed.
                             select String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
                                 g.Key.modified_time, g.Key.modified_user_id) +
                             //---------------------------------------------------------------------
@@ -6482,6 +6501,7 @@ namespace HLU.UI.ViewModel
                                 String.Format("\n\tArea Modified: {0}", g.Distinct(_histRowEqComp)
                                     .Sum(r => !r.Ismodified_areaNull() ? r.modified_area : 0).ToString("f2")))
                                 .Take(_historyDisplayLastN);
+                }
             }
         }
 
