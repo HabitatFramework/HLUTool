@@ -273,7 +273,7 @@ namespace HLU.UI.ViewModel
         internal static void IncidCurrentRowDerivedValuesUpdate(ViewModelWindowMain viewModelMain)
         {
             viewModelMain.IncidCurrentRow.ihs_habitat = viewModelMain.IncidIhsHabitat;
-            viewModelMain.IncidCurrentRow.last_modified_user_id = viewModelMain.IncidLastModifiedUser;
+            viewModelMain.IncidCurrentRow.last_modified_user_id = viewModelMain.IncidLastModifiedUserId;
             viewModelMain.IncidCurrentRow.last_modified_date = viewModelMain.IncidLastModifiedDateVal;
         }
 
