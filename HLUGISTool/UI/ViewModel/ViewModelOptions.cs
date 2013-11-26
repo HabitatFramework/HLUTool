@@ -426,8 +426,15 @@ namespace HLU.UI.ViewModel
                     string msg;
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
-                if (_historyColumns.Count(h => h.IsSelected) == 0)
-                    error.Append("\n" + "Please select columns to be recorded in history trail.");
+                //---------------------------------------------------------------------
+                // FIX: Allow the user to not display any of the history columns
+                // Remove the validation enforcing the user to display at least one
+                // of the history columns because they are all updated when creating
+                // history regardless of whether the user wants to display any of them.
+                //
+                //if (_historyColumns.Count(h => h.IsSelected) == 0)
+                //    error.Append("\n" + "Please select columns to be recorded in history trail.");
+                //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(SeasonSpring))
                     error.Append("\n" + "Please enter a season name for spring.");
                 if (String.IsNullOrEmpty(SeasonSummer))
