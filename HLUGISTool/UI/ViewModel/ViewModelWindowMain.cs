@@ -1508,7 +1508,7 @@ namespace HLU.UI.ViewModel
             // Show the current userid and username together with the version
             // and copyright notice in the 'About' box.
             //
-            MessageBox.Show(App.Current.MainWindow, String.Format("   {0} Version:  {1}.\n\n   Userid:   {2}.\n   Username: {3}.\n\n   {4}.",
+            MessageBox.Show(App.Current.MainWindow, String.Format("   {0} Version:  {1}\n\n   Userid:   {2}\n   Username: {3}\n\n   {4}",
                 _displayName, Assembly.GetExecutingAssembly().GetName().Version.ToString(), UserID, UserName, AssemblyCopyright), 
                 String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
             //---------------------------------------------------------------------
