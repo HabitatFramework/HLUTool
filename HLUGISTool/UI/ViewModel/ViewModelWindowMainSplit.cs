@@ -341,7 +341,19 @@ namespace HLU.UI.ViewModel
                     if (!_viewModelMain.IncidCurrentRow.IsNull(i)) newIncidRow[i] = _viewModelMain.IncidCurrentRow[i];
                 string newIncid = _viewModelMain.NextIncid;
                 newIncidRow.incid = newIncid;
-                newIncidRow.ihs_version = _viewModelMain.RecIDs.IhsVersion;
+                //---------------------------------------------------------------------
+                // FIX: Don't update the ihs version when splitting features
+                // Previously the ihs version was set to the latest version for
+                // new (cloned) incids which meant that a feature split into 2
+                // parts could result in one with the current 'old' ihs version
+                // and one with the latest ihs version.
+                // The ihs version should only be updated when attribute updates
+                // are applied to an incid (as the ihs attributes have then been
+                // validated by the tool and the user) and not as a result of a
+                // logical split.
+                //
+                //newIncidRow.ihs_version = _viewModelMain.RecIDs.IhsVersion;
+                //---------------------------------------------------------------------
                 newIncidRow.created_date = DateTime.Now;
                 newIncidRow.created_user_id = _viewModelMain.UserID;
                 newIncidRow.last_modified_date = newIncidRow.created_date;
