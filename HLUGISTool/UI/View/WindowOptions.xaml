@@ -29,10 +29,11 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="30" />
                         </Grid.ColumnDefinitions>
                         <Label Name="LabelConnectionTimeout" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="0,0,8,4">Timeout [s]</Label>
@@ -46,12 +47,12 @@
 
                         <Label Name="LabelHistoryDisplayLastN" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="8,0,8,4">Display History Rows</Label>
-                        <TextBox Name="TextBoxHistoryDisplayLastN" Grid.Row="0" Grid.Column="3" Margin="4,4,4,4" TextAlignment="Right"
+                        <TextBox Name="TextBoxHistoryDisplayLastN" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Margin="4,4,4,4" TextAlignment="Right"
                                  VerticalAlignment="Center" Text="{Binding Path=HistoryDisplayLastN}" BorderThickness="1" />
 
-                        <Label Name="LabelBulkUpdateBlankRowMeansDelete" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" 
-                               VerticalAlignment="Center" Margin="8,0,8,4">Delete Empty Bulk Update Rows</Label>
-                        <CheckBox Name="CheckBoxBulkUpdateBlankRowMeansDelete" Grid.Row="1" Grid.Column="3" Margin="4,4,4,4"
+                        <Label Name="LabelBulkUpdateBlankRowMeansDelete" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" 
+                               VerticalAlignment="Center" Margin="8,0,8,4">Delete Empty Bulk Update Rows?</Label>
+                        <CheckBox Name="CheckBoxBulkUpdateBlankRowMeansDelete" Grid.Row="1" Grid.Column="4" Margin="4,4,4,4"
                                   VerticalAlignment="Center" HorizontalAlignment="Center" 
                                   IsChecked="{Binding Path=BulkUpdateBlankRowMeansDelete}" />
                     </Grid>
@@ -63,8 +64,8 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition MinWidth="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="9*" MinWidth="170"/>
+                            <ColumnDefinition Width="10*"/>
                         </Grid.ColumnDefinitions>
 
                         <Grid Name="GridHistoryColumns" Grid.Column="0">
@@ -116,8 +117,8 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
                         </Grid>
-                        
-                        <Grid Name="GridGisApp" Grid.Column="1">
+
+                        <Grid Name="GridGisApp" Grid.Column="1" Margin="8,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
