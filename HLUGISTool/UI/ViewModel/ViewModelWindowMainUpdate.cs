@@ -55,16 +55,18 @@ namespace HLU.UI.ViewModel
 
                 //---------------------------------------------------------------------
                 // FIXED: KI97 (Last modified date and user)
+                // CHANGED: CR3 (IHS version)
                 // Previously only changes to fields on the incid table triggered the
                 // last modified date & user fields to be updated.
-                // Update the last modified date & user fields on the incid
-                // table regardless of which attributes have been changed.
+                // Update the last modified date & user fields and the ihs version on
+                // the incid table regardless of which attributes have been changed.
                 //if (_viewModelMain.IsDirtyIncid())
                 //{
                 IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
 
                 _viewModelMain.IncidCurrentRow.last_modified_date = DateTime.Now;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
+                _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
 
                 if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
                     (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
