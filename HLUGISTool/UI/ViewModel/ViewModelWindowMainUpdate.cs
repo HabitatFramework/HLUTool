@@ -53,18 +53,25 @@ namespace HLU.UI.ViewModel
 
                 int incidCurrRowIx = _viewModelMain.IncidCurrentRowIndex;
 
-                if (_viewModelMain.IsDirtyIncid())
-                {
-                    IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
+                //---------------------------------------------------------------------
+                // FIXED: KI97 (Last modified date and user)
+                // Previously only changes to fields on the incid table triggered the
+                // last modified date & user fields to be updated.
+                // Update the last modified date & user fields on the incid
+                // table regardless of which attributes have been changed.
+                //if (_viewModelMain.IsDirtyIncid())
+                //{
+                IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
 
-                    _viewModelMain.IncidCurrentRow.last_modified_date = DateTime.Now;
-                    _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
+                _viewModelMain.IncidCurrentRow.last_modified_date = DateTime.Now;
+                _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
 
-                    if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
-                        (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update '{0}' table.",
-                            _viewModelMain.HluDataset.incid.TableName));
-                }
+                if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
+                    (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
+                    throw new Exception(String.Format("Failed to update '{0}' table.",
+                        _viewModelMain.HluDataset.incid.TableName));
+                //}
+                //---------------------------------------------------------------------
 
                 if ((_viewModelMain.IncidIhsMatrixRows != null) && _viewModelMain.IsDirtyIncidIhsMatrix())
                 {
@@ -282,7 +289,7 @@ namespace HLU.UI.ViewModel
             if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
                 _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_dateColumn.ColumnName),
-                _viewModelMain.DataBase.QuoteValue(DateTime.Today),
+                _viewModelMain.DataBase.QuoteValue(DateTime.Now),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_user_idColumn.ColumnName),
                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
