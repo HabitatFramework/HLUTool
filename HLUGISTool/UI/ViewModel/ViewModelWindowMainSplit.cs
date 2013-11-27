@@ -237,7 +237,15 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.CurrentIncid);
+                //---------------------------------------------------------------------
+                // FIX: Update the incid modified columns for the current incid
+                // The incid modified columns (i.e. last modified user and date)
+                // should be updated for the active incid not the 'highest' incid
+                // which is what "_viewModelMain.CurrentIncid" represents.
+                //
+                //_viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.CurrentIncid);
+                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.Incid);
+                //---------------------------------------------------------------------
 
                 // create new incid by cloning the current one
                 string msg;
@@ -274,8 +282,14 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.HluTableAdapterManager.incid_mm_polygonsTableAdapter.Update(polygons) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
-                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(
-                    historyTable.Rows[0][_viewModelMain.HluDataset.history.incidColumn.ColumnName].ToString());
+                //---------------------------------------------------------------------
+                // FIX: Don't update the incid modified columns again
+                // The incid modified columns (i.e. last modified user and date)
+                // have already been update above for the current incid.
+                //
+                //_viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(
+                //    historyTable.Rows[0][_viewModelMain.HluDataset.history.incidColumn.ColumnName].ToString());
+                //---------------------------------------------------------------------
 
                 // write history
                 Dictionary<int, string> fixedValues = new Dictionary<int, string>();
@@ -328,7 +342,7 @@ namespace HLU.UI.ViewModel
                 string newIncid = _viewModelMain.NextIncid;
                 newIncidRow.incid = newIncid;
                 newIncidRow.ihs_version = _viewModelMain.RecIDs.IhsVersion;
-                newIncidRow.created_date = DateTime.Today;
+                newIncidRow.created_date = DateTime.Now;
                 newIncidRow.created_user_id = _viewModelMain.UserID;
                 newIncidRow.last_modified_date = newIncidRow.created_date;
                 newIncidRow.last_modified_user_id = newIncidRow.created_user_id;
