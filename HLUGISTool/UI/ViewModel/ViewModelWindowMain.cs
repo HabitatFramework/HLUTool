@@ -404,6 +404,16 @@ namespace HLU.UI.ViewModel
             {
                 switch (s.Replace(" ", String.Empty).ToLower())
                 {
+                    //---------------------------------------------------------------------
+                    // FIX: Allow the user to reset only the database settings "/d"
+                    // or only the GIS settings "/g" instead of always both "/c"
+                    case "/d":
+                        DbFactory.ClearSettings();
+                        break;
+                    case "/g":
+                        GISAppFactory.ClearSettings();
+                        break;
+                    //---------------------------------------------------------------------
                     case "/c":
                         DbFactory.ClearSettings();
                         GISAppFactory.ClearSettings();
