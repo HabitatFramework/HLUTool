@@ -744,7 +744,7 @@ namespace HLU.GISApplication.MapInfo
                 (int)MapInfoConstants.ObjectInfo.OBJ_INFO_TYPE)));
 
             geom1 = -1;
-            geom2 = -1; 
+            geom2 = -1;
             
             switch (objType)
             {
@@ -1046,7 +1046,15 @@ namespace HLU.GISApplication.MapInfo
                         _selName, incidFieldName, QuoteValue(keepIncid), "{0}");
                 }
 
-                if (numRows > 2)
+                //---------------------------------------------------------------------
+                // FIX: Don't drop indexes unless processing > 500 rows
+                // Dropping (and rebuilding) the indexes takes a long time
+                // so it is not worth it unless a lot of rows are going to
+                // be processed.
+                //
+                //if (numRows > 2)
+                if (numRows > 500)
+                //---------------------------------------------------------------------
                 {
                     indexColumns = new string[] { GetFieldName(_hluLayerStructure.incidColumn.Ordinal),
                     GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal)};
