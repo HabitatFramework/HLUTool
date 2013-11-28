@@ -83,6 +83,13 @@ namespace HLU.UI.ViewModel
             foreach (SelectionItem<string> si in _historyColumns)
                 si.IsSelected = historyColumnOrdinals.Contains(
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
+
+            //---------------------------------------------------------------------
+            // FIX: Don't clear the map path when cancelling option updates
+            // Store the map path so that it can be reset if the user 
+            // cancels updates to the options.
+            _bakMapPath = _mapPath;
+            //---------------------------------------------------------------------
         }
 
         private string EscapeAccessKey(string s)
@@ -214,6 +221,8 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void CancelCommandClick(object param)
         {
+            // Reset the map path incase the user has selected a new
+            // path and is now cancelling the changes.
             Settings.Default.MapPath = _bakMapPath;
             this.RequestClose(false);
         }
