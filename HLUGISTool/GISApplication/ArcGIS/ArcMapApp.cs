@@ -1995,6 +1995,14 @@ namespace HLU.GISApplication.ArcGIS
                     {
                         path = openFileDlg.FileName;
                         Settings.Default.MapPath = path;
+                        //---------------------------------------------------------------------
+                        // FIX: Ensure HLU layer displays in map after reconfiguration
+                        // For some reason the HLU layer does not display in the map
+                        // window (although it appears in the contents list and the
+                        // attribute table can be opened) if the application is not set
+                        // to visible again before opening the document.
+                        //---------------------------------------------------------------------
+                        _arcMap.Visible = true;
                     }
                     else
                     {
