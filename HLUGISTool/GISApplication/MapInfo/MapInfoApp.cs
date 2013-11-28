@@ -1027,10 +1027,15 @@ namespace HLU.GISApplication.MapInfo
 
                         if (_mapInfoApp.Eval(incidCommand) == keepIncid)
                         {
+                            //---------------------------------------------------------------------
+                            // FIX: Don't overwrite the geometry fields during logical merge
+                            // Don't include the geometry fields in the update string when updating
+                            // all the rows that are logically merging into the keep incid.
                             updateCommandTemplate = new StringBuilder(updateCommandTemplate).Append(_hluFieldNames.Where(fn =>
-                                (fn != incidFieldName) && (fn != toidFieldName) && (fn != toidFragFieldName)).Aggregate(new StringBuilder(), 
+                                (fn != incidFieldName) && (fn != toidFieldName) && (fn != toidFragFieldName) && !fn.StartsWith("shape_")).Aggregate(new StringBuilder(), 
                                 (sb, fn) => sb.Append(", " + fn + " = " + QuoteValue(_mapInfoApp.Eval(String.Format(readCommandTemplate, fn))))))
                                     .Append(" Where RowID = {0}").ToString();
+                            //---------------------------------------------------------------------
                             break;
                         }
                     }
@@ -1442,6 +1447,8 @@ namespace HLU.GISApplication.MapInfo
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            // Wait a couple of seconds after connecting to MapInfo to let it finish opening.
+            System.Threading.Thread.Sleep(2000);
             return MIObj1;
 
         }
