@@ -5,6 +5,14 @@
     Height="460" Width="500" WindowStyle="SingleBorderWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
         ShowInTaskbar="False" Activated="Window_Activated" Title="{Binding WindowTitle}" Icon="..\..\Icons\HLUIcon.png">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\NullableValueConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4">
         <Grid VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -38,17 +46,20 @@
                         <Label Name="LabelConnectionTimeout" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="0,0,8,4">Timeout [s]</Label>
                         <TextBox Name="TextBoxConnectionTimeout" Grid.Row="0" Grid.Column="1" Margin="4,4,4,4" TextAlignment="Right"
-                                 VerticalAlignment="Center" Text="{Binding Path=DbConnectionTimeout}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=DbConnectionTimeout, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 BorderThickness="1" />
 
                         <Label Name="LabelIncidPageSize" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="0,0,8,4">Page Size</Label>
                         <TextBox Name="TextBoxIncidPageSize" Grid.Row="1" Grid.Column="1" Margin="4,4,4,4" TextAlignment="Right"
-                                 VerticalAlignment="Center" Text="{Binding Path=IncidTablePageSize}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=IncidTablePageSize, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 BorderThickness="1" />
 
                         <Label Name="LabelHistoryDisplayLastN" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="8,0,8,4">Display History Rows</Label>
                         <TextBox Name="TextBoxHistoryDisplayLastN" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Margin="4,4,4,4" TextAlignment="Right"
-                                 VerticalAlignment="Center" Text="{Binding Path=HistoryDisplayLastN}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 BorderThickness="1" />
 
                         <Label Name="LabelBulkUpdateBlankRowMeansDelete" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" 
                                VerticalAlignment="Center" Margin="8,0,8,4">Delete Empty Bulk Update Rows?</Label>
@@ -132,8 +143,8 @@
                             <Label Name="LabelPreferredGis" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" 
                                HorizontalAlignment="Right" Margin="4,4,4,4">Preferred GIS Application</Label>
                             <ComboBox Name="ComboBoxPreferredGis" Grid.Row="0" Grid.Column="1" Margin="4,4,4,4" BorderThickness="1"
-                                      ItemsSource="{Binding Path=GisApps}" SelectedValue="{Binding Path=PreferredGis}" 
-                                      IsEnabled="{Binding Path=GisAppsEnabled}"/>
+                                      ItemsSource="{Binding Path=GisApps}" SelectedValue="{Binding Path=PreferredGis, ValidatesOnDataErrors=True}" 
+                                      IsEnabled="{Binding Path=GisAppsEnabled}" />
                         
                             <Label Name="LabelMapPath" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" 
                                HorizontalAlignment="Left" Margin="4,4,4,0">Map Document/Workspace:</Label>
@@ -147,7 +158,7 @@
                                          ToolTip="{Binding Path=MapPath}" ToolTipService.ShowOnDisabled="True" />
                                 <Button Name="ButtonBrowseMap" Grid.Column="1" Margin="1,4,4,4" Content="..." 
                                         Command="{Binding Path=BrowseMapCommand}" 
-                                        IsEnabled="{Binding Path=CanBrowseMapCommand}" />
+                                        IsEnabled="{Binding Path=CanBrowseMap}" />
                             </Grid>
                             
                             
@@ -190,13 +201,13 @@
                                HorizontalAlignment="Right" Margin="4,4,4,4">Winter</Label>
 
                         <TextBox Name="TextBoxSeasonSpring" Grid.Row="0" Grid.Column="1" Margin="4,4,4,4"
-                                 VerticalAlignment="Center" Text="{Binding Path=SeasonSpring}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=SeasonSpring, ValidatesOnDataErrors=True}" BorderThickness="1" />
                         <TextBox Name="TextBoxSeasonSummer" Grid.Row="1" Grid.Column="1" Margin="4,4,4,4"
-                                 VerticalAlignment="Center" Text="{Binding Path=SeasonSummer}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=SeasonSummer, ValidatesOnDataErrors=True}" BorderThickness="1" />
                         <TextBox Name="TextBoxSeasonAutumn" Grid.Row="0" Grid.Column="3" Margin="4,4,4,4"
-                                 VerticalAlignment="Center" Text="{Binding Path=SeasonAutumn}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=SeasonAutumn, ValidatesOnDataErrors=True}" BorderThickness="1" />
                         <TextBox Name="TextBoxSeasonWinter" Grid.Row="1" Grid.Column="3" Margin="4,4,4,4"
-                                 VerticalAlignment="Center" Text="{Binding Path=SeasonWinter}" BorderThickness="1" />
+                                 VerticalAlignment="Center" Text="{Binding Path=SeasonWinter, ValidatesOnDataErrors=True}" BorderThickness="1" />
 
                         <Grid Name="GridDateDelimter" Grid.Row="2" Grid.ColumnSpan="4" HorizontalAlignment="Right">
                             <Grid.ColumnDefinitions>
@@ -207,7 +218,7 @@
                                    HorizontalAlignment="Right" Margin="4,4,4,4">Vague Date Delimiter</Label>
                             <TextBox Name="TextBoxVagueDateDelimiter" Grid.Row="0" Grid.Column="1" Margin="4,4,4,4"
                                       BorderThickness="1" TextAlignment="Center" VerticalAlignment="Center" 
-                                     Text="{Binding Path=VagueDateDelimiter}" />
+                                     Text="{Binding Path=VagueDateDelimiter, ValidatesOnDataErrors=True}" />
                         </Grid>
                     </Grid>
                 </GroupBox>
