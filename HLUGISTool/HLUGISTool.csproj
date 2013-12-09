@@ -262,6 +262,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\Dictionary\NullableValueConverterDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\View\Dictionary\HluTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -348,6 +352,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
     <Compile Include="UI\View\WindowCompletePhysicalSplit.xaml.cs">

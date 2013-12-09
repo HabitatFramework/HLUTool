@@ -46,9 +46,9 @@ namespace HLU.UI.ViewModel
             new HluDataSet.incid_mm_polygonsDataTable();
         private List<int> _gisIDColumnOrdinals;
 
-        private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
-        private int _incidTablePageSize = Settings.Default.IncidTablePageSize;
-        private int _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
+        private int? _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
+        private int? _incidTablePageSize = Settings.Default.IncidTablePageSize;
+        private int? _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
         private bool _bulkUpdateBlankRowMeansDelete = Settings.Default.BulkUpdateBlankRowMeansDelete;
 
         private string _mapPath = Settings.Default.MapPath;
@@ -158,9 +158,9 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
-            Settings.Default.DbConnectionTimeout = _dbConnectionTimeout;
-            Settings.Default.IncidTablePageSize = _incidTablePageSize;
-            Settings.Default.HistoryDisplayLastN = _historyDisplayLastN;
+            Settings.Default.DbConnectionTimeout = (int)_dbConnectionTimeout;
+            Settings.Default.IncidTablePageSize = (int)_incidTablePageSize;
+            Settings.Default.HistoryDisplayLastN = (int)_historyDisplayLastN;
             Settings.Default.BulkUpdateBlankRowMeansDelete = _bulkUpdateBlankRowMeansDelete;
 
             Settings.Default.MapPath = _mapPath;
@@ -231,19 +231,19 @@ namespace HLU.UI.ViewModel
 
         #region Database
 
-        public int DbConnectionTimeout
+        public int? DbConnectionTimeout
         {
             get { return _dbConnectionTimeout; }
             set { _dbConnectionTimeout = value; }
         }
 
-        public int IncidTablePageSize
+        public int? IncidTablePageSize
         {
             get { return _incidTablePageSize; }
             set { _incidTablePageSize = value; }
         }
 
-        public int HistoryDisplayLastN
+        public int? HistoryDisplayLastN
         {
             get { return _historyDisplayLastN; }
             set { _historyDisplayLastN = value; }
@@ -418,12 +418,17 @@ namespace HLU.UI.ViewModel
             {
                 StringBuilder error = new StringBuilder();
 
-                if (DbConnectionTimeout <= 0)
+                //---------------------------------------------------------------------
+                // FIX: Validate that mandatory values are not blank
+                // Validate that the database timeout period, database page size and
+                // history rows to display are not null.
+                if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
                     error.Append("\n" + "Please enter a database timeout greater than 0 seconds.");
-                if (IncidTablePageSize <= 0)
+                if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
                     error.Append("\n" + "Please enter a database page size greater than 0 rows.");
-                if (HistoryDisplayLastN <= 0)
+                if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
                     error.Append("\n" + "Number of history rows to be displayed must be greater than 0.");
+                //---------------------------------------------------------------------
                 if (GisAppsEnabled && (PreferredGis == GISApplications.None))
                     error.Append("\n" + "Please select your preferred GIS application.");
                 if (String.IsNullOrEmpty(_mapPath))
@@ -472,18 +477,24 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
+                    //---------------------------------------------------------------------
+                    // FIX: Validate that mandatory values are not blank
+                    // Validate that the database timeout period, database page size and
+                    // history rows to display are not null.
+                    //---------------------------------------------------------------------
                     case "DbConnectionTimeout":
-                        if (DbConnectionTimeout <= 0)
+                        if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
                             error = "Please enter a database timeout greater than 0 seconds.";
                         break;
                     case "IncidTablePageSize":
-                        if (IncidTablePageSize <= 0)
+                        if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
                             error = "Please enter a database page size greater than 0 rows.";
                         break;
                     case "HistoryDisplayLastN":
-                        if (HistoryDisplayLastN <= 0)
+                        if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
                             error = "Number of history rows to be displayed must be greater than 0.";
                         break;
+                    //---------------------------------------------------------------------
                     case "PreferredGis":
                         if (GisAppsEnabled && (PreferredGis == GISApplications.None))
                             error = "Please select your preferred GIS application.";
