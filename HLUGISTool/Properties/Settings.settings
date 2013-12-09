@@ -183,5 +183,8 @@
     <Setting Name="SourceImportanceApply3" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">C</Value>
     </Setting>
+    <Setting Name="BAPHabitatIgnore" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PHAP-NONE</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

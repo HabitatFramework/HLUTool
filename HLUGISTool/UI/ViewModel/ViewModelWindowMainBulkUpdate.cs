@@ -539,7 +539,7 @@ namespace HLU.UI.ViewModel
             var cx = ihsComplexRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.complex);
             string[] ihsComplexVals = cx.Concat(new string[2 - cx.Count()]).ToArray();
 
-            IEnumerable<string> potentialBap = _viewModelMain.PotentialBapEnvironments(ihsHabitat, 
+            IEnumerable<string> primaryBap = _viewModelMain.PrimaryBapEnvironments(ihsHabitat, 
                 ihsMatrixVals[0], ihsMatrixVals[1], ihsMatrixVals[2], ihsFormationVals[0], ihsFormationVals[1],
                 ihsManagementVals[0], ihsManagementVals[1], ihsComplexVals[0], ihsComplexVals[1]);
 
@@ -562,15 +562,15 @@ namespace HLU.UI.ViewModel
                 IEnumerable<HluDataSet.incid_bapRow> dbRows =
                     incidBapTable.Where(r => r.bap_habitat == be.bap_habitat);
 
-                bool isAdditional = !potentialBap.Contains(be.bap_habitat);
-                if (isAdditional) be.MakeAdditional();
+                bool isSecondary = !primaryBap.Contains(be.bap_habitat);
+                if (isSecondary) be.MakeSecondary();
 
                 switch (dbRows.Count())
                 {
                     case 0: // insert newly added BAP environments
                         HluDataSet.incid_bapRow newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
                         newRow.ItemArray = be.ToItemArray(_viewModelMain.RecIDs.NextIncidBapId, currIncid);
-                        if (be.IsValid(false, isAdditional, newRow)) // reset bulk update mode for full validation of a new row
+                        if (be.IsValid(false, isSecondary, newRow)) // reset bulk update mode for full validation of a new row
                             _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Insert(newRow);
                         break;
                     case 1: // update existing row
@@ -588,9 +588,9 @@ namespace HLU.UI.ViewModel
                 }
             }
 
-            incidBapTable.Where(r => !potentialBap.Contains(r.bap_habitat)).ToList().ForEach(delegate(HluDataSet.incid_bapRow r)
+            incidBapTable.Where(r => !primaryBap.Contains(r.bap_habitat)).ToList().ForEach(delegate(HluDataSet.incid_bapRow r)
             {
-                updateRows.Add(BapEnvironment.MakeAdditional(r));
+                updateRows.Add(BapEnvironment.MakeSecondary(r));
             });
 
             if (updateRows.Count > 0)
@@ -599,10 +599,10 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
             }
 
-            // delete non-potential BAP environments from DB that are not in _viewModelMain.IncidBapRowsUser
+            // delete non-primary BAP environments from DB that are not in _viewModelMain.IncidBapRowsUser
             if (deleteExtraRows)
             {
-                var delRows = incidBapTable.Where(r => !potentialBap.Contains(r.bap_habitat) && 
+                var delRows = incidBapTable.Where(r => !primaryBap.Contains(r.bap_habitat) && 
                     _viewModelMain.IncidBapRowsUser.Count(be => be.bap_habitat == r.bap_habitat) == 0);
                 foreach (HluDataSet.incid_bapRow r in delRows)
                     _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Delete(r);
