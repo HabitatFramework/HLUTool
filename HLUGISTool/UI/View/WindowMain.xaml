@@ -724,9 +724,9 @@
                                 <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
 
-                            <GroupBox Name="GroupBoxPotentialBapHabitats" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" 
-                                      Grid.ColumnSpan="3" Header="BAP Habitats">
-                                <Grid Name="GridBapHabitatsPotential" Margin="0,10,0,2">
+                            <GroupBox Name="GroupBoxPrimaryBapHabitats" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" 
+                                      Grid.ColumnSpan="3" Header="Primary Priority Habitats">
+                                <Grid Name="GridBapHabitatsPrimary" Margin="0,10,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition /> 
                                     </Grid.RowDefinitions>
@@ -735,21 +735,21 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="20" />
                                     </Grid.ColumnDefinitions>
-                                    <tkit:DataGrid Name="DataGridPotentialBapHabitats" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                    <tkit:DataGrid Name="DataGridPrimaryBapHabitats" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                                  RowDetailsVisibilityMode="Visible" BorderBrush="Black" BorderThickness="1" 
                                                  RowHeight="24" Padding="2,0" Margin="8,0,8,4" AutoGenerateColumns="False" 
                                                  HeadersVisibility="All" RowHeaderWidth="20" 
                                                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
                                                  CanUserResizeColumns="True" CanUserSortColumns="True"
-                                                 IsEnabled="{Binding Path=BapHabitatsPotentialEnabled}"
-                                                 ItemsSource="{Binding Path=IncidBapHabitatsPotential}">
+                                                 IsEnabled="{Binding Path=BapHabitatsAutoEnabled}"
+                                                 ItemsSource="{Binding Path=IncidBapHabitatsAuto}">
                                         <tkit:DataGrid.RowValidationRules>
                                             <DataErrorValidationRule />
                                         </tkit:DataGrid.RowValidationRules>
                                         <tkit:DataGrid.Columns>
                                             <tkit:DataGridTextColumn Header="bap_id" Binding="{Binding bap_id}" IsReadOnly="True" Visibility="Collapsed"></tkit:DataGridTextColumn>
                                             <tkit:DataGridTextColumn Header="INCID" Binding="{Binding incid}" IsReadOnly="True" Visibility="Collapsed"></tkit:DataGridTextColumn>
-                                            <hlu:DataGridComboBoxColumnWithBinding Header="BAP Habitat" IsReadOnly="True" Width="SizeToCells" MinWidth="125" CanUserResize="True"
+                                            <hlu:DataGridComboBoxColumnWithBinding Header="Priority Habitat" IsReadOnly="True" Width="SizeToCells" MinWidth="125" CanUserResize="True"
                                                                                     SelectedValueBinding="{Binding bap_habitat}"
                                                                                     SelectedValuePath="code" DisplayMemberPath="description"
                                                                                     ItemsSource="{Binding DataContext.BapHabitatCodes, 
@@ -789,8 +789,8 @@
                                 </Grid>
                             </GroupBox>
 
-                            <GroupBox Name="GroupBoxAdditionalBapHabitats" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"
-                                      Header="Potential BAP Habitats">
+                            <GroupBox Name="GroupBoxSecondaryBapHabitats" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"
+                                      Header="Secondary Priority Habitats">
                                 <Grid Name="GridBapHabitatsUser" Margin="0,10,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -816,7 +816,7 @@
                                                                    Visibility="Collapsed" />
                                             <tkit:DataGridTextColumn Header="INCID" Binding="{Binding incid}" IsReadOnly="True" 
                                                                    Visibility="Collapsed" />
-                                            <hlu:DataGridComboBoxColumnWithBinding Header="BAP Habitat" IsReadOnly="False" Width="SizeToCells" MinWidth="125" CanUserResize="True"
+                                            <hlu:DataGridComboBoxColumnWithBinding Header="Priority Habitat" IsReadOnly="False" Width="SizeToCells" MinWidth="125" CanUserResize="True"
                                                                                     SelectedValueBinding="{Binding bap_habitat, ValidatesOnDataErrors=True}"
                                                                                     SelectedValuePath="code" DisplayMemberPath="description"
                                                                                     ItemsSource="{Binding DataContext.BapHabitatCodes, 

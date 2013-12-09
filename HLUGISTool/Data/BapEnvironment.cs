@@ -33,7 +33,7 @@ namespace HLU.Data
         private int _bap_id;
         private string _incid;
         private bool _bulkUpdateMode;
-        private bool _additionalBap;
+        private bool _secondaryPriorityHabitat;
         private string _bap_habitat;
         private string _quality_determination;
         private string _quality_interpretation;
@@ -45,6 +45,7 @@ namespace HLU.Data
         string _error;
         private static IEnumerable<BapEnvironment> _bapEnvironmentList;
         public readonly static string BAPDetQltyUserAdded = Settings.Default.BAPDeterminationQualiltyUserAdded;
+        public readonly static string BAPHabitatIgnore = Settings.Default.BAPHabitatIgnore;
 
         #endregion
 
@@ -53,69 +54,67 @@ namespace HLU.Data
         public BapEnvironment()
         {
             _bulkUpdateMode = false;
-            _additionalBap = true; // new rows default to additional as that is what UI needs to create
+            _secondaryPriorityHabitat = true; // new rows default to secondary as that is what UI needs to create
             _bap_id = -1; // arbitrary PK for a new row
-            _quality_determination = BAPDetQltyUserAdded; // mandatory determination quality for user added BAP habitats
         }
 
-        public BapEnvironment(bool bulkUpdateMode, bool additional)
+        public BapEnvironment(bool bulkUpdateMode, bool isSecondary)
         {
             _bulkUpdateMode = bulkUpdateMode;
-            _additionalBap = additional;
+            _secondaryPriorityHabitat = isSecondary;
             _bap_id = -1; // arbitrary PK for a new row
-            _quality_determination = BAPDetQltyUserAdded; // mandatory determination quality for user added BAP habitats
         }
 
-        public BapEnvironment(bool bulkUpdateMode, bool additional, HluDataSet.incid_bapRow dataRow)
+        public BapEnvironment(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow dataRow)
         {
             _bulkUpdateMode = bulkUpdateMode;
-            _additionalBap = additional;
+            _secondaryPriorityHabitat = isSecondary;
             HluDataSet.incid_bapDataTable table = (HluDataSet.incid_bapDataTable)dataRow.Table;
             _bap_id = dataRow.bap_id;
             _incid = dataRow.incid;
             _bap_habitat = dataRow.IsNull(table.bap_habitatColumn) ? null : dataRow.bap_habitat;
-            _quality_determination = _additionalBap ? BAPDetQltyUserAdded : dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
+            _quality_determination = dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
             this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ? 
                 null : dataRow.interpretation_comments;
         }
 
-        public BapEnvironment(bool bulkUpdateMode, bool additional, HluDataSet.incid_bapRow dataRow, IEnumerable<BapEnvironment> beList)
+        public BapEnvironment(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow dataRow, IEnumerable<BapEnvironment> beList)
         {
             _bulkUpdateMode = bulkUpdateMode;
-            _additionalBap = additional;
+            _secondaryPriorityHabitat = isSecondary;
             HluDataSet.incid_bapDataTable table = (HluDataSet.incid_bapDataTable)dataRow.Table;
             _bap_id = dataRow.bap_id;
             _incid = dataRow.incid;
             _bap_habitat = dataRow.IsNull(table.bap_habitatColumn) ? null : dataRow.bap_habitat;
-            _quality_determination = _additionalBap ? BAPDetQltyUserAdded : dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
+            _quality_determination = dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
             this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
                 null : dataRow.interpretation_comments;
             _bapEnvironmentList = beList;
         }
 
-        public BapEnvironment(bool bulkUpdateMode, bool additional, object[] itemArray)
+        public BapEnvironment(bool bulkUpdateMode, bool isSecondary, object[] itemArray)
         {
             _bulkUpdateMode = bulkUpdateMode;
-            _additionalBap = additional;
+            _secondaryPriorityHabitat = isSecondary;
             Int32.TryParse(itemArray[0].ToString(), out _bap_id);
             _incid = itemArray[1].ToString();
             _bap_habitat = itemArray[2].ToString();
-            _quality_determination = _additionalBap ? BAPDetQltyUserAdded : itemArray[3].ToString();
+            _quality_determination = itemArray[3].ToString();
             _quality_interpretation = itemArray[4].ToString();
             this.interpretation_comments = itemArray[5].ToString();
         }
 
-        public BapEnvironment(bool bulkUpdateMode, bool additional, int bap_id, string incid, string bap_habitat, 
+        public BapEnvironment(bool bulkUpdateMode, bool isSecondary, int bap_id, string incid, string bap_habitat, 
             string quality_determination, string quality_interpretation, string interpretation_comments)
         {
             _bulkUpdateMode = bulkUpdateMode;
-            _additionalBap = additional;
+            _secondaryPriorityHabitat = isSecondary;
             _bap_id = bap_id;
             _incid = incid;
             _bap_habitat = bap_habitat;
-            _quality_determination = _additionalBap ? BAPDetQltyUserAdded : quality_determination;
+            _quality_determination = quality_determination;
             _quality_interpretation = quality_interpretation;
             this.interpretation_comments = interpretation_comments;
         }
@@ -196,22 +195,20 @@ namespace HLU.Data
                 _quality_interpretation, _interpretation_comments };
         }
 
-        public object[] ToItemArray(int bapID, string incid, bool isAdditional)
+        public object[] ToItemArray(int bapID, string incid, bool isSecondary)
         {
-            if (isAdditional) MakeAdditional();
+            if (isSecondary) MakeSecondary();
             return new object[] { bapID, incid, _bap_habitat, _quality_determination, 
                 _quality_interpretation, _interpretation_comments };
         }
 
-        public void MakeAdditional()
+        public void MakeSecondary()
         {
-            _additionalBap = true;
-            _quality_determination = BAPDetQltyUserAdded;
+            _secondaryPriorityHabitat = true;
         }
 
-        public static HluDataSet.incid_bapRow MakeAdditional(HluDataSet.incid_bapRow r)
+        public static HluDataSet.incid_bapRow MakeSecondary(HluDataSet.incid_bapRow r)
         {
-            if (r != null) r.quality_determination = BAPDetQltyUserAdded;
             return r;
         }
 
@@ -232,34 +229,34 @@ namespace HLU.Data
             return ValidateRow();
         }
 
-        public bool IsValid(bool bulkUpdateMode, bool additionalBap)
+        public bool IsValid(bool bulkUpdateMode, bool isSecondary)
         {
-            return String.IsNullOrEmpty(ValidateRow(bulkUpdateMode, additionalBap, _bap_id, 
+            return String.IsNullOrEmpty(ValidateRow(bulkUpdateMode, isSecondary, _bap_id, 
                 _incid, _bap_habitat, _quality_determination, _quality_interpretation));
         }
 
-        public bool IsValid(bool bulkUpdateMode, bool additionalBap, HluDataSet.incid_bapRow r)
+        public bool IsValid(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow r)
         {
-            return String.IsNullOrEmpty(ValidateRow(bulkUpdateMode, additionalBap, r.bap_id,
+            return String.IsNullOrEmpty(ValidateRow(bulkUpdateMode, isSecondary, r.bap_id,
                 r.incid, r.bap_habitat, r.quality_determination, r.quality_interpretation));
         }
 
         public string ErrorMessages { get { return _error.ToString(); } }
 
-        public static bool ValidateRow(bool bulkUpdateMode, bool additionalBap, HluDataSet.incid_bapRow r)
+        public static bool ValidateRow(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow r)
         {
-            return ValidateRow(bulkUpdateMode, additionalBap, r.bap_id, r.incid, r.bap_habitat, 
+            return ValidateRow(bulkUpdateMode, isSecondary, r.bap_id, r.incid, r.bap_habitat, 
                 r.quality_determination, r.quality_interpretation) == null;
         }
 
-        public static bool ValidateRow(bool bulkUpdateMode, bool additionalBap, HluDataSet.incid_bapRow r, 
+        public static bool ValidateRow(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow r, 
             IEnumerable<BapEnvironment> bapEnvironmentList)
         {
-            return ValidateRow(bulkUpdateMode, additionalBap, r.bap_id, r.incid, r.bap_habitat, 
+            return ValidateRow(bulkUpdateMode, isSecondary, r.bap_id, r.incid, r.bap_habitat, 
                 r.quality_determination, r.quality_interpretation) == null;
         }
 
-        private static string ValidateRow(bool _bulkUpdateMode, bool _additionalBap, int bap_id, string incid, 
+        private static string ValidateRow(bool _bulkUpdateMode, bool isSecondary, int bap_id, string incid, 
             string bap_habitat, string quality_determination, string quality_interpretation)
         {
             StringBuilder sbError = new StringBuilder();
@@ -268,10 +265,10 @@ namespace HLU.Data
                 sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
 
             if (String.IsNullOrEmpty(bap_habitat))
-                sbError.Append(Environment.NewLine).Append("BAP habitat is a mandatory field");
+                sbError.Append(Environment.NewLine).Append("Priority habitat is a mandatory field");
 
             if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
-                sbError.Append(Environment.NewLine).Append("Duplicate BAP environment");
+                sbError.Append(Environment.NewLine).Append("Duplicate priority environment");
 
             if (String.IsNullOrEmpty(quality_determination))
             {
@@ -280,18 +277,44 @@ namespace HLU.Data
             }
             else
             {
-                if (_additionalBap && (quality_determination != BAPDetQltyUserAdded))
+                //---------------------------------------------------------------------
+                // FIX: Allow 'None' habitats to be managed
+                // Validate that if this is a secondary priority habitat (i.e. in
+                // the secondary list) and the habitat is to be ignored (i.e. it equals
+                // 'None') then the determination quality can be anything except
+                // 'Not present but close to definition').
+                if (isSecondary)
                 {
-                    sbError.Append(Environment.NewLine)
-                        .Append("Determination quality for additional BAP habitats must be " +
-                        "'Not present but close to definition'");
+                    if ((bap_habitat == BAPHabitatIgnore) && (quality_determination == BAPDetQltyUserAdded))
+                    {
+                        sbError.Append(Environment.NewLine)
+                            .Append("Determination quality for 'None' priority habitats cannot be " +
+                            "'Not present but close to definition'");
+                    }
+                    // Validate that if this is a secondary priority habitat (i.e. in
+                    // the secondary list) and the habitat is not to be ignored (i.e. it
+                    // does not equal 'None') then the determination quality can only be
+                    // 'Not present but close to definition').
+                    else if ((bap_habitat != BAPHabitatIgnore) && (quality_determination != BAPDetQltyUserAdded))
+                    {
+                        sbError.Append(Environment.NewLine)
+                            .Append("Determination quality for potential priority habitats can only be " +
+                            "'Not present but close to definition'");
+                    }
                 }
-                else if (!_additionalBap && (quality_determination == BAPDetQltyUserAdded))
+                // Validate that if this is not a secondary priority habitat (i.e. in
+                // the primary list) then the determination quality can be anything except
+                // 'Not present but close to definition').
+                else
                 {
-                    sbError.Append(Environment.NewLine)
-                        .Append("Determination quality cannot be " +
-                        "'Not present but close to definition' for potential BAP habitats");
+                    if (!isSecondary && (quality_determination == BAPDetQltyUserAdded))
+                    {
+                        sbError.Append(Environment.NewLine)
+                            .Append("Determination quality cannot be " +
+                            "'Not present but close to definition' for 'primary' priority habitats");
+                    }
                 }
+                //---------------------------------------------------------------------
             }
 
             if (!_bulkUpdateMode && String.IsNullOrEmpty(quality_interpretation))
@@ -302,7 +325,7 @@ namespace HLU.Data
 
         private bool ValidateRow()
         {
-            _error = ValidateRow(_bulkUpdateMode, _additionalBap, bap_id, incid, bap_habitat, quality_determination, quality_interpretation);
+            _error = ValidateRow(_bulkUpdateMode, _secondaryPriorityHabitat, bap_id, incid, bap_habitat, quality_determination, quality_interpretation);
             return _error == null;
         }
         
@@ -338,12 +361,12 @@ namespace HLU.Data
                     case "bap_habitat":
                         if (String.IsNullOrEmpty(bap_habitat))
                         {
-                            _bap_habitat = _bap_habitat_bak;
-                            return "BAP habitat is a mandatory field";
+                            //_bap_habitat = _bap_habitat_bak;
+                            return "Priority habitat is a mandatory field";
                         }
                         else if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
                         {
-                            return "Duplicate BAP environment";
+                            return "Duplicate priority habitat";
                         }
                         _bap_habitat_bak = _bap_habitat;
                         break;
@@ -352,31 +375,58 @@ namespace HLU.Data
                         {
                             if (!_bulkUpdateMode)
                             {
-                                _quality_determination = _quality_determination_bak;
+                                //_quality_determination = _quality_determination_bak;
                                 return "Determination quality is a mandatory field";
                             }
                         }
                         else
                         {
-                            if (_additionalBap && (quality_determination != BAPDetQltyUserAdded))
+                            //---------------------------------------------------------------------
+                            // FIX: Allow 'None' habitats to be managed
+                            // Validate that if this is a secondary priority habitat (i.e. in
+                            // the secondary list) and the habitat is to be ignored (i.e. it equals
+                            // 'None') then the determination quality can be anything except
+                            // 'Not present but close to definition').
+                            if (_secondaryPriorityHabitat)
                             {
-                                _quality_determination = _quality_determination_bak;
-                                return "Determination quality for additional BAP habitats must be " + 
-                                    "'Not present but close to definition'";
+                                if ((bap_habitat == BAPHabitatIgnore) && (quality_determination == BAPDetQltyUserAdded))
+                                {
+                                    //_quality_determination = _quality_determination_bak;
+                                    return "Determination quality for 'None' priority habitats cannot be " +
+                                        "'Not present but close to definition'";
+                                }
+                                // Validate that if this is a secondary priority habitat (i.e. in
+                                // the secondary list) and the habitat is not to be ignored (i.e. it
+                                // does not equal 'None') then the determination quality can only be
+                                // 'Not present but close to definition').
+                                else if ((bap_habitat != BAPHabitatIgnore) && (quality_determination != BAPDetQltyUserAdded))
+                                {
+                                    //_quality_determination = _quality_determination_bak;
+                                    return "Determination quality for potential priority habitats can only be " +
+                                        "'Not present but close to definition'";
+                                }
                             }
-                            else if (!_additionalBap && (quality_determination == BAPDetQltyUserAdded))
+                            // Validate that if this is not a secondary priority habitat (i.e. in
+                            // the primary list) then the determination quality can be anything except
+                            // 'Not present but close to definition').
+                            else
                             {
-                                _quality_determination = _quality_determination_bak;
-                                return "Determination quality cannot be 'Not present but close to definition' " + 
-                                    "for potential BAP habitats";
+                                if ((quality_determination == BAPDetQltyUserAdded))
+                                {
+                                    //_quality_determination = _quality_determination_bak;
+                                    return "Determination quality cannot be " +
+                                        "'Not present but close to definition' for 'primary' priority habitats";
+                                }
                             }
+                            //---------------------------------------------------------------------
                         }
+
                         _quality_determination_bak = _quality_determination;
                         break;
                     case "quality_interpretation":
                         if (!_bulkUpdateMode && String.IsNullOrEmpty(quality_interpretation))
                         {
-                            _quality_interpretation = _quality_interpretation_bak;
+                            //_quality_interpretation = _quality_interpretation_bak;
                             return "Interpretation quality is a mandatory field";
                         }
                         _quality_interpretation_bak = _quality_interpretation;

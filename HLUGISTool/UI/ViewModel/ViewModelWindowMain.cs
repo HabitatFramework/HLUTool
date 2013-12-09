@@ -186,7 +186,7 @@ namespace HLU.UI.ViewModel
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
         private bool _bulkUpdateCreateHistory;
-        private bool _bulkUpdatePotentialBap = Settings.Default.BulkUpdatePotentialBap;
+        private bool _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
         private VagueDateInstance _incidSource1DateEntered;
         private VagueDateInstance _incidSource2DateEntered;
         private VagueDateInstance _incidSource3DateEntered;
@@ -3141,7 +3141,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("NumIncidSelectedMap");
             OnPropertyChanged("NumToidSelectedMap");
             OnPropertyChanged("NumFragmentsSelectedMap");
-            OnPropertyChanged("BapHabitatsPotentialEnabled");
+            OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
         }
 
@@ -3223,13 +3223,13 @@ namespace HLU.UI.ViewModel
 
         private void RefreshDetailsTab()
         {
-            OnPropertyChanged("IncidBapHabitatsPotential");
+            OnPropertyChanged("IncidBapHabitatsAuto");
             OnPropertyChanged("IncidBapHabitatsUser");
             OnPropertyChanged("BapHabitatsUserEnabled");
             OnPropertyChanged("IncidGeneralComments");
             OnPropertyChanged("IncidBoundaryBaseMap");
             OnPropertyChanged("IncidDigitisationBaseMap");
-            OnPropertyChanged("BapHabitatsPotentialEnabled");
+            OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
             OnPropertyChanged("IncidSiteName");
         }
@@ -3788,9 +3788,9 @@ namespace HLU.UI.ViewModel
 
                         OnPropertyChanged("NvcCodes");
                         GetBapEnvironments();
-                        OnPropertyChanged("IncidBapHabitatsPotential");
+                        OnPropertyChanged("IncidBapHabitatsAuto");
                         OnPropertyChanged("IncidBapHabitatsUser");
-                        OnPropertyChanged("BapHabitatsPotentialEnabled");
+                        OnPropertyChanged("BapHabitatsAutoEnabled");
                         OnPropertyChanged("BapHabitatsUserEnabled");
                     }
                     IhsMultiplexCodes(_incidIhsHabitat);
@@ -4077,14 +4077,14 @@ namespace HLU.UI.ViewModel
                     _comingFromIncidIhsMatrix2 = false;
                 }
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4146,14 +4146,14 @@ namespace HLU.UI.ViewModel
                     _comingFromIncidIhsMatrix3 = false;
                 }
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4207,14 +4207,14 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IhsMatrix1Codes");
                 OnPropertyChanged("IhsMatrix2Codes");
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4437,14 +4437,14 @@ namespace HLU.UI.ViewModel
                     _comingFromIncidIhsFormation2 = false;
                 }
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4497,14 +4497,14 @@ namespace HLU.UI.ViewModel
                 }
                 OnPropertyChanged("IhsFormation1Codes");
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4727,14 +4727,14 @@ namespace HLU.UI.ViewModel
                     _comingFromIncidIhsManagement2 = false;
                 }
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -4787,14 +4787,14 @@ namespace HLU.UI.ViewModel
                 _comingFromIncidIhsManagement2 = true;
                 OnPropertyChanged("IhsManagement1Codes");
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -5019,14 +5019,14 @@ namespace HLU.UI.ViewModel
                     _comingFromIncidIhsComplex2 = false;
                 }
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -5079,14 +5079,14 @@ namespace HLU.UI.ViewModel
                 }
                 OnPropertyChanged("IhsComplex1Codes");
                 GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsPotential");
+                OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("IncidBapHabitatsUser");
                 //---------------------------------------------------------------------
                 // FIXED: KI96 (BAP Habitats)
                 // Enable editing of bap habitats when they are only associated
                 // with matrix, formation, management or complex codes (rather
                 // than habitat codes.
-                OnPropertyChanged("BapHabitatsPotentialEnabled");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
             }
@@ -5288,10 +5288,17 @@ namespace HLU.UI.ViewModel
         {
             get
             {
+                //---------------------------------------------------------------------
+                // FIX: Allow 'None' habitats to be managed
+                // Show all determination quality values in the drop-down list (instead
+                // of just 'Not present but close to definition') but validate the
+                // selected value later.
                 if (BapDeterminationQualityCodes != null)
-                    return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
+                    //return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
+                    return BapDeterminationQualityCodes.OrderBy(r => r.sort_order).ToArray();
                 else
                     return null;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -5341,15 +5348,15 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public ObservableCollection<BapEnvironment> IncidBapHabitatsPotential
+        public ObservableCollection<BapEnvironment> IncidBapHabitatsAuto
         {
             get { return _incidBapRowsAuto; }
             set { _incidBapRowsAuto = value; }
         }
 
         /// <summary>
-        /// The bap_id of existing additional BAP environments is multiplied by -1 (and same again when 
-        /// saving back o DB) to distinguish them from potential BAP habitats in UI validation methods.
+        /// The bap_id of existing secondary priority habitats is multiplied by -1 (and same again when 
+        /// saving back to DB) to distinguish them from primary priority habitats in UI validation methods.
         /// </summary>
         public ObservableCollection<BapEnvironment> IncidBapHabitatsUser
         {
@@ -5357,9 +5364,9 @@ namespace HLU.UI.ViewModel
             set { _incidBapRowsUser = value; }
         }
 
-        public bool BapHabitatsPotentialEnabled
+        public bool BapHabitatsAutoEnabled
         {
-            get { return IncidBapHabitatsPotential != null && IncidBapHabitatsPotential.Count > 0; } // return _bulkUpdateMode == false; }
+            get { return IncidBapHabitatsAuto != null && IncidBapHabitatsAuto.Count > 0; } // return _bulkUpdateMode == false; }
         }
 
         public bool BapHabitatsUserEnabled
@@ -5367,23 +5374,23 @@ namespace HLU.UI.ViewModel
             get
             {
                 return true;
-                //return _bulkUpdateMode == true || (IncidBapHabitatsPotential != null && 
-                //    IncidBapHabitatsPotential.Count > 0) || (IncidBapHabitatsUser.Count > 0);
+                //return _bulkUpdateMode == true || (IncidBapHabitatsAuto != null && 
+                //    IncidBapHabitatsAuto.Count > 0) || (IncidBapHabitatsUser.Count > 0);
             }
         }
 
         private void GetBapEnvironments()
         {
-            IEnumerable<string> potentialBap = PotentialBapEnvironments(IncidIhsHabitat, IncidIhsMatrix1,
+            IEnumerable<string> primaryBap = PrimaryBapEnvironments(IncidIhsHabitat, IncidIhsMatrix1,
                 IncidIhsMatrix2, IncidIhsMatrix3, IncidIhsFormation1, IncidIhsFormation2, IncidIhsManagement1,
                 IncidIhsManagement2, IncidIhsComplex1, IncidIhsComplex2);
 
             IEnumerable<HluDataSet.incid_bapRow> incidBapRowsUndel = 
                 _incidBapRows.Where(r => r.RowState != DataRowState.Deleted);
 
-            if ((incidBapRowsUndel != null) && (potentialBap != null))
+            if ((incidBapRowsUndel != null) && (primaryBap != null))
             {
-                // potential BAP environments from DB (real bap_id) and new (bap_id = -1)
+                // primary BAP environments from DB (real bap_id) and new (bap_id = -1)
                 IEnumerable<BapEnvironment> prevBapRowsAuto = null;
                 IEnumerable<BapEnvironment> newBapRowsAuto = null;
                 if (incidBapRowsUndel == null)
@@ -5394,17 +5401,17 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     prevBapRowsAuto = from r in incidBapRowsUndel
-                                      join pot in potentialBap on r.bap_habitat equals pot
+                                      join pot in primaryBap on r.bap_habitat equals pot
                                       where _incidCurrentRow.incid != null && r.incid == _incidCurrentRow.incid
                                       select new BapEnvironment(false, false, r);
 
                     newBapRowsAuto = from r in incidBapRowsUndel
-                                     join pot in potentialBap on r.bap_habitat equals pot
+                                     join pot in primaryBap on r.bap_habitat equals pot
                                      where prevBapRowsAuto.Count(p => p.bap_habitat == r.bap_habitat) == 0
                                      select new BapEnvironment(false, false, r);
                 }
 
-                var potBap = from p in potentialBap
+                var potBap = from p in primaryBap
                              where prevBapRowsAuto.Count(a => a.bap_habitat == p) == 0
                              where incidBapRowsUndel.Count(row => row.bap_habitat == p) == 0
                              select new BapEnvironment(false, false, -1, Incid, p, null, null, null);
@@ -5414,14 +5421,14 @@ namespace HLU.UI.ViewModel
             }
             else if (incidBapRowsUndel != null)
             {
-                // no potential BAP, but user-added Db rows
+                // no primary BAP, but user-added Db rows
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             }
-            else if ((potentialBap != null) && (potentialBap.Count() > 0))
+            else if ((primaryBap != null) && (primaryBap.Count() > 0))
             {
-                // potential BAP, none in DB
+                // primary BAP, none in DB
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>(
-                    potentialBap.Select(p => new BapEnvironment(false, false, -1, Incid, p, null, null, null)));
+                    primaryBap.Select(p => new BapEnvironment(false, false, -1, Incid, p, null, null, null)));
             }
             else
             {
@@ -5430,7 +5437,7 @@ namespace HLU.UI.ViewModel
 
             _incidBapRowsAuto.CollectionChanged += _incidBapRowsAuto_CollectionChanged;
 
-            OnPropertyChanged("IncidBapHabitatsPotential");
+            OnPropertyChanged("IncidBapHabitatsAuto");
 
             if ((incidBapRowsUndel != null) && (_incidBapRowsAuto != null))
             {
@@ -5447,7 +5454,14 @@ namespace HLU.UI.ViewModel
                                        select r).ToList();
                     prevBapRowsUser.ForEach(delegate(BapEnvironment be)
                     {
-                        be.quality_determination = BapEnvironment.BAPDetQltyUserAdded;
+                        //---------------------------------------------------------------------
+                        // FIX: Allow 'None' habitats to be managed
+                        // Don't overwrite the determination quality value loaded from the
+                        // database with 'Not present but close to definition' as other
+                        // values may be valid and will be validated later.
+                        //
+                        //be.quality_determination = BapEnvironment.BAPDetQltyUserAdded;
+                        //---------------------------------------------------------------------
                         be.BulkUpdateMode = _bulkUpdateMode == true;
                     });
                 }
@@ -5473,17 +5487,17 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidBapHabitatsUser");
         }
 
-        internal IEnumerable<string> PotentialBapEnvironments(string ihsHabitat, string ihsMatrix1,
+        internal IEnumerable<string> PrimaryBapEnvironments(string ihsHabitat, string ihsMatrix1,
             string ihsMatrix2, string ihsMatrix3, string ihsFormation1, string ihsFormation2,
             string ihsManagement1, string ihsManagement2, string ihsComplex1, string ihsComplex2)
         {
-            IEnumerable<string> potentialBap = null;
+            IEnumerable<string> primaryBap = null;
 
             if (!String.IsNullOrEmpty(ihsHabitat))
             {
                 try
                 {
-                    potentialBap = from r in HluDataset.lut_ihs_habitat
+                    primaryBap = from r in HluDataset.lut_ihs_habitat
                                    where r.code == ihsHabitat && !r.Iscode_bap_priority_habitatNull()
                                    select r.code_bap_priority_habitat;
                 }
@@ -5497,7 +5511,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_matrix
                             where r.code == ihsMatrix1 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5509,7 +5523,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_matrix
                             where r.code == ihsMatrix2 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5521,7 +5535,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_matrix
                             where r.code == ihsMatrix3 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5533,7 +5547,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_formation
                             where r.code == ihsFormation1 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5545,7 +5559,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_formation
                             where r.code == ihsFormation2 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5557,7 +5571,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_management
                             where r.code == ihsManagement1 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5568,7 +5582,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_management
                             where r.code == ihsManagement2 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5580,7 +5594,7 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_complex
                             where r.code == ihsComplex1 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
@@ -5592,13 +5606,13 @@ namespace HLU.UI.ViewModel
                     var q = from r in HluDataset.lut_ihs_complex
                             where r.code == ihsComplex2 && !r.Isbap_habitatNull()
                             select r.bap_habitat;
-                    potentialBap = potentialBap != null ? potentialBap.Concat(q) : q;
+                    primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
             }
 
-            if (potentialBap != null)
-                return potentialBap.Distinct();
+            if (primaryBap != null)
+                return primaryBap.Distinct();
             else
                 return new string[0];
         }
@@ -7217,7 +7231,7 @@ namespace HLU.UI.ViewModel
                     int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                     if (countInvalid > 0)
                         error.Append(Environment.NewLine).Append(String.Format(
-                            "Invalid potential BAP environment{0} in row{0} {1}.",
+                            "Invalid primary priority habitat{0} in row{0} {1}.",
                             countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsAuto
                             .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
                 }
@@ -7233,7 +7247,7 @@ namespace HLU.UI.ViewModel
                     int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                     if (countInvalid > 0)
                         error.Append(Environment.NewLine).Append(String.Format(
-                            "Invalid additional BAP environment{0} in row{0} {1}.",
+                            "Invalid secondary priority habitat{0} in row{0} {1}.",
                             countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsUser
                             .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
                 }
