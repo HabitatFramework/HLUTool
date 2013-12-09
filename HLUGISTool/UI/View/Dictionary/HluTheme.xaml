@@ -119,7 +119,7 @@
                         StrokeThickness="0.5" VerticalAlignment="Center"/>
                 <TextBlock FontWeight="Bold" Padding="4,0,0,0"
                         Margin="0" VerticalAlignment="Center" Foreground="White" Text="!"
-                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
             </Grid>
             <Border BorderBrush="Red" BorderThickness="1">
                 <AdornedElementPlaceholder />
@@ -134,7 +134,7 @@
             <TextBlock FontWeight="Bold" Padding="4,0,0,0" Margin="0" 
                        VerticalAlignment="Center" Foreground="White" Text="!"
                        ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, 
-                AncestorType={x:Type tkit:DataGridRow}}, Path=(Validation.Errors)[0].ErrorContent}"
+                AncestorType={x:Type tkit:DataGridRow}}, Path=(Validation.Errors).CurrentItem.ErrorContent}"
                        Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type tkit:DataGridRow}}, 
                                 Path=(Validation.HasError), Converter={StaticResource bool2VisibilityConverter}}" />
         </Grid>
@@ -2488,7 +2488,7 @@
                         </Trigger>
                         <!--AM Start-->
                         <Trigger Property="Validation.HasError" Value="true">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
                         <!--AM End-->
                         <!--HT Start-->
@@ -2578,7 +2578,7 @@
                         </Trigger>
                         <!--AM Start-->
                         <Trigger Property="Validation.HasError" Value="true">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
                         <!--AM End-->
                         <!--HT Start-->
@@ -2649,7 +2649,7 @@
                         </Trigger>
                         <!--AM Start-->
                         <Trigger Property="Validation.HasError" Value="true">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
                         <!--AM End-->
                         <!--HT Start-->
@@ -2889,7 +2889,7 @@
                         </Trigger>
                         <!--AM Start-->
                         <Trigger Property="Validation.HasError" Value="true">
-                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
                         <!--AM End-->
                         <!--HT Start-->
