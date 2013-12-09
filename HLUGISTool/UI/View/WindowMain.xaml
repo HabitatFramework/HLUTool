@@ -725,7 +725,7 @@
                             </Grid.ColumnDefinitions>
 
                             <GroupBox Name="GroupBoxPrimaryBapHabitats" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" 
-                                      Grid.ColumnSpan="3" Header="Primary Priority Habitats">
+                                      Grid.ColumnSpan="3" Header="Priority Habitats">
                                 <Grid Name="GridBapHabitatsPrimary" Margin="0,10,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition /> 
@@ -790,7 +790,7 @@
                             </GroupBox>
 
                             <GroupBox Name="GroupBoxSecondaryBapHabitats" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"
-                                      Header="Secondary Priority Habitats">
+                                      Header="Potential Priority Habitats">
                                 <Grid Name="GridBapHabitatsUser" Margin="0,10,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
