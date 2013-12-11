@@ -3092,7 +3092,14 @@ namespace HLU.UI.ViewModel
                 case 0:
                     return true; // new row;
                 case 1:
-                    if (!be.IsValid()) return true; // row in error must be altered
+                    //---------------------------------------------------------------------
+                    // FIX: Don't flag existing invalid incid_bap rows as dirty
+                    // Only flag an incid_bap row that is invalid as dirty if it has
+                    // been added by the user. This allows existing records to be
+                    // viewed in the user interface without warning the user that
+                    // the data has changed.
+                    if (!be.IsValid() && be.IsAdded) return true;
+                    //---------------------------------------------------------------------
                     HluDataSet.incid_bapRow oldRow = q.ElementAt(0);
                     object[] itemArray = be.ToItemArray();
                     for (int i = 0; i < itemArray.Length; i++)
