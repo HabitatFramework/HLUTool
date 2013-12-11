@@ -1,4 +1,4 @@
-HLU GIS Tool, v1.0.4.0
+HLU GIS Tool, v1.0.5.0
 Copyright © 2013 Andy Foy
 
 Overview
@@ -43,7 +43,7 @@ The HLU GIS Tool requires the following:
  - Microsoft SQL Server 2008 Express Edition or later, OR
  - Microsoft SQL Server 2008 or later
 
- - ArcGIS 9.3 or ArcGIS 10.1, OR
+ - ArcGIS 10.1, OR
  - MapInfo 8.0 or MapInfo 10.0
 
 Installation
