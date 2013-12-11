@@ -327,15 +327,17 @@ namespace HLU.GISApplication.MapInfo
                     "Global Pen(1, 2, {2}) Global Brush(2, {2}, {3})", _hluMapWindowID, flashLayer, 
                     (int)MapInfoConstants.Colors.RED, (int)MapInfoConstants.Colors.WHITE));
 
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Off", _hluMapWindowID, flashLayer));
-                    Thread.Sleep(200);
+                    Thread.Sleep(300);
                     _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Global", _hluMapWindowID, flashLayer));
                 }
 
+                _mapInfoApp.Do(String.Format("Set Map Redraw Off")); 
                 _mapInfoApp.Do(String.Format("Remove Map Window {0} Layer {1}", _hluMapWindowID, flashLayer));
                 _mapInfoApp.Do(String.Format("Close Table {0}", flashLayer));
+                _mapInfoApp.Do(String.Format("Set Map Redraw On"));
             }
             catch { }
             finally
@@ -369,7 +371,7 @@ namespace HLU.GISApplication.MapInfo
         // CHANGED: CR23 (Merged features)
         // Flash all the features relating to the selected incid at once.  In this case
         // they will flash in groups if there are too many criteria to fit within a single
-        // item in the outer list).
+        // item in the outer list.
         public override void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses)
         {
             if (String.IsNullOrEmpty(_selName)) return;
@@ -401,15 +403,17 @@ namespace HLU.GISApplication.MapInfo
                         "Global Pen(1, 2, {2}) Global Brush(2, {2}, {3})", _hluMapWindowID, flashLayer,
                         (int)MapInfoConstants.Colors.RED, (int)MapInfoConstants.Colors.WHITE));
 
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Off", _hluMapWindowID, flashLayer));
-                        Thread.Sleep(200);
+                        Thread.Sleep(300);
                         _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Global", _hluMapWindowID, flashLayer));
                     }
 
+                    _mapInfoApp.Do(String.Format("Set Map Redraw Off"));
                     _mapInfoApp.Do(String.Format("Remove Map Window {0} Layer {1}", _hluMapWindowID, flashLayer));
                     _mapInfoApp.Do(String.Format("Close Table {0}", flashLayer));
+                    _mapInfoApp.Do(String.Format("Set Map Redraw On"));
                 }
             }
             catch { }
