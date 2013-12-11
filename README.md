@@ -40,7 +40,7 @@ The HLU GIS Tool requires the following:
  - Microsoft SQL Server 2008 Express Edition or later, OR
  - Microsoft SQL Server 2008 or later
 
- - ArcGIS 10.1, OR
+ - ArcGIS 10.1 (ArcGIS 9.3 is supported by v1.0.1), OR
  - MapInfo 8.0 or MapInfo 10.0
 
 Installation
@@ -61,8 +61,11 @@ The guides will shortly be available online or for download on ReadTheDocs.
 
 Issue Reporting
 ---------------
-To search for existing issues, and report new issues, please use:
+To search for existing issues please use:
 <https://github.com/HabitatFramework/HLUTool/issues>
+
+To report new issues please use:
+<http://forum.lrcs.org.uk/viewforum.php?id=24>
 
 License Information
 -------------------
