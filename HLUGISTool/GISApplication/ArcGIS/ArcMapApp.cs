@@ -485,7 +485,15 @@ namespace HLU.GISApplication.ArcGIS
             return sbTargetList.ToString();
         }
 
-        public override DataTable SqlSelect(bool selectDistinct, 
+        /// <summary>
+        /// Joins are supported using WHERE syntax.
+        /// Column names must be qualified with table name if multiple tables are joined.
+        /// </summary>
+        /// <param name="selectDistinct">If set to true a 'DISTINCT' clause is added to the SQL statement.</param>
+        /// <param name="targetList">The target list of data columns.</param>
+        /// <param name="whereConds">The SQL WHERE conditions.</param>
+        /// <returns></returns>
+        public override DataTable SqlSelect(bool selectDistinct,
             DataColumn[] targetList, List<SqlFilterCondition> whereConds)
         {
             if ((_arcMap == null) || (_hluLayer == null) || (_hluView == null) ||
@@ -498,6 +506,41 @@ namespace HLU.GISApplication.ArcGIS
                 bool additionalTables;
                 string subFields = TargetList(targetList, false, true, ref qualifyColumns, out resultTable);
                 string fromList = qualifyColumns ? 
+                    FromList(false, targetList, false, ref whereConds, out additionalTables) : _hluLayer.Name;
+
+                SqlSelectShared(fromList, whereConds, ref resultTable, qualifyColumns, subFields);
+                return resultTable;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Map selection failed. ArcMap returned the following error message:\n\n{0}",
+                    ex.Message), "HLU: Selection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return new DataTable();
+            }
+        }
+
+        /// <summary>
+        /// Joins are supported using WHERE syntax.
+        /// Column names must be qualified with table name if multiple tables are joined.
+        /// </summary>
+        /// <param name="selectDistinct">If set to true a 'DISTINCT' clause is added to the SQL statement.</param>
+        /// <param name="addGeometryInfo">If set to true the geometry fields will be added to the returned data table.</param>
+        /// <param name="targetList">The target list of data columns.</param>
+        /// <param name="whereConds">The SQL WHERE conditions.</param>
+        /// <returns></returns>
+        public override DataTable SqlSelect(bool selectDistinct, bool addGeometryInfo,
+            DataColumn[] targetList, List<SqlFilterCondition> whereConds)
+        {
+            if ((_arcMap == null) || (_hluLayer == null) || (_hluView == null) ||
+                (targetList == null) || (targetList.Length == 0)) return new DataTable();
+
+            try
+            {
+                DataTable resultTable;
+                bool qualifyColumns = false;
+                bool additionalTables;
+                string subFields = TargetList(targetList, false, true, ref qualifyColumns, out resultTable);
+                string fromList = qualifyColumns ?
                     FromList(false, targetList, false, ref whereConds, out additionalTables) : _hluLayer.Name;
 
                 SqlSelectShared(fromList, whereConds, ref resultTable, qualifyColumns, subFields);
