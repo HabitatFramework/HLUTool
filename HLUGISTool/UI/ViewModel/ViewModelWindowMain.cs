@@ -2119,7 +2119,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     DispatcherHelper.DoEvents();
-                    _gisSelection = _gisApp.SqlSelect(true, _gisIDColumns, 
+                    _gisSelection = _gisApp.SqlSelect(true, false, _gisIDColumns, 
                         ScratchDb.GisWhereClause(_incidSelection, _gisApp));
                 }
             }

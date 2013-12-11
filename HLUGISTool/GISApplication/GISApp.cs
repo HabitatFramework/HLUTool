@@ -137,6 +137,8 @@ namespace HLU.GISApplication
 
         public abstract DataTable SqlSelect(string scratchMdbPath, string selectionTableName, DataColumn[] targetColumns);
 
+        public abstract DataTable SqlSelect(bool selectDistinct, bool addGeometryInfo, DataColumn[] targetColumns, List<SqlFilterCondition> whereConds);
+
         protected abstract bool IsHluWorkspace();
 
         protected abstract bool IsHluLayer();
