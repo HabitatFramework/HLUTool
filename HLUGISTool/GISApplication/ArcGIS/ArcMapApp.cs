@@ -1501,9 +1501,36 @@ namespace HLU.GISApplication.ArcGIS
                 {
                     IMap map = Maps(_arcMap).get_Item(Int32.Parse(retList[0]));
                     _hluView = map as IActiveView;
-                    _templateLayer = (IGeoFeatureLayer)map.get_Layer(Int32.Parse(retList[1]));
-                    CreateHluLayer(false, _templateLayer);
-                    CreateFieldMap(6, 4, 2, retList);
+
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR19 (Feature layer position in GIS)
+                    // Loop through all the feature layers in the document until the
+                    // layer in the same position (number) as the HLU layer is found.
+                    // This ensures that group layers are not counted, in the same way
+                    // that they weren't counted when the position of the HLU layer
+                    // was first determined.
+                    UID uid = new UIDClass();
+                    uid.Value = typeof(IFeatureLayer).GUID.ToString("B");
+
+                    IEnumLayer layers = map.get_Layers(uid, true);
+                    ILayer layer = layers.Next();
+
+                    int layerNum = Int32.Parse(retList[1]);
+                    int j = 0;
+
+                    while (layer != null)
+                    {
+                        if (j == layerNum)
+                        {
+                            string layerName = layer.Name;
+                            _templateLayer = (IGeoFeatureLayer)layer;
+                            CreateHluLayer(false, _templateLayer);
+                            CreateFieldMap(6, 4, 2, retList);
+                        }
+                        layer = layers.Next();
+                        j++;
+                    }
+                    //---------------------------------------------------------------------
                 }
                 else
                 {

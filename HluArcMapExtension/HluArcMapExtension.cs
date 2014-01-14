@@ -2895,17 +2895,26 @@ namespace HLU
                         ILayer layer = layers.Next();
                         while (layer != null)
                         {
-                            IFeatureLayer featureLayer = layer as IFeatureLayer;
-                            if (IsHluLayer(featureLayer))
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR19 (Feature layer position in GIS)
+                            // Only check geofeature layers in the document (to see if they are
+                            // valid HLU layers) to save having to check layers (e.g. coverage
+                            // annotation layers) that can't possibly be valid.
+                            if (layer is IGeoFeatureLayer)
                             {
-                                _hluView = map as IActiveView;
-                                _pipeData.AddRange(new string[] { i.ToString(), j.ToString() });
-                                _pipeData.Add(_pipeTransmissionInterrupt);
-                                _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
-                                _pipeData.Add(_pipeTransmissionInterrupt);
-                                _pipeData.AddRange(_hluFieldNames);
-                                return;
+                                IFeatureLayer featureLayer = layer as IFeatureLayer;
+                                if (IsHluLayer(featureLayer))
+                                {
+                                    _hluView = map as IActiveView;
+                                    _pipeData.AddRange(new string[] { i.ToString(), j.ToString() });
+                                    _pipeData.Add(_pipeTransmissionInterrupt);
+                                    _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
+                                    _pipeData.Add(_pipeTransmissionInterrupt);
+                                    _pipeData.AddRange(_hluFieldNames);
+                                    return;
+                                }
                             }
+                            //---------------------------------------------------------------------
                             layer = layers.Next();
                             j++;
                         }
