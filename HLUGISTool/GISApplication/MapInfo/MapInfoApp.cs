@@ -28,6 +28,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using HLU.Data;
 using HLU.Data.Model;
 using HLU.Properties;
 using HLU.UI.ViewModel;
@@ -56,8 +57,20 @@ namespace HLU.GISApplication.MapInfo
         
         private string _hluLayer;
 
+        private string _hluLayerOld;
+
         private string _selName;
-        
+
+        /// <summary>
+        /// The list of valid HLU map layers in the workspace.
+        /// </summary>
+        private List<GISLayer> _hluLayerList;
+
+        /// <summary>
+        /// The current valid HLU map layer in the workspace.
+        /// </summary>
+        private GISLayer _hluCurrentLayer;
+
         HluGISLayer.incid_mm_polygonsDataTable _hluLayerStructure;
 
         /// <summary>
@@ -276,6 +289,30 @@ namespace HLU.GISApplication.MapInfo
         public override string IncidFieldName
         {
             get { return GetFieldName(_hluLayerStructure.incidColumn.Ordinal); }
+        }
+
+        /// <summary>
+        /// The number of valid hlu layers.
+        /// </summary>
+        public override int HluLayerCount
+        {
+            get { return _hluLayerList.Count(); }
+        }
+
+        /// <summary>
+        /// The list of valid hlu layers.
+        /// </summary>
+        public override List<GISLayer> ValidHluLayers
+        {
+            get { return _hluLayerList; }
+        }
+
+        /// <summary>
+        /// The properties of the current hlu layer.
+        /// </summary>
+        public override GISLayer CurrentHluLayer
+        {
+            get { return _hluCurrentLayer; }
         }
 
         /// <summary>
@@ -1840,6 +1877,22 @@ namespace HLU.GISApplication.MapInfo
         private void ReadSelectedRows(bool replaceSelection, bool closePreviousSelection, bool qualifyColumns, 
             bool addGeometryInfo, string selName, ref DataTable resultTable)
         {
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR31 (Switching between GIS layers)
+            // Enable the user to switch between different HLU layers, where
+            // there is more than one valid layer in the current document.
+            //
+            // Get the name of the table that the current selection is based on.
+            string tableName = _mapInfoApp.Eval(String.Format(
+                "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
+            if (String.IsNullOrEmpty(tableName) || !TableExists(tableName)) return;
+
+            // Check that the table is the same as the current HLU layer and if
+            // return an empty result table.
+            if (tableName != _hluLayer) return;
+            //---------------------------------------------------------------------
+            
             int numSelected = -1;
             string readSelName = null;
             if (replaceSelection)
@@ -2149,18 +2202,16 @@ namespace HLU.GISApplication.MapInfo
             return false;
         }
 
-        public override bool AddLayer()
+        public bool AddLayer(string tabName)
         {
             try
             {
                 string path = null;
 
-                string tabName = _hluLayer;
-
                 if (String.IsNullOrEmpty(tabName))
                 {
                     tabName = OpenTable(out path);
-                    if (!IsHluLayer())
+                    if (!IsHluLayer(tabName))
                     {
                         if (String.IsNullOrEmpty(tabName))
                         {
@@ -2183,11 +2234,13 @@ namespace HLU.GISApplication.MapInfo
                 if (_hluMapWindowID != -1)
                 {
                     _mapInfoApp.Do(String.Format("Add Map Layer {0}", tabName));
+                    _hluCurrentLayer = new GISLayer(_hluMapWindowID, 0, tabName);
                 }
                 else
                 {
                     _mapInfoApp.Do(String.Format("Map From {0}", tabName));
                     _hluMapWindowID = Convert.ToInt32(_mapInfoApp.Eval("FrontWindow()"));
+                    _hluCurrentLayer = new GISLayer(_hluMapWindowID, 0, tabName);
                     SizeWindow(_hluMapWindowID, true);
                 }
 
@@ -2234,7 +2287,7 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(path)));
                 tabName = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
-                _hluLayer = tabName;
+                //_hluLayer = tabName;
                 return tabName;
             }
         }
@@ -2294,8 +2347,8 @@ namespace HLU.GISApplication.MapInfo
             {
                 // check if the workspace contains a mapper window with a valid HLU layer
                 int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
-
                 int windowID;
+                string layer;
 
                 // Loop through all windows
                 for (int i = 1; i <= numWindows; i++)
@@ -2319,13 +2372,15 @@ namespace HLU.GISApplication.MapInfo
                                 j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_COSMETIC)) == "F")
                             {
                                 // Store the name of the layer
-                                _hluLayer = _mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})", 
+                                layer = _mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})", 
                                     windowID, j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_NAME));
 
                                 // Check to see if this layer is a HLU layer
-                                if (IsHluLayer())
+                                if (IsHluLayer(layer))
                                 {
                                     _hluMapWindowID = windowID;
+                                    _hluCurrentLayer = new GISLayer(windowID, 0, layer);
+
                                     // Disable the Close command in the window's system menu.
                                     _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose Off", _hluMapWindowID));
                                     // Note: Before version 10.5, you could enable or disable the Close
@@ -2343,115 +2398,291 @@ namespace HLU.GISApplication.MapInfo
                 // no mapper window open, but there may still be an HLU table
                 int numTables = Int32.Parse(_mapInfoApp.Eval("NumTables()"));
 
+                string tabName;
+                layer = null;
                 for (int i = 1; i <= numTables; i++)
                 {
-                    _hluLayer = _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", i, 
+                    tabName = _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", i, 
                         (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
-                    if (IsHluLayer()) break;
+                    if (IsHluLayer(tabName))
+                    {
+                        layer = tabName;
+                        break;
+                    }
                 }
 
                 // make a map from the open HLU table or browse for a table
-                return AddLayer();
+                return AddLayer(layer);
             }
             catch { }
 
             return false;
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        //
         /// <summary>
-        /// Checks whether the layer/table that field _hluLayer points to is an HLU layer, 
+        /// Determines which of the layers in all the windows are valid HLU layers
+        /// and stores these in a list so the user can switch between them.
+        /// Called before displaying the list of layers for the user to switch
+        /// between.
+        /// </summary>
+        /// <returns>The number of valid HLU layers in the list</returns>
+        public override int ListHluLayers()
+        {
+            if (_mapInfoApp == null) return 0;
+
+            try
+            {
+                // check if the workspace contains a mapper window with a valid HLU layer
+                int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
+
+                int windowID;
+
+                // Initialise the list of valid layers
+                if (_hluLayerList == null) _hluLayerList = new List<GISLayer>();
+
+                // Clear the valid HLU layer list
+                _hluLayerList.Clear();
+
+                // Loop through all windows
+                for (int i = 1; i <= numWindows; i++)
+                {
+                    windowID = Int32.Parse(_mapInfoApp.Eval(String.Format("WindowID({0})", i)));
+
+                    // If this is a mapper window
+                    if (Int32.Parse(_mapInfoApp.Eval(String.Format("WindowInfo({0}, {1})", i,
+                        (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
+                        (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
+                    {
+                        // Store the number of layers in the window
+                        int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
+                            windowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_LAYERS)));
+
+                        // Loop through all the layers in the current window
+                        for (int j = 1; j <= numLayers; j++)
+                        {
+                            // If this is not a cosmetic layer
+                            if (_mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})", windowID,
+                                j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_COSMETIC)) == "F")
+                            {
+                                // Store the name of the layer
+                                string layer = _mapInfoApp.Eval(String.Format("LayerInfo({0}, {1}, {2})",
+                                    windowID, j, (int)MapInfoConstants.LayerInfo.LAYER_INFO_NAME));
+
+                                // Check to see if this layer is a HLU layer
+                                if (IsHluLayer(layer))
+                                {
+                                    // Add the name of layer to the valid list
+                                    _hluLayerList.Add(new GISLayer(windowID, 0, layer));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //// no mapper window open, but there may still be an HLU table
+                //int numTables = Int32.Parse(_mapInfoApp.Eval("NumTables()"));
+
+                //for (int i = 1; i <= numTables; i++)
+                //{
+                //    _hluLayer = _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", i,
+                //        (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
+                //    if (IsHluLayer()) break;
+                //}
+
+                //// make a map from the open HLU table or browse for a table
+                //return AddLayer();
+            }
+            catch { }
+
+            if (_hluCurrentLayer == null)
+                _hluCurrentLayer = _hluLayerList[0];
+            return _hluLayerList.Count();
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        //
+        /// <summary>
+        /// Checks whether the layer/table that is passed to the method is an HLU layer, 
         /// as determined by its data structure. The data structure must follow the template of the 
         /// HLU.Data.Model.HluGISLayer.incid_mm_polygonsDataTable (same column names and data types, 
         /// as per type maps _typeMapSystemToSQL and _typeMapSQLToSystem).
         /// If _hluLayer points to a proper HLU layer _hluLayer, _hluFieldNames and _hluFieldMap 
+        /// are initialized to their correct values; otherwise they are left as their old values.
+        /// </summary>
+        /// <returns>True if the new GIS is a valid HLU layer, otherwise False</returns>
+        public override bool IsHluLayer(GISLayer newGISLayer)
+        {
+            int hluMapWindowIDBak = _hluMapWindowID;
+            int[] hluFieldMapBak = _hluFieldMap;
+            string[] hluFieldNamesBak = _hluFieldNames;
+            string hluLayerBak = _hluLayer;
+            string hluColumnListBak = _hluColumnList;
+
+            try
+            {
+                // Store the previous HLU layer so that the user can remove it
+                // if they wish.
+                _hluLayerOld = _hluLayer;
+
+                // Reset the current HLU layer so that it will be set when
+                // if the passed layer is a valid HLU layer.
+                _hluLayer = null;
+
+                string hluLayer = newGISLayer.LayerName;
+                if (IsHluLayer(hluLayer))
+                {
+                    _hluMapWindowID = newGISLayer.MapNum;
+                    _hluCurrentLayer = newGISLayer;
+                }
+            }
+            catch { }
+
+            // Reset the class properties if the layer is not valid.
+            if (_hluLayer == null)
+            {
+                _hluMapWindowID = hluMapWindowIDBak;
+                _hluFieldNames = hluFieldNamesBak;
+                _hluFieldMap = hluFieldMapBak;
+                _hluLayer = hluLayerBak;
+                _hluColumnList = hluColumnListBak;
+                return false;
+            }
+            else
+                return true;
+        }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Checks whether the layer/table that field hluLayer points to is an HLU layer,
+        /// as determined by its data structure. The data structure must follow the template of the
+        /// HLU.Data.Model.HluGISLayer.incid_mm_polygonsDataTable (same column names and data types,
+        /// as per type maps _typeMapSystemToSQL and _typeMapSQLToSystem).
+        /// If hluLayer points to a proper HLU layer _hluLayer, _hluFieldNames and _hluFieldMap
         /// are initialized to their correct values; otherwise they are set to null.
         /// </summary>
+        /// <param name="hluLayer">The HLU layer that will be switched to.</param>
         /// <returns></returns>
-        protected override bool IsHluLayer()
+        protected bool IsHluLayer(string hluLayer)
         {
             try
             {
                 if (_mapInfoApp == null)
                     throw new Exception("No MapInfo application.");
 
-                if (String.IsNullOrEmpty(_hluLayer))
+                if (String.IsNullOrEmpty(hluLayer))
                     throw new Exception("No HLU layer.");
 
                 // Check various characteristics of the layer and throw exceptions if not valid
-                if (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
+                if (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", hluLayer,
                     (int)MapInfoConstants.TableInfo.TAB_INFO_TYPE))) != (int)MapInfoConstants.TableInfoType.TAB_TYPE_BASE)
-                    throw new Exception(String.Format("Table {0} is not a base table.", _hluLayer));
+                    throw new Exception(String.Format("Table {0} is not a base table.", hluLayer));
 
-                if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
+                if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", hluLayer,
                     (int)MapInfoConstants.TableInfo.TAB_INFO_READONLY)) == "T")
-                    throw new Exception(String.Format("Table {0} is read only.", _hluLayer));
+                    throw new Exception(String.Format("Table {0} is read only.", hluLayer));
 
-                if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer, 
+                if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", hluLayer,
                     (int)MapInfoConstants.TableInfo.TAB_INFO_MAPPABLE)) == "F")
-                    throw new Exception(String.Format("Table {0} is not mappable.", _hluLayer));
+                    throw new Exception(String.Format("Table {0} is not mappable.", hluLayer));
 
                 // Store the number of columns in the layer
                 int numColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
-                    _hluLayer, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
+                    hluLayer, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
 
                 if (_hluLayerStructure == null)
                     _hluLayerStructure = new HluGISLayer.incid_mm_polygonsDataTable();
 
-                _hluFieldMap = _hluLayerStructure.Columns.Cast<DataColumn>().Select(c => -1).ToArray();
-                _hluFieldNames = new string[numColumns];
+                int[] hluFieldMap = _hluLayerStructure.Columns.Cast<DataColumn>().Select(c => -1).ToArray();
+                string[] hluFieldNames = new string[numColumns];
 
                 // Loop through all the columns in the layer
                 for (int i = 1; i <= numColumns; i++)
                 {
                     // Store the column field name
-                    _hluFieldNames[i - 1] = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
-                        _hluLayer, QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+                    hluFieldNames[i - 1] = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
+                        hluLayer, QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
 
-                    DataColumn hluColumn = _hluLayerStructure.Columns.Contains(_hluFieldNames[i - 1]) ?
-                        _hluLayerStructure.Columns[_hluFieldNames[i - 1]] : null;
+                    DataColumn hluColumn = _hluLayerStructure.Columns.Contains(hluFieldNames[i - 1]) ?
+                        _hluLayerStructure.Columns[hluFieldNames[i - 1]] : null;
 
                     if (hluColumn != null)
                     {
-                        _hluFieldMap[hluColumn.Ordinal] = i;
+                        hluFieldMap[hluColumn.Ordinal] = i;
 
                         // Check the field type and length
                         Type colSysType;
                         if (!_typeMapSQLToSystem.TryGetValue(Int32.Parse(_mapInfoApp.Eval(String.Format(
-                            "ColumnInfo({0}, {1}, {2})", _hluLayer, QuoteValue(String.Format("Col{0}", i)), 
-                            (int)MapInfoConstants.ColumnInfo.COL_INFO_TYPE))), out colSysType) || 
+                            "ColumnInfo({0}, {1}, {2})", hluLayer, QuoteValue(String.Format("Col{0}", i)),
+                            (int)MapInfoConstants.ColumnInfo.COL_INFO_TYPE))), out colSysType) ||
                             (hluColumn.DataType != colSysType))
                             throw new Exception("Field type does not match the HLU GIS layer structure.");
 
                         if ((colSysType == typeof(string)) && (Int32.Parse(_mapInfoApp.Eval(
-                            String.Format("ColumnInfo({0}, {1}, {2})", _hluLayer, QuoteValue(String.Format("Col{0}", i)),
+                            String.Format("ColumnInfo({0}, {1}, {2})", hluLayer, QuoteValue(String.Format("Col{0}", i)),
                             (int)MapInfoConstants.ColumnInfo.COL_INFO_WIDTH))) > hluColumn.MaxLength))
                             throw new Exception("Field length does not match the HLU GIS layer structure.");
                     }
                 }
 
-                if (!_hluFieldMap.All(o => o != -1))
+                if (!hluFieldMap.All(o => o != -1))
                     throw new Exception("Layer is missing some fields of the HLU GIS layer structure.");
 
-                // The layer is a valid HLU layer so speed up edits ('Undo Off' and 'FastEdit Off')
-                // and stop the user from being able to remove the layer from the map or close if.
-                _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", _hluLayer));
-                _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayer));
-                _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap Off", _hluLayer));
-                _mapInfoApp.Do(String.Format("Set Table {0} UserClose Off", _hluLayer));
-                _mapInfoApp.Do(String.Format("Set Table {0} UserMap Off", _hluLayer));
+                //---------------------------------------------------------------------
+                // CHANGED: CR31 (Switching between GIS layers)
+                // Enable the user to switch between different HLU layers, where
+                // there is more than one valid layer in the current document.
+                //
+                // Only set the current HLU layer properties (i.e. _hluLayer, etc)
+                // if this valid HLU layer is to replace an existing layer.
+                if (_hluLayer == null)
+                {
+                    // The layer is a valid HLU layer so store the layer properties.
+                    _hluLayer = hluLayer;
+                    _hluFieldMap = hluFieldMap;
+                    _hluFieldNames = hluFieldNames;
 
-                _hluColumnList = ColumnList(_hluLayer, null, true);
+                    if (_hluLayerOld != null)
+                    {
+                        // Turn off speed edits ('Undo Off' and 'FastEdit Off') on the old HLU layer
+                        // and allow the user to remove if from the map or close it.
+                        _mapInfoApp.Do(String.Format("Set Table {0} Undo On", _hluLayerOld));
+                        _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", _hluLayerOld));
+                        _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap On", _hluLayerOld));
+                        _mapInfoApp.Do(String.Format("Set Table {0} UserClose On", _hluLayerOld));
+                        _mapInfoApp.Do(String.Format("Set Table {0} UserMap On", _hluLayerOld));
+                    }
+
+                    // The layer is a valid HLU layer so speed up edits ('Undo Off' and 'FastEdit Off')
+                    // and stop the user from being able to remove the layer from the map or close it.
+                    _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", _hluLayer));
+                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayer));
+                    _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap Off", _hluLayer));
+                    _mapInfoApp.Do(String.Format("Set Table {0} UserClose Off", _hluLayer));
+                    _mapInfoApp.Do(String.Format("Set Table {0} UserMap Off", _hluLayer));
+
+                    _hluColumnList = ColumnList(_hluLayer, null, true);
+                }
+                //---------------------------------------------------------------------
 
                 return true;
             }
             catch
             {
-                _hluMapWindowID = -1;
-                _hluLayerStructure = null;
-                _hluFieldNames = null;
-                _hluFieldMap = null;
-                _hluLayer = null;
-                _hluColumnList = null;
+                //_hluMapWindowID = -1;
+                //_hluLayerStructure = null;
+                //_hluFieldNames = null;
+                //_hluFieldMap = null;
+                //_hluLayer = null;
+                //_hluColumnList = null;
                 return false;
             }
         }
