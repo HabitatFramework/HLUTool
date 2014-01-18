@@ -50,6 +50,7 @@ using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Framework;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
+using HLU.Data;
 using HLU.Data.Model;
 using HLU.Properties;
 using Microsoft.Win32;
@@ -130,6 +131,16 @@ namespace HLU.GISApplication.ArcGIS
         /// The HLU map layer.
         /// </summary>
         private IFeatureLayer _hluLayer;
+
+        /// <summary>
+        /// The list of valid HLU map layers in the document.
+        /// </summary>
+        private List<GISLayer> _hluLayerList;
+
+        /// <summary>
+        /// The current valid HLU map layer in the document.
+        /// </summary>
+        private GISLayer _hluCurrentLayer;
 
         /// <summary>
         /// Persisted HLU layer that is cloned every time the application starts.
@@ -1207,6 +1218,30 @@ namespace HLU.GISApplication.ArcGIS
         }
 
         /// <summary>
+        /// The number of valid hlu layers.
+        /// </summary>
+        public override int HluLayerCount
+        {
+            get { return _hluLayerList.Count(); }
+        }
+
+        /// <summary>
+        /// The list of valid hlu layers.
+        /// </summary>
+        public override List<GISLayer> ValidHluLayers
+        {
+            get { return _hluLayerList; }
+        }
+
+        /// <summary>
+        /// The properties of the current hlu layer.
+        /// </summary>
+        public override GISLayer CurrentHluLayer
+        {
+            get { return _hluCurrentLayer; }
+        }
+
+        /// <summary>
         /// True if ArcMap is running, otherwise false.
         /// </summary>
         public override bool IsRunning
@@ -1440,7 +1475,7 @@ namespace HLU.GISApplication.ArcGIS
             return false;
         }
 
-        public override bool AddLayer()
+        public bool AddLayer()
         {
             try
             {
@@ -1550,33 +1585,122 @@ namespace HLU.GISApplication.ArcGIS
             }
         }
 
-        protected override bool IsHluLayer()
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        //
+        /// <summary>
+        /// Determines which of the layers in all the maps are valid HLU layers
+        /// and stores these in a list so the user can switch between them.
+        /// Called before displaying the list of layers for the user to switch
+        /// between.
+        /// </summary>
+        /// <returns>The number of valid HLU layers in the list</returns>
+        public override int ListHluLayers()
         {
-            if (_templateLayer == null) return false;
+            if (_hluLayerStructure == null)
+                _hluLayerStructure = new HluGISLayer.incid_mm_polygonsDataTable();
 
-            bool isHlu = true;
+            if (_hluLayerList == null)
+                _hluLayerList = new List<GISLayer>();
 
             try
             {
-                IFields origFields = (IFields)CreateArcObject<FieldsClass>(Settings.Default.UseObjectFactory);
-                IFieldChecker fieldChecker = 
-                    (IFieldChecker)CreateArcObject<FieldCheckerClass>(Settings.Default.UseObjectFactory);
+                List<string> retList = IpcArcMap(new string[] { "ll" });
+                if ((retList != null) && (retList.Count > 2))
+                {
+                    if (Int32.Parse(retList[0]) > 0)
+                    {
+                        // Split each layer into constituent parts and add them to the list
+                        // of valid layers.
+                        if (_hluLayerList == null)
+                            _hluLayerList = new List<GISLayer>();
+                        else
+                            _hluLayerList.Clear();
 
-                isHlu = ArcMapAppHelperClass.IsHluLayer(_templateLayer, origFields, fieldChecker,
-                    _validWorkspaces, _typeMapSystemToSQL, ref _hluLayerStructure, out _hluFieldMap, 
-                    out _hluFieldNames);
-            }
-            catch { isHlu = false; }
-            finally
-            {
-                if (isHlu)
-                    CreateHluLayer(false, _templateLayer);
+                        for (int i = 2; i < retList.Count; i++)
+                        {
+                            string[] layerParts = retList[i].ToString().Split(new string[] { "::" }, StringSplitOptions.None);
+                            _hluLayerList.Add(new GISLayer(Int32.Parse(layerParts[0]), Int32.Parse(layerParts[1]), layerParts[2]));
+                        }
+                    }
+                }
                 else
-                    DestroyHluLayer();
+                {
+                    _hluCurrentLayer = null;
+                    return 0;
+                }
             }
+            catch { }
 
-            return isHlu;
+            if (_hluCurrentLayer == null)
+                _hluCurrentLayer = _hluLayerList[0];
+            return _hluLayerList.Count();
         }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        //
+        /// <summary>
+        /// Determines whether the specified new gis layer is a valid HLU layer
+        /// and if it is sets the current layer (_hluLayer, etc) properies
+        /// to relate this the new GIS layer.
+        /// </summary>
+        /// <param name="newGISLayer">The new gis layer to test for validity.</param>
+        /// <returns>True if the GIS layer is a valid HLU layer, otherwise False</returns>
+        public override bool IsHluLayer(GISLayer newGISLayer)
+        {
+            //if (_hluLayerStructure == null)
+            //    _hluLayerStructure = new HluGISLayer.incid_mm_polygonsDataTable();
+
+            try
+            {
+                int mapNum = newGISLayer.MapNum;
+                int layerNum = newGISLayer.LayerNum;
+
+                List<string> retList = IpcArcMap(
+                    new string[] { "il", mapNum.ToString(), layerNum.ToString() });
+                if ((retList != null) && (retList.Count > 5))
+                {
+                    IMap map = Maps(_arcMap).get_Item(mapNum);
+                    _hluView = map as IActiveView;
+
+                    UID uid = new UIDClass();
+                    uid.Value = typeof(IFeatureLayer).GUID.ToString("B");
+
+                    ILayer layer = map.get_Layer(layerNum);
+
+                    if (layer != null)
+                    {
+                        string layerName = layer.Name;
+                        _templateLayer = (IGeoFeatureLayer)layer;
+                        CreateHluLayer(false, _templateLayer);
+                        CreateFieldMap(5, 3, 1, retList);
+                        _hluCurrentLayer = newGISLayer;
+                    }
+                }
+                else
+                {
+                    _hluLayer = null;
+                }
+            }
+            catch { }
+
+            if (_hluLayer != null)
+            {
+                return true;
+            }
+            else
+            {
+                DestroyHluLayer();
+                return false;
+            }
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Populates field map from list returned by ArcMap through pipe.

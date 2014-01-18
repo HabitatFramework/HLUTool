@@ -83,6 +83,7 @@ namespace HLU
         public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter);
         public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, int exportRowCount);
         public delegate void IsHluWorkspaceDelegate();
+        public delegate void ListHluLayersDelegate();
         public delegate void IsHluLayerDelegate(int ixMap, int ixLayer);
         public delegate void IsEditingDelegate();
 
@@ -117,6 +118,7 @@ namespace HLU
         private IWorkspaceEdit _hluWorkspaceEdit;
         private bool _hluWSisSDE = false;
         private IFeatureLayer _hluLayer;
+        private List<string> _hluLayerList;
         private string _hluTableName;
         private IFeatureClass _hluFeatureClass;
         private IFeatureSelection _hluFeatureSelection;
@@ -159,6 +161,7 @@ namespace HLU
         private static ZoomSelectedCursorDelegate _zoomSelCursorDel;
         private static ExportDelegate _exportDel;
         private static IsHluWorkspaceDelegate _isHluWorkspaceDel;
+        private static ListHluLayersDelegate _ListHluLayersDel;
         private static IsHluLayerDelegate _isHluLayerDel;
         private static IsEditingDelegate _isEditingDel;
         
@@ -289,6 +292,7 @@ namespace HLU
             _zoomSelCursorDel = null;
             _exportDel = null;
             _isHluWorkspaceDel = null;
+            _ListHluLayersDel = null;
             _isHluLayerDel = null;
             _isEditingDel = null;
 
@@ -337,6 +341,7 @@ namespace HLU
                 _zoomSelCursorDel = new ZoomSelectedCursorDelegate(ZoomSelectedCursor);
                 _exportDel = new ExportDelegate(Export);
                 _isHluWorkspaceDel = new IsHluWorkspaceDelegate(IsHluWorkspace);
+                _ListHluLayersDel = new ListHluLayersDelegate(ListHluLayers);
                 _isHluLayerDel = new IsHluLayerDelegate(IsHluLayer);
                 _isEditingDel = new IsEditingDelegate(IsEditing);
             }
@@ -490,19 +495,32 @@ namespace HLU
             catch { }
         }
 
-        private void SetupSelectionChangedEvent()
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        // Pass the layer to be switched to so that the event handlers
+        // can be linked to that layer.
+        private void SetupSelectionChangedEvent(IFeatureLayer layer)
         {
-            if (_hluLayer == null) return;
+            if (layer == null) return;
             try
             {
-                _hluFeatureSelection = (IFeatureSelection)_hluLayer;
-                _hluLayerSelectionChangedHandler = (IFeatureLayerSelectionEvents_Event)_hluLayer;
+
+                // Remove the previous event handler if present
+                if (_hluLayerSelectionChangedHandler != null)
+                    _hluLayerSelectionChangedHandler.FeatureLayerSelectionChanged -=
+                        _hluLayerSelectionEvent_FeatureLayerSelectionChanged;
+                
+                _hluFeatureSelection = (IFeatureSelection)layer;
+                _hluLayerSelectionChangedHandler = (IFeatureLayerSelectionEvents_Event)layer;
                 _hluLayerSelectionChangedHandler.FeatureLayerSelectionChanged +=
                     new IFeatureLayerSelectionEvents_FeatureLayerSelectionChangedEventHandler(
                         _hluLayerSelectionEvent_FeatureLayerSelectionChanged);
             }
             catch (Exception ex) { string s = ex.Message; }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -627,7 +645,7 @@ namespace HLU
                 _sendColumnHeaders = false;
                 string cmd = _pipeData[0];
 
-                if ((_hluLayer == null) && (cmd != "iw") && (cmd != "il")) _pipeData.Clear();
+                if ((_hluLayer == null) && (cmd != "iw") && (cmd != "il") && (cmd != "ll")) _pipeData.Clear();
 
                 switch (cmd)
                 {
@@ -842,6 +860,13 @@ namespace HLU
                         if (_pipeData.Count == 1)
                         {
                             try { _dummyControl.Invoke(_isHluWorkspaceDel, null); }
+                            catch { _pipeData.Clear(); }
+                        }
+                        break;
+                    case "ll": // ListHLULayers: cmd
+                        if (_pipeData.Count == 1)
+                        {
+                            try { _dummyControl.Invoke(_ListHluLayersDel, null); }
                             catch { _pipeData.Clear(); }
                         }
                         break;
@@ -2826,6 +2851,12 @@ namespace HLU
             get { return _hluWSisSDE; }
         }
 
+        /// <summary>
+        /// Determines whether at least one of the layers in all the maps is an HLU layer.
+        /// Called by OnOpenDocument when ArcGIS determines that a document has just been opened.
+        /// </summary>
+        /// <param name="maps">The maps collection (i.e. active views) of the open document.</param>
+        /// <returns></returns>
         public bool IsHluWorkspace(IMaps maps)
         {
             try
@@ -2857,6 +2888,14 @@ namespace HLU
             return false;
         }
 
+        /// <summary>
+        /// Determines whether at least one of the layers in all the maps is an HLU layer
+        /// and returns the field mapping of the first HLU layer found, plus a list of all
+        /// the HLU layers found.
+        /// Triggered from ArcMapApp after the required document has been opened.
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
         public void IsHluWorkspace()
         {
             IFeatureLayer hluLayerBak = _hluLayer;
@@ -2937,6 +2976,97 @@ namespace HLU
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        //
+        /// <summary>
+        /// Determines which of the layers in all the maps are valid HLU layers
+        /// and sets the list of all the HLU layers found.
+        /// Triggered from ArcMapApp before switching layers.
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        public void ListHluLayers()
+        {
+            IFeatureLayer hluLayerBak = _hluLayer;
+            int[] hluFieldMapBak = _hluFieldMap;
+            string[] hluFieldNamesBak = _hluFieldNames;
+            IFeatureClass hluFeatureClassBak = _hluFeatureClass;
+            IFeatureWorkspace hluWSBak = _hluWS;
+            string hluTableNameBak = _hluTableName;
+            ISQLSyntax hluSqlSyntaxBak = _hluSqlSyntax;
+            string quotePrefixBak = _quotePrefix;
+            string quoteSuffixBak = _quoteSuffix;
+
+            _pipeCalling = true;
+
+            if (_pipeData == null) _pipeData = new List<string>();
+
+            try
+            {
+                lock (_pipeData)
+                {
+                    // clear the pipe
+                    _pipeData.Clear();
+
+                    //_hluLayer = null;
+                    IMaps maps = ((IMxDocument)_application.Document).Maps;
+                    IMap map = null;
+
+                    UID uid = new UIDClass();
+                    uid.Value = typeof(IFeatureLayer).GUID.ToString("B");
+
+                    // Initialise the list of valid layers
+                    if (_hluLayerList == null) _hluLayerList = new List<string>();
+
+                    // Clear the valid HLU layer list
+                    _hluLayerList.Clear();
+
+                    // Loop through each map in the document
+                    for (int i = 0; i < maps.Count; i++)
+                    {
+                        map = maps.get_Item(i);
+                        int j = 0;
+                        IEnumLayer layers = map.get_Layers(uid, true);
+                        ILayer layer = layers.Next();
+                        while (layer != null)
+                        {
+                            // Only check geofeature layers in the document (to see if they are
+                            // valid HLU layers) to save having to check layers (e.g. coverage
+                            // annotation layers) that can't possibly be valid.
+                            if (layer is IGeoFeatureLayer)
+                            {
+                                IFeatureLayer featureLayer = layer as IFeatureLayer;
+                                if (IsHluLayer(featureLayer))
+                                {
+                                    // Add the map number, layer number and layer name to the list
+                                    // of valid layers.
+                                    _hluLayerList.Add(String.Format("{0}::{1}::{2}", i.ToString(), j.ToString(), layer.Name));
+                                }
+                            }
+                            layer = layers.Next();
+                            j++;
+                        }
+                    }
+
+                    // Return the list of layers once all the layers have been checked
+                    // as valid (or not).
+                    _pipeData.AddRange(new string[] { _hluLayerList.Count.ToString() });
+                    _pipeData.Add(_pipeTransmissionInterrupt);
+                    _pipeData.AddRange(_hluLayerList);
+                    return;
+                }
+            }
+            catch { }
+            finally
+            {
+                _pipeCalling = false;
+            }
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// Determines whether the layer passed is an HLU layer, sets all related fields except _hluView 
         /// (which it cannot obtain from the layer) and sets up the selection changed event handler for the
@@ -2948,36 +3078,61 @@ namespace HLU
         {
             try
             {
-                if ((_hluLayer == null) && HluDbIsRunning && ArcMapAppHelperClass.IsHluLayer(layer,
-                    new FieldsClass(), new FieldCheckerClass(), _validWorkspaces, _typeMapSystemToSql,
-                    ref _hluLayerStructure, out _hluFieldMap, out _hluFieldNames))
+                //---------------------------------------------------------------------
+                // CHANGED: CR31 (Switching between GIS layers)
+                // Don't update the class properties unless an HLU layer (_hluLayer)
+                // has not already been selected so that other feature layers can
+                // be examined to see if they are also valid HLU layers (without
+                // overwritting the class properties of the first layer).
+                int[] hluFieldMap;
+                string[] hluFieldNames;
+
+                if (HluDbIsRunning && ArcMapAppHelperClass.IsHluLayer(layer,
+                new FieldsClass(), new FieldCheckerClass(), _validWorkspaces, _typeMapSystemToSql,
+                ref _hluLayerStructure, out hluFieldMap, out hluFieldNames))
                 {
-                    _hluLayer = layer as IFeatureLayer;
-                    _hluFeatureClass = _hluLayer.FeatureClass;
-                    IWorkspace hluWorkspace = ((IDataset)_hluFeatureClass).Workspace;
-                    _hluWS = hluWorkspace as IFeatureWorkspace;
-                    _hluWSisSDE = hluWorkspace.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace;
-                    if (!_pipeCalling) SetupSelectionChangedEvent();
+                    IFeatureLayer hluLayer = layer as IFeatureLayer;
+                    IFeatureClass hluFeatureClass = hluLayer.FeatureClass;
+                    IWorkspace hluWorkspace = ((IDataset)hluFeatureClass).Workspace;
+                    IFeatureWorkspace hluWS = hluWorkspace as IFeatureWorkspace;
+                    if ((!_pipeCalling) || (_hluLayer == null)) SetupSelectionChangedEvent(hluLayer);
 
-                    _hluUidFieldOrdinals = new int[3];
-                    _hluUidFieldOrdinals[0] = _hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
-                    _hluUidFieldOrdinals[1] = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                    _hluUidFieldOrdinals[2] = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                    int[] hluUidFieldOrdinals = new int[3];
+                    hluUidFieldOrdinals[0] = hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
+                    hluUidFieldOrdinals[1] = hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
+                    hluUidFieldOrdinals[2] = hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
 
-                    _hluFieldSysTypeNames = new string[_hluFeatureClass.Fields.FieldCount];
+                    string[] hluFieldSysTypeNames = new string[hluFeatureClass.Fields.FieldCount];
                     Type sysType;
-                    for (int i = 0; i < _hluFeatureClass.Fields.FieldCount; i++ )
+                    for (int i = 0; i < hluFeatureClass.Fields.FieldCount; i++)
                     {
-                        if (_typeMapSQLToSystem.TryGetValue((int)_hluFeatureClass.Fields.get_Field(i).Type, out sysType))
-                            _hluFieldSysTypeNames[i] = sysType.FullName;
+                        if (_typeMapSQLToSystem.TryGetValue((int)hluFeatureClass.Fields.get_Field(i).Type, out sysType))
+                            hluFieldSysTypeNames[i] = sysType.FullName;
                     }
 
-                    _hluTableName = ((IDataset)_hluFeatureClass).Name;
-                    _hluSqlSyntax = (ISQLSyntax)_hluWS;
-                    _quotePrefix = 
-                        _hluSqlSyntax.GetSpecialCharacter(esriSQLSpecialCharacters.esriSQL_DelimitedIdentifierPrefix);
-                    _quoteSuffix =
-                        _hluSqlSyntax.GetSpecialCharacter(esriSQLSpecialCharacters.esriSQL_DelimitedIdentifierSuffix);
+                    string hluTableName = ((IDataset)hluFeatureClass).Name;
+                    ISQLSyntax hluSqlSyntax = (ISQLSyntax)hluWS;
+                    string quotePrefix =
+                        hluSqlSyntax.GetSpecialCharacter(esriSQLSpecialCharacters.esriSQL_DelimitedIdentifierPrefix);
+                    string quoteSuffix =
+                       hluSqlSyntax.GetSpecialCharacter(esriSQLSpecialCharacters.esriSQL_DelimitedIdentifierSuffix);
+
+                    if (_hluLayer == null)
+                    {
+                        _hluLayer = hluLayer;
+                        _hluFeatureClass = hluFeatureClass;
+                        _hluWS = hluWS;
+                        _hluWSisSDE = hluWorkspace.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace;
+                        _hluUidFieldOrdinals = hluUidFieldOrdinals;
+                        _hluFieldSysTypeNames = hluFieldSysTypeNames;
+                        _hluTableName = hluTableName;
+                        _hluSqlSyntax = hluSqlSyntax;
+                        _quotePrefix = quotePrefix;
+                        _quoteSuffix = quoteSuffix;
+                        _hluFieldMap = hluFieldMap;
+                        _hluFieldNames = hluFieldNames;
+                    }
+                    //---------------------------------------------------------------------
 
                     return true;
                 }
@@ -3021,6 +3176,8 @@ namespace HLU
 
             _pipeCalling = true;
 
+            _hluLayer = null;
+
             try
             {
                 lock (_pipeData)
@@ -3028,12 +3185,11 @@ namespace HLU
                     // clear the pipe
                     _pipeData.Clear();
 
-                    _hluLayer = null;
-
                     IMap map = ((IMxDocument)_application.Document).Maps.get_Item(ixMap);
                     IFeatureLayer layer = (IFeatureLayer)map.get_Layer(ixLayer);
                     if (IsHluLayer(layer))
                     {
+                        _hluView = map as IActiveView;
                         _pipeData.Add("true");
                         _pipeData.Add(_pipeTransmissionInterrupt);
                         _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
@@ -3046,10 +3202,21 @@ namespace HLU
                     }
                 }
             }
-            catch { _pipeData.Clear(); }
+            catch
+            {
+                _pipeData.Clear();
+            }
             finally
             {
                 _pipeCalling = false;
+            }
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR31 (Switching between GIS layers)
+            // Reset the class properties if there has been an error or if
+            // the layer is not valid.
+            if (_hluLayer == null)
+            {
                 _hluLayer = hluLayerBak;
                 _hluFieldMap = hluFieldMapBak;
                 _hluFieldNames = hluFieldNamesBak;
@@ -3060,6 +3227,7 @@ namespace HLU
                 _quotePrefix = quotePrefixBak;
                 _quoteSuffix = quoteSuffixBak;
             }
+            //---------------------------------------------------------------------
         }
 
         private int MapField(string name)
