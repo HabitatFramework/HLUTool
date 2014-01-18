@@ -64,6 +64,7 @@ namespace HLU.UI.ViewModel
         private ICommand _selectOnMapCommand;
         private ICommand _readMapSelectionCommand;
         private ICommand _selectByIncidCommand;
+        private ICommand _switchGisLayerCommand;
         private ICommand _splitCommand;
         private ICommand _mergeCommand;
         private ICommand _updateCommand;
@@ -85,11 +86,13 @@ namespace HLU.UI.ViewModel
         private WindowOptions _windowOptions;
         private WindowQueryBuilder _qryBuilderWindow;
         private WindowWarnOnGISSelect _windowWarnGISSelect;
+        private WindowSwitchGISLayer _windowSwitchGISLayer;
         private ViewModelOptions _viewModelOptions;
         private ViewModelQueryBuilder _qryBuilderViewModel;
         private ViewModelWindowWarnOnGISSelect _viewModelWinWarnGISSelect;
         private ViewModelWindowMainBulkUpdate _viewModelBulkUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
+        private ViewModelWindowSwitchGISLayer _viewModelSwitchGISLayer;
         private WindowCompletePhysicalSplit _windowCompSplit;
         private ViewModelCompletePhysicalSplit _vmCompSplit;
 
@@ -2147,6 +2150,87 @@ namespace HLU.UI.ViewModel
                 RefreshStatus();
             }
         }
+
+        #endregion
+
+        #region Switch GIS Layer
+        //---------------------------------------------------------------------
+        // CHANGED: CR31 (Switching between GIS layers)
+        // Enable the user to switch between different HLU layers, where
+        // there is more than one valid layer in the current document.
+        public ICommand SwitchGisLayerCommand
+        {
+            get
+            {
+                if (_switchGisLayerCommand == null)
+                {
+                    Action<object> SwitchGISLayerAction = new Action<object>(this.SwitchGISLayerClicked);
+                    _switchGisLayerCommand = new RelayCommand(SwitchGISLayerAction);
+                }
+                return _switchGisLayerCommand;
+            }
+        }
+
+        private void SwitchGISLayerClicked(object param)
+        {
+            if (_gisApp.ListHluLayers() > 0)
+            {
+                _windowSwitchGISLayer = new WindowSwitchGISLayer();
+                _windowSwitchGISLayer.Owner = App.Current.MainWindow;
+                _windowSwitchGISLayer.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                _viewModelSwitchGISLayer = new ViewModelWindowSwitchGISLayer(_gisApp.ValidHluLayers, _gisApp.CurrentHluLayer);
+                _viewModelSwitchGISLayer.RequestClose +=
+                    new ViewModelWindowSwitchGISLayer.RequestCloseEventHandler(_viewModelSwitchGISLayer_RequestClose);
+
+                _windowSwitchGISLayer.DataContext = _viewModelSwitchGISLayer;
+
+                _windowSwitchGISLayer.ShowDialog();
+            }
+        }
+
+        private bool CanSwitchGISLayer
+        {
+            get { return _gisApp.ValidHluLayers.Count() > 0; }
+        }
+
+        void _viewModelSwitchGISLayer_RequestClose(bool switchGISLayer, GISLayer selectedHLULayer)
+        {
+            _viewModelSwitchGISLayer.RequestClose -= _viewModelSwitchGISLayer_RequestClose;
+            _windowSwitchGISLayer.Close();
+
+            // Switch the GIS layer
+            if ((switchGISLayer) && (selectedHLULayer != _gisApp.CurrentHluLayer))
+            {
+                // Check if there are unsaved edits
+                MessageBoxResult userResponse = CheckDirty();
+
+                // Check the user's response to saving unsaved edits
+                switch (userResponse)
+                {
+                    case MessageBoxResult.Yes:
+                        // Save the unsaved edits
+                        if (_viewModelUpd.Update())
+                            goto case MessageBoxResult.No;
+                        break;
+                    case MessageBoxResult.No:
+                        // Switch the GIS layer
+                        if (_gisApp.IsHluLayer(selectedHLULayer))
+                        {
+                            // Inform the user that the seitch worked
+                            MessageBox.Show(string.Format("GIS Layer switched to '{0}'.", selectedHLULayer.LayerName), "Switch GIS Layer",
+                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                            // Get the new GIS layer selection
+                            ReadMapSelection(false);
+                        }
+                        break;
+                    case MessageBoxResult.Cancel:
+                        break;
+                }
+            }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
