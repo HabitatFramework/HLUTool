@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using HLU.Data;
 using HLU.Data.Model;
 using HLU.Properties;
 
@@ -84,8 +85,6 @@ namespace HLU.GISApplication
 
         public abstract bool SaveWorkspace();
 
-        public abstract bool AddLayer();
-
         public abstract string HluLayerName { get; }
 
         public abstract string IncidFieldName { get; }
@@ -97,6 +96,12 @@ namespace HLU.GISApplication
         public abstract void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses);
 
         public abstract void ZoomSelected();
+
+        public abstract int HluLayerCount { get; }
+
+        public abstract List<GISLayer> ValidHluLayers { get; }
+
+        public abstract GISLayer CurrentHluLayer { get; }
 
         public abstract DataTable UpdateFeatures(DataColumn[] updateColumns, 
             object[] updateValues, DataColumn[] historyColumns);
@@ -141,7 +146,9 @@ namespace HLU.GISApplication
 
         protected abstract bool IsHluWorkspace();
 
-        protected abstract bool IsHluLayer();
+        public abstract int ListHluLayers();
+
+        public abstract bool IsHluLayer(GISLayer newGISLayer);
 
         protected abstract string GetFieldName(int columnOrdinal);
 
