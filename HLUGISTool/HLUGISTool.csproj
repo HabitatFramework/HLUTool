@@ -288,6 +288,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\WindowSwitchGISLayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\WindowWarnOnGISSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -299,9 +303,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\NullableValueConverter.cs" />
+    <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
+    <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
     <Compile Include="UI\View\WindowCompletePhysicalSplit.xaml.cs">
       <DependentUpon>WindowCompletePhysicalSplit.xaml</DependentUpon>
     </Compile>
@@ -444,6 +450,9 @@
     <Compile Include="UI\View\WindowSplash.xaml.cs">
       <DependentUpon>WindowSplash.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\View\WindowSwitchGISLayer.xaml.cs">
+      <DependentUpon>WindowSwitchGISLayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\View\WindowWarnOnGISSelect.xaml.cs">
       <DependentUpon>WindowWarnOnGISSelect.xaml</DependentUpon>
     </Compile>
@@ -570,6 +579,7 @@
     <Content Include="Icons\HLU32.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Icons\SwitchGISLayer.png" />
     <Resource Include="Icons\HLUSplashBg.png" />
     <Resource Include="Icons\websedit-ag-bar.gif" />
   </ItemGroup>
