@@ -1,9 +1,9 @@
 HLU GIS Tool
 ============
 
-HLU GIS Tool, v1.0.5.0
+HLU GIS Tool, v1.0.6.0
 
-Copyright © 2013 Andy Foy
+Copyright © 2013-2014 Andy Foy
 
 Overview
 --------
