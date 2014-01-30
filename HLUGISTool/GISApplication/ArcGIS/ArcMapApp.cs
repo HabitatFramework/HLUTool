@@ -1524,6 +1524,13 @@ namespace HLU.GISApplication.ArcGIS
             finally { _arcMap.Visible = true; }
         }
 
+        /// <summary>
+        /// Checks whether the current document contains an HLU layer. Also initializes the fields 
+        /// _hluView and _hluCurrentLayer and, indirectly (by calling CreateHluLayer()), _hluLayer,
+        /// _hluFeatureClass and _hluWS, and indirectly (by calling CreateFieldMap(), _hluFieldMap
+        /// and _hluFieldNames.
+        /// </summary>
+        /// <returns>True if the current document contains a valid HLU layer, otherwise false.</returns>
         protected override bool IsHluWorkspace()
         {
             if (_hluLayerStructure == null)
@@ -1550,7 +1557,11 @@ namespace HLU.GISApplication.ArcGIS
                     IEnumLayer layers = map.get_Layers(uid, true);
                     ILayer layer = layers.Next();
 
-                    int layerNum = Int32.Parse(retList[1]);
+                    // Increment the map number by 1 so that it starts with 1 instead
+                    // of 0 to be more user-friendly when displayed.
+                    int mapNum = Int32.Parse(retList[0]) + 1;
+                    string mapName = retList[1];
+                    int layerNum = Int32.Parse(retList[2]);
                     int j = 0;
 
                     while (layer != null)
@@ -1560,7 +1571,8 @@ namespace HLU.GISApplication.ArcGIS
                             string layerName = layer.Name;
                             _templateLayer = (IGeoFeatureLayer)layer;
                             CreateHluLayer(false, _templateLayer);
-                            CreateFieldMap(6, 4, 2, retList);
+                            CreateFieldMap(7, 5, 3, retList);
+                            _hluCurrentLayer = new GISLayer(mapNum, mapName, layerNum, layerName);
                         }
                         layer = layers.Next();
                         j++;
@@ -1621,8 +1633,10 @@ namespace HLU.GISApplication.ArcGIS
 
                         for (int i = 2; i < retList.Count; i++)
                         {
+                            // Increment the map number by 1 so that it starts with 1 instead
+                            // of 0 to be more user-friendly when displayed.
                             string[] layerParts = retList[i].ToString().Split(new string[] { "::" }, StringSplitOptions.None);
-                            _hluLayerList.Add(new GISLayer(Int32.Parse(layerParts[0]), Int32.Parse(layerParts[1]), layerParts[2]));
+                            _hluLayerList.Add(new GISLayer(Int32.Parse(layerParts[0]) + 1, layerParts[1], Int32.Parse(layerParts[2]), layerParts[3]));
                         }
                     }
                 }
@@ -1659,7 +1673,10 @@ namespace HLU.GISApplication.ArcGIS
 
             try
             {
-                int mapNum = newGISLayer.MapNum;
+                // Reduce the map number by 1 because the GISLayer value is always
+                // incremented by 1 so that it starts with 1 instead of 0 to be more
+                // user-friendly.
+                int mapNum = newGISLayer.MapNum - 1;
                 int layerNum = newGISLayer.LayerNum;
 
                 List<string> retList = IpcArcMap(
@@ -1705,11 +1722,11 @@ namespace HLU.GISApplication.ArcGIS
         /// <summary>
         /// Populates field map from list returned by ArcMap through pipe.
         /// </summary>
-        /// <param name="minLength">Minimum valid length of pipeReturnList (6 for workspace, 5 for layer).</param>
+        /// <param name="minLength">Minimum valid length of pipeReturnList (7 for workspace, 6 for layer).</param>
         /// <param name="skipElems">Number of elements of pipeReturnList to be skipped 
-        /// (4 for workspace, 3 for layer).</param>
+        /// (5 for workspace, 4 for layer).</param>
         /// <param name="skipFirst">Number of elements to be skipped at the beginning of pipeReturnList 
-        /// (2 for workspace, 1 for layer).</param>
+        /// (3 for workspace, 2 for layer).</param>
         /// <param name="pipeReturnList">List returned from pipe.</param>
         private void CreateFieldMap(int minLength, int skipElems, int skipFirst, List<string> pipeReturnList)
         {

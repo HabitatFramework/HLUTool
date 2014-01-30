@@ -2945,7 +2945,9 @@ namespace HLU
                                 if (IsHluLayer(featureLayer))
                                 {
                                     _hluView = map as IActiveView;
-                                    _pipeData.AddRange(new string[] { i.ToString(), j.ToString() });
+                                    // Return details of the first valid HLU layer found (the map number,
+                                    // map name, layer number, field indexes and field names).
+                                    _pipeData.AddRange(new string[] { i.ToString(), map.Name, j.ToString() });
                                     _pipeData.Add(_pipeTransmissionInterrupt);
                                     _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
                                     _pipeData.Add(_pipeTransmissionInterrupt);
@@ -3041,9 +3043,9 @@ namespace HLU
                                 IFeatureLayer featureLayer = layer as IFeatureLayer;
                                 if (IsHluLayer(featureLayer))
                                 {
-                                    // Add the map number, layer number and layer name to the list
-                                    // of valid layers.
-                                    _hluLayerList.Add(String.Format("{0}::{1}::{2}", i.ToString(), j.ToString(), layer.Name));
+                                    // Add the map number, map name, layer number and layer name of the
+                                    // current layer to the list of valid layers.
+                                    _hluLayerList.Add(String.Format("{0}::{1}::{2}::{3}", i.ToString(), map.Name, j.ToString(), layer.Name));
                                 }
                             }
                             layer = layers.Next();
