@@ -2231,18 +2231,48 @@ namespace HLU.GISApplication.MapInfo
                     "WindowInfo({0}, {1})", _hluMapWindowID, (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) !=
                     (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER) _hluMapWindowID = -1;
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR19 (Feature layer position in GIS)
+                // Loop through all windows to find the window number (order) of
+                // the current window.
+                int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
+                int windowID;
+                int windowNum = 0;
+
+                for (int i = 1; i <= numWindows; i++)
+                {
+                    windowID = Int32.Parse(_mapInfoApp.Eval(String.Format("WindowID({0})", i)));
+
+                    // If this is a mapper window
+                    if (Int32.Parse(_mapInfoApp.Eval(String.Format("WindowInfo({0}, {1})", i,
+                        (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
+                        (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
+                    {
+                        // Increment the window number
+                        windowNum += 1;
+
+                        // If this window is the current window then use this window number (order)
+                        if (windowID == _hluMapWindowID) break;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 if (_hluMapWindowID != -1)
                 {
                     _mapInfoApp.Do(String.Format("Add Map Layer {0}", tabName));
-                    _hluCurrentLayer = new GISLayer(_hluMapWindowID, 0, tabName);
                 }
                 else
                 {
                     _mapInfoApp.Do(String.Format("Map From {0}", tabName));
                     _hluMapWindowID = Convert.ToInt32(_mapInfoApp.Eval("FrontWindow()"));
-                    _hluCurrentLayer = new GISLayer(_hluMapWindowID, 0, tabName);
                     SizeWindow(_hluMapWindowID, true);
                 }
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR19 (Feature layer position in GIS)
+                // Set the current HLU layer to the new layer.
+                _hluCurrentLayer = new GISLayer(windowNum, 0, tabName);
+                //---------------------------------------------------------------------
 
                 _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose Off", _hluMapWindowID));
 
@@ -2348,6 +2378,7 @@ namespace HLU.GISApplication.MapInfo
                 // check if the workspace contains a mapper window with a valid HLU layer
                 int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
                 int windowID;
+                int windowNum = 0;
                 string layer;
 
                 // Loop through all windows
@@ -2360,6 +2391,9 @@ namespace HLU.GISApplication.MapInfo
                         (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
                         (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
                     {
+                        // Increment the window number counter
+                        windowNum += 1;
+
                         // Store the number of layers in the window
                         int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
                             windowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_LAYERS)));
@@ -2379,7 +2413,7 @@ namespace HLU.GISApplication.MapInfo
                                 if (IsHluLayer(layer))
                                 {
                                     _hluMapWindowID = windowID;
-                                    _hluCurrentLayer = new GISLayer(windowID, 0, layer);
+                                    _hluCurrentLayer = new GISLayer(windowNum, 0, layer);
 
                                     // Disable the Close command in the window's system menu.
                                     _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose Off", _hluMapWindowID));
@@ -2441,6 +2475,7 @@ namespace HLU.GISApplication.MapInfo
                 int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
 
                 int windowID;
+                int windowNum = 0;
 
                 // Initialise the list of valid layers
                 if (_hluLayerList == null) _hluLayerList = new List<GISLayer>();
@@ -2458,6 +2493,9 @@ namespace HLU.GISApplication.MapInfo
                         (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
                         (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
                     {
+                        // Increment the window number counter
+                        windowNum += 1;
+
                         // Store the number of layers in the window
                         int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
                             windowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_LAYERS)));
@@ -2477,7 +2515,7 @@ namespace HLU.GISApplication.MapInfo
                                 if (IsHluLayer(layer))
                                 {
                                     // Add the name of layer to the valid list
-                                    _hluLayerList.Add(new GISLayer(windowID, 0, layer));
+                                    _hluLayerList.Add(new GISLayer(windowNum, 0, layer));
                                 }
                             }
                         }
@@ -2533,15 +2571,27 @@ namespace HLU.GISApplication.MapInfo
                 // if they wish.
                 _hluLayerOld = _hluLayer;
 
-                // Reset the current HLU layer so that it will be set when
+                // Initialise the current HLU layer so that it will be set when
                 // if the passed layer is a valid HLU layer.
                 _hluLayer = null;
 
                 string hluLayer = newGISLayer.LayerName;
+                int windowID = Int32.Parse(_mapInfoApp.Eval(String.Format("WindowID({0})", newGISLayer.MapNum)));
+                
                 if (IsHluLayer(hluLayer))
                 {
-                    _hluMapWindowID = newGISLayer.MapNum;
+                    // If this layer is in a different window to the current HLU layer
+                    if (_hluMapWindowID != windowID)
+                    {
+                        // Enable the Close command in the previous window's system menu.
+                        _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose On", _hluMapWindowID));
+                    }
+
+                    _hluMapWindowID = windowID;
                     _hluCurrentLayer = newGISLayer;
+
+                    // Disable the Close command in the new window's system menu.
+                    _mapInfoApp.Do(String.Format("Set Window {0} SysMenuClose Off", _hluMapWindowID));
                 }
             }
             catch { }

@@ -447,7 +447,23 @@ namespace HLU.UI.ViewModel
 
         public override string WindowTitle
         {
-            get { return String.Format("{0}{1}", DisplayName, _editMode ? String.Empty : " [READONLY]"); }
+            get
+            {
+                //---------------------------------------------------------------------
+                // CHANGED: CR19 (Feature layer position in GIS)
+                // Also display the current HLU layer in the window title.
+                //
+                // If no HLU layer has been identified yet (GIS is still loading) then
+                // don't return the layer name
+                if (_gisApp.CurrentHluLayer == null)
+                    return String.Format("{0}{1}", DisplayName, _editMode ? String.Empty : " [READONLY]");
+                else
+                {
+                    // Include the layer name and active layer/map window number in the window title.
+                    return String.Format("{0} - {1} [{2}]{3}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _gisApp.CurrentHluLayer.MapNum, _editMode ? String.Empty : " [READONLY]");
+                }
+                //---------------------------------------------------------------------
+            }
         }
 
         #endregion
@@ -2217,9 +2233,16 @@ namespace HLU.UI.ViewModel
                         // Switch the GIS layer
                         if (_gisApp.IsHluLayer(selectedHLULayer))
                         {
-                            // Inform the user that the seitch worked
-                            MessageBox.Show(string.Format("GIS Layer switched to '{0}'.", selectedHLULayer.LayerName), "Switch GIS Layer",
-                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            // Inform the user that the switch worked
+                            if (selectedHLULayer.MapName == null)
+                                MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
+                                    "Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            else
+                                MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
+                                    "Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                            // Refresh the window title
+                            OnPropertyChanged("WindowTitle");
 
                             // Get the new GIS layer selection
                             ReadMapSelection(false);

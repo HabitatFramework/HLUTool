@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="{Binding Path=WindowTitle}"
         Height="160"
-        MinWidth="300"
+        MinWidth="350"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -37,7 +37,7 @@
                               Grid.Column="0"
                               Margin="8,8,8,8"
                               VerticalAlignment="Center"
-                              DisplayMemberPath="LayerName"
+                              DisplayMemberPath="DisplayName"
                               IsEditable="True"
                               IsReadOnly="True"
                               ItemsSource="{Binding Path=AvailableHLULayers,
