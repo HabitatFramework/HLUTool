@@ -54,8 +54,11 @@ The source code for the HLU GIS Tool is open source and can be downloaded from:
 
 Documentation
 -------------
-The user guide and technical guides for the latest release v1.0.7 (and for the initial release v1.0.1) can be view online or downloaded as a PDF from:
+The user guide for the latest release v1.0.7 (and for the initial release v1.0.1) can be viewed online or downloaded as a PDF from:
 <https://readthedocs.org/projects/hlugistool-userguide/>
+
+The technical guide for the latest release v1.0.7 (and for the initial release v1.0.1) can be viewed online or downloaded as a PDF from:
+<https://readthedocs.org/projects/hlutool-technicalguide/>
 
 Issue Reporting
 ---------------
