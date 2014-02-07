@@ -1,4 +1,4 @@
-HLU GIS Tool, v1.0.6.0
+HLU GIS Tool, v1.0.7
 Copyright © 2013-2014 Andy Foy
 
 Overview
@@ -36,7 +36,7 @@ The HLU GIS Tool requires the following:
       (For increased performance a multiple core processor with as much RAM
 		as possible is recommended)
 
- - Microsoft .NET Framework 3.5 SP1, 4.0, or 4.5 installed. 
+ - Microsoft .NET Framework 3.5 SP1, 4.0 or 4.5 installed. 
       (You can download .NET Framework 3.5 and its Service Pack here)
 
  - Microsoft Access 2000 or later, OR
@@ -61,10 +61,8 @@ The source code for the HLU GIS Tool is open source and can be downloaded from:
 
 Documentation
 -------------
-User and installation guides for v1.0.1.0 can currently be downloaded from:
-<https://github.com/HabitatFramework/Assets>
-
-The guides will shortly be available online or for download on ReadTheDocs.
+The user guide and technical guides for the latest release v1.0.7 (and for the initial release v1.0.1) can be view online or downloaded as a PDF from:
+<https://readthedocs.org/projects/hlugistool-userguide/>
 
 Issue Reporting
 ---------------
