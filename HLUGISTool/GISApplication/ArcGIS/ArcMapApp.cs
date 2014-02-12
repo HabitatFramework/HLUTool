@@ -1683,21 +1683,31 @@ namespace HLU.GISApplication.ArcGIS
                     new string[] { "il", mapNum.ToString(), layerNum.ToString() });
                 if ((retList != null) && (retList.Count > 5))
                 {
+                    // Get the correct map based on the map number.
                     IMap map = Maps(_arcMap).get_Item(mapNum);
                     _hluView = map as IActiveView;
 
                     UID uid = new UIDClass();
                     uid.Value = typeof(IFeatureLayer).GUID.ToString("B");
 
-                    ILayer layer = map.get_Layer(layerNum);
-
-                    if (layer != null)
+                    // Loop through each layer in the map looking for the correct layer
+                    // by number (order).
+                    int j = 0;
+                    IEnumLayer layers = map.get_Layers(uid, true);
+                    ILayer layer = layers.Next();
+                    while (layer != null)
                     {
-                        string layerName = layer.Name;
-                        _templateLayer = (IGeoFeatureLayer)layer;
-                        CreateHluLayer(false, _templateLayer);
-                        CreateFieldMap(5, 3, 1, retList);
-                        _hluCurrentLayer = newGISLayer;
+                        if (j == layerNum)
+                        {
+                            string layerName = layer.Name;
+                            _templateLayer = (IGeoFeatureLayer)layer;
+                            CreateHluLayer(false, _templateLayer);
+                            CreateFieldMap(5, 3, 1, retList);
+                            _hluCurrentLayer = newGISLayer;
+                            return true;
+                        }
+                        layer = layers.Next();
+                        j++;
                     }
                 }
                 else

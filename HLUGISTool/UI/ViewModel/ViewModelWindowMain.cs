@@ -1923,8 +1923,16 @@ namespace HLU.UI.ViewModel
         {
             _vmCompSplit.RequestClose -= vmCompSplit_RequestClose;
             _windowCompSplit.Close();
-            if (!String.IsNullOrEmpty(reason)) _reason = reason;
-            if (!String.IsNullOrEmpty(process))_process = process;
+            if (!String.IsNullOrEmpty(reason))
+            {
+                _reason = reason;
+                OnPropertyChanged("Reason");
+            }
+            if (!String.IsNullOrEmpty(process))
+            {
+                _process = process;
+                OnPropertyChanged("Process");
+            }
         }
 
         #endregion

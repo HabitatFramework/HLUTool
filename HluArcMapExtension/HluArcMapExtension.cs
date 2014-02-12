@@ -3187,20 +3187,38 @@ namespace HLU
                     // clear the pipe
                     _pipeData.Clear();
 
+                    // Get the correct map based on the map number.
                     IMap map = ((IMxDocument)_application.Document).Maps.get_Item(ixMap);
-                    IFeatureLayer layer = (IFeatureLayer)map.get_Layer(ixLayer);
-                    if (IsHluLayer(layer))
+
+                    UID uid = new UIDClass();
+                    uid.Value = typeof(IFeatureLayer).GUID.ToString("B");
+
+                    // Loop through each layer in the map looking for the correct layer
+                    // by number (order).
+                    int j = 0;
+                    IEnumLayer layers = map.get_Layers(uid, true);
+                    ILayer layer = layers.Next();
+                    while (layer != null)
                     {
-                        _hluView = map as IActiveView;
-                        _pipeData.Add("true");
-                        _pipeData.Add(_pipeTransmissionInterrupt);
-                        _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
-                        _pipeData.Add(_pipeTransmissionInterrupt);
-                        _pipeData.AddRange(_hluFieldNames);
-                    }
-                    else
-                    {
-                        _pipeData.Add("false");
+                        if (j == ixLayer)
+                        {
+                            IFeatureLayer featureLayer = layer as IFeatureLayer;
+                            if (IsHluLayer(featureLayer))
+                            {
+                                _hluView = map as IActiveView;
+                                _pipeData.Add("true");
+                                _pipeData.Add(_pipeTransmissionInterrupt);
+                                _pipeData.AddRange(_hluFieldMap.Select(ix => ix.ToString()));
+                                _pipeData.Add(_pipeTransmissionInterrupt);
+                                _pipeData.AddRange(_hluFieldNames);
+                            }
+                            else
+                            {
+                                _pipeData.Add("false");
+                            }
+                        }
+                        layer = layers.Next();
+                        j++;
                     }
                 }
             }
