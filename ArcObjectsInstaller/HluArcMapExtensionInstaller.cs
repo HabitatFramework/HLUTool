@@ -39,6 +39,11 @@ namespace HLU
             InitializeComponent();
         }
 
+        #region Comments
+        /// <summary>
+        /// Register the component as a COM object and ArcGIS Extension during installation.
+        /// </summary>
+        #endregion
         public override void Install(IDictionary stateSaver)
         {
             base.Install(stateSaver);
@@ -49,16 +54,25 @@ namespace HLU
 
             if (File.Exists(tlbPath))
             {
+                // If the type library already exists then register the .NET component as
+                // a COM object without generating a type library
                 RegistrationServices regSrv = new RegistrationServices();
                 regSrv.RegisterAssembly(regAssembly, AssemblyRegistrationFlags.SetCodeBase);
             }
             else
             {
+                // If the type library doesn't already exist then register the .NET component
+                // as a COM object and generate a type library
                 Regasm(true, regAssembly.Location);
             }
             EsriRegasm(true);
         }
 
+        #region Comments
+        /// <summary>
+        /// Unregister the component as a COM object and ArcGIS Extension during uninstallation.
+        /// </summary>
+        #endregion
         public override void Uninstall(IDictionary savedState)
         {
             base.Uninstall(savedState);
