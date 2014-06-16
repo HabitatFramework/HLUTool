@@ -165,21 +165,37 @@ namespace HLU.GISApplication
             }
         }
 
+        /// <summary>
+        /// Create a list of sql filter conditions jusing a table of selected Incids.
+        /// </summary>
+        /// <param name="incidSelection">A DataTable containing the selected Incids.</param>
+        /// <param name="gisApp">Which GIS system is being used.</param>
+        /// <returns>
+        /// A list of sql filter conditions.
+        /// </returns>
         public static List<SqlFilterCondition> GisWhereClause(DataTable incidSelection, GISApp gisApp)
         {
             List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
             SqlFilterCondition cond = new SqlFilterCondition();
 
-            StringBuilder incidList = new StringBuilder();
+            //StringBuilder incidList = new StringBuilder();
 
+            // Split the table of selected Incids into chunks of continuous Incids so
+            // that each chunk contains a continuous series of one or more Incids.
             var query = incidSelection.AsEnumerable().Select((r, index) => new
             {
                 RowIndex = RecordIds.IncidNumber(r.Field<string>(0)) - index,
                 Incid = r.Field<string>(0)
             }).ChunkBy(r => r.RowIndex);
 
+            // Create a temporary list for storing some of the Incids.
             List<string> inList = new List<string>();
 
+            // Loop through each chunk/series of Incids. If there are at least three
+            // then it is worth processing them within ">=" and "<=" operators (as
+            // this keeps the filter conditions short). If there are only one or two
+            // Incids in the chunk then add them to the temporary 'inList' for
+            // processing later.
             foreach (var item in query)
             {
                 if (item.Count() < 3)
@@ -211,6 +227,11 @@ namespace HLU.GISApplication
                 }
             }
 
+            // Any Incids that are not part of a continuous series of at least
+            // three Incid must be queried using an "=" or "IN" sql operator.
+            // So loop through all these Incids and lump them together into
+            // strings of 254 Incids at a time so that each string can be used
+            // in an "IN" statement.
             int i = 0;
             while (i < inList.Count)
             {

@@ -2987,7 +2987,12 @@ namespace HLU.UI.ViewModel
         {
             if (_gisApp != null)
             {
-                if (_incidSelection.Rows.Count > 1)
+                List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
+                whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp);
+
+                //if (_incidSelection.Rows.Count > 1)
+                // 
+                if (whereClause.Count() > 100)
                 {
                     ScratchDb.WriteSelectionScratchTable(_gisIDColumns, _incidSelection);
                     DispatcherHelper.DoEvents();
@@ -2997,8 +3002,8 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     DispatcherHelper.DoEvents();
-                    _gisSelection = _gisApp.SqlSelect(true, false, _gisIDColumns, 
-                        ScratchDb.GisWhereClause(_incidSelection, _gisApp));
+                    _gisSelection = _gisApp.SqlSelect(true, false, _gisIDColumns,
+                        whereClause);
                 }
             }
         }
