@@ -2298,6 +2298,7 @@ namespace HLU
                 IFeatureClass hluDisplayTableFeatureClass = (IFeatureClass)hluDisplayTable.DisplayTable;
                 ITable hluLayerTable = (ITable)hluDisplayTableFeatureClass;
 
+                // Prompt the user for where to save the export layer
                 IExportOperation exportOp = new ExportOperation();
                 bool saveProjection;
                 esriExportTableOptions exportOptions;
@@ -2305,23 +2306,31 @@ namespace HLU
                     _hluLayer.Name, _hluFeatureSelection != null && _hluFeatureSelection.SelectionSet.Count > 0, 
                     true, _application.hWnd, out saveProjection, out exportOptions);
 
+                // If no export dataset name was chosen by the user then cancel the export
                 if (exportDatasetName == null)
                 {
                     _pipeData.Add("cancelled");
                     return;
                 }
 
+                // Open the export dataset workspace
                 object outWS = ((IName)exportDatasetName.WorkspaceName).Open();
 
+                // Get the field names to be used when joining the attribute data and the feature layer
                 string originPKJoinField = _hluLayerStructure.incidColumn.ColumnName;
                 string originFKJoinField =
                     _hluFeatureClass.Fields.get_Field(_hluFieldMap[_hluLayerStructure.incidColumn.Ordinal]).Name;
 
+                // Get a list of all the fields to be used in the export layer (plus separate lists of all
+                // those fields that will come from the attribute table and those that will come from the
+                // feature layer).
                 List<IField> attributeFields;
                 List<IField> featClassFields;
                 List<IField> exportFields = ExportFieldLists(originPKJoinField, originFKJoinField,
                     exportAttributes, out attributeFields, out featClassFields);
 
+                // Add x/y, length, or area and length fields to the list of fields in the export layer
+                // if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
                 ExportAddGeometryPropertyFields(isShp, exportFields);
 
@@ -2333,7 +2342,7 @@ namespace HLU
 
                 // use Relate to perform a join
                 IDisplayRelationshipClass displayRelClass = (IDisplayRelationshipClass)_hluLayer;
-                displayRelClass.DisplayRelationshipClass(relClass, esriJoinType.esriLeftOuterJoin);
+                displayRelClass.DisplayRelationshipClass(relClass, esriJoinType.esriLeftInnerJoin);
 
                 // create query filter for export cursor
                 bool featClassFieldsQualified;
@@ -2417,6 +2426,9 @@ namespace HLU
         private List<IField> ExportFieldLists(string originPKJoinField, string originFKJoinField, 
             ITable exportAttributes, out List<IField> attributeFields, out List<IField> featClassFields)
         {
+            // Build a list of all the export fields that will come from the
+            // attribute table (except the field to be used as the primary key
+            // when joining the attribute table to the feature layer)
             attributeFields = new List<IField>();
             List<int> attributeFieldOrdinals = new List<int>();
             for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
@@ -2429,6 +2441,9 @@ namespace HLU
                 }
             }
 
+            // Build a list consisting of the feature layer field that is to be
+            // used as the foreign key when joining to the attribute table plus
+            // any other feature fields not already in the attribute table.
             featClassFields = new List<IField>();
             List<int> featClassFieldOrdinals = new List<int>();
             foreach (DataColumn c in _hluLayerStructure.Columns)
@@ -2442,6 +2457,8 @@ namespace HLU
                 }
             }
 
+            // Append the attribute table fields to the feature layer fields
+            // as a new list of fields to go into the export layer.
             List<IField> exportFields = new List<IField>(featClassFields);
             exportFields.AddRange(attributeFields);
 
@@ -2515,14 +2532,14 @@ namespace HLU
             {
                 queryFilterSubFields.Append(",").Append(String.Join(",",
                     attributeFields.Select(f => attributeDataset.Name + "." + f.Name).ToArray()));
-                queryFilterWhereClause = String.Format("{0} IS NOT NULL",
-                    _hluLayer.Name + "." + originPKJoinField);
+                //queryFilterWhereClause = String.Format("{0} IS NOT NULL",
+                  //  _hluLayer.Name + "." + originPKJoinField);
             }
             else
             {
                 queryFilterSubFields.Append(",").Append(
                     String.Join(",", attributeFields.Select(f => f.Name).ToArray()));
-                queryFilterWhereClause = String.Format("{0} IS NOT NULL", originPKJoinField);
+                //queryFilterWhereClause = String.Format("{0} IS NOT NULL", originPKJoinField);
             }
             IQueryFilter exportQueryFilter = new QueryFilterClass();
             exportQueryFilter.SubFields = queryFilterSubFields.ToString();

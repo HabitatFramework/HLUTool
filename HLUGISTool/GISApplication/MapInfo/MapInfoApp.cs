@@ -1185,6 +1185,7 @@ namespace HLU.GISApplication.MapInfo
             {
                 if (!File.Exists(tempMdbPathName)) throw new IOException("File not found");
 
+                // Prompt the user for where to save the export layer
                 SaveFileDialog saveFileFlg = new SaveFileDialog();
                 saveFileFlg.Title = "HLU Export";
                 saveFileFlg.ValidateNames = true;
@@ -1194,20 +1195,26 @@ namespace HLU.GISApplication.MapInfo
                     Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 saveFileFlg.Filter = "MapInfo Tables (*.tab)|*.tab";
 
+                // If no export dataset name was chosen by the user then cancel the export
                 if (saveFileFlg.ShowDialog() != true) return false;
 
                 string outTabPath = saveFileFlg.FileName;
 
+                //Register (build) a MapInfo table from the Access attribute table
                 _mapInfoApp.Do(String.Format("Register Table {0} Type {1} Table {2}",
                     QuoteValue(tempMdbPathName), QuoteValue("Access"), QuoteValue(attributeDatasetName)));
 
+                // Open the registered attribute table
                 _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(tempMdbPathName)));
 
+                // Get the name of the opened attribute table
                 attributeTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
-
+                
+                // Close the previous temporary selection table
                 ClosePreviousSelection();
 
+                // Perform a sql join between the feature layer and the attribute table
                 _mapInfoApp.Do(String.Format("Select {0}, {1} From {2}, {3} Where {2}.{4} = {3}.{5}", 
                     ColumnList(_hluLayer, null, false), ColumnList(attributeTable, 
                     new string[] { _hluLayerStructure.incidColumn.ColumnName }, false),
@@ -1215,24 +1222,31 @@ namespace HLU.GISApplication.MapInfo
                     QuoteIdentifier(GetFieldName(_hluLayerStructure.incidColumn.Ordinal)),
                     QuoteIdentifier(_hluLayerStructure.incidColumn.ColumnName)));
  
+                // Get the name of the new selection table
                 selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
 
+                // If the join failed (i.e. no joined features existed) then cancel the export
                 if (string.IsNullOrEmpty(selTable)) return false;
 
+                // Save the joined table as the new export table
                 _mapInfoApp.Do(String.Format("Commit Table {0} As {1}",
                     QuoteIdentifier(selTable), QuoteValue(outTabPath)));
 
+                // Close the exported table
                 _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(selTable)));
 
+                // Re-open the exported table (so that it can be updated)
                 _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(outTabPath)));
 
+                // Get the name of the exported table
                 outTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
 
                 string geomCol1Name = "shape_length";
                 string geomCol2Name = "shape_area";
 
+                // If the exported table doesn't alreadt have a length or area field then add them
                 if (!HasColumn(outTable, "shape_length") || !HasColumn(outTable, "shape_area"))
                 {
                     geomCol1Name = "ShapeInfo1";
@@ -1244,14 +1258,17 @@ namespace HLU.GISApplication.MapInfo
                         outTable, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), doubleMIType));
                 }
 
+                // Count the number of rows in the export table
                 int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     outTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
 
+                // Fetch the first row from the export table
                 double geom1;
                 double geom2;
                 string fetchCommand = String.Format("Fetch Next From {0}", outTable);
                 _mapInfoApp.Do(String.Format("Fetch First From {0}", outTable));
 
+                // Loop through all the export table rows updating their geometry
                 for (int i = 1; i <= numRows; i++)
                 {
                     GetGeometryInfo(outTable, out geom1, out geom2);
@@ -1262,6 +1279,7 @@ namespace HLU.GISApplication.MapInfo
                     _mapInfoApp.Do(fetchCommand);
                 }
 
+                // Save the export table updates
                 _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
 
                 MessageBox.Show("The export operation succeeded.", "HLU: Export",
@@ -1277,6 +1295,7 @@ namespace HLU.GISApplication.MapInfo
             }
             finally
             {
+                // Close the temporary attribute table, export table and temporary selection table
                 if (TableExists(attributeTable))
                     _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(attributeTable)));
                 if (TableExists(outTable))
