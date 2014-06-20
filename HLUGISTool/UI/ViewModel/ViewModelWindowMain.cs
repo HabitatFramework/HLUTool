@@ -3474,6 +3474,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource1BoundaryImportance");
             OnPropertyChanged("IncidSource1HabitatImportance");
+            OnPropertyChanged("IncidSource1Enabled");
         }
 
         private void RefreshSource2()
@@ -3496,6 +3497,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource2BoundaryImportance");
             OnPropertyChanged("IncidSource2HabitatImportance");
+            OnPropertyChanged("IncidSource2Enabled");
         }
 
         private void RefreshSource3()
@@ -3518,6 +3520,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             OnPropertyChanged("IncidSource3BoundaryImportance");
             OnPropertyChanged("IncidSource3HabitatImportance");
+            OnPropertyChanged("IncidSource3Enabled");
         }
 
         private void RefreshHistory()
@@ -6418,6 +6421,7 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource1HabitatType");
                 OnPropertyChanged("IncidSource1BoundaryImportance");
                 OnPropertyChanged("IncidSource1HabitatImportance");
+                OnPropertyChanged("IncidSource1Enabled");
                 //---------------------------------------------------------------------
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
@@ -6425,6 +6429,11 @@ namespace HLU.UI.ViewModel
                 Changed = true;
                 //---------------------------------------------------------------------
             }
+        }
+
+        public bool IncidSource1Enabled
+        {
+            get { return (IncidSource1Id != null); }
         }
 
         public Date.VagueDateInstance IncidSource1Date
@@ -6711,7 +6720,13 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource2HabitatType");
                 OnPropertyChanged("IncidSource2BoundaryImportance");
                 OnPropertyChanged("IncidSource2HabitatImportance");
+                OnPropertyChanged("IncidSource2Enabled");
             }
+        }
+
+        public bool IncidSource2Enabled
+        {
+            get { return (IncidSource2Id != null); }
         }
 
         public Date.VagueDateInstance IncidSource2Date
@@ -6930,7 +6945,13 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource3HabitatType");
                 OnPropertyChanged("IncidSource3BoundaryImportance");
                 OnPropertyChanged("IncidSource3HabitatImportance");
+                OnPropertyChanged("IncidSource3Enabled");
             }
+        }
+
+        public bool IncidSource3Enabled
+        {
+            get { return (IncidSource3Id != null); }
         }
 
         public Date.VagueDateInstance IncidSource3Date
