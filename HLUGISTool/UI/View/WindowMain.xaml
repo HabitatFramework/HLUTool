@@ -312,7 +312,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="487*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -742,6 +743,7 @@
             <!--  TabControlData  -->
             <TabControl Name="TabControlData"
                         Grid.Row="2"
+                        Grid.RowSpan="2"
                         Grid.Column="0"
                         Margin="0,4,0,0"
                         IsEnabled="{Binding Path=TabControlDataEnabled}">
@@ -1978,6 +1980,8 @@
                                              Margin="8,0,8,4"
                                              VerticalAlignment="Center"
                                              BorderThickness="1"
+                                             IsEnabled="{Binding Path=IncidSource1Enabled,
+                                                                 Mode=OneWay}"
                                              Text="{Binding Path=IncidSource1Date,
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
@@ -2010,6 +2014,8 @@
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="False"
+                                              IsEnabled="{Binding Path=IncidSource1Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=SourceHabitatClassCodes,
                                                                     UpdateSourceTrigger=PropertyChanged}"
@@ -2043,6 +2049,8 @@
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="True"
+                                              IsEnabled="{Binding Path=IncidSource1Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=Source1HabitatTypeCodes,
                                                                     Converter={StaticResource codeDescriptionConverter},
@@ -2090,6 +2098,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource1Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2121,6 +2131,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource1Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2206,6 +2218,8 @@
                                              Margin="8,0,8,4"
                                              VerticalAlignment="Center"
                                              BorderThickness="1"
+                                             IsEnabled="{Binding Path=IncidSource2Enabled,
+                                                                 Mode=OneWay}"
                                              Text="{Binding Path=IncidSource2Date,
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
@@ -2238,6 +2252,8 @@
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="False"
+                                              IsEnabled="{Binding Path=IncidSource2Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=SourceHabitatClassCodes,
                                                                     UpdateSourceTrigger=PropertyChanged}"
@@ -2270,6 +2286,8 @@
                                               VerticalAlignment="Top"
                                               DisplayMemberPath="description"
                                               IsEditable="True"
+                                              IsEnabled="{Binding Path=IncidSource2Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=Source2HabitatTypeCodes,
                                                                     Converter={StaticResource codeDescriptionConverter},
@@ -2317,6 +2335,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource2Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2348,6 +2368,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource2Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2433,6 +2455,8 @@
                                              Margin="8,0,8,4"
                                              VerticalAlignment="Center"
                                              BorderThickness="1"
+                                             IsEnabled="{Binding Path=IncidSource3Enabled,
+                                                                 Mode=OneWay}"
                                              Text="{Binding Path=IncidSource3Date,
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
@@ -2465,6 +2489,8 @@
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="False"
+                                              IsEnabled="{Binding Path=IncidSource3Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=SourceHabitatClassCodes,
                                                                     UpdateSourceTrigger=PropertyChanged}"
@@ -2497,6 +2523,8 @@
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="True"
+                                              IsEnabled="{Binding Path=IncidSource3Enabled,
+                                                                  Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Path=Source3HabitatTypeCodes,
                                                                     Converter={StaticResource codeDescriptionConverter},
@@ -2544,6 +2572,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource3Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2575,6 +2605,8 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
+                                                  IsEnabled="{Binding Path=IncidSource3Enabled,
+                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding Path=SourceImportanceCodes,
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -2650,6 +2682,7 @@
             <!--  DockPanelGetMapSelection  -->
             <DockPanel Name="DockPanelGetMapSelection"
                        Grid.Row="2"
+                       Grid.RowSpan="2"
                        Grid.Column="0"
                        MaxHeight="35"
                        Margin="0,4,0,0"
@@ -2688,11 +2721,10 @@
 
             <!--  ButtonGetMapSelection2  -->
             <Button Name="ButtonGetMapSelection2"
-                    Grid.Row="2"
-                    Grid.Column="1"
+                    Grid.Row="3"
                     Width="20"
                     MaxHeight="20"
-                    Margin="0,10,8,0"
+                    Margin="0,5,8,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Command="{Binding Path=ReadMapSelectionCommand}"
@@ -2709,7 +2741,7 @@
 
             <!--  GridNavigation  -->
             <Grid Name="GridStatus"
-                  Grid.Row="3"
+                  Grid.Row="4"
                   Margin="0,4,0,0"
                   IsEnabled="{Binding Path=WindowEnabled}">
                 <Grid.ColumnDefinitions>
