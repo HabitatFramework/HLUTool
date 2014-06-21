@@ -1648,6 +1648,7 @@ namespace HLU.UI.ViewModel
                     _editMode = editMode;
                     OnPropertyChanged("WindowTitle");
                     OnPropertyChanged("CanBulkUpdate");
+                    OnPropertyChanged("ShowReasonProcessGroup");
                 }
                 return _editMode;
             }
@@ -4509,6 +4510,15 @@ namespace HLU.UI.ViewModel
         }
 
         #region Reason and Process
+
+        /// <summary>
+        /// Only show the Reason and Process group if the data is editable, otherwise collapse it.
+        /// </summary>
+        public bool ShowReasonProcessGroup
+        {
+            get { return _editMode == true; }
+            set { }
+        }
 
         public HluDataSet.lut_reasonRow[] ReasonCodes
         {
