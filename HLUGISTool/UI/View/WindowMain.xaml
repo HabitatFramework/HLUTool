@@ -24,6 +24,7 @@
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -669,7 +670,10 @@
             <!--  GroupBoxReasonProcess  -->
             <GroupBox x:Name="GroupBoxReasonProcess"
                       Grid.Row="1"
-                      Margin="0,4,0,0">
+                      Margin="0,4,0,0"
+                      Visibility="{Binding Path=ShowReasonProcessGroup,
+                                           Converter={StaticResource bool2CollapsedConverter},
+                                           Mode=TwoWay}">
                 <Grid x:Name="GridReasonProcess"
                       Grid.Row="1"
                       Margin="0,4,0,0">

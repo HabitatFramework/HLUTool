@@ -207,6 +207,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\View\WindowWarnOnSubsetUpdate.xaml">
+    <Page Include="UI\View\Dictionary\Bool2CollapsedConverterDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -312,6 +313,7 @@
     </Compile>
     <Compile Include="Base36.cs" />
     <Compile Include="Converters\CodeNameDescriptionConverter.cs" />
+    <Compile Include="Converters\Bool2CollapsedConverter.cs" />
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
