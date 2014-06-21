@@ -78,8 +78,10 @@ namespace HLU.UI.ViewModel
         private ICommand _readMapSelectionCommand;
         private ICommand _selectByIncidCommand;
         private ICommand _switchGisLayerCommand;
-        private ICommand _splitCommand;
-        private ICommand _mergeCommand;
+        private ICommand _logicalSplitCommand;
+        private ICommand _physicalSplitCommand;
+        private ICommand _logicalMergeCommand;
+        private ICommand _physicalMergeCommand;
         private ICommand _updateCommand;
         private ICommand _bulkUpdateCommand;
         private ICommand _bulkUpdateCommandMenu;
@@ -1261,43 +1263,90 @@ namespace HLU.UI.ViewModel
         #region Split
 
         /// <summary>
-        /// Split command.
+        /// Logical Split command.
         /// </summary>
-        public ICommand SplitCommand
+        public ICommand LogicalSplitCommand
         {
             get
             {
-                if (_splitCommand == null)
+                if (_logicalSplitCommand == null)
                 {
-                    Action<object> splitAction = new Action<object>(this.SplitClicked);
-                    _splitCommand = new RelayCommand(splitAction, param => this.CanSplit);
+                    Action<object> logicalSplitAction = new Action<object>(this.LogicalSplitClicked);
+                    _logicalSplitCommand = new RelayCommand(logicalSplitAction, param => this.CanLogicallySplit);
                 }
-                return _splitCommand;
+                return _logicalSplitCommand;
             }
         }
 
         /// <summary>
-        /// SplitCommand event handler.
+        /// Physical Split command.
+        /// </summary>
+        public ICommand PhysicalSplitCommand
+        {
+            get
+            {
+                if (_physicalSplitCommand == null)
+                {
+                    Action<object> physicalSplitAction = new Action<object>(this.PhysicalSplitClicked);
+                    _physicalSplitCommand = new RelayCommand(physicalSplitAction, param => this.CanPhysicallySplit);
+                }
+                return _physicalSplitCommand;
+            }
+        }
+
+        /// <summary>
+        /// LogicalSplitCommand event handler.
         /// </summary>
         /// <param name="param"></param>
-        private void SplitClicked(object param)
+        private void LogicalSplitClicked(object param)
         {
             _autoSplit = false;
             ReadMapSelection(false);
             _autoSplit = true;
 
             ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-            vmSplit.Split();
+            vmSplit.LogicalSplit();
         }
 
-        private bool CanSplit
+        /// <summary>
+        /// PhysicalSplitCommand event handler.
+        /// </summary>
+        /// <param name="param"></param>
+        private void PhysicalSplitClicked(object param)
+        {
+            _autoSplit = false;
+            ReadMapSelection(false);
+            _autoSplit = true;
+
+            ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
+            vmSplit.PhysicalSplit();
+        }
+
+        /// <summary>
+        /// At least one feature in selection that share the same incid, but *not* toid and toid_fragment_id
+        /// </summary>
+        private bool CanLogicallySplit
         {
             get
             {
-                return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
-                    (_gisSelection != null) && (_gisSelection.Rows.Count > 0) && (_incidsSelectedMapCount == 1) && 
-                    (((_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1)) || 
-                    ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) || (_fragsSelectedMapCount == 1));
+                return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                    (_gisSelection != null) && (_incidsSelectedMapCount == 1) && 
+                    ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
+                    (_gisSelection.Rows.Count == 1));
+            }
+        }
+
+        
+        /// <summary>
+        /// At least two features in selection that share the same incid, toid and toid_fragment_id
+        /// </summary>
+        private bool CanPhysicallySplit
+        {
+            get
+            {
+                return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                    (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
+                    (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1);
             }
         }
 
@@ -1306,36 +1355,84 @@ namespace HLU.UI.ViewModel
         #region Merge
 
         /// <summary>
-        /// Merge command.
+        /// Logical Merge command.
         /// </summary>
-        public ICommand MergeCommand
+        public ICommand LogicalMergeCommand
         {
             get
             {
-                if (_mergeCommand == null)
+                if (_logicalMergeCommand == null)
                 {
-                    Action<object> mergeAction = new Action<object>(this.MergeClicked);
-                    _mergeCommand = new RelayCommand(mergeAction, param => this.CanMerge);
+                    Action<object> logcalMergeAction = new Action<object>(this.LogicalMergeClicked);
+                    _logicalMergeCommand = new RelayCommand(logcalMergeAction, param => this.CanLogicallyMerge);
                 }
-                return _mergeCommand;
+                return _logicalMergeCommand;
             }
         }
 
-        private void MergeClicked(object param)
+        /// <summary>
+        /// Physical Merge command.
+        /// </summary>
+        public ICommand PhysicalMergeCommand
+        {
+            get
+            {
+                if (_physicalMergeCommand == null)
+                {
+                    Action<object> logcalMergeAction = new Action<object>(this.PhysicalMergeClicked);
+                    _physicalMergeCommand = new RelayCommand(logcalMergeAction, param => this.CanPhysicallyMerge);
+                }
+                return _physicalMergeCommand;
+            }
+        }
+
+        /// <summary>
+        /// LogicalMergeCommand event handler.
+        /// </summary>
+        /// <param name="param"></param>
+        private void LogicalMergeClicked(object param)
         {
             ReadMapSelection(false);
 
             ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
-            vmMerge.Merge();
+            vmMerge.LogicalMerge();
         }
 
-        private bool CanMerge
+        /// <summary>
+        /// PhysicalMergeCommand event handler.
+        /// </summary>
+        /// <param name="param"></param>
+        private void PhysicalMergeClicked(object param)
+        {
+            ReadMapSelection(false);
+
+            ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
+            vmMerge.PhysicalMerge();
+        }
+
+        /// <summary>
+        /// At least one feature in selection that do not share the same incid or toid_fragment_id
+        /// </summary>
+        private bool CanLogicallyMerge
         {
             get
             {
                 return (_bulkUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
-                    _gisSelection != null && _gisSelection.Rows.Count > 1 && (_fragsSelectedMapCount > 1) && 
-                    ((_toidsSelectedMapCount == 1) || (_incidsSelectedMapCount > 1));
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    (_incidsSelectedMapCount > 1) && (_fragsSelectedMapCount > 1);
+            }
+        }
+
+        /// <summary>
+        /// At least one feature in selection that share the same incid and toid but *not* the same toid_fragment_id
+        /// </summary>
+        private bool CanPhysicallyMerge
+        {
+            get
+            {
+                return (_bulkUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
         }
 
@@ -2445,7 +2542,7 @@ namespace HLU.UI.ViewModel
                     {
                         if (IsAuthorisedUser)
                         {
-                            if (!CanSplit)
+                            if (!CanPhysicallySplit)
                             {
                                 _windowCompSplit = new WindowCompletePhysicalSplit();
                                 _windowCompSplit.Owner = App.Current.MainWindow;
@@ -2455,10 +2552,10 @@ namespace HLU.UI.ViewModel
                                 _windowCompSplit.DataContext = _vmCompSplit;
                                 _windowCompSplit.ShowDialog();
                             }
-                            if (CanSplit)
+                            if (CanPhysicallySplit)
                             {
                                 ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-                                if (vmSplit.Split()) MessageBox.Show("Physical split completed.",
+                                if (vmSplit.PhysicalSplit()) MessageBox.Show("Physical split completed.",
                                     "HLU: Physical Split", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                             else

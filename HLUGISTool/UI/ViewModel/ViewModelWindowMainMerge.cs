@@ -42,35 +42,53 @@ namespace HLU.UI.ViewModel
             _viewModelMain = viewModelMain;
         }
 
-        internal void Merge()
+        /// <summary>
+        /// There must be at least two selected features that either share the same toid but not the same incid,
+        /// or they do not share the same incid.
+        /// </summary>
+        internal void LogicalMerge()
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
-                MessageBox.Show("Cannot merge: nothing is selected on the map.", "HLU: Merge",
+                MessageBox.Show("Cannot logically merge: nothing is selected on the map.", "HLU: Logical Merge",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
             else if (_viewModelMain.GisSelection.Rows.Count <= 1)
             {
-                MessageBox.Show("Cannot merge: map selection set must contain more than one feature for a merge.",
-                    "HLU: Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            }
-            else if (_viewModelMain.ToidsSelectedMapCount == 1) // selected features share same toid
-            {
-                if (_viewModelMain.IncidsSelectedMapCount == 1)
-                {
-                    // selected features share same incid and toid
-                    PerformPhysicalMerge();
-                }
-                else
-                {
-                    // selected features share same toid but not incid
-                    PerformLogicalMerge(true);
-                }
+                MessageBox.Show("Cannot merge: map selection must contain more than one feature for a merge.",
+                    "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
             else if (_viewModelMain.IncidsSelectedMapCount > 1)
             {
                 // selected features do not share same incid
                 PerformLogicalMerge(false);
+            }
+            else if ((_viewModelMain.ToidsSelectedMapCount == 1) && (_viewModelMain.IncidsSelectedMapCount > 1))
+            {
+                // selected features share same toid but not incid
+                PerformLogicalMerge(true);
+            }
+        }
+
+        /// <summary>
+        /// There must be at least two selected features that share the same incid and toid.
+        /// </summary>
+        internal void PhysicalMerge()
+        {
+            if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
+            {
+                MessageBox.Show("Cannot physically merge: nothing is selected on the map.", "HLU: Physical Merge",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+            else if (_viewModelMain.GisSelection.Rows.Count <= 1)
+            {
+                MessageBox.Show("Cannot physically merge: map selection must contain more than one feature for a merge.",
+                    "HLU: Physical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+            else if ((_viewModelMain.IncidsSelectedMapCount == 1) && (_viewModelMain.ToidsSelectedMapCount == 1))
+            {
+                // selected features share same incid and toid
+                PerformPhysicalMerge();
             }
         }
 
@@ -196,7 +214,7 @@ namespace HLU.UI.ViewModel
 
                         _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid);
 
-                        if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Merge",
+                        if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Physical Merge",
                             MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
                         {
                             // restore the selection

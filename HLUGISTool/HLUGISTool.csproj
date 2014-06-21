@@ -640,16 +640,10 @@
     <Resource Include="Icons\FileExit.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\SplitFeatures.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Icons\ZoomSelection.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Options.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\MergeFeatures.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\ClearFilter.png" />
@@ -673,6 +667,10 @@
     <Resource Include="Icons\HLUIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\LogicalMerge.png" />
+    <Resource Include="Icons\LogicalSplit.png" />
+    <Resource Include="Icons\PhysicalMerge.png" />
+    <Resource Include="Icons\PhysicalSplit.png" />
     <Resource Include="Icons\SwitchGISLayer.png" />
     <EmbeddedResource Include="GISApplication\ArcGIS\lib\sde.dll" />
     <Content Include="Icons\HLU32.ico">
