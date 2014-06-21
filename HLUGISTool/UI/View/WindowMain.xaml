@@ -104,14 +104,23 @@
                           IsEnabled="{Binding CanSelectByIncid}" />
             </MenuItem>
             <MenuItem Header="Split/_Merge">
-                <MenuItem x:Name="MenuItemSplit"
-                          Command="{Binding SplitCommand}"
-                          Header="_Split Features"
-                          IsEnabled="{Binding CanSplit}" />
-                <MenuItem x:Name="MenuItemMerge"
-                          Command="{Binding MergeCommand}"
-                          Header="_Merge Features"
-                          IsEnabled="{Binding CanMerge}" />
+                <MenuItem Name="MenuItemLogicalSplit"
+                          Command="{Binding Path=LogicalSplitCommand}"
+                          Header="Logical _Split"
+                          IsEnabled="{Binding Path=CanLogicallySplit}" />
+                <MenuItem Name="MenuItemLogicalMerge"
+                          Command="{Binding Path=LogicalMergeCommand}"
+                          Header="_Logical Merge"
+                          IsEnabled="{Binding Path=CanLogicallyMerge}" />
+                <!-- <Separator /> -->
+                <MenuItem Name="MenuItemPhysicalSplit"
+                          Command="{Binding Path=PhysicalSplitCommand}"
+                          Header="Physical Spli_t"
+                          IsEnabled="{Binding Path=CanPhysicallySplit}" />
+                <MenuItem Name="MenuItemPhysicalMerge"
+                          Command="{Binding Path=PhysicalMergeCommand}"
+                          Header="_Physical Merge"
+                          IsEnabled="{Binding Path=CanPhysicallyMerge}" />
             </MenuItem>
             <MenuItem Header="_Tools">
                 <MenuItem x:Name="MenuItemOptions"
@@ -130,17 +139,9 @@
             <ToolBar x:Name="ToolBarMain"
                      Band="1"
                      BandIndex="1">
-                <Button x:Name="ButtonExit"
-                        Command="{Binding CloseCommand}"
-                        ToolTip="Exit"
-                        ToolTipService.ShowOnDisabled="True">
-                    <Image Width="16"
-                           Height="16"
-                           Source="..\..\Icons\FileExit.png" />
-                </Button>
-                <Button x:Name="ButtonExport"
-                        Command="{Binding ExportCommand}"
-                        IsEnabled="{Binding CanExport}"
+                <Button Name="ButtonExport"
+                        Command="{Binding Path=ExportCommand}"
+                        IsEnabled="{Binding Path=CanExport}"
                         ToolTip="Export"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
@@ -166,6 +167,16 @@
                            Source="..\..\Icons\EditPaste.png" />
                 </Button>
                 <!--
+                    <Button Name="ButtonExit"
+                    Command="{Binding Path=CloseCommand}"
+                    ToolTip="Exit"
+                    ToolTipService.ShowOnDisabled="True">
+                    <Image Width="16"
+                    Height="16"
+                    Source="..\..\Icons\FileExit.png" />
+                    </Button>
+                -->
+                <!--
                     <Button Name="ButtonBulkUpdate"
                     Command="{Binding Path=BulkUpdateCommand}"
                     IsEnabled="{Binding Path=CanBulkUpdate}"
@@ -180,18 +191,20 @@
             <ToolBar x:Name="ToolBarView"
                      Band="1"
                      BandIndex="2">
-                <Button x:Name="ButtonGisMaximise"
-                        Command="{Binding GisWinMaximiseCommand}"
-                        IsEnabled="{Binding CanGisWinMaximise}"
+                <!--
+                <Button Name="ButtonGisMaximise"
+                        Command="{Binding Path=GisWinMaximiseCommand}"
+                        IsEnabled="{Binding Path=CanGisWinMaximise}"
                         ToolTip="Maximise GIS Window"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
                            Height="16"
                            Source="..\..\Icons\GisWinMaximise.png" />
                 </Button>
-                <Button x:Name="ButtonGisSideBySide"
-                        Command="{Binding GisWinSideBySideCommand}"
-                        IsEnabled="{Binding CanGisWinSideBySide}"
+                -->
+                <Button Name="ButtonGisSideBySide"
+                        Command="{Binding Path=GisWinSideBySideCommand}"
+                        IsEnabled="{Binding Path=CanGisWinSideBySide}"
                         ToolTip="Windows Side By Side"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
@@ -271,23 +284,41 @@
             <ToolBar x:Name="ToolBarSplitMerge"
                      Band="1"
                      BandIndex="4">
-                <Button x:Name="ButtonSplit"
-                        Command="{Binding SplitCommand}"
-                        IsEnabled="{Binding CanSplit}"
-                        ToolTip="Split Features"
+                <Button Name="ButtonLogicalSplit"
+                        Command="{Binding Path=LogicalSplitCommand}"
+                        IsEnabled="{Binding Path=CanLogicallySplit}"
+                        ToolTip="Logical Split"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
                            Height="16"
-                           Source="..\..\Icons\SplitFeatures.png" />
+                           Source="..\..\Icons\LogicalSplit.png" />
                 </Button>
-                <Button x:Name="ButtonMergeFeatures"
-                        Command="{Binding MergeCommand}"
-                        IsEnabled="{Binding CanMerge}"
-                        ToolTip="Merge Features"
+                <Button Name="ButtonLogicalMerge"
+                        Command="{Binding Path=LogicalMergeCommand}"
+                        IsEnabled="{Binding Path=CanLogicallyMerge}"
+                        ToolTip="Logical Merge"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
                            Height="16"
-                           Source="..\..\Icons\MergeFeatures.png" />
+                           Source="..\..\Icons\LogicalMerge.png" />
+                </Button>
+                <Button Name="ButtonPhysicalSplit"
+                        Command="{Binding Path=PhysicalSplitCommand}"
+                        IsEnabled="{Binding Path=CanPhysicallySplit}"
+                        ToolTip="Physical Split"
+                        ToolTipService.ShowOnDisabled="True">
+                    <Image Width="16"
+                           Height="16"
+                           Source="..\..\Icons\PhysicalSplit.png" />
+                </Button>
+                <Button Name="ButtonPhysicalMerge"
+                        Command="{Binding Path=PhysicalMergeCommand}"
+                        IsEnabled="{Binding Path=CanPhysicallyMerge}"
+                        ToolTip="Physical Merge"
+                        ToolTipService.ShowOnDisabled="True">
+                    <Image Width="16"
+                           Height="16"
+                           Source="..\..\Icons\PhysicalMerge.png" />
                 </Button>
             </ToolBar>
             <ToolBar x:Name="ToolBarTools"

@@ -38,11 +38,43 @@ namespace HLU.UI.ViewModel
             _viewModelMain = viewModelMain;
         }
 
-        internal bool Split()
+        /// <summary>
+        /// There must be either more than one feature in the selection that share the same incid, but *not* the same toid or toid_fragment_id,
+        /// or there must be only one feature in the selection.
+        /// </summary>
+        /// <returns></returns>
+        internal bool LogicalSplit()
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
-                MessageBox.Show("Cannot split: nothing is selected on the map.", "HLU: Split",
+                MessageBox.Show("Cannot split: nothing is selected on the map.", "HLU: Logical Split",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+            if ((_viewModelMain.IncidsSelectedMapCount == 1) && 
+                ((_viewModelMain.GisSelection.Rows.Count > 1) && ((_viewModelMain.ToidsSelectedMapCount > 1) || (_viewModelMain.FragsSelectedMapCount > 1))) || 
+                (_viewModelMain.GisSelection.Rows.Count == 1))
+            {
+                // all features in selection share same incid, but *not* toid and toid_fragment_id
+                return PerformLogicalSplit();
+            }
+            else
+            {
+                MessageBox.Show("Cannot split: map selection set contains features belonging to more than one INCID.",
+                    "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// There must be more than one feature in the selection that share the same incid, toid and toid_fragment_id.
+        /// </summary>
+        /// <returns></returns>
+        internal bool PhysicalSplit()
+        {
+            if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
+            {
+                MessageBox.Show("Cannot split: nothing is selected on the map.", "HLU: Physical Split",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
@@ -52,23 +84,10 @@ namespace HLU.UI.ViewModel
                 // all features in selection share same incid, toid and toid_fragment_id
                 return PerformPhysicalSplit();
             }
-            else if ((_viewModelMain.GisSelection.Rows.Count > 0) && 
-                ((_viewModelMain.ToidsSelectedMapCount > 1) || (_viewModelMain.FragsSelectedMapCount > 1) || 
-                (_viewModelMain.FragsSelectedMapCount == 1)))
-            {
-                // all features in selection share same incid, but *not* toid and toid_fragment_id
-                return PerformLogicalSplit();
-            }
-            else if (_viewModelMain.GisSelection.Rows.Count < 1)
-            {
-                MessageBox.Show("Cannot split: map selection set must contain at least one feature for a split.",
-                    "HLU: Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return false;
-            }
             else
             {
-                MessageBox.Show("Cannot split: map selection set contains features belonging to more than one INCID.",
-                    "HLU: Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show("Cannot physically split: map selection set contains features belonging to more than one INCID, Toid or Fragment.",
+                    "HLU: Physical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
         }
@@ -243,7 +262,7 @@ namespace HLU.UI.ViewModel
                 if (featCount == 1)
                 {
                     MessageBox.Show(String.Format("Cannot split: feature selected in map is the only" +
-                        " feature corresponding to INCID {0}", _viewModelMain.Incid), "HLU: Split",
+                        " feature corresponding to INCID {0}", _viewModelMain.Incid), "HLU: Logical Split",
                         MessageBoxButton.OK, MessageBoxImage.Asterisk);
                     return false;
                 }
