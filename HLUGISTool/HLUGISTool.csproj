@@ -215,12 +215,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\View\Dictionary\Bool2VisibilityConverterDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\View\Dictionary\CodeDescriptionConverterDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,7 +337,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChunkIt.cs" />
-    <Compile Include="Converters\Bool2VisibilityConverter.cs" />
     <Compile Include="Converters\CodeDescriptionConverter.cs" />
     <Compile Include="Converters\VagueDateConverter.cs" />
     <Compile Include="Data\BapEnvironment.cs" />

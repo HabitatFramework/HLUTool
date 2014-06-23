@@ -60,9 +60,20 @@ namespace HLU.UI.ViewModel
     {
         #region Enums
 
+        /// <summary>
+        /// Geometry types.
+        /// </summary>
         public enum GeometryTypes { Point, Line, Polygon, Unknown };
 
+        /// <summary>
+        /// Update operations.
+        /// </summary>
         public enum Operations { PhysicalMerge, PhysicalSplit, LogicalMerge, LogicalSplit, AttributeUpdate, BulkUpdate };
+
+        /// <summary>
+        /// User Interface control visibility values.
+        /// </summary>
+        //public enum Visibility { Visible, Hidden, Collapsed };
 
         #endregion
 
@@ -1825,9 +1836,15 @@ namespace HLU.UI.ViewModel
             set { _bulkUpdateMode = value; }
         }
 
-        public bool HideInBulkUpdateMode 
-        { 
-            get { return _bulkUpdateMode == false; }
+        public Visibility HideInBulkUpdateMode
+        {
+            get
+            {
+                if (_bulkUpdateMode == true)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
             set { }
         }
 
@@ -1857,9 +1874,15 @@ namespace HLU.UI.ViewModel
                 BulkUpdateClicked(param);
         }
 
-        public bool ShowInBulkUpdateMode
+        public Visibility ShowInBulkUpdateMode
         {
-            get { return _bulkUpdateMode == true; }
+            get
+            {
+                if (_bulkUpdateMode == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Hidden;
+            }
             set { }
         }
 
@@ -4506,9 +4529,15 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Only show the Reason and Process group if the data is editable, otherwise collapse it.
         /// </summary>
-        public bool ShowReasonProcessGroup
+        public Visibility ShowReasonProcessGroup
         {
-            get { return _editMode == true; }
+            get
+            {
+                if (_editMode == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
             set { }
         }
 

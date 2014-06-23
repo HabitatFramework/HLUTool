@@ -23,8 +23,8 @@
                 <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
-                <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />
-                <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />
+                <!-- <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" /> -->
+                <!-- <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" /> -->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -356,10 +356,10 @@
             <GroupBox x:Name="GroupBoxTopControls"
                       Grid.Row="0"
                       Grid.Column="0"
-                      Header="{Binding TopControlsGroupHeader}"
-                      Visibility="{Binding HideInBulkUpdateMode,
-                                           Converter={StaticResource bool2VisibilityConverter},
-                                           Mode=TwoWay}">
+                      Header="{Binding Path=TopControlsGroupHeader}"
+                      Visibility="{Binding Path=HideInBulkUpdateMode}">
+                <!-- Converter={StaticResource bool2VisibilityConverter},
+                Mode=TwoWay}"> -->
                 <Grid x:Name="GridTopControls"
                       Grid.Row="0"
                       Margin="0,4,0,0"
@@ -446,9 +446,10 @@
                            Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="Created"
-                           Visibility="{Binding HideInBulkUpdateMode,
-                                                Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
+                        Created
+                    </Label>
                     <TextBox x:Name="TextBoxIncidCreatedDate"
                              Grid.Row="1"
                              Grid.Column="1"
@@ -459,8 +460,8 @@
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
-                             Visibility="{Binding HideInBulkUpdateMode,
-                                                  Converter={StaticResource bool2VisibilityConverter}}" />
+                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                    <!-- Converter={StaticResource bool2VisibilityConverter}, -->
 
                     <Label x:Name="LabelIncidCreatedUser"
                            Grid.Row="1"
@@ -468,9 +469,10 @@
                            Margin="12,0,0,4"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
-                           Content="By"
-                           Visibility="{Binding HideInBulkUpdateMode,
-                                                Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
+                        By
+                    </Label>
                     <TextBox x:Name="TextBoxIncidCreatedUser"
                              Grid.Row="1"
                              Grid.Column="3"
@@ -481,8 +483,8 @@
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
-                             Visibility="{Binding HideInBulkUpdateMode,
-                                                  Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
 
                     <Label x:Name="LabelIncidLastModDate"
                            Grid.Row="2"
@@ -490,9 +492,10 @@
                            Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="Modified"
-                           Visibility="{Binding HideInBulkUpdateMode,
-                                                Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
+                        Modified
+                    </Label>
                     <TextBox x:Name="TextBoxIncidLastModDate"
                              Grid.Row="2"
                              Grid.Column="1"
@@ -503,8 +506,8 @@
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
-                             Visibility="{Binding HideInBulkUpdateMode,
-                                                  Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                    <!-- Converter={StaticResource bool2VisibilityConverter}, -->
 
                     <Label x:Name="LabelIncidLastModUser"
                            Grid.Row="2"
@@ -512,9 +515,10 @@
                            Margin="12,0,0,4"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
-                           Content="By"
-                           Visibility="{Binding HideInBulkUpdateMode,
-                                                Converter={StaticResource bool2VisibilityConverter}}" />
+                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
+                        By
+                    </Label>
                     <TextBox x:Name="TextBoxIncidLastModUser"
                              Grid.Row="2"
                              Grid.Column="3"
@@ -525,8 +529,8 @@
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
-                             Visibility="{Binding HideInBulkUpdateMode,
-                                                  Converter={StaticResource bool2VisibilityConverter}}" />
+                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                    <!-- Converter={StaticResource bool2VisibilityConverter}, -->
 
                 </Grid>
             </GroupBox>
@@ -536,9 +540,9 @@
                       Grid.Row="0"
                       Grid.Column="0"
                       Header="Bulk Update"
-                      Visibility="{Binding ShowInBulkUpdateMode,
-                                           Converter={StaticResource bool2VisibilityConverter},
-                                           Mode=TwoWay}">
+                      Visibility="{Binding Path=ShowInBulkUpdateMode}">
+                <!-- Converter={StaticResource bool2VisibilityConverter},
+                                           Mode=TwoWay}"> -->
                 <Grid x:Name="GridTopControlsBulkUpdate"
                       Grid.Row="0"
                       Margin="0,4,0,0"
@@ -671,9 +675,9 @@
             <GroupBox x:Name="GroupBoxReasonProcess"
                       Grid.Row="1"
                       Margin="0,4,0,0"
-                      Visibility="{Binding Path=ShowReasonProcessGroup,
-                                           Converter={StaticResource bool2CollapsedConverter},
-                                           Mode=TwoWay}">
+                      Visibility="{Binding Path=ShowReasonProcessGroup}">
+                <!--  Converter={StaticResource bool2CollapsedConverter},
+                Mode=TwoWay}"> -->
                 <Grid x:Name="GridReasonProcess"
                       Grid.Row="1"
                       Margin="0,4,0,0">
@@ -2672,7 +2676,7 @@
                        Margin="0,4,0,0"
                        VerticalAlignment="Top"
                        Panel.ZIndex="5">
-                <Grid x:Name="GridStatusTop" Visibility="{Binding HideInBulkUpdateMode, Converter={StaticResource bool2VisibilityConverter}}">
+                <Grid x:Name="GridStatusTop" Visibility="{Binding Path=HideInBulkUpdateMode}"> <!-- Converter={StaticResource bool2VisibilityConverter}}"> -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -2739,9 +2743,9 @@
                       Grid.Column="0"
                       Height="23"
                       VerticalAlignment="Bottom"
-                      Visibility="{Binding ShowInBulkUpdateMode,
-                                           Converter={StaticResource bool2VisibilityConverter},
-                                           Mode=TwoWay}">
+                      Visibility="{Binding Path=ShowInBulkUpdateMode}">
+                                           <!-- Converter={StaticResource bool2VisibilityConverter},
+                                           Mode=TwoWay}"> -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
@@ -2758,9 +2762,9 @@
                       Grid.Column="0"
                       Height="23"
                       VerticalAlignment="Bottom"
-                      Visibility="{Binding HideInBulkUpdateMode,
-                                           Converter={StaticResource bool2VisibilityConverter},
-                                           Mode=TwoWay}">
+                      Visibility="{Binding Path=HideInBulkUpdateMode}">
+                    <!-- Converter={StaticResource bool2VisibilityConverter},
+                                           Mode=TwoWay}"> -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40" />
                         <ColumnDefinition Width="25" />
@@ -2833,10 +2837,11 @@
                     <Button x:Name="ButtonCancelBulkUpdate"
                             Grid.Column="1"
                             Margin="2,0,2,0"
-                            Command="{Binding CancelBulkUpdateCommand}"
-                            Content="_Cancel"
-                            Visibility="{Binding ShowInBulkUpdateMode,
-                                                 Converter={StaticResource bool2VisibilityConverter}}" />
+                            Command="{Binding Path=CancelBulkUpdateCommand}"
+                            Visibility="{Binding Path=ShowInBulkUpdateMode}">
+                        <!-- Converter={StaticResource bool2VisibilityConverter}, -->
+                        _Cancel
+                    </Button>
                     <Button x:Name="ButtonUpdate"
                             Grid.Column="2"
                             Margin="2,0,0,0"
