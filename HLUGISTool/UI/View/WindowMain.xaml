@@ -1506,7 +1506,8 @@
                                                                                                          RelativeSource={RelativeSource Mode=FindAncestor,
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
-                                                                                   SelectedValueBinding="{Binding bap_habitat}"
+                                                                                   SelectedValueBinding="{Binding bap_habitat,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged}"
                                                                                    SelectedValuePath="code" />
                                             <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
                                                                                    MinWidth="125"
@@ -1519,6 +1520,7 @@
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
                                                                                    SelectedValueBinding="{Binding quality_determination,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged,
                                                                                                                   ValidatesOnDataErrors=True}"
                                                                                    SelectedValuePath="code" />
                                             <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
@@ -1532,11 +1534,13 @@
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
                                                                                    SelectedValueBinding="{Binding quality_interpretation,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged,
                                                                                                                   ValidatesOnDataErrors=True}"
                                                                                    SelectedValuePath="code" />
                                             <tkit:DataGridTextColumn Width="SizeToCells"
                                                                      MinWidth="125"
                                                                      Binding="{Binding interpretation_comments,
+                                                                                       UpdateSourceTrigger=PropertyChanged,
                                                                                        ValidatesOnDataErrors=True}"
                                                                      CanUserResize="True"
                                                                      EditingElementStyle="{StaticResource TextBoxStyle}"
@@ -1618,6 +1622,7 @@
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
                                                                                    SelectedValueBinding="{Binding bap_habitat,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged,
                                                                                                                   ValidatesOnDataErrors=True}"
                                                                                    SelectedValuePath="code" />
                                             <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
@@ -1631,6 +1636,7 @@
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
                                                                                    SelectedValueBinding="{Binding quality_determination,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged,
                                                                                                                   ValidatesOnDataErrors=True}"
                                                                                    SelectedValuePath="code" />
                                             <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
@@ -1644,11 +1650,13 @@
                                                                                                                                         AncestorType={x:Type Window}},
                                                                                                          IsAsync=true}"
                                                                                    SelectedValueBinding="{Binding quality_interpretation,
+                                                                                                                  UpdateSourceTrigger=PropertyChanged,
                                                                                                                   ValidatesOnDataErrors=True}"
                                                                                    SelectedValuePath="code" />
                                             <tkit:DataGridTextColumn Width="SizeToCells"
                                                                      MinWidth="125"
                                                                      Binding="{Binding interpretation_comments,
+                                                                                       UpdateSourceTrigger=PropertyChanged,
                                                                                        ValidatesOnDataErrors=True}"
                                                                      CanUserResize="True"
                                                                      EditingElementStyle="{StaticResource TextBoxStyle}"
@@ -1708,6 +1716,7 @@
                                              MaxLength="254"
                                              Text="{Binding Path=IncidGeneralComments,
                                                             Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged,
                                                             ValidatesOnDataErrors=True}"
                                              TextWrapping="Wrap"
                                              ToolTipService.ShowOnDisabled="True" />
@@ -1852,6 +1861,7 @@
                                              MaxLength="100"
                                              Text="{Binding Path=IncidSiteName,
                                                             Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged,
                                                             ValidatesOnDataErrors=True}"
                                              TextWrapping="Wrap"
                                              ToolTipService.ShowOnDisabled="True" />
@@ -1966,6 +1976,7 @@
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
                                                             Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged,
                                                             ValidatesOnDataErrors=True}"
                                              ToolTipService.ShowOnDisabled="True" />
                                     <CheckBox Name="CheckBoxCopySource1Date"
@@ -2193,6 +2204,7 @@
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
                                                             Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged,
                                                             ValidatesOnDataErrors=True}"
                                              ToolTipService.ShowOnDisabled="True" />
                                     <CheckBox Name="CheckBoxCopySource2Date"
@@ -2419,6 +2431,7 @@
                                                             Converter={StaticResource vagueDateConverter},
                                                             ConverterParameter='source_date_start^source_date_end^source_date_type',
                                                             Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged,
                                                             ValidatesOnDataErrors=True}"
                                              ToolTipService.ShowOnDisabled="True" />
                                     <CheckBox Name="CheckBoxCopySource3Date"

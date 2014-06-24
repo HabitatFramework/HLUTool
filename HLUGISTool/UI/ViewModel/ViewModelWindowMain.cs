@@ -151,6 +151,7 @@ namespace HLU.UI.ViewModel
         private bool _windowEnabled = true;
         private bool _editMode;
         private bool _pasting = false;
+        private bool _changed = false;
         private bool _saving = false;
         private bool _autoSplit = true;
         private bool _comingFromIncidIhsMatrix2 = false;
@@ -634,6 +635,12 @@ namespace HLU.UI.ViewModel
         {
             get { return _pasting; }
             set { _pasting = value; }
+        }
+
+        internal bool Changed
+        {
+            get { return _changed; }
+            set { _changed = value; }
         }
 
         internal bool Saving
@@ -1192,18 +1199,43 @@ namespace HLU.UI.ViewModel
                 if (_bulkUpdateMode == true)
                     BulkUpdateClicked(param);
                 else if (!_savingAttempted)
-                    _viewModelUpd.Update();
+                {
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Check if the record has changed and if it hasn't ask the user
+                    // if they still want to update the record (to create new history).
+                    MessageBoxResult userResponse = CheckClean();
+
+                    switch (userResponse)
+                    {
+                        case MessageBoxResult.Yes:
+                            _viewModelUpd.Update();
+                            break;
+                        case MessageBoxResult.No:
+                            _changed = false;
+                            break;
+                        case MessageBoxResult.Cancel:
+                            return;
+                    }
+                    //---------------------------------------------------------------------
+                }
             }
         }
 
         /// <summary>
-        /// Update is disabled if no GIS application is known to be running or the current record is in error.
+        /// Update is disabled if not currently in edit mode, if no changes have been made by
+        /// the user, or if the current record is in error.
         /// </summary>
         private bool CanUpdate
         {
-            get { return EditMode && String.IsNullOrEmpty(this.Error); }
+            get { return EditMode && (_changed == true) && String.IsNullOrEmpty(this.Error); }
         }
 
+        /// <summary>
+        /// Edit mode is enabled if the user is authorised (i.e. is in the lut_user table),
+        /// if there is a GIS application known to be running and if the HLU Layer is currently
+        /// being editing in GIS.
+        /// </summary>
         public bool EditMode
         {
             get
@@ -2491,6 +2523,35 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR2 (Apply button)
+        // Check if the record has changed and if it hasn't ask the user
+        // if they still want to update the record (to create new history).
+        //
+        /// <summary>
+        /// If no changes have been made reset the changed flag and then
+        /// check if the user still wants to save the record.
+        /// </summary>
+        /// <returns>The user's response to save or not save the record.</returns>
+        private MessageBoxResult CheckClean()
+        {
+            MessageBoxResult userResponse = MessageBoxResult.No;
+
+            if (EditMode && (_bulkUpdateMode == false))
+            {
+                userResponse = MessageBoxResult.Yes;
+                if (!IsDirty)
+                {
+                    userResponse = _saving ? MessageBox.Show("The current record has not been changed.\n" +
+                        "Would you still like to save the record?", "HLU: Save Changes",
+                        MessageBoxButton.YesNoCancel, MessageBoxImage.Question) : MessageBoxResult.Yes;
+                }
+            }
+
+            return userResponse;
+        }
+        //---------------------------------------------------------------------
+
         private MessageBoxResult CheckDirty()
         {
             MessageBoxResult userResponse = MessageBoxResult.No;
@@ -2499,7 +2560,7 @@ namespace HLU.UI.ViewModel
             {
                 if (CanUpdate)
                 {
-                    userResponse = _saving ? MessageBoxResult.Yes : 
+                    userResponse = _saving ? MessageBoxResult.Yes :
                         MessageBox.Show("The current record has been changed.\n" +
                         "Would you like to save your changes?", "HLU: Save Changes",
                         MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
@@ -2516,8 +2577,8 @@ namespace HLU.UI.ViewModel
                 {
                     userResponse = MessageBox.Show("The current record has been changed, " +
                         "but it cannot be saved at this time because it is in error." +
-                        "\n\nWould you like to leave this record discarding your changes?", 
-                        "HLU: Cannot Save", MessageBoxButton.YesNo, MessageBoxImage.Exclamation, 
+                        "\n\nWould you like to leave this record discarding your changes?",
+                        "HLU: Cannot Save", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
                         MessageBoxResult.No);
                     if (userResponse == MessageBoxResult.Yes)
                         userResponse = MessageBoxResult.No;
@@ -2576,6 +2637,12 @@ namespace HLU.UI.ViewModel
 
                 _incidArea = -1;
                 _incidLength = -1;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has not been changed yes so that the
+                // apply button does not appear.
+                _changed = false;
+                //---------------------------------------------------------------------
 
                 // without this IncidIhsHabitat becomes null, called from IhsHabitatCodes, when coming 
                 // from a previous row with valid IHS habitat code 
@@ -4209,6 +4276,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4278,6 +4351,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4339,6 +4418,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4569,6 +4654,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4629,6 +4720,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4859,6 +4956,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -4919,6 +5022,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -5151,6 +5260,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -5211,6 +5326,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("BapHabitatsAutoEnabled");
                 //---------------------------------------------------------------------
                 OnPropertyChanged("BapHabitatsUserEnabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -5361,7 +5482,16 @@ namespace HLU.UI.ViewModel
                 else
                     return null;
             }
-            set { if ((IncidCurrentRow != null) && (value != null)) IncidCurrentRow.legacy_habitat = value; }
+            set
+            { 
+                if ((IncidCurrentRow != null) && (value != null)) IncidCurrentRow.legacy_habitat = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
+            }
         }
 
         #endregion
@@ -5473,7 +5603,16 @@ namespace HLU.UI.ViewModel
         public ObservableCollection<BapEnvironment> IncidBapHabitatsAuto
         {
             get { return _incidBapRowsAuto; }
-            set { _incidBapRowsAuto = value; }
+            set
+            {
+                _incidBapRowsAuto = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
+            }
         }
 
         /// <summary>
@@ -5483,7 +5622,16 @@ namespace HLU.UI.ViewModel
         public ObservableCollection<BapEnvironment> IncidBapHabitatsUser
         {
             get { return _incidBapRowsUser; }
-            set { _incidBapRowsUser = value; }
+            set 
+            { 
+                _incidBapRowsUser = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
+            }
         }
 
         public bool BapHabitatsAutoEnabled
@@ -5559,6 +5707,16 @@ namespace HLU.UI.ViewModel
 
             _incidBapRowsAuto.CollectionChanged += _incidBapRowsAuto_CollectionChanged;
 
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Track when the BAP data has been changed so that the apply button
+            // will appear.
+            foreach (BapEnvironment be in _incidBapRowsAuto)
+            {
+                be.DataChanged += _incidBapRowsAuto_dataChanged;
+            };
+            //---------------------------------------------------------------------
+
             OnPropertyChanged("IncidBapHabitatsAuto");
 
             if ((incidBapRowsUndel != null) && (_incidBapRowsAuto != null))
@@ -5606,8 +5764,33 @@ namespace HLU.UI.ViewModel
 
             BapEnvironment.BapEnvironmentList = _incidBapRowsAuto.Concat(_incidBapRowsUser);
 
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Track when the BAP data has been changed so that the apply button
+            // will appear.
+            foreach (BapEnvironment be in _incidBapRowsUser)
+            {
+                be.DataChanged += _incidBapRowsUser_dataChanged;
+            };
+            //---------------------------------------------------------------------
+
             OnPropertyChanged("IncidBapHabitatsUser");
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR2 (Apply button)
+        // Track when the BAP data has been changed so that the apply button
+        // will appear.
+        private void _incidBapRowsAuto_dataChanged(bool Changed)
+        {
+            if (_changed == false && Changed == true) _changed = true;
+        }
+
+        private void _incidBapRowsUser_dataChanged(bool Changed)
+        {
+            if (_changed == false && Changed == true) _changed = true;
+        }
+        //---------------------------------------------------------------------
 
         internal IEnumerable<string> PrimaryBapEnvironments(string ihsHabitat, string ihsMatrix1,
             string ihsMatrix2, string ihsMatrix3, string ihsFormation1, string ihsFormation2,
@@ -5786,7 +5969,15 @@ namespace HLU.UI.ViewModel
             set
             {
                 if ((IncidCurrentRow != null) && (value != null))
+                {
                     IncidCurrentRow.general_comments = value.Trim();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    _changed = true;
+                    //---------------------------------------------------------------------
+                }
             }
         }
 
@@ -5823,7 +6014,15 @@ namespace HLU.UI.ViewModel
             set
             {
                 if ((IncidCurrentRow != null) && (value != null))
+                {
                     IncidCurrentRow.boundary_base_map = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    _changed = true;
+                    //---------------------------------------------------------------------
+                }
             }
         }
 
@@ -5839,7 +6038,15 @@ namespace HLU.UI.ViewModel
             set
             {
                 if ((IncidCurrentRow != null) && (value != null))
+                {
                     IncidCurrentRow.digitisation_base_map = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    _changed = true;
+                    //---------------------------------------------------------------------
+                }
             }
         }
 
@@ -5859,7 +6066,15 @@ namespace HLU.UI.ViewModel
             set
             {
                 if ((IncidCurrentRow != null) && (value != null))
+                {
                     IncidCurrentRow.site_name = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    _changed = true;
+                    //---------------------------------------------------------------------
+                }
             }
         }
 
@@ -5959,6 +6174,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource1HabitatType");
                 OnPropertyChanged("IncidSource1BoundaryImportance");
                 OnPropertyChanged("IncidSource1HabitatImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -5987,6 +6208,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(0, IncidSourcesTable.source_date_startColumn.Ordinal, value);
                 _incidSource1DateEntered = value;
                 OnPropertyChanged("IncidSource1Date");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -6025,6 +6252,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(0, IncidSourcesTable.source_habitat_classColumn.Ordinal, value);
                 OnPropertyChanged("Source1HabitatTypeCodes");
                 OnPropertyChanged("IncidSource1HabitatType");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -6046,11 +6279,17 @@ namespace HLU.UI.ViewModel
                         .Where(r => r.habitat_class_code == IncidSource1HabitatClass)
                         .OrderBy(r => r.sort_order).ToArray();
 
-                    if ((retArray.Length == 1) && (IncidSource1Id != null))
-                    {
-                        IncidSource1HabitatType = retArray[0].code;
-                        OnPropertyChanged("IncidSource1HabitatType");
-                    }
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Don't pre-populate the habitat type value if there is only one
+                    // possible value (as it triggers the data changed flag.
+                    //
+                    //if ((retArray.Length == 1) && (IncidSource1Id != null))
+                    //{
+                    //    IncidSource1HabitatType = retArray[0].code;
+                    //    OnPropertyChanged("IncidSource1HabitatType");
+                    //}
+                    //---------------------------------------------------------------------
 
                     return retArray;
                 }
@@ -6072,6 +6311,12 @@ namespace HLU.UI.ViewModel
             set
             {
                 UpdateIncidSourcesRow(0, IncidSourcesTable.source_habitat_typeColumn.Ordinal, value);
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -6111,6 +6356,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource1BoundaryImportance");
                 OnPropertyChanged("IncidSource2BoundaryImportance");
                 OnPropertyChanged("IncidSource3BoundaryImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -6131,6 +6382,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource1HabitatImportance");
                 OnPropertyChanged("IncidSource2HabitatImportance");
                 OnPropertyChanged("IncidSource3HabitatImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                _changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -6278,11 +6535,17 @@ namespace HLU.UI.ViewModel
                         .Where(r => r.habitat_class_code == IncidSource2HabitatClass)
                         .OrderBy(r => r.sort_order).ToArray();
 
-                    if ((retArray.Length == 1) && (IncidSource2Id != null))
-                    {
-                        IncidSource2HabitatType = retArray[0].code;
-                        OnPropertyChanged("IncidSource2HabitatType");
-                    }
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Don't pre-populate the habitat type value if there is only one
+                    // possible value (as it triggers the data changed flag.
+                    //
+                    //if ((retArray.Length == 1) && (IncidSource2Id != null))
+                    //{
+                    //    IncidSource2HabitatType = retArray[0].code;
+                    //    OnPropertyChanged("IncidSource2HabitatType");
+                    //}
+                    //---------------------------------------------------------------------
 
                     return retArray;
                 }
@@ -6508,11 +6771,17 @@ namespace HLU.UI.ViewModel
                         .Where(r => r.habitat_class_code == IncidSource3HabitatClass)
                         .OrderBy(r => r.sort_order).ToArray();
 
-                    if ((retArray.Length == 1) && (IncidSource3Id != null))
-                    {
-                        IncidSource3HabitatType = retArray[0].code;
-                        OnPropertyChanged("IncidSource3HabitatType");
-                    }
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Don't pre-populate the habitat type value if there is only one
+                    // possible value (as it triggers the data changed flag.
+                    //
+                    //if ((retArray.Length == 1) && (IncidSource3Id != null))
+                    //{
+                    //    IncidSource3HabitatType = retArray[0].code;
+                    //    OnPropertyChanged("IncidSource3HabitatType");
+                    //}
+                    //---------------------------------------------------------------------
 
                     return retArray;
                 }

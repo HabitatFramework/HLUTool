@@ -75,8 +75,18 @@ namespace HLU.Data
             _bap_habitat = dataRow.IsNull(table.bap_habitatColumn) ? null : dataRow.bap_habitat;
             _quality_determination = dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
-            this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ? 
-                null : dataRow.interpretation_comments;
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Update the _interpretation_comments string directly, rather than via the property,
+            // so that the _changed flag is not set.
+            //
+            //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
+            //    null : dataRow.interpretation_comments;
+            if (dataRow.IsNull(table.interpretation_commentsColumn))
+                _interpretation_comments = null;
+            else
+                _interpretation_comments = dataRow.interpretation_comments.Length < 255 ? dataRow.interpretation_comments : dataRow.interpretation_comments.Substring(0, 254);
+            //---------------------------------------------------------------------
         }
 
         public BapEnvironment(bool bulkUpdateMode, bool isSecondary, HluDataSet.incid_bapRow dataRow, IEnumerable<BapEnvironment> beList)
@@ -89,8 +99,18 @@ namespace HLU.Data
             _bap_habitat = dataRow.IsNull(table.bap_habitatColumn) ? null : dataRow.bap_habitat;
             _quality_determination = dataRow.IsNull(table.quality_determinationColumn) ? null : dataRow.quality_determination;
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
-            this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
-                null : dataRow.interpretation_comments;
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Update the _interpretation_comments string directly, rather than via the property,
+            // so that the _changed flag is not set.
+            //
+            //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
+            //    null : dataRow.interpretation_comments;
+            if (dataRow.IsNull(table.interpretation_commentsColumn))
+                _interpretation_comments = null;
+            else
+                _interpretation_comments = dataRow.interpretation_comments.Length < 255 ? dataRow.interpretation_comments : dataRow.interpretation_comments.Substring(0, 254);
+            //---------------------------------------------------------------------
             _bapEnvironmentList = beList;
         }
 
@@ -103,7 +123,17 @@ namespace HLU.Data
             _bap_habitat = itemArray[2].ToString();
             _quality_determination = itemArray[3].ToString();
             _quality_interpretation = itemArray[4].ToString();
-            this.interpretation_comments = itemArray[5].ToString();
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Update the _interpretation_comments string directly, rather than via the property,
+            // so that the _changed flag is not set.
+            //
+            //this.interpretation_comments = itemArray[5].ToString();
+            if (itemArray[5].ToString() == null)
+                _interpretation_comments = null;
+            else
+                _interpretation_comments = itemArray[5].ToString().Length < 255 ? itemArray[5].ToString() : itemArray[5].ToString().Substring(0, 254);
+            //---------------------------------------------------------------------
         }
 
         public BapEnvironment(bool bulkUpdateMode, bool isSecondary, int bap_id, string incid, string bap_habitat, 
@@ -116,8 +146,34 @@ namespace HLU.Data
             _bap_habitat = bap_habitat;
             _quality_determination = quality_determination;
             _quality_interpretation = quality_interpretation;
-            this.interpretation_comments = interpretation_comments;
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Update the _interpretation_comments string directly, rather than via the property,
+            // so that the _changed flag is not set.
+            //
+            //this.interpretation_comments = interpretation_comments;
+            if (interpretation_comments == null)
+                _interpretation_comments = null;
+            else
+                _interpretation_comments = interpretation_comments.Length < 255 ? interpretation_comments : interpretation_comments.Substring(0, 254);
+            //---------------------------------------------------------------------
         }
+
+        #endregion
+
+        #region DataChanged
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR2 (Apply button)
+        // Create a handler so that updates to the BAP records can be picked
+        // up back in the main window.
+        //
+        // declare the delegate since using the generic pattern
+        public delegate void DataChangedEventHandler(bool Changed);
+
+        // declare the event
+        public event DataChangedEventHandler DataChanged;
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -156,25 +212,61 @@ namespace HLU.Data
         public string bap_habitat
         {
             get { return _bap_habitat; }
-            set { _bap_habitat = value; }
+            set 
+            {
+                _bap_habitat = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                this.DataChanged(true);
+                //---------------------------------------------------------------------
+            }
         }
 
         public string quality_determination
         {
             get { return _quality_determination; }
-            set { _quality_determination = value; }
+            set 
+            {
+                _quality_determination = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                this.DataChanged(true);
+                //---------------------------------------------------------------------
+            }
         }
 
         public string quality_interpretation
         {
             get { return _quality_interpretation; }
-            set { _quality_interpretation = value; }
+            set 
+            { 
+                _quality_interpretation = value;
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                this.DataChanged(true);
+                //---------------------------------------------------------------------
+            }
         }
 
         public string interpretation_comments
         {
             get { return _interpretation_comments; }
-            set { _interpretation_comments = value == null || value.Length < 255 ? value : value.Substring(0, 254); }
+            set 
+            { 
+                _interpretation_comments = value == null || value.Length < 255 ? value : value.Substring(0, 254);
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                this.DataChanged(true);
+                //---------------------------------------------------------------------
+            }
         }
         
         #endregion
