@@ -4625,8 +4625,8 @@
                         </Border>
                         <Grid>
                             <ContentPresenter x:Name="ContentSite"
-                                              Margin="6,1,6,1"
-                                              HorizontalAlignment="Center"
+                                              Margin="10,1,10,1"
+                                              HorizontalAlignment="Stretch"
                                               VerticalAlignment="Center"
                                               ContentSource="Header"
                                               RecognizesAccessKey="True"

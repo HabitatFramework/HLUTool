@@ -750,12 +750,11 @@
                     <TabItem.Header>
                         <StackPanel>
                             <Label Name="IhsTabLabel"
-                                   Margin="2,0,2,2"
+                                   Margin="4,2,4,4"
                                    VerticalAlignment="Bottom"
                                    Content="{Binding Path=IhsTabLabel,
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
-                                   Padding="8,2,8,2"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -1425,12 +1424,11 @@
                     <TabItem.Header>
                         <StackPanel>
                             <Label Name="DetailsTabLabel"
-                                   Margin="2,0,2,2"
+                                   Margin="4,2,4,4"
                                    VerticalAlignment="Bottom"
                                    Content="{Binding Path=DetailsTabLabel,
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
-                                   Padding="8,2,8,2"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -1891,12 +1889,11 @@
                     <TabItem.Header>
                         <StackPanel>
                             <Label Name="SourcesTabLabel"
-                                   Margin="2,0,2,2"
+                                   Margin="4,2,4,4"
                                    VerticalAlignment="Bottom"
                                    Content="{Binding Path=SourcesTabLabel,
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
-                                   Padding="8,2,8,2"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -2654,7 +2651,7 @@
             <DockPanel Name="DockPanelGetMapSelection"
                        Grid.Row="2"
                        Grid.Column="0"
-                       MaxHeight="25"
+                       MaxHeight="35"
                        Margin="0,4,0,0"
                        VerticalAlignment="Top"
                        Panel.ZIndex="5">

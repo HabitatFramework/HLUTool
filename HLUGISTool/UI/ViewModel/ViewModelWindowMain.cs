@@ -5749,7 +5749,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsAuto)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5766,7 +5766,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsAuto)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5783,7 +5783,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsAuto)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5801,7 +5801,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsAuto)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5817,8 +5817,26 @@ namespace HLU.UI.ViewModel
             // will appear.
             foreach (BapEnvironment be in _incidBapRowsAuto)
             {
-                be.DataChanged += _incidBapRowsAuto_dataChanged;
+                be.DataChanged += _incidBapRowsAuto_DataChanged;
             };
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: Show field errors on tab labels.
+            // Check if there are any errors in the primary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+            {
+                int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+            }
+            else
+                UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+
+            OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
 
             OnPropertyChanged("IncidBapHabitatsAuto");
@@ -5857,7 +5875,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsUser)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5877,7 +5895,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsUser)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5894,7 +5912,7 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (BapEnvironment be in _incidBapRowsUser)
                     {
-                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                        be.DataChanged -= _incidBapRowsUser_DataChanged;
                     }
                 }
                 //---------------------------------------------------------------------
@@ -5911,8 +5929,40 @@ namespace HLU.UI.ViewModel
             // will appear.
             foreach (BapEnvironment be in _incidBapRowsUser)
             {
-                be.DataChanged += _incidBapRowsUser_dataChanged;
+                be.DataChanged += _incidBapRowsUser_DataChanged;
             };
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: Show field errors on tab labels.
+            // Check if there are any errors in the secondary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+            {
+                int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+
+                // Check if there are any duplicates between the primary and 
+                // secondary BAP records.
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                {
+                    StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                                            group be by be.bap_habitat into g
+                                            where g.Count() > 1
+                                            select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                    if (beDups.Length > 2)
+                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    else
+                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                }
+            }
+            else
+                UpdateErrorList(ref _detailsErrors, "BapUser", false);
+
+            OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
 
             OnPropertyChanged("IncidBapHabitatsUser");
@@ -5920,16 +5970,65 @@ namespace HLU.UI.ViewModel
 
         //---------------------------------------------------------------------
         // CHANGED: CR2 (Apply button)
-        // Track when the BAP data has been changed so that the apply button
-        // will appear.
-        private void _incidBapRowsAuto_dataChanged(bool BapChanged)
+        // Track when the BAP primary records have changed so that the apply
+        // button will appear.
+        private void _incidBapRowsAuto_DataChanged(bool BapChanged)
         {
             Changed = true;
-        }
 
-        private void _incidBapRowsUser_dataChanged(bool BapChanged)
+            //---------------------------------------------------------------------
+            // FIX: Show field errors on tab labels.
+            // Check if there are any errors in the primary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+            {
+                int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+            }
+            OnPropertyChanged("DetailsTabLabel");
+            //---------------------------------------------------------------------
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR2 (Apply button)
+        // Track when the BAP secondary records have changed so that the apply
+        // button will appear.
+        private void _incidBapRowsUser_DataChanged(bool BapChanged)
         {
             Changed = true;
+
+            //---------------------------------------------------------------------
+            // FIX: Show field errors on tab labels.
+            // Check if there are any errors in the secondary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+            {
+                int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+
+                // Check if there are any duplicates between the primary and 
+                // secondary BAP records.
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                {
+                    StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                                            group be by be.bap_habitat into g
+                                            where g.Count() > 1
+                                            select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                    if (beDups.Length > 2)
+                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    else
+                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                }
+            }
+            OnPropertyChanged("DetailsTabLabel");
+            //---------------------------------------------------------------------
         }
         //---------------------------------------------------------------------
 
@@ -7726,56 +7825,97 @@ namespace HLU.UI.ViewModel
                     error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
                 //---------------------------------------------------------------------
 
-                if (String.IsNullOrEmpty(IncidIhsHabitat))
-                    error.Append(Environment.NewLine).Append("IHS Habitat is mandatory for every INCID");
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // No need to check errors again here as they are already being checked
+                // whenever the IHS codes are changed.
+                //
+                //if (String.IsNullOrEmpty(IncidIhsHabitat))
+                //    error.Append(Environment.NewLine).Append("IHS Habitat is mandatory for every INCID");
 
-                if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
-                    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
-                    error.Append(Environment.NewLine).Append("Matrix code 1 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
+                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
+                //    error.Append(Environment.NewLine).Append("Matrix code 1 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
-                    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
-                    error.Append(Environment.NewLine).Append("Matrix code 2 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
+                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
+                //    error.Append(Environment.NewLine).Append("Matrix code 2 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) && 
-                    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
-                    error.Append(Environment.NewLine).Append("Matrix code 3 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) && 
+                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
+                //    error.Append(Environment.NewLine).Append("Matrix code 3 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) && 
-                    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
-                    error.Append(Environment.NewLine).Append("Formation code 1 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) && 
+                //    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
+                //    error.Append(Environment.NewLine).Append("Formation code 1 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) && 
-                    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
-                    error.Append(Environment.NewLine).Append("Formation code 2 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) && 
+                //    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
+                //    error.Append(Environment.NewLine).Append("Formation code 2 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) && 
-                    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
-                    error.Append(Environment.NewLine).Append("Management code 1 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) && 
+                //    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
+                //    error.Append(Environment.NewLine).Append("Management code 1 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
-                    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
-                    error.Append(Environment.NewLine).Append("Management code 2 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
+                //    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
+                //    error.Append(Environment.NewLine).Append("Management code 2 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) && 
-                    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
-                    error.Append(Environment.NewLine).Append("Complex code 1 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) && 
+                //    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
+                //    error.Append(Environment.NewLine).Append("Complex code 1 does not correspond to chosen IHS habitat");
 
-                if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
-                    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
-                    error.Append(Environment.NewLine).Append("Complex code 2 does not correspond to chosen IHS habitat");
+                //if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
+                //    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
+                //    error.Append(Environment.NewLine).Append("Complex code 2 does not correspond to chosen IHS habitat");
 
-                string s = ValidateIhsFormation1Code();
-                if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
+                //string s = ValidateIhsFormation1Code();
+                //if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
 
-                s = ValidateIhsManagement1Code();
-                if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
+                //s = ValidateIhsManagement1Code();
+                //if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
+                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIX: Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
                 if (_detailsErrors != null && _detailsErrors.Count > 0)
-                    error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
+                    error.Append(Environment.NewLine).Append("One or more Detail codes are in error");
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // No need to check errors again here as they are already being checked
+                // when the BAP fields are changed.
+                //
+                //if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                //{
+                //    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                //    if (countInvalid > 0)
+                //        error.Append(Environment.NewLine).Append(String.Format(
+                //            "Invalid primary priority habitat{0} in row{0} {1}.",
+                //            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsAuto
+                //            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
+                //}
+
+                //if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+                //{
+                //    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                //    if (countInvalid > 0)
+                //        error.Append(Environment.NewLine).Append(String.Format(
+                //            "Invalid secondary priority habitat{0} in row{0} {1}.",
+                //            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsUser
+                //            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
+
+                //    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                //    {
+                //        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                //                                group be by be.bap_habitat into g
+                //                                where g.Count() > 1
+                //                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                //        if (beDups.Length > 2) error.Append(beDups.Remove(0, 2));
+                //    }
+                //}
                 //---------------------------------------------------------------------
 
                 if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
@@ -7784,42 +7924,13 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
                     error.Append(Environment.NewLine).Append("Digitisation basemap is mandatory for every INCID");
 
-                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                {
-                    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
-                    if (countInvalid > 0)
-                        error.Append(Environment.NewLine).Append(String.Format(
-                            "Invalid primary priority habitat{0} in row{0} {1}.",
-                            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsAuto
-                            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
-                }
-
-                if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
-                {
-                    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
-                    if (countInvalid > 0)
-                        error.Append(Environment.NewLine).Append(String.Format(
-                            "Invalid secondary priority habitat{0} in row{0} {1}.",
-                            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsUser
-                            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
-
-                    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                    {
-                        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
-                                                group be by be.bap_habitat into g
-                                                where g.Count() > 1
-                                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
-                        if (beDups.Length > 2) error.Append(beDups.Remove(0, 2));
-                    }
-                }
-
                 //---------------------------------------------------------------------
                 // FIX: Show field errors on tab labels.
                 // If there are any Source field errors then show an error on the tab label.
                 if (((Source1Errors != null) && (Source1Errors.Count > 0)) ||
                     ((Source2Errors != null) && (Source2Errors.Count > 0)) ||
                     ((Source3Errors != null) && (Source3Errors.Count > 0)))
-                    error.Append(Environment.NewLine).Append("One or more sources are in error");
+                    error.Append(Environment.NewLine).Append("One or more Sources are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -8084,7 +8195,7 @@ namespace HLU.UI.ViewModel
                         if ((Source1Errors != null && Source1Errors.Count > 0) ||
                             (Source2Errors != null && Source2Errors.Count > 0) ||
                             (Source3Errors != null && Source3Errors.Count > 0))
-                            error = "One or more sources are in error";
+                            error = "One or more Sources are in error";
                         break;
                     case "IncidSource1Id":
                     case "IncidSource1Date":
@@ -8126,41 +8237,6 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("SourcesTabLabel");
                         break;
                 }
-
-                // Check if there are any errors in the primary BAP records.
-                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                {
-                    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
-                    if (countInvalid > 0)
-                        UpdateErrorList(ref _detailsErrors, "BapAuto", true);
-                    else
-                        UpdateErrorList(ref _detailsErrors, "BapAuto", false);
-                }
-
-                // Check if there are any errors in the secondary BAP records.
-                if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
-                {
-                    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
-                    if (countInvalid > 0)
-                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
-                    else
-                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
-
-                    // Check if there are any duplicates between the primary and 
-                    // secondary BAP records.
-                    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                    {
-                        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
-                                                group be by be.bap_habitat into g
-                                                where g.Count() > 1
-                                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
-                        if (beDups.Length > 2)
-                            UpdateErrorList(ref _detailsErrors, "BapUser", true);
-                        else
-                            UpdateErrorList(ref _detailsErrors, "BapUser", false);
-                    }
-                }
-                OnPropertyChanged("DetailsTabLabel");
                 //---------------------------------------------------------------------
 
                 // dirty commands registered with CommandManager so they are queried to see if they can execute now
