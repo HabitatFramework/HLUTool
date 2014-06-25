@@ -4179,6 +4179,19 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false" />
+                        <!--  AM Start  -->
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                        </Trigger>
+                        <!--  AM End  -->
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -4701,6 +4714,14 @@
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.3" />
                         </Trigger>
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

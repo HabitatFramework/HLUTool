@@ -198,6 +198,11 @@ namespace HLU.UI.ViewModel
         private string _processingMsg = "Processing ...";
         private bool _saved = false;
         private bool _savingAttempted;
+        private List<string> _ihsErrors = new List<string>();
+        private List<string> _detailsErrors = new List<string>();
+        private List<string[]> _source1Errors;
+        private List<string[]> _source2Errors;
+        private List<string[]> _source3Errors;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -697,6 +702,24 @@ namespace HLU.UI.ViewModel
         internal ViewModelWindowMainUpdate ViewModelUpdate
         {
             get { return _viewModelUpd; }
+        }
+
+        internal List<string[]> Source1Errors
+        {
+            get { return _source1Errors; }
+            set { _source1Errors = value; }
+        }
+
+        internal List<string[]> Source2Errors
+        {
+            get { return _source2Errors; }
+            set { _source2Errors = value; }
+        }
+
+        internal List<string[]> Source3Errors
+        {
+            get { return _source3Errors; }
+            set { _source3Errors = value; }
         }
 
         #endregion
@@ -3774,6 +3797,18 @@ namespace HLU.UI.ViewModel
 
         #region IHS Tab
 
+        //---------------------------------------------------------------------
+        // FIX: Show field errors on tab labels.
+        // Set the Ihs tab label from here so that validation can be done.
+        // This will enable tooltips to be shown so that validation errors
+        // in any fields in the tab can be highlighted by flagging the tab
+        // label as in error.
+        public string IhsTabLabel
+        {
+            get { return "IHS"; }
+        }
+        //---------------------------------------------------------------------
+
         #region IHS Category
 
         public HluDataSet.lut_ihs_categoryRow[] IhsCategoryCodes
@@ -5509,6 +5544,18 @@ namespace HLU.UI.ViewModel
 
         #region Details Tab
 
+        //---------------------------------------------------------------------
+        // FIX: Show field errors on tab labels.
+        // Set the Details tab label from here so that validation can be done.
+        // This will enable tooltips to be shown so that validation errors
+        // in any fields in the tab can be highlighted by flagging the tab
+        // label as in error.
+        public string DetailsTabLabel
+        {
+            get { return "Details"; }
+        }
+        //---------------------------------------------------------------------
+
         #region BAP Habitat
 
         public HluDataSet.lut_habitat_typeRow[] BapHabitatCodes
@@ -6177,6 +6224,18 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region Sources Tab
+
+        //---------------------------------------------------------------------
+        // FIX: Show field errors on tab labels.
+        // Set the Sources tab label from here so that validation can be done.
+        // This will enable tooltips to be shown so that validation errors
+        // in any fields in the tab can be highlighted by flagging the tab
+        // label as in error.
+        public string SourcesTabLabel
+        {
+            get { return "Sources"; }
+        }
+        //---------------------------------------------------------------------
 
         private bool CheckSources()
         {
@@ -7660,6 +7719,13 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(Process))
                     error.Append(Environment.NewLine).Append("Process is mandatory for the history trail of every INCID");
 
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // If there are any IHS field errors then show an error on the tab label.
+                if (_ihsErrors != null && _ihsErrors.Count > 0)
+                    error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
+                //---------------------------------------------------------------------
+
                 if (String.IsNullOrEmpty(IncidIhsHabitat))
                     error.Append(Environment.NewLine).Append("IHS Habitat is mandatory for every INCID");
 
@@ -7705,13 +7771,20 @@ namespace HLU.UI.ViewModel
                 s = ValidateIhsManagement1Code();
                 if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
 
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // If there are any Detail field errors then show an error on the tab label.
+                if (_detailsErrors != null && _detailsErrors.Count > 0)
+                    error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
+                //---------------------------------------------------------------------
+
                 if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
                     error.Append(Environment.NewLine).Append("Boundary basemap is mandatory for every INCID");
 
                 if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
                     error.Append(Environment.NewLine).Append("Digitisation basemap is mandatory for every INCID");
 
-                if (_incidBapRowsAuto != null)
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
                 {
                     int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                     if (countInvalid > 0)
@@ -7721,33 +7794,51 @@ namespace HLU.UI.ViewModel
                             .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
                 }
 
-                if (_incidBapRowsUser != null)
+                if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
                 {
-                    StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
-                                            group be by be.bap_habitat into g
-                                            where g.Count() > 1
-                                            select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
-                    if (beDups.Length > 2) error.Append(beDups.Remove(0, 2));
-
                     int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                     if (countInvalid > 0)
                         error.Append(Environment.NewLine).Append(String.Format(
                             "Invalid secondary priority habitat{0} in row{0} {1}.",
                             countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsUser
                             .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
+
+                    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                    {
+                        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                                                group be by be.bap_habitat into g
+                                                where g.Count() > 1
+                                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                        if (beDups.Length > 2) error.Append(beDups.Remove(0, 2));
+                    }
                 }
 
-                List<string[]> errorList = ValidateSource1();
-                if ((errorList != null) && (errorList.Count > 0))
-                    error.Append(Environment.NewLine).Append(ErrorMessageList(errorList));
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // If there are any Source field errors then show an error on the tab label.
+                if (((Source1Errors != null) && (Source1Errors.Count > 0)) ||
+                    ((Source2Errors != null) && (Source2Errors.Count > 0)) ||
+                    ((Source3Errors != null) && (Source3Errors.Count > 0)))
+                    error.Append(Environment.NewLine).Append("One or more sources are in error");
+                //---------------------------------------------------------------------
 
-                errorList = ValidateSource2();
-                if ((errorList != null) && (errorList.Count > 0))
-                    error.Append(Environment.NewLine).Append(ErrorMessageList(errorList));
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // Store the Source field errors so that they can be checked
+                // at the end to see if the Source tab label should also be flagged
+                // as in error.
+                //Source1Errors = ValidateSource1();
+                if ((Source1Errors != null) && (Source1Errors.Count > 0))
+                    error.Append(Environment.NewLine).Append(ErrorMessageList(Source1Errors));
 
-                errorList = ValidateSource3();
-                if ((errorList != null) && (errorList.Count > 0))
-                    error.Append(Environment.NewLine).Append(ErrorMessageList(errorList));
+                //Source2Errors = ValidateSource2();
+                if ((Source2Errors != null) && (Source2Errors.Count > 0))
+                    error.Append(Environment.NewLine).Append(ErrorMessageList(Source2Errors));
+
+                //Source3Errors = ValidateSource3();
+                if ((Source3Errors != null) && (Source3Errors.Count > 0))
+                    error.Append(Environment.NewLine).Append(ErrorMessageList(Source3Errors));
+                //---------------------------------------------------------------------
 
                 if (error.Length > 1)
                     return error.Remove(0, 1).ToString();
@@ -7765,6 +7856,10 @@ namespace HLU.UI.ViewModel
 
                 string error = null;
 
+                //---------------------------------------------------------------------
+                // FIX: Show field errors on tab labels.
+                // Check the individual field errors to see if their parent tab label
+                // should be flagged as also in error.
                 switch (columnName)
                 {
                     case "Reason":
@@ -7777,75 +7872,219 @@ namespace HLU.UI.ViewModel
                         break;
                     case "Incid":
                         break;
+                    case "IhsTabLabel":
+                        if (_ihsErrors != null && _ihsErrors.Count > 0)
+                            error = "One or more IHS codes are in error";
+                        break;
                     case "IncidIhsHabitat":
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidIhsHabitat))
+                        {
                             error = "IHS Habitat is mandatory for every INCID";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsMatrix1":
                         FixIhsMatrixCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
+                        {
                             error = "Matrix code 1 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsMatrix2":
                         FixIhsMatrixCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
+                        {
                             error = "Matrix code 2 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsMatrix3":
                         FixIhsMatrixCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) &&
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
+                        {
                             error = "Matrix code 3 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsFormation1":
                         FixIhsFormationCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) &&
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
+                        {
                             error = "Formation code 1 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
                         else
                             error = ValidateIhsFormation1Code();
+                            if (error != null)
+                            {
+                                UpdateErrorList(ref _ihsErrors, columnName, true);
+                            }
+                            else
+                            {
+                                UpdateErrorList(ref _ihsErrors, columnName, false);
+                            }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsFormation2":
                         FixIhsFormationCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) &&
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
+                        {
                             error = "Formation code 2 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsManagement1":
                         FixIhsManagementCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) &&
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
+                        {
                             error = "Management code 1 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
                         else
                             error = ValidateIhsManagement1Code();
+                            if (error != null)
+                            {
+                                UpdateErrorList(ref _ihsErrors, columnName, true);
+                            }
+                            else
+                            {
+                                UpdateErrorList(ref _ihsErrors, columnName, false);
+                            }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsManagement2":
                         FixIhsManagementCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
+                        {
                             error = "Management code 2 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsComplex1":
                         FixIhsComplexCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) &&
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
+                        {
                             error = "Complex code 1 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsComplex2":
                         FixIhsComplexCodes();
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
+                        {
                             error = "Complex code 2 does not correspond to chosen IHS habitat";
+                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("IhsTabLabel");
+                        break;
+                    case "DetailsTabLabel":
+                        if (_detailsErrors != null && _detailsErrors.Count > 0)
+                            error = "One or more Details are in error";
                         break;
                     case "IncidBoundaryBaseMap":
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
+                        {
                             error = "Boundary basemap is mandatory for every INCID";
+                            UpdateErrorList(ref _detailsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _detailsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("DetailsTabLabel");
                         break;
                     case "IncidDigitisationBaseMap":
+                        // If the field is in error add the field name to the list of errors
+                        // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
+                        {
                             error = "Digitisation basemap is mandatory for every INCID";
+                            UpdateErrorList(ref _detailsErrors, columnName, true);
+                        }
+                        else
+                        {
+                            UpdateErrorList(ref _detailsErrors, columnName, false);
+                        }
+                        OnPropertyChanged("DetailsTabLabel");
+                        break;
+                    case "SourcesTabLabel":
+                        // Check the Source field errors to see if the Source tab label
+                        // should be flagged as in error.
+                        if ((Source1Errors != null && Source1Errors.Count > 0) ||
+                            (Source2Errors != null && Source2Errors.Count > 0) ||
+                            (Source3Errors != null && Source3Errors.Count > 0))
+                            error = "One or more sources are in error";
                         break;
                     case "IncidSource1Id":
                     case "IncidSource1Date":
@@ -7853,7 +8092,12 @@ namespace HLU.UI.ViewModel
                     case "IncidSource1HabitatType":
                     case "IncidSource1BoundaryImportance":
                     case "IncidSource1HabitatImportance":
-                        error = ErrorMessage(columnName, ValidateSource1());
+                        // Store the Source1 field errors so that they can be checked
+                        // later to see if the Source tab label should also be flagged
+                        // as in error.
+                        Source1Errors = ValidateSource1();
+                        error = ErrorMessage(columnName, Source1Errors);
+                        OnPropertyChanged("SourcesTabLabel");
                         break;
                     case "IncidSource2Id":
                     case "IncidSource2Date":
@@ -7861,7 +8105,12 @@ namespace HLU.UI.ViewModel
                     case "IncidSource2HabitatType":
                     case "IncidSource2BoundaryImportance":
                     case "IncidSource2HabitatImportance":
-                        error = ErrorMessage(columnName, ValidateSource2());
+                        // Store the Source2 field errors so that they can be checked
+                        // later to see if the Source tab label should also be flagged
+                        // as in error.
+                        Source2Errors = ValidateSource2();
+                        error = ErrorMessage(columnName, Source2Errors);
+                        OnPropertyChanged("SourcesTabLabel");
                         break;
                     case "IncidSource3Id":
                     case "IncidSource3Date":
@@ -7869,9 +8118,50 @@ namespace HLU.UI.ViewModel
                     case "IncidSource3HabitatType":
                     case "IncidSource3BoundaryImportance":
                     case "IncidSource3HabitatImportance":
-                        error = ErrorMessage(columnName, ValidateSource3());
+                        // Store the Source3 field errors so that they can be checked
+                        // later to see if the Source tab label should also be flagged
+                        // as in error.
+                        Source3Errors = ValidateSource3();
+                        error = ErrorMessage(columnName, Source3Errors);
+                        OnPropertyChanged("SourcesTabLabel");
                         break;
                 }
+
+                // Check if there are any errors in the primary BAP records.
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                {
+                    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                    if (countInvalid > 0)
+                        UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                    else
+                        UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+                }
+
+                // Check if there are any errors in the secondary BAP records.
+                if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+                {
+                    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                    if (countInvalid > 0)
+                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    else
+                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
+
+                    // Check if there are any duplicates between the primary and 
+                    // secondary BAP records.
+                    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                    {
+                        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                                                group be by be.bap_habitat into g
+                                                where g.Count() > 1
+                                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                        if (beDups.Length > 2)
+                            UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                        else
+                            UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                    }
+                }
+                OnPropertyChanged("DetailsTabLabel");
+                //---------------------------------------------------------------------
 
                 // dirty commands registered with CommandManager so they are queried to see if they can execute now
                 CommandManager.InvalidateRequerySuggested();
@@ -7880,6 +8170,20 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("CanPaste");
 
                 return error;
+            }
+        }
+
+        public void UpdateErrorList(ref List<string> errorList, string columnName, bool addError)
+        {
+            if (addError == true)
+            {
+                if (!errorList.Contains(columnName))
+                    errorList.Add(columnName);
+            }
+            else
+            {
+                if (errorList.Contains(columnName))
+                    errorList.Remove(columnName);
             }
         }
 

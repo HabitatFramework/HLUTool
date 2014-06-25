@@ -359,8 +359,8 @@ namespace HLU.Data
             if (String.IsNullOrEmpty(bap_habitat))
                 sbError.Append(Environment.NewLine).Append("Priority habitat is a mandatory field");
 
-            if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
-                sbError.Append(Environment.NewLine).Append("Duplicate priority environment");
+            //if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
+            //    sbError.Append(Environment.NewLine).Append("Duplicate priority environment");
 
             if (String.IsNullOrEmpty(quality_determination))
             {
