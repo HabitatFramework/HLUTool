@@ -78,7 +78,7 @@ namespace HLU.Data
             //---------------------------------------------------------------------
             // CHANGED: CR2 (Apply button)
             // Update the _interpretation_comments string directly, rather than via the property,
-            // so that the _changed flag is not set.
+            // so that the Changed flag is not set.
             //
             //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
             //    null : dataRow.interpretation_comments;
@@ -102,7 +102,7 @@ namespace HLU.Data
             //---------------------------------------------------------------------
             // CHANGED: CR2 (Apply button)
             // Update the _interpretation_comments string directly, rather than via the property,
-            // so that the _changed flag is not set.
+            // so that the Changed flag is not set.
             //
             //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
             //    null : dataRow.interpretation_comments;
@@ -126,7 +126,7 @@ namespace HLU.Data
             //---------------------------------------------------------------------
             // CHANGED: CR2 (Apply button)
             // Update the _interpretation_comments string directly, rather than via the property,
-            // so that the _changed flag is not set.
+            // so that the Changed flag is not set.
             //
             //this.interpretation_comments = itemArray[5].ToString();
             if (itemArray[5].ToString() == null)
@@ -149,7 +149,7 @@ namespace HLU.Data
             //---------------------------------------------------------------------
             // CHANGED: CR2 (Apply button)
             // Update the _interpretation_comments string directly, rather than via the property,
-            // so that the _changed flag is not set.
+            // so that the Changed flag is not set.
             //
             //this.interpretation_comments = interpretation_comments;
             if (interpretation_comments == null)
