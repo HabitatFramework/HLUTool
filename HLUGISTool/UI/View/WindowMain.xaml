@@ -749,11 +749,14 @@
                 <TabItem Name="TabItemIhs" IsEnabled="{Binding Path=TabItemIhsEnabled}">
                     <TabItem.Header>
                         <StackPanel>
-                            <Label Margin="4,2,2,4"
+                            <Label Name="IhsTabLabel"
+                                   Margin="2,0,2,2"
                                    VerticalAlignment="Bottom"
-                                   FontSize="13">
-                                IHS
-                            </Label>
+                                   Content="{Binding Path=IhsTabLabel,
+                                                     ValidatesOnDataErrors=True}"
+                                   FontSize="13"
+                                   Padding="8,2,8,2"
+                                   ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
                     <AdornerDecorator>
@@ -1421,11 +1424,14 @@
                 <TabItem Name="TabItemDetails" IsEnabled="{Binding Path=TabItemDetailsEnabled}">
                     <TabItem.Header>
                         <StackPanel>
-                            <Label Margin="4,2,2,4"
+                            <Label Name="DetailsTabLabel"
+                                   Margin="2,0,2,2"
                                    VerticalAlignment="Bottom"
-                                   FontSize="13">
-                                Details
-                            </Label>
+                                   Content="{Binding Path=DetailsTabLabel,
+                                                     ValidatesOnDataErrors=True}"
+                                   FontSize="13"
+                                   Padding="8,2,8,2"
+                                   ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
                     <AdornerDecorator>
@@ -1884,11 +1890,14 @@
                 <TabItem Name="TabItemSources" IsEnabled="{Binding Path=TabItemSourcesEnabled}">
                     <TabItem.Header>
                         <StackPanel>
-                            <Label Margin="4,2,2,4"
+                            <Label Name="SourcesTabLabel"
+                                   Margin="2,0,2,2"
                                    VerticalAlignment="Bottom"
-                                   FontSize="13">
-                                Sources
-                            </Label>
+                                   Content="{Binding Path=SourcesTabLabel,
+                                                     ValidatesOnDataErrors=True}"
+                                   FontSize="13"
+                                   Padding="8,2,8,2"
+                                   ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
                     <AdornerDecorator>
@@ -2595,7 +2604,7 @@
                 <TabItem Name="TabItemHistory" IsEnabled="{Binding Path=TabItemHistoryEnabled}">
                     <TabItem.Header>
                         <StackPanel>
-                            <Label Margin="4,2,2,4"
+                            <Label Margin="4,2,4,4"
                                    VerticalAlignment="Bottom"
                                    FontSize="13">
                                 History
