@@ -3419,7 +3419,13 @@
                             </Border.Background>
                         </Border>
                         <Grid>
-                            <ContentPresenter x:Name="ContentSite" RecognizesAccessKey="True" ContentSource="Header" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="6,1,6,1" VerticalAlignment="Center" />
+                            <ContentPresenter x:Name="ContentSite"
+                                              Margin="10,1,10,1"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Center"
+                                              ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              d:LayoutOverrides="Width, Height" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
