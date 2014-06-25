@@ -114,8 +114,28 @@ namespace HLU.UI.ViewModel
         public static bool RowIsDirty<R>(R row)
             where R : DataRow
         {
-            return row != null && row.RowState != DataRowState.Unchanged && 
-                row.RowState != DataRowState.Detached;
+            // If the row is not null and is not unchanged or detached
+            // (i.e. it has been added, deleted or modified)
+            if (row != null && row.RowState != DataRowState.Unchanged &&
+                row.RowState != DataRowState.Detached)
+            {
+                // If the row has been modified then compare the original and
+                // current values of every column to see if they are dirty.
+                if (row.RowState == DataRowState.Modified)
+                {
+                    foreach (DataColumn dc in row.Table.Columns)
+                    {
+                        if (!row[dc, DataRowVersion.Original].Equals(
+                             row[dc, DataRowVersion.Current]))
+                            return true;
+                    }
+                }
+                else
+                    // If the row has been added or deleted then it must be
+                    // dirty.
+                    return true;
+            }
+            return false;
         }
 
         public static string GetOperationsCode(HluDataSet hluDS, ViewModelWindowMain.Operations modifyOperation)

@@ -640,7 +640,16 @@ namespace HLU.UI.ViewModel
         internal bool Changed
         {
             get { return _changed; }
-            set { _changed = value; }
+            set
+            {
+                // If this is another change by the user but the data is no longer
+                // dirty (i.e. the user has reversed out their changes) then
+                // reset the changed flag.
+                if (value == true && !IsDirty)
+                    _changed = false;
+                else
+                    _changed = value; 
+            }
         }
 
         internal bool Saving
@@ -1212,7 +1221,7 @@ namespace HLU.UI.ViewModel
                             _viewModelUpd.Update();
                             break;
                         case MessageBoxResult.No:
-                            _changed = false;
+                            Changed = false;
                             break;
                         case MessageBoxResult.Cancel:
                             return;
@@ -1228,7 +1237,7 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private bool CanUpdate
         {
-            get { return EditMode && (_changed == true) && String.IsNullOrEmpty(this.Error); }
+            get { return EditMode && (Changed == true) && String.IsNullOrEmpty(this.Error); }
         }
 
         /// <summary>
@@ -2641,7 +2650,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has not been changed yes so that the
                 // apply button does not appear.
-                _changed = false;
+                Changed = false;
                 //---------------------------------------------------------------------
 
                 // without this IncidIhsHabitat becomes null, called from IhsHabitatCodes, when coming 
@@ -4280,7 +4289,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -4355,7 +4364,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -4422,7 +4431,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -4658,7 +4667,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -4724,7 +4733,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -4960,7 +4969,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5026,7 +5035,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5264,7 +5273,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5330,7 +5339,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5489,7 +5498,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5610,7 +5619,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5629,7 +5638,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -5686,22 +5695,70 @@ namespace HLU.UI.ViewModel
                              where incidBapRowsUndel.Count(row => row.bap_habitat == p) == 0
                              select new BapEnvironment(false, false, -1, Incid, p, null, null, null);
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsAuto != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsAuto)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>(
                     prevBapRowsAuto.Concat(newBapRowsAuto).Concat(potBap));
             }
             else if (incidBapRowsUndel != null)
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsAuto != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsAuto)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 // no primary BAP, but user-added Db rows
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             }
             else if ((primaryBap != null) && (primaryBap.Count() > 0))
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsAuto != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsAuto)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 // primary BAP, none in DB
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>(
                     primaryBap.Select(p => new BapEnvironment(false, false, -1, Incid, p, null, null, null)));
             }
             else
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsAuto != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsAuto)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             }
 
@@ -5745,6 +5802,19 @@ namespace HLU.UI.ViewModel
                         be.BulkUpdateMode = _bulkUpdateMode == true;
                     });
                 }
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsUser != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsUser)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 _incidBapRowsUser = new ObservableCollection<BapEnvironment>(prevBapRowsUser.Concat(
                     from r in incidBapRowsUndel
                     where _incidBapRowsAuto.Count(a => a.bap_habitat == r.bap_habitat) == 0
@@ -5753,11 +5823,35 @@ namespace HLU.UI.ViewModel
             }
             else if (incidBapRowsUndel != null)
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsUser != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsUser)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 _incidBapRowsUser = new ObservableCollection<BapEnvironment>(
                    incidBapRowsUndel.Select(r => new BapEnvironment(_bulkUpdateMode == true, true, r)));
             }
             else
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidBapRowsUser != null)
+                {
+                    foreach (BapEnvironment be in _incidBapRowsUser)
+                    {
+                        be.DataChanged -= _incidBapRowsUser_dataChanged;
+                    }
+                }
+                //---------------------------------------------------------------------
+
                 _incidBapRowsUser = new ObservableCollection<BapEnvironment>();
             }
             _incidBapRowsUser.CollectionChanged += _incidBapRowsUser_CollectionChanged;
@@ -5781,14 +5875,14 @@ namespace HLU.UI.ViewModel
         // CHANGED: CR2 (Apply button)
         // Track when the BAP data has been changed so that the apply button
         // will appear.
-        private void _incidBapRowsAuto_dataChanged(bool Changed)
+        private void _incidBapRowsAuto_dataChanged(bool BapChanged)
         {
-            if (_changed == false && Changed == true) _changed = true;
+            Changed = true;
         }
 
-        private void _incidBapRowsUser_dataChanged(bool Changed)
+        private void _incidBapRowsUser_dataChanged(bool BapChanged)
         {
-            if (_changed == false && Changed == true) _changed = true;
+            Changed = true;
         }
         //---------------------------------------------------------------------
 
@@ -5975,7 +6069,7 @@ namespace HLU.UI.ViewModel
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
                     // will appear.
-                    _changed = true;
+                    Changed = true;
                     //---------------------------------------------------------------------
                 }
             }
@@ -6020,7 +6114,7 @@ namespace HLU.UI.ViewModel
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
                     // will appear.
-                    _changed = true;
+                    Changed = true;
                     //---------------------------------------------------------------------
                 }
             }
@@ -6044,7 +6138,7 @@ namespace HLU.UI.ViewModel
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
                     // will appear.
-                    _changed = true;
+                    Changed = true;
                     //---------------------------------------------------------------------
                 }
             }
@@ -6072,7 +6166,7 @@ namespace HLU.UI.ViewModel
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
                     // will appear.
-                    _changed = true;
+                    Changed = true;
                     //---------------------------------------------------------------------
                 }
             }
@@ -6178,7 +6272,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -6212,7 +6306,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -6256,7 +6350,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -6315,7 +6409,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -6360,7 +6454,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -6386,7 +6480,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                _changed = true;
+                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
