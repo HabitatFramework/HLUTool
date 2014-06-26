@@ -168,6 +168,8 @@ namespace HLU.UI.ViewModel
         private int _incidsSelectedMapCount = -1;
         private int _toidsSelectedMapCount = -1;
         private int _fragsSelectedMapCount = -1;
+        private int _toidsTotalDbCount = -1;
+        private int _fragsTotalDbCount = -1;
         private int _origIncidIhsMatrixCount = 0;
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
@@ -1032,7 +1034,18 @@ namespace HLU.UI.ViewModel
         private void NavigateFirstClicked(object param)
         {
             if (_bulkUpdateMode == true) return;
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR22 (Record selectors)
+            // Show the wait cursor and processing message in the status area
+            // whilst moving to the new Incid.
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
             IncidCurrentRowIndex = 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
+        
         }
 
         /// <summary>
@@ -1053,7 +1066,16 @@ namespace HLU.UI.ViewModel
 
         private void NavigatePreviousClicked(object param)
         {
+            //---------------------------------------------------------------------
+            // CHANGED: CR22 (Record selectors)
+            // Show the wait cursor and processing message in the status area
+            // whilst moving to the new Incid.
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
             IncidCurrentRowIndex -= 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
         }
 
         private bool CanNavigateBackward
@@ -1079,7 +1101,16 @@ namespace HLU.UI.ViewModel
 
         private void NavigateNextClicked(object param)
         {
+            //---------------------------------------------------------------------
+            // CHANGED: CR22 (Record selectors)
+            // Show the wait cursor and processing message in the status area
+            // whilst moving to the new Incid.
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
             IncidCurrentRowIndex += 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
         }
 
         private bool CanNavigateForward
@@ -1110,7 +1141,17 @@ namespace HLU.UI.ViewModel
         private void NavigateLastClicked(object param)
         {
             if (_bulkUpdateMode == true) return;
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR22 (Record selectors)
+            // Show the wait cursor and processing message in the status area
+            // whilst moving to the new Incid.
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
             IncidCurrentRowIndex = IsFiltered ? _incidSelection.Rows.Count : _incidRowCount;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
         }
 
         #endregion
@@ -2084,7 +2125,18 @@ namespace HLU.UI.ViewModel
                 _toidsSelectedMapCount = -1;
                 _fragsSelectedMapCount = -1;
                 _incidPageRowNoMax = -1;
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR22 (Record selectors)
+                // Show the wait cursor and processing message in the status area
+                // whilst moving to the new Incid.
+                ChangeCursor(Cursors.Wait, "Processing ...");
+
                 IncidCurrentRowIndex = 1;
+
+                ChangeCursor(Cursors.Arrow, null);
+                //---------------------------------------------------------------------
+
                 OnPropertyChanged("IsFiltered");
                 OnPropertyChanged("CanBulkUpdate");
                 OnPropertyChanged("CanZoomSelection");
@@ -2096,6 +2148,9 @@ namespace HLU.UI.ViewModel
 
         #region Select Helpers
 
+        /// <summary>
+        /// Count how many incids, toids and fragments are selected in GIS.
+        /// </summary>
         private void AnalyzeGisSelectionSet()
         {
             _incidsSelectedMapCount = -1;
@@ -2106,6 +2161,7 @@ namespace HLU.UI.ViewModel
                 switch (_gisSelection.Columns.Count)
                 {
                     case 3:
+                        // Count the number of fragments selected in GIS.
                         _fragsSelectedMap = from r in _gisSelection.AsEnumerable()
                                             group r by new
                                             {
@@ -2118,11 +2174,13 @@ namespace HLU.UI.ViewModel
                         _fragsSelectedMapCount = _fragsSelectedMap.Count();
                         goto case 2;
                     case 2:
+                        // Count the number of toids selected in GIS.
                         _toidsSelectedMap = _gisSelection.AsEnumerable()
                             .GroupBy(r => r.Field<string>(_gisIDColumns[1].ColumnName)).Select(g => g.Key);
                         _toidsSelectedMapCount = _toidsSelectedMap.Count();
                         goto case 1;
                     case 1:
+                        // Count the number of incids selected in GIS.
                         _incidsSelectedMap = _gisSelection.AsEnumerable()
                             .GroupBy(r => r.Field<string>(_gisIDColumns[0].ColumnName)).Select(g => g.Key);
                         _incidsSelectedMapCount = _incidsSelectedMap.Count();
@@ -2476,8 +2534,20 @@ namespace HLU.UI.ViewModel
                         numFrags = gisRows.Length;
                     }
 
-                    return String.Format("of {0} (filtered){1}{2}", _incidSelection.Rows.Count,
-                        String.Format(" [T:{0}]", numToids.ToString()), String.Format(" [F:{0}]", numFrags.ToString()));
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR22 (Record selectors)
+                    // Include the total toid and fragment counts for the current Incid
+                    // in the status area in addition to the currently select toid and
+                    // fragment counts.
+                    //
+                    //return String.Format("of {0} (filtered){1}{2}", _incidSelection.Rows.Count,
+                    //    String.Format(" [T:{0}]", numToids.ToString()), String.Format(" [F:{0}]", numFrags.ToString()));
+                    return String.Format("of {0} (filtered) {1}{2} of {3}{4}", _incidSelection.Rows.Count,
+                        String.Format("[{0}:", numToids.ToString()),
+                        String.Format("{0}", numFrags.ToString()),
+                        String.Format("{0}:", _toidsTotalDbCount.ToString()),
+                        String.Format("{0}]", _fragsTotalDbCount.ToString()));
+                    //---------------------------------------------------------------------
                 }
                 else if ((_bulkUpdateMode == true) && (_incidSelection != null) && (_incidSelection.Rows.Count > 0))
                 {
@@ -2705,6 +2775,33 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("NvcCategory");
                     }
                 }
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR22 (Record selectors)
+                // Count the total number of toids and fragments in the database
+                // for this incid so that they can be included in the status area.
+                if (IsFiltered)
+                {
+                    // Count the total number of fragments in the database for
+                    // this incid.
+                    _fragsTotalDbCount = (int)_db.ExecuteScalar(String.Format(
+                        "SELECT COUNT(*) FROM {0} WHERE {1} = {2}",
+                        _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
+                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
+                        _db.QuoteValue(_incidCurrentRow.incid)),
+                        _db.Connection.ConnectionTimeout, CommandType.Text);
+
+                    // Count the total number of toids in the database for
+                    // this incid.
+                    _toidsTotalDbCount = (int)_db.ExecuteScalar(String.Format(
+                        "SELECT COUNT(*) FROM (SELECT DISTINCT {0} FROM {1} WHERE {2} = {3}) AS T",
+                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
+                        _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
+                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
+                        _db.QuoteValue(_incidCurrentRow.incid)),
+                        _db.Connection.ConnectionTimeout, CommandType.Text);
+                }
+                //---------------------------------------------------------------------
 
                 OnPropertyChanged("IncidCurrentRowIndex");
                 OnPropertyChanged("IncidCurrentRow");
