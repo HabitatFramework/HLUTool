@@ -2145,14 +2145,33 @@ namespace HLU.UI.ViewModel
 
             try
             {
+                // Save the current table of selected incids.
+                DataTable prevIncidSelection = NewIncidSelectionTable();
+                prevIncidSelection = _incidSelection;
+
+                // Save the current table of selected GIS features.
+                DataTable prevGISSelection = NewGisSelectionTable();
+                prevGISSelection = _gisSelection;
+
+                // Reset the table of selected incids.
                 _incidSelection = NewIncidSelectionTable();
 
+                // Set the table of selected incids to the current incid.
                 DataRow selRow = _incidSelection.NewRow();
                 foreach (DataColumn c in _incidSelection.Columns)
                     selRow[c] = IncidCurrentRow[c.ColumnName];
                 _incidSelection.Rows.Add(selRow);
 
-                PerformGisSelection(true);
+                // Select all the features for the current incid in GIS
+                // and don't set the filter (i.e. don't go to the first
+                // record).
+                PerformGisSelection(false);
+
+                //Restore the current table of selected incids.
+                _incidSelection = prevIncidSelection;
+
+                //Restore the current table of selected GIS features.
+                _gisSelection = prevGISSelection;
             }
             catch (Exception ex)
             {
