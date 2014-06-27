@@ -2037,15 +2037,52 @@ namespace HLU.UI.ViewModel
                         _incidSelection = null;
                     }
 
+                    // If there are any records in the selection (and the tool is
+                    // not currently in bulk update mode).
                     if (IsFiltered)
                     {
-                        if (ConfirmGISSelect()) PerformGisSelection(true);
+                        // If the user confirms that they wish to go ahead with
+                        // the selection, or if they have switched off the
+                        // confirmation in the user options, then perform the
+                        // selection.
+                        if (ConfirmGISSelect())
+                        {
+                            // Select the required incid(s) in GIS.
+                            PerformGisSelection();
+
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR21 (Select current incid in map)
+                            // Analyse the results, set the filter and reset the cursor AFTER
+                            // returning from performing the GIS selection so that other calls
+                            // to the PerformGisSelection method can control if/when these things
+                            // are done.
+                            //
+                            // Analyse the results of the GIS selection by counting the number of
+                            // incids, toids and fragments selected.
+                            AnalyzeGisSelectionSet();
+
+                            // Set the filter back to the first incid.
+                            SetFilter();
+
+                            // Warn the user that no records were found.
+                            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+                            //---------------------------------------------------------------------
+                        }
                     }
                     else
                     {
+                        // Warn the user that no records were found
                         MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Information);
+
                         _incidSelection = null;
+
+                        // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
                     }
                 }
@@ -2143,15 +2180,33 @@ namespace HLU.UI.ViewModel
         {
             if (IncidCurrentRow == null) return;
 
+            //---------------------------------------------------------------------
+            // CHANGED: CR21 (Select current incid in map)
+            // Temporarily store the incid and GIS selections whilst
+            // selecting the current incid in GIS so that the selections
+            // can be restored again afterwards (so that the filter is
+            // still active).
+            //
             try
             {
-                // Save the current table of selected incids.
-                DataTable prevIncidSelection = NewIncidSelectionTable();
-                prevIncidSelection = _incidSelection;
+                // Set the status to processing and the cursor to wait.
+                ChangeCursor(Cursors.Wait, "Processing ...");
 
-                // Save the current table of selected GIS features.
+                DataTable prevIncidSelection = NewIncidSelectionTable();
                 DataTable prevGISSelection = NewGisSelectionTable();
-                prevGISSelection = _gisSelection;
+
+                // Determine if a filter with more than one incid is currently active.
+                bool multiIncidFilter = (IsFiltered && _incidSelection.Rows.Count > 1);
+
+                // If a multi-incid filter is active then save the details.
+                if (multiIncidFilter)
+                {
+                    // Save the current table of selected incids.
+                    prevIncidSelection = _incidSelection;
+
+                    // Save the current table of selected GIS features.
+                    prevGISSelection = _gisSelection;
+                }
 
                 // Reset the table of selected incids.
                 _incidSelection = NewIncidSelectionTable();
@@ -2162,21 +2217,85 @@ namespace HLU.UI.ViewModel
                     selRow[c] = IncidCurrentRow[c.ColumnName];
                 _incidSelection.Rows.Add(selRow);
 
-                // Select all the features for the current incid in GIS
-                // and don't set the filter (i.e. don't go to the first
-                // record).
-                PerformGisSelection(false);
+                // Select all the features for the current incid in GIS.
+                PerformGisSelection();
 
-                //Restore the current table of selected incids.
-                _incidSelection = prevIncidSelection;
+                // If a multi-incid filter was previously active then restore it.
+                if (multiIncidFilter)
+                {
+                    // Restore the previous table of selected incids.
+                    _incidSelection = prevIncidSelection;
 
-                //Restore the current table of selected GIS features.
-                _gisSelection = prevGISSelection;
+                    // Count the number of fragments previously selected for this incid.
+                    int numFragsOld = 0;
+                    if (prevGISSelection != null)
+                    {
+                        DataRow[] gisRows = prevGISSelection.AsEnumerable()
+                            .Where(r => r[HluDataset.incid_mm_polygons.incidColumn.ColumnName].Equals(_incidCurrentRow.incid)).ToArray();
+                        numFragsOld = gisRows.Length;
+                    }
+
+                    // Count the number of fragments now selected for this incid.
+                    int numFragsNew = 0;
+                    if (_gisSelection != null)
+                    {
+                        DataRow[] gisRows = _gisSelection.AsEnumerable()
+                            .Where(r => r[HluDataset.incid_mm_polygons.incidColumn.ColumnName].Equals(_incidCurrentRow.incid)).ToArray();
+                        numFragsNew = gisRows.Length;
+                    }
+
+                    // Check if the number of fragments now selected for this incid
+                    // has changed.
+                    if (numFragsNew == numFragsOld)
+                    {
+                        // If the same number of fragments for this incid has been
+                        // selected then just restore the previous table.
+                        _gisSelection = prevGISSelection;
+                    }
+                    else
+                    {
+                        // If the number of fragments selected has changed for this
+                        // incid then add all the rows for all the other incids in
+                        // the previous table of selected GIS features to the current
+                        // table of selected GIS features (thereby replacing the previously
+                        // selected features for the current incid with the new
+                        // selection).
+                        if (prevGISSelection != null)
+                        {
+                            selRow = _gisSelection.NewRow();
+                            foreach (DataRow row in prevGISSelection.Rows)
+                            {
+                                if (row[HluDataset.incid.incidColumn.ColumnName].ToString() != _incidCurrentRow.incid)
+                                    _gisSelection.ImportRow(row);
+                            }
+                        }
+                    }
+                }
+
+                // Analyse the results of the GIS selection by counting
+                // the number ofincids, toids and fragments selected.
+                AnalyzeGisSelectionSet();
+
+                // Refresh all the status type fields.
+                RefreshStatus();
+
+                // Warn the user that no records were found.
+                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "HLU", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            // Make sure the cursor is always reset.
+            finally
+            {
+                // Reset the cursor back to normal
+                ChangeCursor(Cursors.Arrow, null);
+            }
+            //---------------------------------------------------------------------
+
         }
 
         #endregion
@@ -2330,8 +2449,22 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void SelectByIncid()
         {
-            if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0) && (_incidsSelectedMapCount == 1))
+            if ((_gisSelection == null) || (_gisSelection.Rows.Count <= 0) || (_incidsSelectedMapCount != 1))
+                return;
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR21 (Select current incid in map)
+            // Set the status message and cursor, analyse the results, set
+            // the filter and reset the cursor AFTER performing the GIS selection
+            // so that other calls to the PerformGisSelection method
+            // can control if/when these things are done.
+            //
+            try
             {
+                // Set the status to processing and the cursor to wait.
+                ChangeCursor(Cursors.Wait, "Processing ...");
+
+                // Set the table of selected incids to the current incid.
                 _incidSelection = NewIncidSelectionTable();
                 DataRow selRow = _incidSelection.NewRow();
                 foreach (DataColumn c in _incidSelection.Columns)
@@ -2341,8 +2474,36 @@ namespace HLU.UI.ViewModel
                 }
                 _incidSelection.Rows.Add(selRow);
 
-                PerformGisSelection(false);
+                // Select all the features for the current incid in GIS.
+                PerformGisSelection();
+
+                // Analyse the results of the GIS selection by counting the number of
+                // incids, toids and fragments selected.
+                AnalyzeGisSelectionSet();
+
+                // Set the filter back to the first incid.
+                SetFilter();
+
+                // Warn the user that no records were found.
+                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Reset the cursor back to normal.
+                ChangeCursor(Cursors.Arrow, null);
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            // Make sure the cursor is always reset.
+            finally
+            {
+                // Reset the cursor back to normal
+                ChangeCursor(Cursors.Arrow, null);
+            }
+            //---------------------------------------------------------------------
+
         }
 
         #endregion
@@ -2450,9 +2611,14 @@ namespace HLU.UI.ViewModel
                         _toidsSelectedMapCount = _toidsSelectedMap.Count();
                         goto case 1;
                     case 1:
-                        // Count the number of incids selected in GIS.
+                        //---------------------------------------------------------------------
+                        // FIX: Get the map selection in incid order
+                        // Order the incids selected in the GIS so that the filter
+                        // is sorted in incid order.
                         _incidsSelectedMap = _gisSelection.AsEnumerable()
-                            .GroupBy(r => r.Field<string>(_gisIDColumns[0].ColumnName)).Select(g => g.Key);
+                            .GroupBy(r => r.Field<string>(_gisIDColumns[0].ColumnName)).Select(g => g.Key).OrderBy(s => s);
+                        //---------------------------------------------------------------------
+                        // Count the number of incids selected in GIS.
                         _incidsSelectedMapCount = _incidsSelectedMap.Count();
                         break;
                 }
@@ -2467,7 +2633,6 @@ namespace HLU.UI.ViewModel
             {
                 _incidSelectionWhereClause = null;
             }
-            RefreshStatus();
         }
 
         private void GisToDbSelection()
@@ -2522,10 +2687,14 @@ namespace HLU.UI.ViewModel
             return -1;
         }
 
-        private void PerformGisSelection(bool setFilter)
+        //---------------------------------------------------------------------
+        // CHANGED: CR21 (Select current incid in map)
+        // No longer set the filter or reset the cursor AFTER performing
+        // the GIS selection so that methods that call this method
+        // can control if/when these things are done.
+        //
+        private void PerformGisSelection()
         {
-            ChangeCursor(Cursors.Wait, "Processing ...");
-
             if (_gisApp != null)
             {
                 if (_incidSelection.Rows.Count > 1)
@@ -2542,17 +2711,8 @@ namespace HLU.UI.ViewModel
                         ScratchDb.GisWhereClause(_incidSelection, _gisApp));
                 }
             }
-
-            AnalyzeGisSelectionSet();
-
-            if (setFilter) SetFilter();
-
-            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-
-            ChangeCursor(Cursors.Arrow, null);
         }
+        //---------------------------------------------------------------------
 
         private void SetFilter()
         {
@@ -3357,7 +3517,14 @@ namespace HLU.UI.ViewModel
                     }
                     else
                     {
-                        return moveForward ? _hluDS.incid[0] : _hluDS.incid[_hluDS.incid.Count - 1];
+                        //---------------------------------------------------------------------
+                        // FIX: Correctly select the first incid in filter
+                        // If the table has paged backwards (because the required incid
+                        // is lower than the page minimum) and if the row number being
+                        // sought is the first (i.e. zero) then return the lowest incid.
+                        // Otherwise, return the lowest or highest as appropriate.
+                        return (moveForward || seekRowNumber == 0) ? _hluDS.incid[0] : _hluDS.incid[_hluDS.incid.Count - 1];
+                        //---------------------------------------------------------------------
                     }
                 }
                 catch { return null; }
