@@ -250,6 +250,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\WindowWarnOnSubsetUpdate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\WindowSwitchGISLayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -359,8 +363,12 @@
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
+    <Compile Include="UI\ViewModel\ViewModelWindowWarnOnSubsetUpdate.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
+    <Compile Include="UI\View\WindowWarnOnSubsetUpdate.xaml.cs">
+      <DependentUpon>WindowWarnOnSubsetUpdate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\View\WindowSwitchGISLayer.xaml.cs">
       <DependentUpon>WindowSwitchGISLayer.xaml</DependentUpon>
     </Compile>

@@ -86,10 +86,12 @@ namespace HLU.UI.ViewModel
         private WindowOptions _windowOptions;
         private WindowQueryBuilder _qryBuilderWindow;
         private WindowWarnOnGISSelect _windowWarnGISSelect;
+        private WindowWarnOnSubsetUpdate _windowWarnSubsetUpdate;
         private WindowSwitchGISLayer _windowSwitchGISLayer;
         private ViewModelOptions _viewModelOptions;
         private ViewModelQueryBuilder _qryBuilderViewModel;
         private ViewModelWindowWarnOnGISSelect _viewModelWinWarnGISSelect;
+        private ViewModelWindowWarnOnSubsetUpdate _viewModelWinWarnSubsetUpdate;
         private ViewModelWindowMainBulkUpdate _viewModelBulkUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
         private ViewModelWindowSwitchGISLayer _viewModelSwitchGISLayer;
@@ -168,6 +170,8 @@ namespace HLU.UI.ViewModel
         private int _incidsSelectedMapCount = -1;
         private int _toidsSelectedMapCount = -1;
         private int _fragsSelectedMapCount = -1;
+        private int _toidsIncidGisCount = -1;
+        private int _fragsIncidGisCount = -1;
         private int _toidsTotalDbCount = -1;
         private int _fragsTotalDbCount = -1;
         private int _origIncidIhsMatrixCount = 0;
@@ -1323,6 +1327,52 @@ namespace HLU.UI.ViewModel
                 return _editMode;
             }
             set { }
+        }
+
+        private bool ConfirmSubsetUpdate()
+        {
+            if (!Settings.Default.WarnOnSubsetUpdate)
+            {
+                return true;
+            }
+            else
+            {
+                int expectedNumFeatures = ExpectedSelectionFeatures();
+
+                _windowWarnSubsetUpdate = new WindowWarnOnSubsetUpdate();
+                if ((_windowWarnSubsetUpdate.Owner = App.GetActiveWindow()) == null)
+                    throw (new Exception("No parent window loaded"));
+                _windowWarnSubsetUpdate.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                // create ViewModel to which main window binds
+                _viewModelWinWarnSubsetUpdate = new ViewModelWindowWarnOnSubsetUpdate(
+                    _fragsSelectedMapCount, _toidsSelectedMapCount, _fragsIncidGisCount, _toidsIncidGisCount, _gisLayerType);
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinWarnSubsetUpdate.RequestClose +=
+                    new ViewModelWindowWarnOnSubsetUpdate.RequestCloseEventHandler(_viewModelWinWarnSubsetUpdate_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowWarnSubsetUpdate.DataContext = _viewModelWinWarnSubsetUpdate;
+
+                // show window
+                _windowWarnSubsetUpdate.ShowDialog();
+
+                return IsFiltered;
+            }
+        }
+
+        void _viewModelWinWarnSubsetUpdate_RequestClose(bool proceed, bool split)
+        {
+            _viewModelWinWarnSubsetUpdate.RequestClose -= _viewModelWinWarnSubsetUpdate_RequestClose;
+            _windowWarnSubsetUpdate.Close();
+
+            if (!proceed)
+            {
+                _incidSelectionWhereClause = null;
+                _incidSelection = null;
+                ChangeCursor(Cursors.Arrow, null);
+            }
         }
 
         #endregion
@@ -2524,16 +2574,6 @@ namespace HLU.UI.ViewModel
             {
                 if (IsFiltered)
                 {
-                    int numToids = 0;
-                    int numFrags = 0;
-                    if (_gisSelection != null)
-                    {
-                        DataRow[] gisRows = _gisSelection.AsEnumerable()
-                            .Where(r => r[HluDataset.incid_mm_polygons.incidColumn.ColumnName].Equals(_incidCurrentRow.incid)).ToArray();
-                        numToids = gisRows.GroupBy(r => r[HluDataset.incid_mm_polygons.toidColumn.ColumnName]).Count();
-                        numFrags = gisRows.Length;
-                    }
-
                     //---------------------------------------------------------------------
                     // CHANGED: CR22 (Record selectors)
                     // Include the total toid and fragment counts for the current Incid
@@ -2543,8 +2583,8 @@ namespace HLU.UI.ViewModel
                     //return String.Format("of {0} (filtered){1}{2}", _incidSelection.Rows.Count,
                     //    String.Format(" [T:{0}]", numToids.ToString()), String.Format(" [F:{0}]", numFrags.ToString()));
                     return String.Format("of {0} (filtered) {1}{2} of {3}{4}", _incidSelection.Rows.Count,
-                        String.Format("[{0}:", numToids.ToString()),
-                        String.Format("{0}", numFrags.ToString()),
+                        String.Format("[{0}:", _toidsIncidGisCount.ToString()),
+                        String.Format("{0}", _fragsIncidGisCount.ToString()),
                         String.Format("{0}:", _toidsTotalDbCount.ToString()),
                         String.Format("{0}]", _fragsTotalDbCount.ToString()));
                     //---------------------------------------------------------------------
@@ -2775,6 +2815,22 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("NvcCategory");
                     }
                 }
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Count the number of toids and fragments for this incid selected
+                // in the GIS. They are counted here, once when the incid changes,
+                // instead of in StatusIncid() which is constantly being called.
+                int _toidsIncidGisCount = 0;
+                int _fragsIncidGisCount = 0;
+                if (_gisSelection != null)
+                {
+                    DataRow[] gisRows = _gisSelection.AsEnumerable()
+                        .Where(r => r[HluDataset.incid_mm_polygons.incidColumn.ColumnName].Equals(_incidCurrentRow.incid)).ToArray();
+                    _toidsIncidGisCount = gisRows.GroupBy(r => r[HluDataset.incid_mm_polygons.toidColumn.ColumnName]).Count();
+                    _fragsIncidGisCount = gisRows.Length;
+                }
+                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR22 (Record selectors)
