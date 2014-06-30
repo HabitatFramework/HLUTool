@@ -202,6 +202,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\WindowWarnOnSubsetUpdate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\View\WindowSwitchGISLayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\Dictionary\Bool2VisibilityConverterDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -308,6 +316,15 @@
     <Compile Include="Settings.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
+    <Compile Include="UI\ViewModel\ViewModelWindowWarnOnSubsetUpdate.cs" />
+    <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
+    <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
+    <Compile Include="UI\View\WindowWarnOnSubsetUpdate.xaml.cs">
+      <DependentUpon>WindowWarnOnSubsetUpdate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\View\WindowSwitchGISLayer.xaml.cs">
+      <DependentUpon>WindowSwitchGISLayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\View\WindowCompletePhysicalSplit.xaml.cs">
       <DependentUpon>WindowCompletePhysicalSplit.xaml</DependentUpon>
     </Compile>
