@@ -48,21 +48,21 @@
                             BorderThickness="0.5"
                             Opacity="0.5"
                             Padding="0" />
-                    <Label Name="LabelDoNotAskAgain"
+                    <Label Name="LabelMakeDefaultReponse"
                            Grid.Row="2"
                            Grid.Column="0"
-                           Margin="0,4,0,4"
+                           Margin="0,4,4,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center">
-                        Don't ask again
+                        Make this your default reponse?
                     </Label>
-                    <CheckBox Name="CheckBoxDoNotAskAgain"
+                    <CheckBox Name="CheckMakeDefaultReponse"
                               Grid.Row="2"
                               Grid.Column="1"
                               Margin="0,4,0,4"
                               HorizontalAlignment="Right"
                               VerticalAlignment="Center"
-                              IsChecked="{Binding Path=DoNotAskAgain,
+                              IsChecked="{Binding Path=MakeDefaultReponse,
                                                   Mode=TwoWay,
                                                   UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>

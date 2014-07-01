@@ -36,6 +36,7 @@ namespace HLU.UI.ViewModel
         private ICommand _yesCommand;
         private ICommand _noCommand;
         private ICommand _cancelCommand;
+        private bool _makeDefaultReponse;
 
         #endregion
 
@@ -104,7 +105,11 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void YesCommandClick(object param)
         {
-            Settings.Default.Save();
+            if (_makeDefaultReponse == true)
+            {
+                Settings.Default.WarnOnSubsetUpdate = "Selected";
+                Settings.Default.Save();
+            }
             this.RequestClose(true, true);
         }
 
@@ -139,6 +144,11 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void NoCommandClick(object param)
         {
+            if (_makeDefaultReponse == true)
+            {
+                Settings.Default.WarnOnSubsetUpdate = "All";
+                Settings.Default.Save();
+            }
             this.RequestClose(true, false);
         }
 
@@ -197,10 +207,10 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
-        public bool DoNotAskAgain
+        public bool MakeDefaultReponse
         {
-            get { return !Settings.Default.WarnOnSubsetUpdate; }
-            set { Settings.Default.WarnOnSubsetUpdate = !value; }
+            get { return _makeDefaultReponse; }
+            set { _makeDefaultReponse = value; }
         }
     }
 }
