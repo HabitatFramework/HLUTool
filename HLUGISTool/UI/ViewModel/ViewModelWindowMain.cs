@@ -172,8 +172,8 @@ namespace HLU.UI.ViewModel
         private int _fragsSelectedMapCount = -1;
         private int _toidsIncidGisCount = -1;
         private int _fragsIncidGisCount = -1;
-        private int _toidsTotalDbCount = -1;
-        private int _fragsTotalDbCount = -1;
+        private int _toidsIncidDbCount = -1;
+        private int _fragsIncidDbCount = -1;
         private int _origIncidIhsMatrixCount = 0;
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
@@ -209,6 +209,8 @@ namespace HLU.UI.ViewModel
         private List<string[]> _source1Errors;
         private List<string[]> _source2Errors;
         private List<string[]> _source3Errors;
+        private bool _updateCancelled = true;
+        private bool _updateAllFeatures = true;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -1269,12 +1271,19 @@ namespace HLU.UI.ViewModel
         {
             _saving = true;
             _savingAttempted = false;
+
+            // If there are no features selected in the GIS (for some
+            // reason) then re-select the current incid features in GIS.
             if (_incidsSelectedMapCount <= 0)
                 SelectOnMap();
+
+            // If there are any features selected in the GIS ...
             if (_incidsSelectedMapCount > 0)
             {
+                // If in bulk update mode then perform the bulk update.
                 if (_bulkUpdateMode == true)
                     BulkUpdateClicked(param);
+                // If there is no saving already in progress ...
                 else if (!_savingAttempted)
                 {
                     //---------------------------------------------------------------------
@@ -1295,6 +1304,50 @@ namespace HLU.UI.ViewModel
                             return;
                     }
                     //---------------------------------------------------------------------
+
+                    // If all of the features for the current incid have been
+                    // selected in GIS then update them all.
+                    if (_fragsIncidGisCount == _fragsIncidDbCount)
+                    {
+                        _viewModelUpd.Update();
+                    }
+                    // Otherwise, check if/how the subset of features for the
+                    // incid should be updated.
+                    else if (ConfirmSubsetUpdate())
+                    {
+                        // The user does not want to update all the features for the incid
+                        // then logically split the subset of features first
+                        if (_updateAllFeatures == false)
+                        {
+                            // If a split can be performed then go ahead.
+                            if (CanSplit)
+                            {
+
+
+
+
+                                ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
+                                if (!vmSplit.Split())
+                                {
+                                    MessageBox.Show("Could not complete logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
+                                        "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    return;
+                                }
+
+
+
+
+                            }
+                            else
+                            {
+                                MessageBox.Show("Unable to perform logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
+                                    "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                return;
+                            }
+                        }
+                        // Apply the updates on the current incid.
+                        _viewModelUpd.Update();
+                    }
                 }
             }
         }
@@ -1329,15 +1382,41 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // Check if the user still wants to go ahead because only a subset
+        // of all the features in an incid have been selected. Also checks
+        // if the user wants to logically split the subset of features first
+        // or updates all the incid features.
+        //
+        /// <summary>
+        /// Confirms with the user if the update is to go ahead
+        /// </summary>
+        /// <returns>
+        /// True if the update is to go ahead, or false if it is cancelled.
+        /// </returns>
         private bool ConfirmSubsetUpdate()
         {
-            if (!Settings.Default.WarnOnSubsetUpdate)
+            // The user settings indicate that only the selected features
+            // should be updated.
+            if (Settings.Default.WarnOnSubsetUpdate == "All")
             {
+                _updateAllFeatures = true;
                 return true;
             }
+            // The user settings indicate that all the features for the incid
+            // should be updated.
+            else if (Settings.Default.WarnOnSubsetUpdate == "Selected")
+            {
+                _updateAllFeatures = false;
+                return true;
+            }
+            // If the user settings do not indicate that all the features for the
+            // incid should be updated, or that only the selected features should
+            // be updated, then prompt the user for their choice.
             else
             {
-                int expectedNumFeatures = ExpectedSelectionFeatures();
+                _updateCancelled = true;
 
                 _windowWarnSubsetUpdate = new WindowWarnOnSubsetUpdate();
                 if ((_windowWarnSubsetUpdate.Owner = App.GetActiveWindow()) == null)
@@ -1358,7 +1437,7 @@ namespace HLU.UI.ViewModel
                 // show window
                 _windowWarnSubsetUpdate.ShowDialog();
 
-                return IsFiltered;
+                return (!_updateCancelled);
             }
         }
 
@@ -1367,13 +1446,22 @@ namespace HLU.UI.ViewModel
             _viewModelWinWarnSubsetUpdate.RequestClose -= _viewModelWinWarnSubsetUpdate_RequestClose;
             _windowWarnSubsetUpdate.Close();
 
-            if (!proceed)
+            // If the user wants to proceed with the update then set whether they
+            // want to update all the features or perform a logically split first.
+            if (proceed)
             {
-                _incidSelectionWhereClause = null;
-                _incidSelection = null;
-                ChangeCursor(Cursors.Arrow, null);
+                if (split)
+                    _updateAllFeatures = false;
+                else
+                    _updateAllFeatures = true;
             }
+            else
+            {
+                _updateCancelled = true;
+            }
+            ChangeCursor(Cursors.Arrow, null);
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -2585,8 +2673,8 @@ namespace HLU.UI.ViewModel
                     return String.Format("of {0} (filtered) {1}{2} of {3}{4}", _incidSelection.Rows.Count,
                         String.Format("[{0}:", _toidsIncidGisCount.ToString()),
                         String.Format("{0}", _fragsIncidGisCount.ToString()),
-                        String.Format("{0}:", _toidsTotalDbCount.ToString()),
-                        String.Format("{0}]", _fragsTotalDbCount.ToString()));
+                        String.Format("{0}:", _toidsIncidDbCount.ToString()),
+                        String.Format("{0}]", _fragsIncidDbCount.ToString()));
                     //---------------------------------------------------------------------
                 }
                 else if ((_bulkUpdateMode == true) && (_incidSelection != null) && (_incidSelection.Rows.Count > 0))
@@ -2840,7 +2928,7 @@ namespace HLU.UI.ViewModel
                 {
                     // Count the total number of fragments in the database for
                     // this incid.
-                    _fragsTotalDbCount = (int)_db.ExecuteScalar(String.Format(
+                    _fragsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
                         "SELECT COUNT(*) FROM {0} WHERE {1} = {2}",
                         _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
                         _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
@@ -2849,7 +2937,7 @@ namespace HLU.UI.ViewModel
 
                     // Count the total number of toids in the database for
                     // this incid.
-                    _toidsTotalDbCount = (int)_db.ExecuteScalar(String.Format(
+                    _toidsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
                         "SELECT COUNT(*) FROM (SELECT DISTINCT {0} FROM {1} WHERE {2} = {3}) AS T",
                         _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
                         _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),

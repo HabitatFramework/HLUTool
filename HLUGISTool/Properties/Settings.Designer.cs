@@ -648,11 +648,11 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Prompt")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool WarnOnSubsetUpdate {
+        public string WarnOnSubsetUpdate {
             get {
-                return ((bool)(this["WarnOnSubsetUpdate"]));
+                return ((string)(this["WarnOnSubsetUpdate"]));
             }
             set {
                 this["WarnOnSubsetUpdate"] = value;
