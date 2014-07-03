@@ -336,11 +336,22 @@ namespace HLU.UI.ViewModel
 
             try
             {
+                // Create a local copy of the Incid row.
                 HluDataSet.incidRow newIncidRow = _viewModelMain.IncidTable.NewincidRow();
                 for (int i = 0; i < _viewModelMain.IncidTable.Columns.Count; i++)
                     if (!_viewModelMain.IncidCurrentRow.IsNull(i)) newIncidRow[i] = _viewModelMain.IncidCurrentRow[i];
+
+                // Get the next number for the new incid.
                 string newIncid = _viewModelMain.NextIncid;
                 newIncidRow.incid = newIncid;
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Discard any changes to the Incid table once a copy has been
+                // made.
+                _viewModelMain.IncidTable.RejectChanges();
+                //---------------------------------------------------------------------
+
                 //---------------------------------------------------------------------
                 // FIX: Don't update the ihs version when splitting features
                 // Previously the ihs version was set to the latest version for
@@ -359,78 +370,345 @@ namespace HLU.UI.ViewModel
                 newIncidRow.last_modified_date = newIncidRow.created_date;
                 newIncidRow.last_modified_user_id = newIncidRow.created_user_id;
 
+                // Add the local copy of the row to the table.
                 _viewModelMain.IncidTable.AddincidRow(newIncidRow);
+
+                // Update the table with the new row.
                 if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(_viewModelMain.HluDataset.incid) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid.TableName));
 
                 if ((_viewModelMain.IncidIhsMatrixRows != null) && (_viewModelMain.IncidIhsMatrixRows.Length > 0))
                 {
-                    HluDataSet.incid_ihs_matrixRow[] ihsMatrixRows =
-                        _viewModelMain.IncidIhsMatrixRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidIhsMatrix rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_ihs_matrixRow[] ihsMatrixRows =
+                    //    _viewModelMain.IncidIhsMatrixRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidIhsMatrix rows.
+                    List<HluDataSet.incid_ihs_matrixRow> ihsMatrixRows = new List<HluDataSet.incid_ihs_matrixRow>();
+
+                    // Copy the column values for each row in the IncidIhsMatrix table.
+                    foreach (HluDataSet.incid_ihs_matrixRow row in _viewModelMain.IncidIhsMatrixRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_ihs_matrixRow newIncidIhsMatrixRow = _viewModelMain.IncidIhsMatrixTable.Newincid_ihs_matrixRow();
+                            for (int i = 0; i < _viewModelMain.IncidIhsMatrixTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidIhsMatrixRow[i] = row[i];
+
+                            ihsMatrixRows.Add(newIncidIhsMatrixRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidIhsMatrix table once a copy has been
+                    // made.
+                    _viewModelMain.IncidIhsMatrixTable.RejectChanges();
+                    
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidIhsMatrixRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidIhsMatrixRows[i] != null) && (_viewModelMain.IncidIhsMatrixRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidIhsMatrixRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidIhsMatrixRows[i].Delete();
+                            _viewModelMain.IncidIhsMatrixRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_ihs_matrixRow row in ihsMatrixRows)
                         _viewModelMain.HluDataset.incid_ihs_matrix.Addincid_ihs_matrixRow(
                             CloneRow<HluDataSet.incid_ihs_matrixRow, HluDataSet.incid_ihs_matrixDataTable>(
                             row, _viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter.Update(_viewModelMain.HluDataset.incid_ihs_matrix) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_ihs_matrix.TableName));
                 }
 
                 if ((_viewModelMain.IncidIhsFormationRows != null) && (_viewModelMain.IncidIhsFormationRows.Length > 0))
                 {
-                    HluDataSet.incid_ihs_formationRow[] ihsFormationRows =
-                        _viewModelMain.IncidIhsFormationRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidIhsFormation rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_ihs_formationRow[] ihsFormationRows =
+                    //    _viewModelMain.IncidIhsFormationRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidIhsFormation rows.
+                    List<HluDataSet.incid_ihs_formationRow> ihsFormationRows = new List<HluDataSet.incid_ihs_formationRow>();
+
+                    // Copy the column values for each row in the IncidIhsFormation table.
+                    foreach (HluDataSet.incid_ihs_formationRow row in _viewModelMain.IncidIhsFormationRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_ihs_formationRow newIncidIhsFormationRow = _viewModelMain.IncidIhsFormationTable.Newincid_ihs_formationRow();
+                            for (int i = 0; i < _viewModelMain.IncidIhsFormationTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidIhsFormationRow[i] = row[i];
+
+                            ihsFormationRows.Add(newIncidIhsFormationRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidIhsFormation table once a copy has been
+                    // made.
+                    _viewModelMain.IncidIhsFormationTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidIhsFormationRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidIhsFormationRows[i] != null) && (_viewModelMain.IncidIhsFormationRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidIhsFormationRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidIhsFormationRows[i].Delete();
+                            _viewModelMain.IncidIhsFormationRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_ihs_formationRow row in ihsFormationRows)
                         _viewModelMain.HluDataset.incid_ihs_formation.Addincid_ihs_formationRow(
                             CloneRow<HluDataSet.incid_ihs_formationRow, HluDataSet.incid_ihs_formationDataTable>(
                             row, _viewModelMain.HluDataset.incid_ihs_formation.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter.Update(_viewModelMain.HluDataset.incid_ihs_formation) == -1)
                             throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_ihs_formation.TableName));
                 }
 
                 if ((_viewModelMain.IncidIhsManagementRows != null) && (_viewModelMain.IncidIhsManagementRows.Length > 0))
                 {
-                    HluDataSet.incid_ihs_managementRow[] ihsManagementRows =
-                        _viewModelMain.IncidIhsManagementRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidIhsManagement rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_ihs_managementRow[] ihsManagementRows =
+                    //    _viewModelMain.IncidIhsManagementRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidIhsManagement rows.
+                    List<HluDataSet.incid_ihs_managementRow> ihsManagementRows = new List<HluDataSet.incid_ihs_managementRow>();
+
+                    // Copy the column values for each row in the IncidIhsManagement table.
+                    foreach (HluDataSet.incid_ihs_managementRow row in _viewModelMain.IncidIhsManagementRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_ihs_managementRow newIncidIhsManagementRow = _viewModelMain.IncidIhsManagementTable.Newincid_ihs_managementRow();
+                            for (int i = 0; i < _viewModelMain.IncidIhsManagementTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidIhsManagementRow[i] = row[i];
+
+                            ihsManagementRows.Add(newIncidIhsManagementRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidIhsManagement table once a copy has been
+                    // made.
+                    _viewModelMain.IncidIhsManagementTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidIhsManagementRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidIhsManagementRows[i] != null) && (_viewModelMain.IncidIhsManagementRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidIhsManagementRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidIhsManagementRows[i].Delete();
+                            _viewModelMain.IncidIhsManagementRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_ihs_managementRow row in ihsManagementRows)
                         _viewModelMain.HluDataset.incid_ihs_management.Addincid_ihs_managementRow(
                             CloneRow<HluDataSet.incid_ihs_managementRow, HluDataSet.incid_ihs_managementDataTable>(
                             row, _viewModelMain.HluDataset.incid_ihs_management.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter.Update(_viewModelMain.HluDataset.incid_ihs_management) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_ihs_management.TableName));
                 }
 
                 if ((_viewModelMain.IncidIhsComplexRows != null) && (_viewModelMain.IncidIhsComplexRows.Length > 0))
                 {
-                    HluDataSet.incid_ihs_complexRow[] ihsComplexRows =
-                        _viewModelMain.IncidIhsComplexRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidIhsComplex rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_ihs_complexRow[] ihsComplexRows =
+                    //    _viewModelMain.IncidIhsComplexRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidIhsComplex rows.
+                    List<HluDataSet.incid_ihs_complexRow> ihsComplexRows = new List<HluDataSet.incid_ihs_complexRow>();
+
+                    // Copy the column values for each row in the IncidIhsComplex table.
+                    foreach (HluDataSet.incid_ihs_complexRow row in _viewModelMain.IncidIhsComplexRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_ihs_complexRow newIncidIhsComplexRow = _viewModelMain.IncidIhsComplexTable.Newincid_ihs_complexRow();
+                            for (int i = 0; i < _viewModelMain.IncidIhsComplexTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidIhsComplexRow[i] = row[i];
+
+                            ihsComplexRows.Add(newIncidIhsComplexRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidIhsComplex table once a copy has been
+                    // made.
+                    _viewModelMain.IncidIhsComplexTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidIhsComplexRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidIhsComplexRows[i] != null) && (_viewModelMain.IncidIhsComplexRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidIhsComplexRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidIhsComplexRows[i].Delete();
+                            _viewModelMain.IncidIhsComplexRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_ihs_complexRow row in ihsComplexRows)
                         _viewModelMain.HluDataset.incid_ihs_complex.Addincid_ihs_complexRow(
                             CloneRow<HluDataSet.incid_ihs_complexRow, HluDataSet.incid_ihs_complexDataTable>(
                             row, _viewModelMain.HluDataset.incid_ihs_complex.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter.Update(_viewModelMain.HluDataset.incid_ihs_complex) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_ihs_complex.TableName));
                 }
 
                 if ((_viewModelMain.IncidBapRows != null) && (_viewModelMain.IncidBapRows.Length > 0))
                 {
-                    HluDataSet.incid_bapRow[] bapRows = _viewModelMain.IncidBapRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidBap rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_bapRow[] bapRows = _viewModelMain.IncidBapRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidBap rows.
+                    List<HluDataSet.incid_bapRow> bapRows = new List<HluDataSet.incid_bapRow>();
+
+                    // Copy the column values for each row in the IncidBap table.
+                    foreach (HluDataSet.incid_bapRow row in _viewModelMain.IncidBapRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_bapRow newIncidBapRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
+                            for (int i = 0; i < _viewModelMain.IncidBapTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidBapRow[i] = row[i];
+
+                            bapRows.Add(newIncidBapRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidBap table once a copy has been
+                    // made.
+                    _viewModelMain.IncidBapTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidBapRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidBapRows[i] != null) && (_viewModelMain.IncidBapRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidBapRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidBapRows[i].Delete();
+                            _viewModelMain.IncidBapRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_bapRow row in bapRows)
                     {
                         _viewModelMain.HluDataset.incid_bap.Addincid_bapRow(
                             CloneRow<HluDataSet.incid_bapRow, HluDataSet.incid_bapDataTable>(
                             row, _viewModelMain.HluDataset.incid_bap.incidColumn.Ordinal, newIncid));
                     }
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Update(_viewModelMain.HluDataset.incid_bap) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
                 }
 
                 if ((_viewModelMain.IncidSourcesRows != null) && (_viewModelMain.IncidSourcesRows.Length > 0))
                 {
-                    HluDataSet.incid_sourcesRow[] sourcesRows = _viewModelMain.IncidSourcesRows.Where(r => r != null).ToArray();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidSources rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+                    //HluDataSet.incid_sourcesRow[] sourcesRows = _viewModelMain.IncidSourcesRows.Where(r => r != null).ToArray();
+
+                    // Create a local copy of the IncidSources rows.
+                    List<HluDataSet.incid_sourcesRow> sourcesRows = new List<HluDataSet.incid_sourcesRow>();
+
+                    // Copy the column values for each row in the IncidSources table.
+                    foreach (HluDataSet.incid_sourcesRow row in _viewModelMain.IncidSourcesRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_sourcesRow newIncidSourcesRow = _viewModelMain.IncidSourcesTable.Newincid_sourcesRow();
+                            for (int i = 0; i < _viewModelMain.IncidSourcesTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidSourcesRow[i] = row[i];
+
+                            sourcesRows.Add(newIncidSourcesRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidSources table once a copy has been
+                    // made.
+                    _viewModelMain.IncidSourcesTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidSourcesRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidSourcesRows[i] != null) && (_viewModelMain.IncidSourcesRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidSourcesRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidSourcesRows[i].Delete();
+                            _viewModelMain.IncidSourcesRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
                     foreach (HluDataSet.incid_sourcesRow row in sourcesRows)
                         _viewModelMain.HluDataset.incid_sources.Addincid_sourcesRow(
                             CloneRow<HluDataSet.incid_sourcesRow, HluDataSet.incid_sourcesDataTable>(
                             row, _viewModelMain.HluDataset.incid_sources.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter.Update(_viewModelMain.HluDataset.incid_sources) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_sources.TableName));
                 }
