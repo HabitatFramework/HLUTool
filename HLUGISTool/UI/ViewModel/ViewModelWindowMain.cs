@@ -1324,32 +1324,192 @@ namespace HLU.UI.ViewModel
                             {
 
 
+            // If there are still no features selected in the GIS then return.
+            if (_incidsSelectedMapCount <= 0)
+                return;
 
+            // If in bulk update mode then perform the bulk update and exit.
+            if (_bulkUpdateMode == true)
+            {
+                BulkUpdateClicked(param);
+                return;
+            }
 
-                                ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-                                if (!vmSplit.Split())
-                                {
-                                    MessageBox.Show("Could not complete logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
-                                        "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                    return;
-                                }
+            // If there is saving already in progress then exit.
+            if (_savingAttempted) return;
 
+            // If all of the features for the current incid have been
+            // selected in GIS then update them all and exit.
+            if (_fragsIncidGisCount == _fragsIncidDbCount)
+            {
+                // Update the current incid.
+                _viewModelUpd.Update();
+                return;
+            }
 
+            // Determine if a filter is active with only one incid currently active.
+            if (IsFiltered && _incidSelection.Rows.Count == 1)
+            {
+                // Check if/how the subset of features for the incid should be updated.
+                if (ConfirmSubsetUpdate())
+                {
+                    DataTable prevIncidSelection = NewIncidSelectionTable();
+                    DataTable prevGISSelection = NewGisSelectionTable();
 
+                    // The user does not want to update all the features for the incid
+                    // then logically split the subset of features first
+                    if (_updateAllFeatures == false)
+                    {
+                        // Store the current incid number.
+                        string originalIncid = _incidCurrentRow.incid;
 
-                            }
-                            else
+                        //// If a multi-incid filter is active then save the details.
+                        //if (multiIncidFilter)
+                        //{
+                        //    // Save the current table of selected incids.
+                        //    prevIncidSelection = _incidSelection;
+
+                        //    // Save the current table of selected GIS features.
+                        //    prevGISSelection = _gisSelection;
+
+                        //    // Reset the table of selected incids.
+                        //    _incidSelection = NewIncidSelectionTable();
+
+                        //    // Set the table of selected incids to the current incid.
+                        //    DataRow selRow = _incidSelection.NewRow();
+                        //    foreach (DataColumn c in _incidSelection.Columns)
+                        //        selRow[c] = IncidCurrentRow[c.ColumnName];
+                        //    _incidSelection.Rows.Add(selRow);
+
+                        //    // Set the table of selected features to only those for
+                        //    // the current incid.
+                        //    _gisSelection = NewGisSelectionTable();
+                        //    selRow = _gisSelection.NewRow();
+                        //    foreach (DataRow row in prevGISSelection.Rows)
+                        //    {
+                        //        if (row[HluDataset.incid.incidColumn.ColumnName].ToString() == originalIncid)
+                        //            _gisSelection.ImportRow(row);
+                        //    }
+
+                        //    // Analyse the new table of selected features.
+                        //    AnalyzeGisSelectionSet();
+                        //}
+
+                        // If a split can be performed then go ahead.
+                        if (CanSplit)
+                        {
+                            // Set the status to processing and the cursor to wait.
+                            ChangeCursor(Cursors.Wait, "Processing ...");
+
+                            // Logically split the features for the current incid into a new incid.
+                            ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
+                            if (!vmSplit.Split())
                             {
-                                MessageBox.Show("Unable to perform logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
-                                    "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
+                                //MessageBox.Show("Could not complete logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
+                                //    "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                _updateCancelled = true;
                             }
                         }
-                        // Apply the updates on the current incid.
-                        _viewModelUpd.Update();
+                        else
+                        {
+                            MessageBox.Show("Unable to save changes - update cancelled.\nInvoke the Split command before applying any updates.",
+                                "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            _updateCancelled = true;
+                        }
+
+                        // If the update failed then restore any active filter exactly as
+                        // it was.
+                        if (_updateCancelled == true)
+                        {
+                            //// If a multi-incid filter was previously active then restore it.
+                            //if (multiIncidFilter)
+                            //{
+                            //    // Restore the previous table of selected incids.
+                            //    _incidSelection = prevIncidSelection;
+
+                            //    // Restore the previous table of selected features.
+                            //    _gisSelection = prevGISSelection;
+                            //}
+
+                            // Reset the status message and the cursor.
+                            ChangeCursor(Cursors.Arrow, null);
+
+                            return;
+                        }
+
+                        //// If a multi-incid filter was previously active then restore it.
+                        //if (multiIncidFilter)
+                        //{
+                        //    // Restore all the rows in the previous table of selected incids
+                        //    // (except the original incid which has been replaced by the new
+                        //    // split incid) then add the new incid to the end (to ensure they
+                        //    // stay in sort order).
+                        //    DataRow selRow;
+                        //    if (prevIncidSelection != null)
+                        //    {
+                        //        // Create a new incid selection table.
+                        //        DataTable tempTable = NewIncidSelectionTable();
+
+                        //        // Add all the previous incids (except the original one) to the
+                        //        // temporary table.
+                        //        selRow = _incidSelection.NewRow();
+                        //        foreach (DataRow row in prevIncidSelection.Rows)
+                        //        {
+                        //            if (row[HluDataset.incid.incidColumn.ColumnName].ToString() != originalIncid)
+                        //                tempTable.ImportRow(row);
+                        //        }
+
+                        //        // Add the new selected incid to the temporary table.
+                        //        selRow = _incidSelection.NewRow();
+                        //        foreach (DataRow row in _incidSelection.Rows)
+                        //        {
+                        //            if (row[HluDataset.incid.incidColumn.ColumnName].ToString() != originalIncid)
+                        //                tempTable.ImportRow(row);
+                        //        }
+
+                        //        // Set the selected incids table to the temporary table.
+                        //        _incidSelection = tempTable;
+                        //    }
+
+                        //    // Restore all the rows in the previous table of selected GIS features
+                        //    // (except the original incid which has been replaced by the new
+                        //    // split incid).
+                        //    if (prevGISSelection != null)
+                        //    {
+                        //        selRow = _gisSelection.NewRow();
+                        //        foreach (DataRow row in prevGISSelection.Rows)
+                        //        {
+                        //            if (row[HluDataset.incid.incidColumn.ColumnName].ToString() != originalIncid)
+                        //                _gisSelection.ImportRow(row);
+                        //        }
+                        //    }
+
+                        //    // Point to the last (new) incid in the selection.
+                        //    IncidCurrentRowIndex = _incidSelection.Rows.Count;
+                        //}
                     }
+                    // Apply the updates on the current incid.
+                    _viewModelUpd.Update();
+                }
+                else
+                {
+                    MessageBox.Show("The changes have not been applied - the update was cancelled.",
+                        "HLU: Save Cancelled", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
                 }
             }
+            else
+            {
+                MessageBox.Show("Unable to save changes whilst a multi-incid filter is active and only\n" +
+                    " a subset of the features for the current incid are selected in the map.\n\n" +
+                    "Invoke the Split command or selected all the features for the current\n" +
+                    " incid before applying any updates.",
+                    "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+
+            _savingAttempted = true;
+            _saving = false;
+
         }
 
         /// <summary>
@@ -1425,7 +1585,7 @@ namespace HLU.UI.ViewModel
 
                 // create ViewModel to which main window binds
                 _viewModelWinWarnSubsetUpdate = new ViewModelWindowWarnOnSubsetUpdate(
-                    _fragsSelectedMapCount, _toidsSelectedMapCount, _fragsIncidGisCount, _toidsIncidGisCount, _gisLayerType);
+                    _fragsIncidGisCount, _toidsIncidGisCount, _fragsIncidDbCount, _toidsIncidDbCount, _gisLayerType);
 
                 // when ViewModel asks to be closed, close window
                 _viewModelWinWarnSubsetUpdate.RequestClose +=
@@ -1450,6 +1610,7 @@ namespace HLU.UI.ViewModel
             // want to update all the features or perform a logically split first.
             if (proceed)
             {
+                _updateCancelled = false;
                 if (split)
                     _updateAllFeatures = false;
                 else
@@ -2909,8 +3070,8 @@ namespace HLU.UI.ViewModel
                 // Count the number of toids and fragments for this incid selected
                 // in the GIS. They are counted here, once when the incid changes,
                 // instead of in StatusIncid() which is constantly being called.
-                int _toidsIncidGisCount = 0;
-                int _fragsIncidGisCount = 0;
+                _toidsIncidGisCount = -1;
+                _fragsIncidGisCount = -1;
                 if (_gisSelection != null)
                 {
                     DataRow[] gisRows = _gisSelection.AsEnumerable()
@@ -2924,6 +3085,8 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR22 (Record selectors)
                 // Count the total number of toids and fragments in the database
                 // for this incid so that they can be included in the status area.
+                _fragsIncidDbCount = -1;
+                _toidsIncidDbCount = -1;
                 if (IsFiltered)
                 {
                     // Count the total number of fragments in the database for

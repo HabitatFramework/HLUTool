@@ -190,7 +190,7 @@ namespace HLU.UI.ViewModel
 
         public string GroupBoxWarnOnSubsetUpdateHeader
         {
-            get { return String.Format("Attempting to update subset of Incid {0}",_gisFeaturesType); }
+            get { return String.Format("Attempting to update subset of Incid"); }
             set { }
         }
 
@@ -198,11 +198,13 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return String.Format("Only {0} {1}{2} out of a total of {3} {1}{2} have been selected for this Incid.\n" +
-                    "Would you like to logically split the selected {1}{2} before applying the update?\n\n" +
-                    "Clicking 'No' will apply the update to all of the {1}{2} for this Incid?",
-                    _numFrags.ToString(CultureInfo.CurrentCulture), _gisFeaturesType.ToString().ToLower(),
-                    _numTotalFrags.ToString(CultureInfo.CurrentCulture));
+                return String.Format("Only {0} out of {2} {1}s have been selected for this Incid.\n" +
+                    "Would you like to logically split the selected {1}{3} before applying the update?\n\n" +
+                    "Clicking 'No' will apply the update to all of the {1}s for this Incid?",
+                    _numFrags.ToString(CultureInfo.CurrentCulture),
+                    _gisFeaturesType.ToString().ToLower(),
+                    _numTotalFrags.ToString(CultureInfo.CurrentCulture),
+                    _numFrags > 0 ? "s" : String.Empty);
             }
             set { }
         }

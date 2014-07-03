@@ -348,7 +348,7 @@ namespace HLU.Data
         public int NextID<T>(int nextID, T table, int idColumnOrdinal)
             where T : DataTable
         {
-            if ((nextID == -1) && (table != null))
+            if ((nextID == -1) && (table.Rows.Count > 0) && (table != null))
                 nextID = table.AsEnumerable().Max(r => r.Field<int>(idColumnOrdinal)) + 1;
 
             string sql = String.Format("SELECT MAX({0}) + 1 FROM {1}",
