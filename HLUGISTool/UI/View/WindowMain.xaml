@@ -388,8 +388,8 @@
                              Grid.Column="1"
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
-                             IsEnabled="False"
-                             Text="{Binding Incid,
+                             IsReadOnly="True"
+                             Text="{Binding Path=Incid,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}" />
 
