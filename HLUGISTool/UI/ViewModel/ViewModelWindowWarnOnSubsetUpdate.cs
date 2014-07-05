@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -105,9 +105,10 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void YesCommandClick(object param)
         {
+            // Set the default value to 'Subset'.
             if (_makeDefaultReponse == true)
             {
-                Settings.Default.WarnOnSubsetUpdate = "Selected";
+                Settings.Default.SubsetUpdateAction = 1;
                 Settings.Default.Save();
             }
             this.RequestClose(true, true);
@@ -144,9 +145,10 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void NoCommandClick(object param)
         {
+            // Set the default value to 'All'.
             if (_makeDefaultReponse == true)
             {
-                Settings.Default.WarnOnSubsetUpdate = "All";
+                Settings.Default.SubsetUpdateAction = 2;
                 Settings.Default.Save();
             }
             this.RequestClose(true, false);

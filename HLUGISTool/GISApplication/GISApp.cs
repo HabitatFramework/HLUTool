@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -131,7 +132,7 @@ namespace HLU.GISApplication
         public abstract DataTable SplitFeature(string currentToidFragmentID, string lastToidFragmentID,
             List<SqlFilterCondition> selectionWhereClause, DataColumn[] historyColumns);
 
-        public abstract DataTable SplitFeaturesLogically(string newIncid, DataColumn[] historyColumns);
+        public abstract DataTable SplitFeaturesLogically(string oldIncid, string newIncid, DataColumn[] historyColumns);
 
         public abstract DataTable MergeFeatures(string newToidFragmentID, 
             List<SqlFilterCondition> resultWhereClause, DataColumn[] historyColumns);

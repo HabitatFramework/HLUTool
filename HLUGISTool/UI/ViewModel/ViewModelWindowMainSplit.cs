@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -18,9 +19,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using HLU.Data;
 using HLU.Data.Model;
 
 namespace HLU.UI.ViewModel
@@ -48,7 +51,7 @@ namespace HLU.UI.ViewModel
                 // all features in selection share same incid, toid and toid_fragment_id
                 return PerformPhysicalSplit();
             }
-            else if ((_viewModelMain.GisSelection.Rows.Count > 0) && (_viewModelMain.IncidsSelectedMapCount == 1) &&
+            else if ((_viewModelMain.GisSelection.Rows.Count > 0) && 
                 ((_viewModelMain.ToidsSelectedMapCount > 1) || (_viewModelMain.FragsSelectedMapCount > 1) || 
                 (_viewModelMain.FragsSelectedMapCount == 1)))
             {
@@ -194,8 +197,14 @@ namespace HLU.UI.ViewModel
             {
                 if (success)
                 {
+                    // Re-count the incid records in the database.
                     _viewModelMain.IncidRowCount(true);
-                    _viewModelMain.ClearFilter();
+
+                    // Reset the incid and map selections but don't move
+                    // to the first incid in the database.
+                    _viewModelMain.ClearFilter(false);
+
+                    // Synch with the GIS selection.
                     _viewModelMain.ReadMapSelection(true);
                 }
             }
@@ -252,14 +261,21 @@ namespace HLU.UI.ViewModel
                 if (!CloneCurrentIncid(false, out msg)) throw new Exception(msg);
                 string newIncid = _viewModelMain.RecIDs.CurrentIncid;
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Pass the old incid number together with the new incid number
+                // so that only features belonging to the old incid are
+                // updated.
+                //
                 // update GIS layer
-                DataTable historyTable = _viewModelMain.GISApplication.SplitFeaturesLogically(newIncid,
+                DataTable historyTable = _viewModelMain.GISApplication.SplitFeaturesLogically(_viewModelMain.Incid, newIncid,
                     _viewModelMain.HistoryColumns.Concat(new DataColumn[] { new DataColumn(
                             _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.ColumnName.Replace(
                             _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName, String.Empty) + 
                             GISApplication.GISApp.HistoryAdditionalFieldsDelimiter + 
                             _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName, 
                             _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.DataType)}).ToArray());
+                //---------------------------------------------------------------------
                 if (historyTable == null) throw new Exception("Failed to update GIS layer.");
 
                 // update DB shadow copy of GIS layer
@@ -273,11 +289,16 @@ namespace HLU.UI.ViewModel
 
                 foreach (HluDataSet.incid_mm_polygonsRow r in polygons)
                 {
-                    DataRow historyRow = historyTable.Rows.Find(r.ItemArray.Where((i, index) =>
-                        _viewModelMain.GisIDColumnOrdinals.Contains(index)).ToArray());
-                    r.toid_fragment_id = historyRow.Field<string>(
-                        _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.ColumnName);
-                    r.incid = newIncid;
+                    // If the feature in GIS belongs to the current incid then update the
+                    // toid_fragment_id and incid.
+                    if (r.incid == _viewModelMain.Incid)
+                    {
+                        DataRow historyRow = historyTable.Rows.Find(r.ItemArray.Where((i, index) =>
+                            _viewModelMain.GisIDColumnOrdinals.Contains(index)).ToArray());
+                        r.toid_fragment_id = historyRow.Field<string>(
+                            _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.ColumnName);
+                        r.incid = newIncid;
+                    }
                 }
                 if (_viewModelMain.HluTableAdapterManager.incid_mm_polygonsTableAdapter.Update(polygons) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
@@ -314,12 +335,14 @@ namespace HLU.UI.ViewModel
             {
                 if (success)
                 {
-                    _viewModelMain.ClearFilter();
-
-                    // re-count records
+                    // Re-count the incid records in the database.
                     _viewModelMain.IncidRowCount(true);
 
-                    // synch with GIS selection
+                    // Reset the incid and map selections but don't move
+                    // to the first incid in the database.
+                    _viewModelMain.ClearFilter(false);
+
+                    // Synch with the GIS selection.
                     _viewModelMain.ReadMapSelection(true);
                 }
             }
@@ -347,9 +370,14 @@ namespace HLU.UI.ViewModel
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Get the current value of the IHS Habitat which isn't stored
+                // in the current Incid row.
+                newIncidRow.ihs_habitat = _viewModelMain.IncidIhsHabitat;
+
                 // Discard any changes to the Incid table once a copy has been
                 // made.
                 _viewModelMain.IncidTable.RejectChanges();
+
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -365,6 +393,8 @@ namespace HLU.UI.ViewModel
                 //
                 //newIncidRow.ihs_version = _viewModelMain.RecIDs.IhsVersion;
                 //---------------------------------------------------------------------
+
+                // Update the created and last modified date and user fields.
                 newIncidRow.created_date = DateTime.Now;
                 newIncidRow.created_user_id = _viewModelMain.UserID;
                 newIncidRow.last_modified_date = newIncidRow.created_date;
@@ -407,7 +437,7 @@ namespace HLU.UI.ViewModel
                     // Discard any changes to the IncidIhsMatrix table once a copy has been
                     // made.
                     _viewModelMain.IncidIhsMatrixTable.RejectChanges();
-                    
+
                     // Remove any rows added by the edit that have been discarded but
                     // are still in the rows array.
                     for (int i = 0; i < _viewModelMain.IncidIhsMatrixRows.Count(); i++)
@@ -601,49 +631,75 @@ namespace HLU.UI.ViewModel
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_ihs_complex.TableName));
                 }
 
-                if ((_viewModelMain.IncidBapRows != null) && (_viewModelMain.IncidBapRows.Length > 0))
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Copy the values of any IncidBap rows rather than
+                // copying the rows themselves so that any pending changes
+                // to the rows can be discarded afterwards.
+                //
+                //HluDataSet.incid_bapRow[] bapRows = _viewModelMain.IncidBapRows.Where(r => r != null).ToArray();
+
+                // Create a local copy of the IncidBap rows.
+                List<HluDataSet.incid_bapRow> bapRows = new List<HluDataSet.incid_bapRow>();
+
+                IEnumerable<BapEnvironment> beAuto = null;
+                IEnumerable<BapEnvironment> beUser = null;
+                //beAuto = new BapEnvironment[0].AsEnumerable();
+                //beUser = new BapEnvironment[0].AsEnumerable();
+
+                // Get a list of the auto BAP rows.
+                if (_viewModelMain.IncidBapRowsAuto != null)
                 {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
-                    // Copy the values of any IncidBap rows rather than
-                    // copying the rows themselves so that any pending changes
-                    // to the rows can be discarded afterwards.
-                    //
-                    //HluDataSet.incid_bapRow[] bapRows = _viewModelMain.IncidBapRows.Where(r => r != null).ToArray();
+                    beAuto = from b in _viewModelMain.IncidBapRowsAuto
+                                                            group b by b.bap_habitat into habs
+                                                            select habs.First();
+                }
 
-                    // Create a local copy of the IncidBap rows.
-                    List<HluDataSet.incid_bapRow> bapRows = new List<HluDataSet.incid_bapRow>();
+                // Get a list of the user BAP rows, removing any duplicate
+                // codes already in the auto list as it goes.
+                if (_viewModelMain.IncidBapHabitatsUser != null)
+                {
+                    beUser = from b in _viewModelMain.IncidBapHabitatsUser
+                                                            where beAuto.Count(a => a.bap_habitat == b.bap_habitat) == 0
+                                                            group b by b.bap_habitat into habs
+                                                            select habs.First();
+                }
 
-                    // Copy the column values for each row in the IncidBap table.
-                    foreach (HluDataSet.incid_bapRow row in _viewModelMain.IncidBapRows)
+                // Concatenate the two BAP lists together.
+                var currentBapRows = beAuto.Concat(beUser);
+
+                // Iterate through the concatenated BAP list, adding each
+                // one to the local BAP table.
+                foreach (BapEnvironment be in currentBapRows)
+                {
+                    HluDataSet.incid_bapRow newRow;
+                    // If the row is new get a new bap_id and then add it to
+                    // the local copy of rows.
+                    if (be.bap_id == -1)
                     {
-                        if (row != null)
-                        {
-                            HluDataSet.incid_bapRow newIncidBapRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
-                            for (int i = 0; i < _viewModelMain.IncidBapTable.Columns.Count; i++)
-                                if (!row.IsNull(i)) newIncidBapRow[i] = row[i];
-
-                            bapRows.Add(newIncidBapRow);
-                        }
+                        be.bap_id = _viewModelMain.RecIDs.NextIncidBapId;
+                        be.incid = _viewModelMain.Incid;
+                        newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
+                        newRow.ItemArray = be.ToItemArray();
+                        bapRows.Add(newRow);
                     }
-
-                    // Discard any changes to the IncidBap table once a copy has been
-                    // made.
-                    _viewModelMain.IncidBapTable.RejectChanges();
-
-                    // Remove any rows added by the edit that have been discarded but
-                    // are still in the rows array.
-                    for (int i = 0; i < _viewModelMain.IncidBapRows.Count(); i++)
+                    // If the row is updated get the new values from the bap
+                    // data grid and then add it to the local copy of rows.
+                    else if ((newRow = UpdateIncidBapRow(be)) != null)
                     {
-                        if ((_viewModelMain.IncidBapRows[i] != null) && (_viewModelMain.IncidBapRows[i].incidRow == null))
-                        {
-                            if (_viewModelMain.IncidBapRows[i].RowState != DataRowState.Detached)
-                                _viewModelMain.IncidBapRows[i].Delete();
-                            _viewModelMain.IncidBapRows[i] = null;
-                        }
+                        bapRows.Add(newRow);
                     }
-                    //---------------------------------------------------------------------
+                }
 
+                // Restore the IHS Habitat back to it's original value. This
+                // will retrieve the auto and user bap rows from the database
+                // again so that they will no longer be flagged as changed.
+                _viewModelMain.IncidBapRowsUser = null;
+                _viewModelMain.IncidIhsHabitat = _viewModelMain.IncidCurrentRow[_viewModelMain.IncidTable.ihs_habitatColumn.ColumnName].ToString();
+
+                // If there are any local rows ...
+                if ((bapRows != null) && (bapRows.Count > 0))
+                {
                     // Clone the temporary rows, replacing the original incid with the
                     // new incid.
                     foreach (HluDataSet.incid_bapRow row in bapRows)
@@ -657,6 +713,7 @@ namespace HLU.UI.ViewModel
                     if (_viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Update(_viewModelMain.HluDataset.incid_bap) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
                 }
+                //---------------------------------------------------------------------
 
                 if ((_viewModelMain.IncidSourcesRows != null) && (_viewModelMain.IncidSourcesRows.Length > 0))
                 {
@@ -751,5 +808,31 @@ namespace HLU.UI.ViewModel
             }
             return newRow;
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // Used when cloning an incid to retrieve the current values for
+        // a given BAP row.
+        //
+        /// <summary>
+        /// Writes the values from a BapEnvironment object bound to the BAP data grids into the corresponding incid_bap DataRow.
+        /// </summary>
+        /// <param name="be">BapEnvironment object bound to data grid on form.</param>
+        /// <returns>Updated incid_bap row, or null if no corresponding row was found.</returns>
+        private HluDataSet.incid_bapRow UpdateIncidBapRow(BapEnvironment be)
+        {
+            var q = _viewModelMain.IncidBapRows.Where(r => r.RowState != DataRowState.Deleted && r.bap_id == be.bap_id);
+            if (q.Count() == 1)
+            {
+                if (!be.IsValid()) return null;
+                HluDataSet.incid_bapRow oldRow = q.ElementAt(0);
+                object[] itemArray = be.ToItemArray();
+                for (int i = 0; i < itemArray.Length; i++)
+                    oldRow[i] = itemArray[i];
+                return oldRow;
+            }
+            return null;
+        }
+        //---------------------------------------------------------------------
     }
 }

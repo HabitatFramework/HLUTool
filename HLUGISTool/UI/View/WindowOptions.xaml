@@ -4,7 +4,7 @@
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
         Width="500"
-        Height="460"
+        Height="523"
         Activated="Window_Activated"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -31,6 +31,8 @@
             </Grid.RowDefinitions>
             <Grid Name="GridOptions" Grid.Row="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="4" />
                     <RowDefinition />
                     <RowDefinition Height="4" />
                     <RowDefinition />
@@ -301,8 +303,49 @@
                         </Grid>
                     </Grid>
                 </GroupBox>
-                <GroupBox Name="GroupBoxSeasons"
+                <GroupBox Name="GroupBoxInterface"
                           Grid.Row="4"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="Interface Options">
+                    <Grid Margin="2,8,2,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Name="GridSubsetUpdateAction"
+                              Grid.Column="0"
+                              Margin="8,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <Label Name="LabelSubsetUpdateAction"
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Action To Take When Updating Subset
+                            </Label>
+                            <ComboBox Name="ComboBoxSubsetUpdateAction"
+                                      Grid.Row="0"
+                                      Grid.Column="1"
+                                      Margin="4,4,4,4"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding Path=SubsetUpdateActions}"
+                                      SelectedValue="{Binding Path=SubsetUpdateAction}" />
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Name="GroupBoxSeasons"
+                          Grid.Row="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Vague Date Season Names">

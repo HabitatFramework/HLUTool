@@ -216,8 +216,14 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.DataBase.CommitTransaction();
                             _viewModelMain.HluDataset.AcceptChanges();
 
+                            // Re-count the incid records in the database.
                             _viewModelMain.IncidRowCount(true);
-                            _viewModelMain.ClearFilter();
+
+                            // Reset the incid and map selections but don't move
+                            // to the first incid in the database.
+                            _viewModelMain.ClearFilter(false);
+
+                            // Synch with the GIS selection.
                             _viewModelMain.ReadMapSelection(true);
                         }
                     }
@@ -351,8 +357,14 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.HluDataset.AcceptChanges();
                         }
 
+                        // Re-count the incid records in the database.
                         _viewModelMain.IncidRowCount(true);
-                        _viewModelMain.ClearFilter();
+
+                        // Reset the incid and map selections but don't move
+                        // to the first incid in the database.
+                        _viewModelMain.ClearFilter(false);
+
+                        // Synch with the GIS selection.
                         _viewModelMain.ReadMapSelection(true);
                     }
                     catch

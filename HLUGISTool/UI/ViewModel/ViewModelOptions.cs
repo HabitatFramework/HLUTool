@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -27,6 +28,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using HLU.Data.Model;
+using HLU.UI.ViewModel;
 using HLU.GISApplication;
 using HLU.Properties;
 using HLU.UI.UserControls;
@@ -54,6 +56,7 @@ namespace HLU.UI.ViewModel
         private string _mapPath = Settings.Default.MapPath;
         private int _preferredGis = Settings.Default.PreferredGis;
         private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
+        private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -170,6 +173,8 @@ namespace HLU.UI.ViewModel
             Settings.Default.HistoryColumnOrdinals = new StringCollection();
             Settings.Default.HistoryColumnOrdinals.AddRange(_historyColumns.Where(c => c.IsSelected)
                 .Select(c => _incidMMPolygonsTable.Columns[UnescapeAccessKey(c.Item)].Ordinal.ToString()).ToArray());
+
+            Settings.Default.SubsetUpdateAction = _subsetUpdateAction;
 
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
@@ -346,6 +351,49 @@ namespace HLU.UI.ViewModel
             get { return _warnOnGISSelect; }
             set { _warnOnGISSelect = value; }
         }
+
+        #endregion
+
+        #region Interface
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // A new option to enable the user to determine what to do
+        // if they try to update a subset of features for the current
+        // incid.
+        // 
+        /// <summary>
+        /// Gets or sets the list of available subset update actions from
+        /// the enum.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public SubsetUpdateActions[] SubsetUpdateActions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SubsetUpdateActions)).Cast<SubsetUpdateActions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred subset update action.
+        /// </summary>
+        /// <value>
+        /// The preferred subset update action.
+        /// </value>
+        public SubsetUpdateActions SubsetUpdateAction
+        {
+            get { return (SubsetUpdateActions)_subsetUpdateAction; }
+            set
+            {
+                _subsetUpdateAction = (int)value;
+            }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 

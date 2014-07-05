@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -649,7 +650,12 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
-        public override DataTable SplitFeaturesLogically(string newIncid, DataColumn[] historyColumns)
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // The old incid number is passed together with the new incid
+        // number so that only features belonging to the old incid are
+        // updated.
+        public override DataTable SplitFeaturesLogically(string oldIncid, string newIncid, DataColumn[] historyColumns)
         {
             try
             {
@@ -678,6 +684,8 @@ namespace HLU.GISApplication.MapInfo
                 string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
 
                 string fetchCommand = String.Format("Fetch Rec {0} From {1}", "{0}", _selName);
+                string incidCommand = String.Format("{0}.{1}", _selName,
+                    GetFieldName(_hluLayerStructure.incidColumn.Ordinal));
                 string fragCommand = String.Format("{0}.{1}", _selName,
                     GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal));
                 string toidFragmentCommand = String.Format("{0}.{1}", _selName,
@@ -689,10 +697,18 @@ namespace HLU.GISApplication.MapInfo
                 for (int i = 1; i <= numRows; i++)
                 {
                     _mapInfoApp.RunCommand(String.Format(fetchCommand, i));
-                    CollectHistory(ixGeom1, ixGeom2, readCommandTemplate, historyColumnNames, ref historyTable);
-                    if (!String.IsNullOrEmpty(newToidFragmentColumnName))
-                        historyTable.Rows[historyTable.Rows.Count - 1][newToidFragmentColumnName] = _mapInfoApp.Eval(fragCommand);
-                    _mapInfoApp.Do(String.Format(updateCommandTemplate, i));
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Only collect the history details and update the incid number if
+                    // the each feature belongs to the old incid.
+                    if (_mapInfoApp.Eval(fragCommand) == oldIncid)
+                    {
+                        CollectHistory(ixGeom1, ixGeom2, readCommandTemplate, historyColumnNames, ref historyTable);
+                        if (!String.IsNullOrEmpty(newToidFragmentColumnName))
+                            historyTable.Rows[historyTable.Rows.Count - 1][newToidFragmentColumnName] = _mapInfoApp.Eval(fragCommand);
+                        _mapInfoApp.Do(String.Format(updateCommandTemplate, i));
+                    }
+                    //---------------------------------------------------------------------
                 }
 
                 if ((historyTable != null) && !CommitChanges())
@@ -706,6 +722,7 @@ namespace HLU.GISApplication.MapInfo
                 return null;
             }
         }
+        //---------------------------------------------------------------------
 
         private void CollectHistory(int ixGeom1, int ixGeom2, string readCommandTemplate, 
             string[] historyColumnNames, ref DataTable historyTable)
