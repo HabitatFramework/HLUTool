@@ -1,5 +1,6 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -66,7 +67,7 @@ namespace HLU
         public delegate void FlashSelectedFeatureDelegate(IQueryFilter queryFilter);
         public delegate void SplitFeatureDelegate(IQueryFilter selectionQueryFilter,
             string lastToidFragmentID, string[] historyColumns);
-        public delegate void SplitFeaturesLogicallyDelegate(string newIncid, string[] historyColumns);
+        public delegate void SplitFeaturesLogicallyDelegate(string oldIncid, string newIncid, string[] historyColumns);
         public delegate void MergeFeaturesDelegate(IQueryFilter resultFeatureQueryFilter,
             string newToidFragmentID, string[] historyColumns);
         public delegate void MergeFeaturesLogicallyDelegate(string keepIncid, string[] historyColumns);
@@ -810,17 +811,23 @@ namespace HLU
                             catch { _pipeData.Clear(); }
                         }
                         break;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // The old incid number is passed together with the new incid
+                    // number so that only features belonging to the old incid are
+                    // updated.
                     case "sl": // split features logically: cmd, newIncid, historyColumns
-                        if (_pipeData.Count == 3)
+                        if (_pipeData.Count == 4)
                         {
                             try
                             {
                                 _dummyControl.Invoke(_splitFeatLogDel, new object[] { _pipeData[1], 
-                                    _pipeData[2].Split(',') } );
+                                    _pipeData[2], _pipeData[3].Split(',') });
                             }
                             catch { _pipeData.Clear(); }
                         }
                         break;
+                    //---------------------------------------------------------------------
                     case "zs": // zoom selected: cmd [, queryFilter]
                         try
                         {
@@ -1536,7 +1543,12 @@ namespace HLU
             catch { _pipeData.Clear(); }
         }
 
-        private void SplitFeaturesLogically(string newIncid, string[] historyColumns)
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // The old incid number is passed together with the new incid
+        // number so that only features belonging to the old incid are
+        // updated.
+        private void SplitFeaturesLogically(string oldIncid, string newIncid, string[] historyColumns)
         {
             // make sure selection changed event handler won't intervene
             _selectFieldOrdinals = null;
@@ -1550,7 +1562,7 @@ namespace HLU
                     // clear the pipe
                     _pipeData.Clear();
 
-                    // make sure at least two features are selected
+                    // make sure at least one feature is selected
                     if (_hluFeatureSelection == null)
                         _hluFeatureSelection = (IFeatureSelection)_hluLayer;
                     if (_hluFeatureSelection.SelectionSet.Count < 1) return;
@@ -1580,11 +1592,19 @@ namespace HLU
 
                         while (splitFeature != null)
                         {
-                            if (!String.IsNullOrEmpty(newToidFragmentColumnName))
-                                _pipeData.Add(History(splitFeature, historyFieldOrdinals, 
-                                    new string[] { splitFeature.get_Value(fragOrdinal).ToString() }));
-                            splitFeature.set_Value(incidOrdinal, newIncid);
-                            splitFeature.Store();
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR10 (Attribute updates for incid subsets)
+                            // Only collect the history details and update the incid number if
+                            // the each feature belongs to the old incid.
+                            if (splitFeature.get_Value(incidOrdinal).ToString() == oldIncid)
+                            {
+                                if (!String.IsNullOrEmpty(newToidFragmentColumnName))
+                                    _pipeData.Add(History(splitFeature, historyFieldOrdinals,
+                                        new string[] { splitFeature.get_Value(fragOrdinal).ToString() }));
+                                splitFeature.set_Value(incidOrdinal, newIncid);
+                                splitFeature.Store();
+                            }
+                            //---------------------------------------------------------------------
                             splitFeature = featCursor.NextFeature();
                         }
                         FlushCursor(false, ref featCursor);
@@ -1603,6 +1623,7 @@ namespace HLU
             }
             catch { _pipeData.Clear(); }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 

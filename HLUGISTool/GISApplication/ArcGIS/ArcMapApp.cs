@@ -1,5 +1,6 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -704,20 +705,27 @@ namespace HLU.GISApplication.ArcGIS
                 lastToidFragmentID, String.Join(",", historyColumns.Select(c => c.ColumnName).ToArray()) }));
         }
 
-        public override DataTable SplitFeaturesLogically(string newIncid, DataColumn[] historyColumns)
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // Pass the old incid number together with the new incid number
+        // so that only features belonging to the old incid are
+        // updated.
+        public override DataTable SplitFeaturesLogically(string oldIncid, string newIncid, DataColumn[] historyColumns)
         {
             try
             {
-                string[] sendList = new string[3];
+                string[] sendList = new string[4];
                 sendList[0] = "sl";
-                sendList[1] = newIncid;
-                sendList[2] = historyColumns.Aggregate(new StringBuilder(), (sb, c) => 
+                sendList[1] = oldIncid;
+                sendList[2] = newIncid;
+                sendList[3] = historyColumns.Aggregate(new StringBuilder(), (sb, c) => 
                     sb.Append("," + c.ColumnName)).Remove(0, 1).ToString();
 
                 return ResultTableFromList(IpcArcMap(sendList));
             }
             catch { throw; }
         }
+        //---------------------------------------------------------------------
 
         public override DataTable MergeFeatures(string newToidFragmentID, 
             List<SqlFilterCondition> resultWhereClause, DataColumn[] historyColumns)

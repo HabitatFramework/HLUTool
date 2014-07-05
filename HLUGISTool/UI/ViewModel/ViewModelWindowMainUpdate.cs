@@ -229,26 +229,35 @@ namespace HLU.UI.ViewModel
                     newRow.ItemArray = be.ToItemArray();
                     newRows.Add(newRow);
                 }
+                // Get the new values for every updated bap row from the bap data grid.
                 else if ((updateRow = UpdateIncidBapRow(be)) != null)
                 {
+                    // If a row is returned from the data grid add it to the list
+                    // of updated rows.
                     updateRows.Add(updateRow);
                 }
             }
 
+            // Delete any rows that haven't been marked as deleted but are
+            // no longer in the current rows.
             _viewModelMain.IncidBapRows.Where(r => r.RowState != DataRowState.Deleted &&
                 currentBapRows.Count(g => g.bap_id == r.bap_id) == 0).ToList()
                 .ForEach(delegate(HluDataSet.incid_bapRow row) { row.Delete(); });
             
+            // Update the table to remove the deleted rows.
             if (_viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Update(
                 _viewModelMain.IncidBapRows.Where(r => r.RowState == DataRowState.Deleted).ToArray()) == -1)
                 throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
 
+            // If there are any rows that have been updated.
             if (updateRows.Count > 0)
             {
+                // Update the table to update the updated rows.
                 if (_viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Update(updateRows.ToArray()) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
             }
 
+            // Insert the new rows into the table.
             foreach (HluDataSet.incid_bapRow r in newRows)
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Insert(r);
         }
