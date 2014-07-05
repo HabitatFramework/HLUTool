@@ -2586,7 +2586,12 @@
                             <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                         </Trigger>
-                        <!--AM Start-->
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
+                        <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
@@ -2897,7 +2902,12 @@
                             <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                         </Trigger>
-                        <!--AM Start-->
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
+                        <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}"/>
                         </Trigger>
