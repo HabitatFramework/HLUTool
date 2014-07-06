@@ -7,7 +7,7 @@
         xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
         Title="{Binding WindowTitle}"
         Width="500"
-        Height="820"
+        Height="Auto"
         Icon="..\..\Icons\HLUIcon.png"
         KeyUp="Window_KeyUp"
         Loaded="Window_Loaded"
@@ -2655,8 +2655,6 @@
                                 <ItemsControl x:Name="ItemsControlModificationHistory"
                                               Grid.Row="0"
                                               Margin="8,8,8,8"
-                                              Background="#FFD6D6D6"
-                                              BorderBrush="Black"
                                               BorderThickness="2"
                                               Foreground="Black"
                                               ItemsSource="{Binding IncidHistory,
@@ -2782,14 +2780,18 @@
                     <Button x:Name="ButtonFirstRecord"
                             Grid.Column="1"
                             Margin="0,0,1,0"
-                            Command="{Binding NavigateFirstCommand}"
-                            Content="|&lt;" />
-                    <Button x:Name="ButtonPreviousRecord"
+              							FontWeight="Bold"
+                            Command="{Binding Path=NavigateFirstCommand}">
+                        |&lt;
+                    </Button>
+                    <Button Name="ButtonPreviousRecord"
                             Grid.Column="2"
                             Margin="0,0,1,0"
-                            Command="{Binding NavigatePreviousCommand}"
-                            Content="&lt;" />
-                    <TextBox x:Name="TextBoxRecordNumber"
+							              FontWeight="Bold"
+                            Command="{Binding Path=NavigatePreviousCommand}">
+                        &lt;
+                    </Button>
+                    <TextBox Name="TextBoxRecordNumber"
                              Grid.Column="3"
                              Text="{Binding IncidCurrentRowIndex,
                                             Mode=TwoWay,
@@ -2798,13 +2800,17 @@
                     <Button x:Name="ButtonNextRecord"
                             Grid.Column="4"
                             Margin="1,0,0,0"
-                            Command="{Binding NavigateNextCommand}"
-                            Content="&gt;" />
-                    <Button x:Name="ButtonLastRecord"
+              							FontWeight="Bold"
+                            Command="{Binding Path=NavigateNextCommand}">
+                        &gt;
+                    </Button>
+                    <Button Name="ButtonLastRecord"
                             Grid.Column="5"
                             Margin="1,0,0,0"
-                            Command="{Binding NavigateLastCommand}"
-                            Content="&gt;|" />
+							              FontWeight="Bold"
+                            Command="{Binding Path=NavigateLastCommand}">
+                        &gt;|
+                    </Button>
                 </Grid>
 
                 <Grid x:Name="GridLabelStatusIncid"
