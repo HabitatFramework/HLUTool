@@ -69,7 +69,7 @@
                           Header="Windows _Side By Side"
                           IsEnabled="{Binding CanGisWinSideBySide}" />
                 <MenuItem x:Name="MenuItemAppKeepOnTop"
-                          Header="_Keep DB Window on Top"
+                          Header="_Keep Tool Window on Top"
                           IsCheckable="True" />
 
 
@@ -105,20 +105,20 @@
                           IsEnabled="{Binding CanSelectByIncid}" />
             </MenuItem>
             <MenuItem Header="Split/_Merge">
-                <MenuItem Name="MenuItemLogicalSplit"
+                <MenuItem x:Name="MenuItemLogicalSplit"
                           Command="{Binding Path=LogicalSplitCommand}"
                           Header="Logical _Split"
                           IsEnabled="{Binding Path=CanLogicallySplit}" />
-                <MenuItem Name="MenuItemLogicalMerge"
+                <MenuItem x:Name="MenuItemLogicalMerge"
                           Command="{Binding Path=LogicalMergeCommand}"
                           Header="_Logical Merge"
                           IsEnabled="{Binding Path=CanLogicallyMerge}" />
                 <!-- <Separator /> -->
-                <MenuItem Name="MenuItemPhysicalSplit"
+                <MenuItem x:Name="MenuItemPhysicalSplit"
                           Command="{Binding Path=PhysicalSplitCommand}"
                           Header="Physical Spli_t"
                           IsEnabled="{Binding Path=CanPhysicallySplit}" />
-                <MenuItem Name="MenuItemPhysicalMerge"
+                <MenuItem x:Name="MenuItemPhysicalMerge"
                           Command="{Binding Path=PhysicalMergeCommand}"
                           Header="_Physical Merge"
                           IsEnabled="{Binding Path=CanPhysicallyMerge}" />
@@ -130,12 +130,18 @@
                 <MenuItem Header="_Styles">
                     <MenuItem Name="ThemeGreyHi"
                               Click="MenuItem_Style_Click"
-                              Header="Grey _Hi" />
+                              Header="Grey _Hi" 
+                              IsCheckable="True" />
                     <MenuItem Name="ThemeGreyLo"
                               Click="MenuItem_Style_Click"
-                              Header="Grey _Lo" />
+                              Header="Grey _Lo" 
+                              IsCheckable="True" />
+                    <MenuItem Name="ThemeDark"
+                              Click="MenuItem_Style_Click"
+                              Header="_Dark" 
+                              IsCheckable="True" />
                 </MenuItem>
-                <MenuItem Name="MenuItemSwitchGisLayer"
+                <MenuItem x:Name="MenuItemSwitchGisLayer"
                           Command="{Binding Path=SwitchGisLayerCommand}"
                           Header="Switch _GIS Layer" />
                 <MenuItem x:Name="MenuItemAbout"
