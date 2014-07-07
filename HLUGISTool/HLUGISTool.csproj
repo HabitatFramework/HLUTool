@@ -203,6 +203,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\View\Dictionary\CodeNameDescriptionConverterDictionary.xaml">
+    <Page Include="UI\View\Dictionary\ThemeGreyLo.xaml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\View\WindowSwitchGISLayer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -225,11 +231,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\View\Dictionary\HluTheme.xaml">
+    <Page Include="UI\View\Dictionary\ThemeGreyHi.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\View\Dictionary\MergeFeaturesWindowDictionary.xaml">
       <SubType>Designer</SubType>

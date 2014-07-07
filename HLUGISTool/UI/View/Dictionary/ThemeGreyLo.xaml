@@ -1,6 +1,11 @@
+<<<<<<< HEAD:HLUGISTool/UI/View/Dictionary/HluTheme.xaml
 ﻿<!--
     Theme used for HLU application based on Microsoft Exression Light.
 -->
+=======
+﻿
+<!--  Theme used for HLU application based on Microsoft Exression Light.  -->
+>>>>>>> 493336d... Added menu option to switch theme:HLUGISTool/UI/View/Dictionary/ThemeGreyLo.xaml
 
 <!--
 // (c) Copyright Microsoft Corporation.
@@ -28,13 +33,17 @@
     <Color x:Key="MainColor">#FF939393</Color>
     <Color x:Key="HoverColor">#FFAAAAAA</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
-    <SolidColorBrush x:Key="LightBrush" Color="#FFAFAFAF" />
+    <SolidColorBrush x:Key="LightBrush" Color="#FFAAC8E6" />
     <SolidColorBrush x:Key="ShadeBrush" Color="#FF9F9F9F" />
 
     <Color x:Key="TopGradientSelectColor">#FFFFFFFF</Color>
     <Color x:Key="BottomGradientSelectColor">#FF999999</Color>
 
     <Color x:Key="BlackColor">#FF000000</Color>
+<<<<<<< HEAD:HLUGISTool/UI/View/Dictionary/HluTheme.xaml
+=======
+    <Color x:Key="DarkColor">#FF559BE2</Color>
+>>>>>>> 493336d... Added menu option to switch theme:HLUGISTool/UI/View/Dictionary/ThemeGreyLo.xaml
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
     <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />
@@ -96,6 +105,7 @@
 
 
 
+<<<<<<< HEAD:HLUGISTool/UI/View/Dictionary/HluTheme.xaml
     <!--DatePickerTextBox-->
     <Style TargetType="{x:Type tkit:DatePickerTextBox}">
         <Setter Property="Background" Value="#FFD6D6D6"/>
@@ -109,6 +119,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+=======
+>>>>>>> 493336d... Added menu option to switch theme:HLUGISTool/UI/View/Dictionary/ThemeGreyLo.xaml
 
     <!--ErrorTemplate-->
     <ControlTemplate x:Key="ErrorTemplate">
