@@ -127,8 +127,16 @@
                 <MenuItem x:Name="MenuItemOptions"
                           Command="{Binding OptionsCommand}"
                           Header="_Options" />
-                <MenuItem x:Name="MenuItemSwitchGisLayer"
-                          Command="{Binding SwitchGisLayerCommand}"
+                <MenuItem Header="_Styles">
+                    <MenuItem Name="ThemeGreyHi"
+                              Click="MenuItem_Style_Click"
+                              Header="Grey _Hi" />
+                    <MenuItem Name="ThemeGreyLo"
+                              Click="MenuItem_Style_Click"
+                              Header="Grey _Lo" />
+                </MenuItem>
+                <MenuItem Name="MenuItemSwitchGisLayer"
+                          Command="{Binding Path=SwitchGisLayerCommand}"
                           Header="Switch _GIS Layer" />
                 <MenuItem x:Name="MenuItemAbout"
                           Command="{Binding AboutCommand}"
@@ -2780,15 +2788,15 @@
                     <Button x:Name="ButtonFirstRecord"
                             Grid.Column="1"
                             Margin="0,0,1,0"
-              							FontWeight="Bold"
-                            Command="{Binding Path=NavigateFirstCommand}">
+                            Command="{Binding Path=NavigateFirstCommand}"
+                            FontWeight="Bold">
                         |&lt;
                     </Button>
                     <Button Name="ButtonPreviousRecord"
                             Grid.Column="2"
                             Margin="0,0,1,0"
-							              FontWeight="Bold"
-                            Command="{Binding Path=NavigatePreviousCommand}">
+                            Command="{Binding Path=NavigatePreviousCommand}"
+                            FontWeight="Bold">
                         &lt;
                     </Button>
                     <TextBox Name="TextBoxRecordNumber"
@@ -2800,15 +2808,15 @@
                     <Button x:Name="ButtonNextRecord"
                             Grid.Column="4"
                             Margin="1,0,0,0"
-              							FontWeight="Bold"
-                            Command="{Binding Path=NavigateNextCommand}">
+                            Command="{Binding Path=NavigateNextCommand}"
+                            FontWeight="Bold">
                         &gt;
                     </Button>
                     <Button Name="ButtonLastRecord"
                             Grid.Column="5"
                             Margin="1,0,0,0"
-							              FontWeight="Bold"
-                            Command="{Binding Path=NavigateLastCommand}">
+                            Command="{Binding Path=NavigateLastCommand}"
+                            FontWeight="Bold">
                         &gt;|
                     </Button>
                 </Grid>

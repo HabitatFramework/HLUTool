@@ -197,5 +197,12 @@ namespace HLU
                 cb.Text = null;
             }
         }
+
+        private void MenuItem_Style_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            string stylefile = string.Format("/UI/View/Dictionary/{0}", mi.Name + ".xaml");
+            App.Instance.LoadStyleDictionaryFromFile(stylefile);
+        }
     }
 }

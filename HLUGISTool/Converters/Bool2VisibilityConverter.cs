@@ -22,7 +22,7 @@ using System.Windows.Data;
 
 namespace HLU.Converters
 {
-    class Bool2VisibilityConverter : IValueConverter
+    public class Bool2VisibilityConverter : IValueConverter
     {
         #region IValueConverter Members
 

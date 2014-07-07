@@ -20,11 +20,13 @@
 #define THREADED
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 using HLU.UI.View;
 using HLU.UI.ViewModel;
 using HLU.Properties;
@@ -43,12 +45,26 @@ namespace HLU
         private static Mutex _toolMutex = null;
         private static Mutex _updaterMutex = null;
 
+        public static App Instance;
+        public static String Directory;
+        private String _DefaultStyle = "ThemeGreyHi.xaml";
+
         public static ViewModelWindowSplash SplashViewModel
         {
             get { return _splashViewModel; }
         }
 
         public static string[] StartupArguments = null;
+
+        public App()
+        {
+            Instance = this;
+            Directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            //string stringsFile = Path.Combine(Directory, string.Format("UI\\View\\Dictionary\\{0}", _DefaultStyle));
+            //string stringsFile = _DefaultStyle;
+            string stringsFile = string.Format("/UI/View/Dictionary/{0}", _DefaultStyle);
+            LoadStyleDictionaryFromFile(stringsFile);
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -247,6 +263,30 @@ namespace HLU
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// This function loads a ResourceDictionary from a file at runtime
+        /// </summary>
+        public void LoadStyleDictionaryFromFile(string inFileName)
+        {
+            try
+            {
+                var dictUri = new Uri(inFileName, UriKind.Relative);
+
+                // Read in ResourceDictionary File
+                ResourceDictionary dic = Application.LoadComponent(dictUri) as ResourceDictionary;
+                //ResourceDictionary dic = (ResourceDictionary)XamlReader.Load(fs);
+
+                // Clear any previous dictionaries loaded
+                Application.Current.Resources.MergedDictionaries.Clear();
+
+                // Add in newly loaded Resource Dictionary
+                Application.Current.Resources.MergedDictionaries.Add(dic);
+            }
+            catch
+            {
+            }
         }
     }
 }
