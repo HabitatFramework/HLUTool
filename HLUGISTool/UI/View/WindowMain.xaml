@@ -707,8 +707,8 @@
                               Margin="8,0,8,4"
                               VerticalAlignment="Center"
                               DisplayMemberPath="description"
-                              IsEditable="True"
-                              IsEnabled="{Binding ReasonProcessEnabled}"
+                              IsEditable="False"
+                              IsEnabled="{Binding Path=ReasonProcessEnabled}"
                               IsReadOnly="False"
                               ItemsSource="{Binding ReasonCodes,
                                                     Mode=TwoWay,
@@ -742,8 +742,8 @@
                               Margin="8,0,8,4"
                               VerticalAlignment="Center"
                               DisplayMemberPath="description"
-                              IsEditable="True"
-                              IsEnabled="{Binding ReasonProcessEnabled}"
+                              IsEditable="False"
+                              IsEnabled="{Binding Path=ReasonProcessEnabled}"
                               IsReadOnly="False"
                               ItemsSource="{Binding ProcessCodes,
                                                     Mode=TwoWay,
