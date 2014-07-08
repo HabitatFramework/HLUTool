@@ -35,6 +35,7 @@ namespace HLU
     public partial class WindowMain : Window
     {
         private ComboBox[] _comboBoxes;
+        private MenuItem lastStyle = null;
 
         public WindowMain()
         {
@@ -201,8 +202,18 @@ namespace HLU
         private void MenuItem_Style_Click(object sender, RoutedEventArgs e)
         {
             MenuItem mi = sender as MenuItem;
-            string stylefile = string.Format("/UI/View/Dictionary/{0}", mi.Name + ".xaml");
-            App.Instance.LoadStyleDictionaryFromFile(stylefile);
+            string styleFile = string.Format("/UI/View/Dictionary/{0}", mi.Name + ".xaml");
+
+            // Switch the style to the selected menu item syle.
+            if (App.Instance.LoadStyleDictionaryFromFile(styleFile))
+            {
+                // Clear the check against the last menu item style.
+                if (lastStyle != null)
+                    lastStyle.IsChecked = false;
+
+                // Store the last style as the current menu item.
+                lastStyle = mi;
+            }
         }
     }
 }

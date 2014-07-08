@@ -1,5 +1,5 @@
 ﻿
-<!--  Theme used for HLU application based on Microsoft Exression Light.  -->
+<!--  Theme used for HLU application based on Microsoft Expression Light.  -->
 
 <!--
     // (c) Copyright Microsoft Corporation.
@@ -23,25 +23,25 @@
 
     <!--  Main Colors  -->
 
-    <Color x:Key="MainColor">#FF939393</Color>
-    <Color x:Key="HoverColor">#FFAAAAAA</Color>
+    <Color x:Key="MainColor">#FF595959</Color>
+    <Color x:Key="HoverColor">#FF393939</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
-    <SolidColorBrush x:Key="LightBrush" Color="#FFAFAFAF" />
-    <SolidColorBrush x:Key="ShadeBrush" Color="#FF9F9F9F" />
+    <SolidColorBrush x:Key="LightBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="ShadeBrush" Color="#FF434343" />
 
     <Color x:Key="TopGradientSelectColor">#FFFFFFFF</Color>
-    <Color x:Key="BottomGradientSelectColor">#FF999999</Color>
+    <Color x:Key="BottomGradientSelectColor">#FF737373</Color>
 
     <Color x:Key="BlackColor">#FF000000</Color>
-    <Color x:Key="DarkColor">#FF555555</Color>
+    <Color x:Key="DarkColor">#FFAAAAAA</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
-    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource WhiteColor}" />
     <SolidColorBrush x:Key="NormalBrush" Color="{StaticResource MainColor}" />
-    <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF9B9999" />
+    <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF333333" />
     <SolidColorBrush x:Key="DarkBorderBrush" Color="{StaticResource DarkColor}" />
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
-    <SolidColorBrush x:Key="GlyphBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="GlyphBrush" Color="#FFD1D1D1" />
 
     <LinearGradientBrush x:Key="PressedBrush" StartPoint="0.5,0.042" EndPoint="0.5,0.971">
         <GradientStop Offset="0" Color="#4C000000" />
@@ -50,18 +50,18 @@
         <GradientStop Offset="0.479" Color="#26FFFFFF" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFE6E6E6" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FFD6D6D6" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF333333" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
         <GradientStop Offset="1" Color="{StaticResource BottomGradientSelectColor}" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF4F4F4F" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFD4D4D4" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FF787878" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
-    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FF595959" />
 
     <SolidColorBrush x:Key="RowHeaderBackgroundBrush" Color="#FFD4D4D4" />
     <SolidColorBrush x:Key="RowHeaderIsMouseOverBrush" Color="#888" />
@@ -97,15 +97,6 @@
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
 
 
-
-
-    <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
-		<Setter Property="Background">
-			<Setter.Value>
-				<SolidColorBrush Color="{StaticResource MainColor}"/>         
-			</Setter.Value>
-		</Setter>
-	</Style>
 
 
     <!--  ErrorTemplate  -->

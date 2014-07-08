@@ -12,10 +12,10 @@
         KeyUp="Window_KeyUp"
         Loaded="Window_Loaded"
         SizeToContent="Height"
-        Topmost="{Binding IsChecked,
-                          ElementName=MenuItemAppKeepOnTop}"
-        WindowStyle="SingleBorderWindow"
-        mc:Ignorable="d">
+        Topmost="{Binding ElementName=MenuItemAppKeepOnTop,
+                          Path=IsChecked}"
+        WindowStyle="SingleBorderWindow">
+<!--		Style="{DynamicResource WindowStyle}"  -->
 
     <Window.Resources>
         <ResourceDictionary>
@@ -127,6 +127,10 @@
                 <MenuItem x:Name="MenuItemOptions"
                           Command="{Binding OptionsCommand}"
                           Header="_Options" />
+                <MenuItem x:Name="MenuItemSwitchGisLayer"
+                          Command="{Binding Path=SwitchGisLayerCommand}"
+                          Header="Switch _GIS Layer" />
+				        <Separator HorizontalAlignment="Left"/>
                 <MenuItem Header="_Styles">
                     <MenuItem Name="ThemeGreyHi"
                               Click="MenuItem_Style_Click"
@@ -141,11 +145,9 @@
                               Header="_Dark" 
                               IsCheckable="True" />
                 </MenuItem>
-                <MenuItem x:Name="MenuItemSwitchGisLayer"
-                          Command="{Binding Path=SwitchGisLayerCommand}"
-                          Header="Switch _GIS Layer" />
+				        <Separator/>
                 <MenuItem x:Name="MenuItemAbout"
-                          Command="{Binding AboutCommand}"
+                          Command="{Binding Path=AboutCommand}"
                           Header="_About" />
             </MenuItem>
         </Menu>
@@ -2765,6 +2767,7 @@
                            Margin="0,0,8,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
+                           Style="{DynamicResource LabelReverseStyle}"
                            Content="Bulk Update. Affected:"
                            FontStretch="UltraExpanded"
                            FontWeight="Bold" />
@@ -2788,21 +2791,20 @@
                     <Label x:Name="LabelNavigation"
                            Grid.Column="0"
                            Margin="0,0,4,0"
+                           Style="{DynamicResource LabelReverseStyle}"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Content="INCID:" />
                     <Button x:Name="ButtonFirstRecord"
                             Grid.Column="1"
                             Margin="0,0,1,0"
-                            Command="{Binding Path=NavigateFirstCommand}"
-                            FontWeight="Bold">
+                            Command="{Binding Path=NavigateFirstCommand}">
                         |&lt;
                     </Button>
                     <Button Name="ButtonPreviousRecord"
                             Grid.Column="2"
                             Margin="0,0,1,0"
-                            Command="{Binding Path=NavigatePreviousCommand}"
-                            FontWeight="Bold">
+                            Command="{Binding Path=NavigatePreviousCommand}">
                         &lt;
                     </Button>
                     <TextBox Name="TextBoxRecordNumber"
@@ -2814,15 +2816,13 @@
                     <Button x:Name="ButtonNextRecord"
                             Grid.Column="4"
                             Margin="1,0,0,0"
-                            Command="{Binding Path=NavigateNextCommand}"
-                            FontWeight="Bold">
+                            Command="{Binding Path=NavigateNextCommand}">
                         &gt;
                     </Button>
                     <Button Name="ButtonLastRecord"
                             Grid.Column="5"
                             Margin="1,0,0,0"
-                            Command="{Binding Path=NavigateLastCommand}"
-                            FontWeight="Bold">
+                            Command="{Binding Path=NavigateLastCommand}">
                         &gt;|
                     </Button>
                 </Grid>
@@ -2834,6 +2834,7 @@
                     <Label x:Name="LabelStatusIncid"
                            Grid.Column="0"
                            Margin="8,0,4,0"
+                           Style="{DynamicResource LabelReverseStyle}"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Content="{Binding StatusIncid,
