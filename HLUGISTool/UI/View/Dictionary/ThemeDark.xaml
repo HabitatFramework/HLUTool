@@ -23,8 +23,9 @@
 
     <!--  Main Colors  -->
 
+<!--    <Color x:Key="MainColor">#FF595959</Color>  -->
     <Color x:Key="MainColor">#FF595959</Color>
-    <Color x:Key="HoverColor">#FF393939</Color>
+    <Color x:Key="HoverColor">#FF303030</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
     <SolidColorBrush x:Key="LightBrush" Color="#FF333333" />
     <SolidColorBrush x:Key="ShadeBrush" Color="#FF434343" />
@@ -33,15 +34,17 @@
     <Color x:Key="BottomGradientSelectColor">#FF737373</Color>
 
     <Color x:Key="BlackColor">#FF000000</Color>
-    <Color x:Key="DarkColor">#FFAAAAAA</Color>
+    <Color x:Key="DarkColor">#FF444444</Color>
+    <Color x:Key="MidColor">#FFAAAAAA</Color>
+    <Color x:Key="LightColor">#FFDDDDDD</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource WhiteColor}" />
     <SolidColorBrush x:Key="NormalBrush" Color="{StaticResource MainColor}" />
-    <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF333333" />
-    <SolidColorBrush x:Key="DarkBorderBrush" Color="{StaticResource DarkColor}" />
+    <SolidColorBrush x:Key="NormalBorderBrush" Color="{StaticResource MidColor}" />
+    <SolidColorBrush x:Key="DarkBorderBrush" Color="#FF666666" />
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
-    <SolidColorBrush x:Key="GlyphBrush" Color="#FFD1D1D1" />
+    <SolidColorBrush x:Key="GlyphBrush" Color="{StaticResource WhiteColor}" />
 
     <LinearGradientBrush x:Key="PressedBrush" StartPoint="0.5,0.042" EndPoint="0.5,0.971">
         <GradientStop Offset="0" Color="#4C000000" />
@@ -50,24 +53,25 @@
         <GradientStop Offset="0.479" Color="#26FFFFFF" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{StaticResource DarkColor}" />
+    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF444444" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
         <GradientStop Offset="1" Color="{StaticResource BottomGradientSelectColor}" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF888888" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="{StaticResource LightColor}" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FF787878" />
-    <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="{StaticResource MidColor}" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FF595959" />
 
-    <SolidColorBrush x:Key="RowHeaderBackgroundBrush" Color="#FFD4D4D4" />
-    <SolidColorBrush x:Key="RowHeaderIsMouseOverBrush" Color="#888" />
-    <SolidColorBrush x:Key="RowBackgroundSelectedBrush" Color="Gainsboro" />
+    <SolidColorBrush x:Key="RowHeaderBackgroundBrush" Color="#FF585858" />
+    <SolidColorBrush x:Key="RowHeaderIsMouseOverBrush" Color="#FF888888" />
+    <SolidColorBrush x:Key="RowBackgroundSelectedBrush" Color="{StaticResource DarkColor}" />
     <!--  #FFD6D6D6}" />  -->
-    <SolidColorBrush x:Key="RowBorderSelectedBrush" Color="Black" />
+    <SolidColorBrush x:Key="RowBorderSelectedBrush" Color="{StaticResource MidColor}" />
     <!--  #FFFFFFFF" #FFD6D6D6/>  -->
 
 
@@ -97,6 +101,15 @@
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
 
 
+
+
+    <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
+		<Setter Property="Background">
+			<Setter.Value>
+				<SolidColorBrush Color="{StaticResource DarkColor}"/>         
+			</Setter.Value>
+		</Setter>
+	</Style>
 
 
     <!--  ErrorTemplate  -->
@@ -228,7 +241,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type tkit:DataGridCell}">
@@ -1343,11 +1356,6 @@
 
 
 
-
-
-
-
-
     <!--  ItemsControl  -->
     <Style TargetType="{x:Type ItemsControl}">
         <Setter Property="Template">
@@ -1356,8 +1364,8 @@
                     <Border BorderBrush="{DynamicResource DarkBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="2">
-                        <ScrollViewer Background="{DynamicResource DisabledBackgroundBrush}"
-                                      Foreground="Black"
+                        <ScrollViewer Background="{DynamicResource ControlBackgroundBrush}"
+                                      Foreground="{DynamicResource DisabledTextBrush}"
                                       Padding="2"
                                       VerticalScrollBarVisibility="Auto">
                             <ItemsPresenter />
@@ -1382,6 +1390,14 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+	<Style TargetType="{x:Type Image}">
+		<Style.Triggers>
+			<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+				<Setter Property="Opacity" Value="0.7"></Setter>
+			</DataTrigger>
+		</Style.Triggers>
+	</Style>
 
     <Style BasedOn="{x:Null}" TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
@@ -3196,6 +3212,11 @@
                                                Storyboard.TargetProperty="(UIElement.Opacity)">
                     <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
                 </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+                                               Storyboard.TargetName="HoverTextRectangle"
+                                               Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.5" />
+                </DoubleAnimationUsingKeyFrames>
             </Storyboard>
             <Storyboard x:Key="HoverOff">
                 <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -3205,6 +3226,11 @@
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
                                                Storyboard.TargetName="HoverBorder"
+                                               Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+                                               Storyboard.TargetName="HoverTextRectangle"
                                                Storyboard.TargetProperty="(UIElement.Opacity)">
                     <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
@@ -3235,6 +3261,17 @@
                        RadiusX="3"
                        RadiusY="3"
                        Stroke="{TemplateBinding BorderBrush}" />
+            <Rectangle x:Name="HoverTextRectangle"
+                       Grid.Column="0"
+                       Width="Auto"
+                       Height="Auto"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Fill="{TemplateBinding Background}"
+                       RadiusX="3"
+                       RadiusY="3"
+                       Stroke="{DynamicResource GlyphBrush}"
+                       Opacity="0" />
             <Border x:Name="border"
                     Grid.Column="1"
                     Margin="2,2,2,2"
@@ -3318,6 +3355,8 @@
                     <Grid x:Name="grid">
                         <ToggleButton x:Name="ToggleButton"
                                       Grid.Column="2"
+                                      Background="{DynamicResource ControlBackgroundBrush}"
+                                      BorderBrush="{DynamicResource DarkBorderBrush}"
                                       ClickMode="Press"
                                       Focusable="false"
                                       IsChecked="{Binding Path=IsDropDownOpen,
@@ -3336,7 +3375,7 @@
                                  Margin="3,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
-                                 Background="{DynamicResource LightBrush}"
+                                 Background="{DynamicResource ControlBackgroundBrush}"
                                  BorderBrush="{DynamicResource NormalBorderBrush}"
                                  Focusable="True"
                                  Foreground="{DynamicResource TextBrush}"
@@ -3355,7 +3394,7 @@
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                   SnapsToDevicePixels="True">
                                 <Border x:Name="DropDownBorder"
-                                        Background="{DynamicResource LightBrush}"
+                                        Background="{DynamicResource ControlBackgroundBrush}"
                                         CornerRadius="3,3,3,3" />
                                 <ScrollViewer Margin="4,6,4,6"
                                               CanContentScroll="True"
@@ -3501,7 +3540,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
@@ -3603,10 +3642,12 @@
                             <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                            <!--  <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />  -->
-                            <Setter Property="Background" Value="Blue" />
-                            <Setter TargetName="grid" Property="Opacity" Value="0.5" />
+                            <!--
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                                <Setter Property="Opacity" TargetName="grid" Value="0.5"/>
+                                <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+                            -->
+                            <!--  "{DynamicResource DisabledBackgroundBrush}"/>  -->
                         </Trigger>
                         <Trigger Property="IsGrouping" Value="true">
                             <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
@@ -3639,7 +3680,7 @@
     </Style>
 
     <Style TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
-        <Setter Property="Background" Value="{StaticResource LightBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Template">
@@ -3732,7 +3773,7 @@
                             </Trigger.EnterActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3939,7 +3980,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
@@ -4052,7 +4093,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -4152,7 +4193,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -4183,9 +4224,33 @@
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
 
+    <Style x:Key="LabelReverseStyle" TargetType="{x:Type Label}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Label}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false" />
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource BlackColor}" />
+                </Setter.Value>
+            </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{DynamicResource NormalBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
@@ -4251,6 +4316,7 @@
                     </ControlTemplate.Resources>
                     <Border x:Name="Border"
                             Margin="3,2,3,2"
+                            BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="0,0,0,0">
                         <Grid Margin="0,0,0,0">
@@ -4314,7 +4380,7 @@
                                             BorderThickness="1"
                                             Opacity="0.8">
                                         <Border.BorderBrush>
-                                            <SolidColorBrush Color="{DynamicResource WhiteColor}" />
+                                            <SolidColorBrush Color="{DynamicResource MidColor}" />
                                         </Border.BorderBrush>
                                     </Border>
                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
@@ -4377,7 +4443,24 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Separator}">
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,2,0,2" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border
+						BorderBrush="{DynamicResource SolidBorderBrush}"
+						BorderThickness="1" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+<!--    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">  -->
+	<Style TargetType="{x:Type Separator}">
         <Setter Property="Height" Value="1" />
         <Setter Property="Margin" Value="0,2,0,2" />
         <Setter Property="Focusable" Value="false" />
@@ -4694,7 +4777,7 @@
                             <Setter TargetName="border" Property="Opacity" Value="0.9" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.3" />
                         </Trigger>
@@ -6232,15 +6315,25 @@
         </Style>
     -->
 
+    <Style TargetType="{x:Type ToolBarTray}">
+		<Setter Property="Background" Value="{StaticResource NormalBackgroundBrush}"/>
+	</Style>
+
     <LinearGradientBrush x:Key="ToolBarHorizontalBackground" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#FFFFFF" />
+<!--        <GradientStop Offset="0" Color="#FFFFFF" />
         <GradientStop Offset="0.5" Color="#FFFBFF" />
-        <GradientStop Offset="1" Color="#F7F7F7" />
+        <GradientStop Offset="1" Color="#F7F7F7" />  -->
+        <GradientStop Offset="0" Color="#FF444444" />
+        <GradientStop Offset="0.5" Color="#FF4C4C4C" />
+        <GradientStop Offset="1" Color="#FF505050" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ToolBarToggleButtonHorizontalBackground" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#ECECEC" />
+<!--        <GradientStop Offset="0" Color="#ECECEC" />
         <GradientStop Offset="0.5" Color="#DDDDDD" />
-        <GradientStop Offset="1" Color="#A0A0A0" />
+        <GradientStop Offset="1" Color="#A0A0A0" />  -->
+        <GradientStop Offset="0" Color="#FF444444" />
+        <GradientStop Offset="0.5" Color="#FF4C4C4C" />
+        <GradientStop Offset="1" Color="#FF505050" />
     </LinearGradientBrush>
     <SolidColorBrush x:Key="ToolBarButtonHover" Color="{StaticResource MainColor}" />
     <SolidColorBrush x:Key="ToolBarGripper" Color="#C6C3C6" />
@@ -6252,7 +6345,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Border x:Name="Bd"
-                            Background="{DynamicResource LightBrush}"
+                            Background="{DynamicResource NormalBorderBrush}"
                             CornerRadius="0,0,0,0"
                             SnapsToDevicePixels="true">
                         <Canvas Width="6"
@@ -6288,6 +6381,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
+                    <!--  <Border Background="{TemplateBinding Background}"  -->
                     <Border Background="Transparent"
                             CornerRadius="0,0,0,0"
                             Padding="{TemplateBinding Padding}"
@@ -6366,13 +6460,16 @@
         <GradientStop Offset="0.5" Color="#FFFBFF" />
         <GradientStop Offset="1" Color="#F7F7F7" />
     </LinearGradientBrush>
+
     <Style TargetType="{x:Type ToolBar}">
-        <Setter Property="Background" Value="{StaticResource ToolBarHorizontalBackground}" />
+        <Setter Property="Background" Value="{StaticResource NormalBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToolBar}">
                     <Grid x:Name="Grid"
-                          Margin="3,1,1,1"
+					      Margin="3,1,1,1"
+						  Background="#FF505050"
                           SnapsToDevicePixels="true">
                         <Grid x:Name="OverflowGrid" HorizontalAlignment="Right">
                             <ToggleButton x:Name="OverflowButton"
@@ -6392,8 +6489,8 @@
                                    PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}"
                                    StaysOpen="False">
                                 <Border x:Name="Shdw">
-                                    <Border Background="{DynamicResource LightBrush}"
-                                            BorderBrush="{DynamicResource LightBrush}"
+                                    <Border Background="{DynamicResource MidBrush}"
+                                            BorderBrush="{DynamicResource MidBrush}"
                                             BorderThickness="1,1,1,1">
                                         <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel"
                                                               Margin="2"
@@ -6409,7 +6506,7 @@
                         </Grid>
                         <Border x:Name="MainPanelBorder"
                                 Margin="0,0,11,0"
-                                Background="{DynamicResource NormalBorderBrush}"
+                                Background="{TemplateBinding BorderBrush}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="0,0,0,0"
@@ -6419,7 +6516,7 @@
                                 <DockPanel KeyboardNavigation.TabIndex="1" KeyboardNavigation.TabNavigation="Local">
                                     <Thumb x:Name="ToolBarThumb"
                                            Width="10"
-                                           Margin="-3,-1,0,0"
+                                           Margin="-3,0,0,0"
                                            Padding="6,5,1,6"
                                            Style="{StaticResource ToolBarThumbStyle}" />
                                     <ContentPresenter x:Name="ToolBarHeader"
@@ -6430,7 +6527,7 @@
                                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                     <ToolBarPanel x:Name="PART_ToolBarPanel"
                                                   Margin="0,1,2,2"
-                                                  Background="{DynamicResource NormalBrush}"
+                                                  Background="{DynamicResource NormalBorderBrush}"
                                                   IsItemsHost="true"
                                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                 </DockPanel>
@@ -6441,7 +6538,7 @@
                                            IsHitTestVisible="False"
                                            Opacity="0.15">
                                     <Rectangle.Fill>
-                                        <SolidColorBrush Color="{DynamicResource WhiteColor}" />
+                                        <SolidColorBrush Color="{DynamicResource DarkColor}" />
                                     </Rectangle.Fill>
                                 </Rectangle>
                             </Grid>

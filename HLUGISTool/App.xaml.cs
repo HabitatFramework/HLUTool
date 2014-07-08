@@ -47,7 +47,7 @@ namespace HLU
 
         public static App Instance;
         public static String Directory;
-        private String _DefaultStyle = "ThemeGreyHi.xaml";
+        private String _DefaultStyle = "ThemeDark.xaml";
 
         public static ViewModelWindowSplash SplashViewModel
         {
@@ -268,7 +268,7 @@ namespace HLU
         /// <summary>
         /// This function loads a ResourceDictionary from a file at runtime
         /// </summary>
-        public void LoadStyleDictionaryFromFile(string inFileName)
+        public bool LoadStyleDictionaryFromFile(string inFileName)
         {
             try
             {
@@ -283,9 +283,12 @@ namespace HLU
 
                 // Add in newly loaded Resource Dictionary
                 Application.Current.Resources.MergedDictionaries.Add(dic);
+
+                return true;
             }
             catch
             {
+                return false;
             }
         }
     }
