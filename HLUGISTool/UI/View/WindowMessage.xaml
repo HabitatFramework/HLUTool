@@ -14,7 +14,6 @@
         Background="{DynamicResource WindowBackgroundBrush}"
 		SizeChanged="Window_SizeChanged" 
         Title="{Binding Path=WindowTitle}"
-		Style="{DynamicResource WindowStyle}"
 		Icon="..\..\Icons\HLUIcon.png">
 
     <Window.Resources>

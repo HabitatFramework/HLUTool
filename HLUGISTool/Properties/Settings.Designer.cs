@@ -660,9 +660,10 @@ namespace HLU.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -679,6 +680,16 @@ namespace HLU.Properties {
             }
             set {
                 this["PreferredHabitatClass"] = value;
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Original")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string InterfaceStyle {
+            get {
+                return ((string)(this["InterfaceStyle"]));
+            }
+            set {
+                this["InterfaceStyle"] = value;
             }
         }
     }

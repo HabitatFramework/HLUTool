@@ -45,10 +45,6 @@ namespace HLU
         private static Mutex _toolMutex = null;
         private static Mutex _updaterMutex = null;
 
-        public static App Instance;
-        public static String Directory;
-        private String _DefaultStyle = "ThemeDark.xaml";
-
         public static ViewModelWindowSplash SplashViewModel
         {
             get { return _splashViewModel; }
@@ -58,12 +54,15 @@ namespace HLU
 
         public App()
         {
-            Instance = this;
-            Directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //string stringsFile = Path.Combine(Directory, string.Format("UI\\View\\Dictionary\\{0}", _DefaultStyle));
-            //string stringsFile = _DefaultStyle;
-            string stringsFile = string.Format("/UI/View/Dictionary/{0}", _DefaultStyle);
-            LoadStyleDictionaryFromFile(stringsFile);
+            //---------------------------------------------------------------------
+            // FIXED: KI15 (User Interface Style)
+            // Load the user's default interface style at runtime.
+            //
+            string defaultStyle = Settings.Default.InterfaceStyle;
+            if (string.IsNullOrEmpty(defaultStyle))
+                defaultStyle = "Original";
+            LoadStyleDictionaryFromFile(defaultStyle);
+            //---------------------------------------------------------------------
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -265,31 +264,44 @@ namespace HLU
             return null;
         }
 
+        //---------------------------------------------------------------------
+        // FIXED: KI15 (User Interface Style)
+        // Provide ability to switch interface style at runtime.
+        //
         /// <summary>
-        /// This function loads a ResourceDictionary from a file at runtime
+        /// This function loads a ResourceDictionary from a file at runtime.
         /// </summary>
-        public bool LoadStyleDictionaryFromFile(string inFileName)
+        /// <param name="styleName">Name of the new style to be loaded.</param>
+        /// <returns>True if the style has been loaded, otherwise false.</returns>
+        static public bool LoadStyleDictionaryFromFile(string styleName)
         {
             try
             {
-                var dictUri = new Uri(inFileName, UriKind.Relative);
+                string styleFile = string.Format("/UI/View/Dictionary/Theme{0}.xaml", styleName);
+                var dictUri = new Uri(styleFile, UriKind.Relative);
 
-                // Read in ResourceDictionary File
+                // Read in ResourceDictionary File.
                 ResourceDictionary dic = Application.LoadComponent(dictUri) as ResourceDictionary;
-                //ResourceDictionary dic = (ResourceDictionary)XamlReader.Load(fs);
 
-                // Clear any previous dictionaries loaded
+                // Clear any previous dictionaries loaded.
                 Application.Current.Resources.MergedDictionaries.Clear();
 
-                // Add in newly loaded Resource Dictionary
+                // Add in newly loaded Resource Dictionary.
                 Application.Current.Resources.MergedDictionaries.Add(dic);
+
+                // Save the name of the new style in the user settings.
+                Settings.Default.InterfaceStyle = styleName;
+                Settings.Default.Save();
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                // Inform the user of the error.
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
+        //---------------------------------------------------------------------
     }
 }

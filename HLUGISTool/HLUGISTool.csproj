@@ -258,14 +258,17 @@
     </Page>
     <Page Include="UI\View\Dictionary\CodeNameDescriptionConverterDictionary.xaml">
     <Page Include="UI\View\Dictionary\ThemeDark.xaml">
+    <Page Include="UI\View\Dictionary\ThemeDarkGrey.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="UI\View\Dictionary\ThemeGreyLo.xaml">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Page Include="UI\View\Dictionary\ThemeLightGrey.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\View\Dictionary\ThemeOriginal.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\View\WindowSwitchGISLayer.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -288,13 +291,6 @@
     </Page>
     <Page Include="UI\View\Dictionary\NullableValueConverterDictionary.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\View\Dictionary\ThemeGreyHi.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\View\Dictionary\MergeFeaturesWindowDictionary.xaml">

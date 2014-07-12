@@ -176,7 +176,8 @@
                                      ItemsSource="{Binding HistoryColumns}"
                                      Padding="2"
                                      SelectionMode="Extended">
-                                <ListBox.ItemContainerStyle>
+									 <!--  ItemContainerStyle="{StaticResource ListBoxItemStyle}"  -->
+                             <ListBox.ItemContainerStyle>
                                     <Style>
                                         <Setter Property="ListBoxItem.Background" Value="Transparent" />
                                         <Setter Property="ListBoxItem.Template">
