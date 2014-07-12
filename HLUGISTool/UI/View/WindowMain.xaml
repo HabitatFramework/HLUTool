@@ -15,7 +15,7 @@
         Topmost="{Binding ElementName=MenuItemAppKeepOnTop,
                           Path=IsChecked}"
         WindowStyle="SingleBorderWindow">
-<!--		Style="{DynamicResource WindowStyle}"  -->
+    <!--  Style="{DynamicResource WindowStyle}"  -->
 
     <Window.Resources>
         <ResourceDictionary>
@@ -35,7 +35,7 @@
                VerticalAlignment="Stretch"
                Cursor="{Binding WindowCursor}">
 
-        <Menu DockPanel.Dock="Top">
+        <Menu Name="MenuBar" DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuItemExport"
                           Command="{Binding ExportCommand}"
@@ -123,29 +123,29 @@
                           Header="_Physical Merge"
                           IsEnabled="{Binding Path=CanPhysicallyMerge}" />
             </MenuItem>
-            <MenuItem Header="_Tools">
+            <MenuItem Name="MenuItemTools" Header="_Tools">
                 <MenuItem x:Name="MenuItemOptions"
-                          Command="{Binding OptionsCommand}"
+                          Command="{Binding Path=OptionsCommand}"
                           Header="_Options" />
                 <MenuItem x:Name="MenuItemSwitchGisLayer"
                           Command="{Binding Path=SwitchGisLayerCommand}"
                           Header="Switch _GIS Layer" />
-				        <Separator HorizontalAlignment="Left"/>
-                <MenuItem Header="_Styles">
-                    <MenuItem Name="ThemeGreyHi"
+                <Separator />
+                <MenuItem x:Name="MenuItemStyles" Header="_Styles">
+                    <MenuItem Name="Original"
                               Click="MenuItem_Style_Click"
-                              Header="Grey _Hi" 
+                              Header="Original"
                               IsCheckable="True" />
-                    <MenuItem Name="ThemeGreyLo"
+                    <MenuItem Name="LightGrey"
                               Click="MenuItem_Style_Click"
-                              Header="Grey _Lo" 
+                              Header="_Light Grey"
                               IsCheckable="True" />
-                    <MenuItem Name="ThemeDark"
+                    <MenuItem Name="DarkGrey"
                               Click="MenuItem_Style_Click"
-                              Header="_Dark" 
+                              Header="_Dark Grey"
                               IsCheckable="True" />
                 </MenuItem>
-				        <Separator/>
+                <Separator />
                 <MenuItem x:Name="MenuItemAbout"
                           Command="{Binding Path=AboutCommand}"
                           Header="_About" />
@@ -1532,7 +1532,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Priority Habitat"
                                                                                    IsReadOnly="True"
                                                                                    ItemsSource="{Binding DataContext.BapHabitatCodes,
@@ -1546,7 +1546,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Determination Quality"
                                                                                    ItemsSource="{Binding DataContext.BapDeterminationQualityCodesAuto,
                                                                                                          IsAsync=true,
@@ -1560,7 +1560,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Interpretation Quality"
                                                                                    ItemsSource="{Binding DataContext.BapInterpretationQualityCodes,
                                                                                                          IsAsync=true,
@@ -1576,7 +1576,7 @@
                                                                                        UpdateSourceTrigger=PropertyChanged,
                                                                                        ValidatesOnDataErrors=True}"
                                                                      CanUserResize="True"
-                                                                     EditingElementStyle="{StaticResource TextBoxStyle}"
+                                                                     EditingElementStyle="{DynamicResource TextBoxStyle}"
                                                                      Header="Interpretation Comments" />
                                         </tkit:DataGrid.Columns>
                                         <!--
@@ -1647,7 +1647,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Priority Habitat"
                                                                                    IsReadOnly="False"
                                                                                    ItemsSource="{Binding DataContext.BapHabitatCodes,
@@ -1662,7 +1662,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Determination Quality"
                                                                                    ItemsSource="{Binding DataContext.BapDeterminationQualityCodesUser,
                                                                                                          IsAsync=true,
@@ -1676,7 +1676,7 @@
                                                                                    MinWidth="125"
                                                                                    CanUserResize="True"
                                                                                    DisplayMemberPath="description"
-                                                                                   EditingElementStyle="{StaticResource ComboBoxStyle}"
+                                                                                   EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                    Header="Interpretation Quality"
                                                                                    ItemsSource="{Binding DataContext.BapInterpretationQualityCodes,
                                                                                                          IsAsync=true,
@@ -1692,7 +1692,7 @@
                                                                                        UpdateSourceTrigger=PropertyChanged,
                                                                                        ValidatesOnDataErrors=True}"
                                                                      CanUserResize="True"
-                                                                     EditingElementStyle="{StaticResource TextBoxStyle}"
+                                                                     EditingElementStyle="{DynamicResource TextBoxStyle}"
                                                                      Header="Interpretation Comments" />
                                         </tkit:DataGrid.Columns>
                                         <!--
@@ -2767,8 +2767,8 @@
                            Margin="0,0,8,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Style="{DynamicResource LabelReverseStyle}"
                            Content="Bulk Update. Affected:"
+                           Style="{DynamicResource LabelReverseStyle}"
                            FontStretch="UltraExpanded"
                            FontWeight="Bold" />
                 </Grid>
@@ -2834,12 +2834,12 @@
                     <Label x:Name="LabelStatusIncid"
                            Grid.Column="0"
                            Margin="8,0,4,0"
-                           Style="{DynamicResource LabelReverseStyle}"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Content="{Binding StatusIncid,
                                              UpdateSourceTrigger=PropertyChanged}"
                            MouseDoubleClick="LabelStatusIncid_MouseDoubleClick"
+                           Style="{DynamicResource LabelReverseStyle}"
                            ToolTip="{Binding StatusIncidToolTip,
                                              UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>

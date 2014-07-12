@@ -26,6 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using HLU.UI.UserControls;
 using Microsoft.Windows.Controls;
+using HLU.Properties;
 
 namespace HLU
 {
@@ -35,7 +36,8 @@ namespace HLU
     public partial class WindowMain : Window
     {
         private ComboBox[] _comboBoxes;
-        private MenuItem lastStyle = null;
+        private MenuItem[] _menuItems;
+        public string lastStyle = null;
 
         public WindowMain()
         {
@@ -44,7 +46,20 @@ namespace HLU
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _comboBoxes = FindControls.FindLogicalChildren<ComboBox>(this.GridMain).ToArray(); 
+            _comboBoxes = FindControls.FindLogicalChildren<ComboBox>(this.GridMain).ToArray();
+
+            //---------------------------------------------------------------------
+            // FIXED: KI15 (User Interface Style)
+            // Create
+            //
+            // Create an array of all the menu items in the window.
+            _menuItems = FindControls.FindLogicalChildren<MenuItem>(this.MenuBar).ToArray();
+
+            // Set the last style to be the default style (already loaded).
+            lastStyle = Settings.Default.InterfaceStyle;
+
+            // Check the menu item for the default style.
+            CheckMenuItem(lastStyle, true);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -199,21 +214,56 @@ namespace HLU
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIXED: KI15 (User Interface Style)
+        // Switch the interface style to the style selected by the user
+        // based on the menu item name.
+        //
+        /// <summary>
+        /// Handles the Click event of the MenuItem_Style control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void MenuItem_Style_Click(object sender, RoutedEventArgs e)
         {
+            // Set the style name from the menu item name.
             MenuItem mi = sender as MenuItem;
-            string styleFile = string.Format("/UI/View/Dictionary/{0}", mi.Name + ".xaml");
+            string styleName = string.Format("{0}", mi.Name);
 
-            // Switch the style to the selected menu item syle.
-            if (App.Instance.LoadStyleDictionaryFromFile(styleFile))
+            // Switch the style to the selected menu item style.
+            if (App.LoadStyleDictionaryFromFile(styleName))
             {
                 // Clear the check against the last menu item style.
-                if (lastStyle != null)
-                    lastStyle.IsChecked = false;
+                CheckMenuItem(lastStyle, false);
 
                 // Store the last style as the current menu item.
-                lastStyle = mi;
+                lastStyle = mi.Name;
             }
         }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIXED: KI15 (User Interface Style)
+        // Check or uncheck a named menu item.
+        //
+        /// <summary>
+        /// Checks or unchecks a named menu item.
+        /// </summary>
+        /// <param name="mItemName">The name of the menu item.</param>
+        /// <param name="check">If set to <c>true</c> [check] the menu item is checked.</param>
+        private void CheckMenuItem(string mItemName, bool check)
+        {
+            foreach (MenuItem mItem in _menuItems)
+            {
+                if ((mItem is MenuItem) && (mItem.Name == mItemName))
+                {
+                    if (check)
+                        mItem.IsChecked = true;
+                    else
+                        mItem.IsChecked = false;
+                }
+            }
+        }
+        //---------------------------------------------------------------------
     }
 }

@@ -195,5 +195,8 @@
     <Setting Name="PreferredHabitatClass" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">ICAT</Value>
     </Setting>
+    <Setting Name="InterfaceStyle" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Original</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
