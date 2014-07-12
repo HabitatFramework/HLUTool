@@ -1,5 +1,4 @@
-﻿
-<!--  Theme used for HLU application based on Microsoft Exression Light.  -->
+<!--  Theme used for HLU application based on Microsoft Expression Light.  -->
 
 <!--
     // (c) Copyright Microsoft Corporation.
@@ -19,7 +18,7 @@
                     xmlns:vsm="clr-namespace:System.Windows;assembly=WPFToolkit"
                     mc:Ignorable="d">
 
-    <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" />
+    <!-- <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" /> -->
 
     <!--  Main Colors  -->
 
@@ -36,10 +35,9 @@
     <Color x:Key="DarkColor">#FF555555</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
-    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource BlackColor}" />
+    <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="NormalBrush" Color="{StaticResource MainColor}" />
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF9B9999" />
-    <SolidColorBrush x:Key="DarkBorderBrush" Color="{StaticResource DarkColor}" />
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
     <SolidColorBrush x:Key="GlyphBrush" Color="#FFFFFFFF" />
 
@@ -50,15 +48,14 @@
         <GradientStop Offset="0.479" Color="#26FFFFFF" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFE6E6E6" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FFD6D6D6" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFD6D6D6" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
         <GradientStop Offset="1" Color="{StaticResource BottomGradientSelectColor}" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF4F4F4F" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFD4D4D4" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
@@ -107,6 +104,19 @@
 		</Setter>
 	</Style>
 
+    <!--  DatePickerTextBox  -->
+    <Style TargetType="{x:Type tkit:DatePickerTextBox}">
+        <Setter Property="Background" Value="#FFD6D6D6" />
+        <!--  <Setter Property="Padding" Value="2" />  -->
+        <Setter Property="BorderBrush" Value="#969696" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="LightGray" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 
     <!--  ErrorTemplate  -->
     <ControlTemplate x:Key="ErrorTemplate">
@@ -151,8 +161,8 @@
                                                                         AncestorType={x:Type tkit:DataGridRow}},
                                          Path=(Validation.Errors).CurrentItem.ErrorContent}"
                        Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type tkit:DataGridRow}},
-                                            Path=(Validation.HasError),
-                                            Converter={StaticResource bool2VisibilityConverter}}" />
+                                            Path=(Validation.HasError)}" />
+                                            <!-- Converter={StaticResource bool2VisibilityConverter}}" /> -->
         </Grid>
     </ControlTemplate>
 
@@ -1033,7 +1043,7 @@
             <Setter Property="RowBackground" Value="{StaticResource NormalBrush}" />
             <Setter Property="AlternatingRowBackground" Value="{StaticResource HoverBrush}" />
         -->
-        <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
+        <Setter Property="Background" Value="{StaticResource NormalBrush}" />
         <Setter Property="HeadersVisibility" Value="All" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
@@ -1149,7 +1159,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:DataGrid">
-                    <Border BorderBrush="{DynamicResource DarkBorderBrush}"
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="2">
 
@@ -1392,6 +1402,14 @@
         </Setter>
     </Style>
 
+	<Style TargetType="{x:Type Image}">
+		<Style.Triggers>
+			<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+				<Setter Property="Opacity" Value="0.8"></Setter>
+			</DataTrigger>
+		</Style.Triggers>
+	</Style>
+
     <Style BasedOn="{x:Null}" TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
         <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
@@ -1578,9 +1596,9 @@
     <Style TargetType="{x:Type CheckBox}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
-        <Setter Property="Background" Value="{DynamicResource NormalBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
@@ -1678,7 +1696,7 @@
                                       Height="10"
                                       Margin="1,1,0,1.5"
                                       Data="M102.03442,598.79645 L105.22962,597.78918 L106.78825,600.42358 C106.78825,600.42358 108.51028,595.74304 110.21724,593.60419 C112.00967,591.35822 114.89314,591.42316 114.89314,591.42316 C114.89314,591.42316 112.67844,593.42645 111.93174,594.44464 C110.7449,596.06293 107.15683,604.13837 107.15683,604.13837 z"
-                                      Fill="{StaticResource GlyphBrush}"
+                                      Fill="{StaticResource TextBrush}"
                                       Opacity="0"
                                       Stretch="Fill" />
                                 <Rectangle x:Name="IndeterminateIcon"
@@ -2307,7 +2325,7 @@
                     <Grid>
                         <Border x:Name="Border"
                                 Background="{DynamicResource ControlBackgroundBrush}"
-                                BorderBrush="{DynamicResource DarkBorderBrush}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="2" />
                         <ScrollViewer Margin="1"
@@ -2331,9 +2349,10 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ListBoxItem}" d:IsControlPart="True">
+    <Style TargetType="{x:Type ListBoxItem}" d:IsControlPart="True" x:Key="ListBoxItemStyle">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Background" Value="{DynamicResource DisabledTextBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -3205,6 +3224,11 @@
                                                Storyboard.TargetProperty="(UIElement.Opacity)">
                     <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
                 </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+                                               Storyboard.TargetName="HoverTextRectangle"
+                                               Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0.5" />
+                </DoubleAnimationUsingKeyFrames>
             </Storyboard>
             <Storyboard x:Key="HoverOff">
                 <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -3214,6 +3238,11 @@
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
                                                Storyboard.TargetName="HoverBorder"
+                                               Storyboard.TargetProperty="(UIElement.Opacity)">
+                    <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+                                               Storyboard.TargetName="HoverTextRectangle"
                                                Storyboard.TargetProperty="(UIElement.Opacity)">
                     <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
@@ -3244,6 +3273,17 @@
                        RadiusX="3"
                        RadiusY="3"
                        Stroke="{TemplateBinding BorderBrush}" />
+            <Rectangle x:Name="HoverTextRectangle"
+                       Grid.Column="0"
+                       Width="Auto"
+                       Height="Auto"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       Fill="{TemplateBinding Background}"
+                       RadiusX="3"
+                       RadiusY="3"
+                       Stroke="{DynamicResource GlyphBrush}"
+                       Opacity="0" />
             <Border x:Name="border"
                     Grid.Column="1"
                     Margin="2,2,2,2"
@@ -3292,7 +3332,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                 <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource DisabledForegroundBrush}" />
                 <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBorderBrush}" />
-                <Setter TargetName="TextRectangle" Property="Fill" Value="{DynamicResource LightBrush}" />
                 <Setter TargetName="grid" Property="Opacity" Value="0.8" />
             </Trigger>
         </ControlTemplate.Triggers>
@@ -3327,6 +3366,8 @@
                     <Grid x:Name="grid">
                         <ToggleButton x:Name="ToggleButton"
                                       Grid.Column="2"
+                                      Background="{DynamicResource ControlBackgroundBrush}"
+                                      BorderBrush="{DynamicResource DarkBorderBrush}"
                                       ClickMode="Press"
                                       Focusable="false"
                                       IsChecked="{Binding Path=IsDropDownOpen,
@@ -3345,7 +3386,7 @@
                                  Margin="3,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
-                                 Background="{DynamicResource LightBrush}"
+                                 Background="{DynamicResource ControlBackgroundBrush}"
                                  BorderBrush="{DynamicResource NormalBorderBrush}"
                                  Focusable="True"
                                  Foreground="{DynamicResource TextBrush}"
@@ -3364,7 +3405,7 @@
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                   SnapsToDevicePixels="True">
                                 <Border x:Name="DropDownBorder"
-                                        Background="{DynamicResource LightBrush}"
+                                        Background="{DynamicResource ControlBackgroundBrush}"
                                         CornerRadius="3,3,3,3" />
                                 <ScrollViewer Margin="4,6,4,6"
                                               CanContentScroll="True"
@@ -3512,6 +3553,11 @@
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                         </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
@@ -3531,7 +3577,7 @@
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
+        <Setter Property="BorderBrush" Value="#FF000000" />
     </Style>
 
 
@@ -3614,7 +3660,6 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
                             <!--  <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />  -->
-                            <Setter Property="Background" Value="Blue" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.5" />
                         </Trigger>
                         <Trigger Property="IsGrouping" Value="true">
@@ -3648,7 +3693,7 @@
     </Style>
 
     <Style TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
-        <Setter Property="Background" Value="{StaticResource LightBrush}" />
+        <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Template">
@@ -3695,7 +3740,7 @@
                     </ControlTemplate.Resources>
                     <Grid Margin="1,1,1,1" SnapsToDevicePixels="true">
                         <Rectangle x:Name="Background"
-                                   Fill="{DynamicResource NormalBrush}"
+                                   Fill="{StaticResource NormalBrush}"
                                    IsHitTestVisible="False"
                                    Opacity="0.25"
                                    RadiusX="1"
@@ -3713,7 +3758,7 @@
                                    RadiusX="1"
                                    RadiusY="1" />
                         <ContentPresenter x:Name="contentPresenter"
-                                          Margin="4,2,2,2"
+                                          Margin="5,2,0,2"
                                           VerticalAlignment="Center" />
                         <Rectangle x:Name="FocusVisualElement"
                                    RadiusX="1"
@@ -3950,6 +3995,11 @@
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                         </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
@@ -3969,7 +4019,7 @@
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
+        <Setter Property="BorderBrush" Value="#FF000000" />
     </Style>
 
     <Style TargetType="{x:Type PasswordBox}">
@@ -4069,7 +4119,7 @@
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
+        <Setter Property="BorderBrush" Value="#FF000000" />
     </Style>
 
     <Style TargetType="{x:Type RichTextBox}">
@@ -4169,10 +4219,43 @@
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
+        <Setter Property="BorderBrush" Value="#FF000000" />
     </Style>
 
     <Style TargetType="{x:Type Label}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Label}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false" />
+                        <!--  AM Start  -->
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                        </Trigger>
+                        <!--  AM End  -->
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+
+    <Style x:Key="LabelReverseStyle" TargetType="{x:Type Label}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
         <Setter Property="Template">
@@ -4189,11 +4272,15 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{DynamicResource BlackColor}" />
+                </Setter.Value>
+            </Setter>
     </Style>
 
     <Style TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{DynamicResource NormalBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
@@ -4386,6 +4473,22 @@
         </Setter>
     </Style>
 
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0,2,0,2" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border
+						BorderBrush="{DynamicResource SolidBorderBrush}"
+						BorderThickness="1" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Separator}">
         <Setter Property="Height" Value="1" />
         <Setter Property="Margin" Value="0,2,0,2" />
@@ -4473,7 +4576,7 @@
                                 </TransformGroup>
                             </Border.LayoutTransform>
                             <Border.BorderBrush>
-                                <SolidColorBrush Color="{DynamicResource DarkColor}" />
+                                <SolidColorBrush Color="{DynamicResource BlackColor}" />
                             </Border.BorderBrush>
                         </Border>
                     </Grid>
@@ -4618,8 +4721,8 @@
                         </Border>
                         <Grid>
                             <ContentPresenter x:Name="ContentSite"
-                                              Margin="6,1,6,1"
-                                              HorizontalAlignment="Center"
+                                              Margin="10,1,10,1"
+                                              HorizontalAlignment="Stretch"
                                               VerticalAlignment="Center"
                                               ContentSource="Header"
                                               RecognizesAccessKey="True"
@@ -4707,6 +4810,14 @@
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.3" />
                         </Trigger>
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
