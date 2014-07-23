@@ -1485,7 +1485,7 @@ namespace HLU.UI.ViewModel
         // or updates all the incid features.
         //
         /// <summary>
-        /// Confirms with the user if the update is to go ahead
+        /// Confirms with the user if the update is to go ahead.
         /// </summary>
         /// <returns>
         /// True if the update is to go ahead, or false if it is cancelled.
