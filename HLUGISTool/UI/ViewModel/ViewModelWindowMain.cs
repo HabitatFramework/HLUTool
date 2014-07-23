@@ -1296,52 +1296,6 @@ namespace HLU.UI.ViewModel
             if (_incidsSelectedMapCount <= 0)
                 SelectOnMap();
 
-            // If there are any features selected in the GIS ...
-            if (_incidsSelectedMapCount > 0)
-            {
-                // If in bulk update mode then perform the bulk update.
-                if (_bulkUpdateMode == true)
-                    BulkUpdateClicked(param);
-                // If there is no saving already in progress ...
-                else if (!_savingAttempted)
-                {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR2 (Apply button)
-                    // Check if the record has changed and if it hasn't ask the user
-                    // if they still want to update the record (to create new history).
-                    MessageBoxResult userResponse = CheckClean();
-
-                    switch (userResponse)
-                    {
-                        case MessageBoxResult.Yes:
-                            _viewModelUpd.Update();
-                            break;
-                        case MessageBoxResult.No:
-                            Changed = false;
-                            break;
-                        case MessageBoxResult.Cancel:
-                            return;
-                    }
-                    //---------------------------------------------------------------------
-
-                    // If all of the features for the current incid have been
-                    // selected in GIS then update them all.
-                    if (_fragsIncidGisCount == _fragsIncidDbCount)
-                    {
-                        _viewModelUpd.Update();
-                    }
-                    // Otherwise, check if/how the subset of features for the
-                    // incid should be updated.
-                    else if (ConfirmSubsetUpdate())
-                    {
-                        // The user does not want to update all the features for the incid
-                        // then logically split the subset of features first
-                        if (_updateAllFeatures == false)
-                        {
-                            // If a split can be performed then go ahead.
-                            if (CanSplit)
-                            {
-
             // If there are still no features selected in the GIS this suggests
             // that the feature layer contains only a subset of the database
             // features so this incid cannot be updated.
@@ -1354,6 +1308,27 @@ namespace HLU.UI.ViewModel
                 BulkUpdateClicked(param);
                 return;
             }
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Check if the record has changed and if it hasn't ask the user
+            // if they still want to update the record (to create new history).
+            //
+            // Currently, in theory, this can't happen because the Apply button
+            // shouldn't be enabled unless some changes have been made by the
+            // user. But this logic is retained just in case.
+            MessageBoxResult userResponse = CheckClean();
+            switch (userResponse)
+            {
+                case MessageBoxResult.Yes:
+                    break;
+                case MessageBoxResult.No:
+                    Changed = false;
+                    return;
+                case MessageBoxResult.Cancel:
+                    return;
+            }
+            //---------------------------------------------------------------------
 
             // If there is no filter active (and hence all the features for the
             // current incid are to be updated) or all of the features for the
