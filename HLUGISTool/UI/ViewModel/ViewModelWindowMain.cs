@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2013 Andy Foy
+// Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2013-2014 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -1838,8 +1839,11 @@ namespace HLU.UI.ViewModel
                 // If there aren't any Copyright attributes, return an empty string
                 if (attributes.Length == 0)
                     return null;
+                // Split the copyright statement at each full stop and
+                // wrap it to a new line.
+                String copyright = String.Join(Environment.NewLine, ((AssemblyCopyrightAttribute)attributes[0]).Copyright.Split('.'));
                 // If there is a Copyright attribute, return its value
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                return copyright;
             }
         }
         //---------------------------------------------------------------------

@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2013 Andy Foy
+// Copyright © 2011 Hampshire Biodiversity Information Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HluArcMapExtension")]
-[assembly: AssemblyCopyright("Copyright © 2013-2014 Andy Foy")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14 TVERC.Copyright © 2014 SxBRC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.8.0")]
+[assembly: AssemblyVersion("1.0.9.0")]
 //[assembly: AssemblyFileVersion("1.0.*")]

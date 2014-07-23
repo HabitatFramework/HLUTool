@@ -3990,7 +3990,7 @@
 		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>899746153</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082589397</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>HBIC, TVERC &amp; SxBRC (on behalf of all south-east LRCs)</td><td>0</td><td/><td>-1146976884</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>2082566933</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>2082587541</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>2082571221</td></row>
@@ -4631,9 +4631,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{EB68C996-DC37-4390-8553-0283466F0B0E}</td><td/></row>
+		<row><td>ProductCode</td><td>{5437A0B2-412F-451B-9571-2D492C634457}</td><td/></row>
 		<row><td>ProductName</td><td>HLU GIS Tool</td><td/></row>
-		<row><td>ProductVersion</td><td>1.0.8.0</td><td/></row>
+		<row><td>ProductVersion</td><td>1.0.9.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4923,7 +4923,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>1.0.7.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>1.0.8.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">

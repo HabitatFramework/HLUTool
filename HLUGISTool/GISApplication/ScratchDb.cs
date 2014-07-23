@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2013 Andy Foy
+// Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2013 Thames Valley Environmental Records Centre
 // 
 // This file is part of HLUTool.
 // 
