@@ -1295,7 +1295,10 @@ namespace HLU.UI.ViewModel
             // If there are no features selected in the GIS (because there is no
             // active filter) then re-select the current incid features in GIS.
             if (_incidsSelectedMapCount <= 0)
-                SelectOnMap();
+            {
+                SelectOnMap(true);
+                CountToidFrags();
+            }
 
             // If there are still no features selected in the GIS this suggests
             // that the feature layer contains only a subset of the database
@@ -2038,7 +2041,7 @@ namespace HLU.UI.ViewModel
                             //
                             // Analyse the results of the GIS selection by counting the number of
                             // incids, toids and fragments selected.
-                            AnalyzeGisSelectionSet();
+                            AnalyzeGisSelectionSet(true);
 
                             // Set the filter back to the first incid.
                             SetFilter();
@@ -2144,7 +2147,7 @@ namespace HLU.UI.ViewModel
 
         private void SelectOnMapClicked(object param)
         {
-            SelectOnMap();
+            SelectOnMap(true);
         }
 
         private bool CanSelectOnMap
@@ -2155,7 +2158,7 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Select current DB record on map when button pressed.
         /// </summary>
-        private void SelectOnMap()
+        private void SelectOnMap(bool updateIncidSelection)
         {
             if (IncidCurrentRow == null) return;
 
@@ -2252,8 +2255,8 @@ namespace HLU.UI.ViewModel
                 }
 
                 // Analyse the results of the GIS selection by counting
-                // the number ofincids, toids and fragments selected.
-                AnalyzeGisSelectionSet();
+                // the number of incids, toids and fragments selected.
+                AnalyzeGisSelectionSet(updateIncidSelection);
 
                 // Refresh all the status type fields.
                 RefreshStatus();
@@ -2318,7 +2321,7 @@ namespace HLU.UI.ViewModel
                 _gisSelection = NewGisSelectionTable();
                 _gisApp.ReadMapSelection(ref _gisSelection);
                 _incidSelectionWhereClause = null;
-                AnalyzeGisSelectionSet();
+                AnalyzeGisSelectionSet(true);
                 if (_gisSelection.Rows.Count > 0)
                 {
                     SetFilter();
@@ -2450,7 +2453,7 @@ namespace HLU.UI.ViewModel
 
                 // Analyse the results of the GIS selection by counting the number of
                 // incids, toids and fragments selected.
-                AnalyzeGisSelectionSet();
+                AnalyzeGisSelectionSet(true);
 
                 // Set the filter back to the first incid.
                 SetFilter();
@@ -2553,7 +2556,7 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Count how many incids, toids and fragments are selected in GIS.
         /// </summary>
-        private void AnalyzeGisSelectionSet()
+        private void AnalyzeGisSelectionSet(bool updateIncidSelection)
         {
             _incidsSelectedMapCount = -1;
             _toidsSelectedMapCount = -1;
@@ -2598,7 +2601,8 @@ namespace HLU.UI.ViewModel
                     _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
                         IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
 
-                if (_incidsSelectedMapCount > 0) GisToDbSelection();
+                // Update the database Incid selection only if required.
+                if ((updateIncidSelection) && (_incidsSelectedMapCount > 0)) GisToDbSelection();
             }
             else
             {
