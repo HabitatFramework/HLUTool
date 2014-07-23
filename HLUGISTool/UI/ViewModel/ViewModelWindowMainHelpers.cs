@@ -114,8 +114,13 @@ namespace HLU.UI.ViewModel
         public static bool RowIsDirty<R>(R row)
             where R : DataRow
         {
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
             // If the row is not null and is not unchanged or detached
             // (i.e. it has been added, deleted or modified)
+
+            //return row != null && row.RowState != DataRowState.Unchanged &&
+            //    row.RowState != DataRowState.Detached;
             if (row != null && row.RowState != DataRowState.Unchanged &&
                 row.RowState != DataRowState.Detached)
             {
@@ -134,6 +139,7 @@ namespace HLU.UI.ViewModel
                     // If the row has been added or deleted then it must be
                     // dirty.
                     return true;
+                //---------------------------------------------------------------------
             }
             return false;
         }
