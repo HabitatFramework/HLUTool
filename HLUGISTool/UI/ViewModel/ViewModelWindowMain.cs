@@ -1297,7 +1297,7 @@ namespace HLU.UI.ViewModel
             if (_incidsSelectedMapCount <= 0)
             {
                 SelectOnMap(true);
-                CountToidFrags();
+                //CountToidFrags();
             }
 
             // If there are still no features selected in the GIS this suggests
@@ -1350,11 +1350,11 @@ namespace HLU.UI.ViewModel
 
             DispatcherHelper.DoEvents();
 
+            // Recheck the selected features in GIS to make sure they
+            // all belong to the current incid.
             _gisSelection = NewGisSelectionTable();
             _gisApp.ReadMapSelection(ref _gisSelection);
 
-            // Recheck the selected features in GIS to make sure they
-            // all belong to the current incid.
             //_incidSelectionWhereClause = null;
             //AnalyzeGisSelectionSet();
             RefreshStatus();
@@ -2252,14 +2252,23 @@ namespace HLU.UI.ViewModel
                             }
                         }
                     }
+
+                    // Analyse the results of the GIS selection by counting
+                    // the number of incids, toids and fragments selected.
+                    AnalyzeGisSelectionSet(updateIncidSelection);
+
+                    // Refresh all the status type fields.
+                    RefreshStatus();
                 }
+                else
+                {
+                    // Analyse the results of the GIS selection by counting
+                    // the number of incids, toids and fragments selected.
+                    AnalyzeGisSelectionSet(updateIncidSelection);
 
-                // Analyse the results of the GIS selection by counting
-                // the number of incids, toids and fragments selected.
-                AnalyzeGisSelectionSet(updateIncidSelection);
-
-                // Refresh all the status type fields.
-                RefreshStatus();
+                    // Set the filter back to the first incid.
+                    SetFilter();
+                }
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
