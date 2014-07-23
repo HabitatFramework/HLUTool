@@ -1294,10 +1294,11 @@ namespace HLU.UI.ViewModel
         {
             // If there are no features selected in the GIS (because there is no
             // active filter) then re-select the current incid features in GIS.
+            _saving = true;
+            _savingAttempted = false;
             if (_incidsSelectedMapCount <= 0)
             {
                 SelectOnMap(true);
-                //CountToidFrags();
             }
 
             // If there are still no features selected in the GIS this suggests
@@ -1339,10 +1340,16 @@ namespace HLU.UI.ViewModel
             // current incid have been selected in GIS then update them all and exit.
             if ((!IsFiltered) || (_fragsIncidGisCount == _fragsIncidDbCount))
             {
-                // Update the current incid.
-                _saving = true;
-                _savingAttempted = false;
-                _viewModelUpd.Update();
+                // If saving has already been attempted, when the features for
+                // the current incid were selected in the map (above), then
+                // do the update now.
+                if (!_savingAttempted)
+                {
+                    // Update the current incid.
+                    _saving = true;
+                    _savingAttempted = false;
+                    _viewModelUpd.Update();
+                }
                 return;
             }
 
@@ -1355,10 +1362,12 @@ namespace HLU.UI.ViewModel
             _gisSelection = NewGisSelectionTable();
             _gisApp.ReadMapSelection(ref _gisSelection);
 
-            //_incidSelectionWhereClause = null;
-            //AnalyzeGisSelectionSet();
-            RefreshStatus();
+            // Count the number of toids and fragments for the current incid
+            // selected in the GIS and in the database.
             CountToidFrags();
+
+            // Refresh all the status type fields.
+            RefreshStatus();
 
             ChangeCursor(Cursors.Arrow, null);
 
@@ -2257,6 +2266,10 @@ namespace HLU.UI.ViewModel
                     // the number of incids, toids and fragments selected.
                     AnalyzeGisSelectionSet(updateIncidSelection);
 
+                    // Count the number of toids and fragments for the current incid
+                    // selected in the GIS and in the database.
+                    CountToidFrags();
+
                     // Refresh all the status type fields.
                     RefreshStatus();
                 }
@@ -2466,6 +2479,10 @@ namespace HLU.UI.ViewModel
 
                 // Set the filter back to the first incid.
                 SetFilter();
+
+                //// Count the number of toids and fragments for the current incid
+                //// selected in the GIS and in the database.
+                //CountToidFrags();
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
@@ -7277,6 +7294,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource2BoundaryImportance");
                 OnPropertyChanged("IncidSource2HabitatImportance");
                 OnPropertyChanged("IncidSource2Enabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7310,6 +7333,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(1, IncidSourcesTable.source_date_startColumn.Ordinal, value);
                 _incidSource2DateEntered = value;
                 OnPropertyChanged("IncidSource2Date");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7329,6 +7358,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(1, IncidSourcesTable.source_habitat_classColumn.Ordinal, value);
                 OnPropertyChanged("Source2HabitatTypeCodes");
                 OnPropertyChanged("IncidSource2HabitatType");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7382,6 +7417,12 @@ namespace HLU.UI.ViewModel
             set
             {
                 UpdateIncidSourcesRow(1, IncidSourcesTable.source_habitat_typeColumn.Ordinal, value);
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7402,6 +7443,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource2BoundaryImportance");
                 OnPropertyChanged("IncidSource1BoundaryImportance");
                 OnPropertyChanged("IncidSource3BoundaryImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7422,6 +7469,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource2HabitatImportance");
                 OnPropertyChanged("IncidSource1HabitatImportance");
                 OnPropertyChanged("IncidSource3HabitatImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7502,6 +7555,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource3BoundaryImportance");
                 OnPropertyChanged("IncidSource3HabitatImportance");
                 OnPropertyChanged("IncidSource3Enabled");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7535,6 +7594,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(2, IncidSourcesTable.source_date_startColumn.Ordinal, value);
                 _incidSource3DateEntered = value;
                 OnPropertyChanged("IncidSource3Date");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7554,6 +7619,12 @@ namespace HLU.UI.ViewModel
                 UpdateIncidSourcesRow(2, IncidSourcesTable.source_habitat_classColumn.Ordinal, value);
                 OnPropertyChanged("Source3HabitatTypeCodes");
                 OnPropertyChanged("IncidSource3HabitatType");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7571,6 +7642,12 @@ namespace HLU.UI.ViewModel
             set
             {
                 UpdateIncidSourcesRow(2, IncidSourcesTable.source_habitat_typeColumn.Ordinal, value);
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7627,6 +7704,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource3BoundaryImportance");
                 OnPropertyChanged("IncidSource1BoundaryImportance");
                 OnPropertyChanged("IncidSource2BoundaryImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -7647,6 +7730,12 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidSource3HabitatImportance");
                 OnPropertyChanged("IncidSource1HabitatImportance");
                 OnPropertyChanged("IncidSource2HabitatImportance");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
             }
         }
 

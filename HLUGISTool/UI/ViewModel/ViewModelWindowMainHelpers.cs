@@ -130,6 +130,8 @@ namespace HLU.UI.ViewModel
                 {
                     foreach (DataColumn dc in row.Table.Columns)
                     {
+                        string a = row[dc, DataRowVersion.Original].ToString();
+                        string b = row[dc, DataRowVersion.Current].ToString();
                         if (!row[dc, DataRowVersion.Original].Equals(
                              row[dc, DataRowVersion.Current]))
                             return true;
