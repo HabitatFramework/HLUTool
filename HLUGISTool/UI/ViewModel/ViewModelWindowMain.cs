@@ -1853,7 +1853,7 @@ namespace HLU.UI.ViewModel
                     return null;
                 // Split the copyright statement at each full stop and
                 // wrap it to a new line.
-                String copyright = String.Join(Environment.NewLine, ((AssemblyCopyrightAttribute)attributes[0]).Copyright.Split('.'));
+                String copyright = String.Join(Environment.NewLine + "   ", ((AssemblyCopyrightAttribute)attributes[0]).Copyright.Split('.'));
                 // If there is a Copyright attribute, return its value
                 return copyright;
             }
@@ -2781,31 +2781,30 @@ namespace HLU.UI.ViewModel
             _viewModelSwitchGISLayer.RequestClose -= _viewModelSwitchGISLayer_RequestClose;
             _windowSwitchGISLayer.Close();
 
-            // Switch the GIS layer
+            // If the GIS layer has been switched
             if ((switchGISLayer) && (selectedHLULayer != _gisApp.CurrentHluLayer))
             {
                 // Check if there are unsaved edits
-                MessageBoxResult userResponse = CheckDirty();
-
-                // Check the user's response to saving unsaved edits
-                switch (userResponse)
+                if (EditMode && (_bulkUpdateMode == false) && IsDirty)
                 {
-                    case MessageBoxResult.Yes:
-                        // Save the unsaved edits
-                        if (_viewModelUpd.Update())
-                            goto case MessageBoxResult.No;
-                        break;
-                    case MessageBoxResult.No:
-                        // Switch the GIS layer
-                        if (_gisApp.IsHluLayer(selectedHLULayer))
+                    // Inform the user to save the unsaved edits first.
+                    MessageBox.Show("The current record has been changed." +
+                        "\n\nYou must save any outstanding changes before switching GIS layer!",
+                        "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+                else
+                {
+                    // Switch the GIS layer
+                    if (_gisApp.IsHluLayer(selectedHLULayer))
+                    {
+                        // Inform the user that the switch worked
+                        if (selectedHLULayer.MapName == null)
+                            MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
+                                "HLU: Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        else
                         {
-                            // Inform the user that the switch worked
-                            if (selectedHLULayer.MapName == null)
-                                MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
-                                    "Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                            else
-                                MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
-                                    "Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
+                                "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
                             // Refresh the window title
                             OnPropertyChanged("WindowTitle");
@@ -2813,9 +2812,7 @@ namespace HLU.UI.ViewModel
                             // Get the new GIS layer selection
                             ReadMapSelection(false);
                         }
-                        break;
-                    case MessageBoxResult.Cancel:
-                        break;
+                    }
                 }
             }
         }
@@ -8922,5 +8919,6 @@ namespace HLU.UI.ViewModel
         }
 
         #endregion
+
     }
 }
