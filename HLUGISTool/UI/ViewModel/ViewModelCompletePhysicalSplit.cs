@@ -34,7 +34,7 @@ namespace HLU.UI.ViewModel
         private string _reason;
         private string _process;
         private ICommand _okCommand;
-        private ICommand _cancelCommand;
+        //private ICommand _cancelCommand;
 
         #endregion
 
