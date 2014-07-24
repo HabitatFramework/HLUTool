@@ -256,6 +256,11 @@ namespace HLU.GISApplication
                 return "{Left: " + _Left + "; " + "Top: " + _Top + "; Right: " + _Right + "; Bottom: " + _Bottom + "}";
             }
 
+            public override int GetHashCode()
+            {
+                return (this.Left.GetHashCode() * 1000) + (this.Top.GetHashCode() * 100) + (this.Right.GetHashCode() * 10) + (this.Bottom.GetHashCode());
+            }
+
             public bool Equals(RECT Rectangle)
             {
                 return Rectangle.Left == _Left && Rectangle.Top == _Top && Rectangle.Right == _Right && Rectangle.Bottom == _Bottom;

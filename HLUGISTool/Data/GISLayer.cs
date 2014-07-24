@@ -110,17 +110,33 @@ namespace HLU.Data
 
         #endregion // Properties
 
+        #region Methods
+
+        public override string ToString()
+        {
+            return "Map: " + _mapName + "[" + _mapNum + "]" + " Layer: " + _layerName + "[" + _layerNum + "]";
+        }
+
+        public override int GetHashCode()
+        {
+            return (this.MapNum.GetHashCode() * 100) + (this.LayerNum.GetHashCode() * 10) + this.LayerName.GetHashCode();
+        }
+
         public virtual bool Equals(GISLayer other)
         {
             if (other == null) return false;
 
-            return ((this._mapNum == other._mapNum) && (this._layerName == other._layerName) && (this._layerNum == other._layerNum) && (this._layerName == other._layerName));
+            return ((this._mapNum == other._mapNum) && (this._mapName == other._mapName) && (this._layerNum == other._layerNum) && (this._layerName == other._layerName));
         }
 
         public override bool Equals(object obj)
         {
+            if (this.GetType() != obj.GetType()) return false;
+
             return Equals(obj as GISLayer);
         }
+
+        #endregion // Methods
 
     }
 }
