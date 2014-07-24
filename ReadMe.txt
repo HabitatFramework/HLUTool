@@ -1,5 +1,8 @@
-HLU GIS Tool, v1.0.8
-Copyright © 2013-2014 Andy Foy
+HLU GIS Tool, v1.0.9
+
+Copyright © 2011 Hampshire Biodiversity Information Centre
+Copyright © 2013-2014 Thames Valley Environmental Records Centre
+Copyright © 2014 Sussex Biodiversity Record Centre
 
 Overview
 --------
