@@ -700,6 +700,7 @@ namespace HLU.UI.ViewModel
                 // will retrieve the auto and user bap rows from the database
                 // again so that they will no longer be flagged as changed.
                 _viewModelMain.IncidBapRowsUser = null;
+                _viewModelMain.IncidBapRowsAuto = null;
                 _viewModelMain.IncidIhsHabitat = _viewModelMain.IncidCurrentRow[_viewModelMain.IncidTable.ihs_habitatColumn.ColumnName].ToString();
 
                 // If there are any local rows ...
