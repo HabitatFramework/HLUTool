@@ -6282,13 +6282,27 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void GetBapEnvironments()
         {
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Remove any existing handlers before assigning a new collection.
+            _incidBapRowsAuto.CollectionChanged -= _incidBapRowsAuto_CollectionChanged;
+            _incidBapRowsUser.CollectionChanged -= _incidBapRowsUser_CollectionChanged;
+            //---------------------------------------------------------------------
+            
+            // Identify which primary BAP rows there should be from the
+            // IHS codes.
             IEnumerable<string> primaryBap = PrimaryBapEnvironments(IncidIhsHabitat, IncidIhsMatrix1,
                 IncidIhsMatrix2, IncidIhsMatrix3, IncidIhsFormation1, IncidIhsFormation2, IncidIhsManagement1,
                 IncidIhsManagement2, IncidIhsComplex1, IncidIhsComplex2);
 
+            // Identify any BAP rows (both auto generated and user added) that
+            // have not been marked as deleted.
             IEnumerable<HluDataSet.incid_bapRow> incidBapRowsUndel = 
                 _incidBapRows.Where(r => r.RowState != DataRowState.Deleted);
 
+            // If there are any undeleted rows and the IHS codes indicate
+            // that there should be some primary BAP (auto) rows then sort out
+            // which of the undeleted rows are the auto rows.
             if ((incidBapRowsUndel != null) && (primaryBap != null))
             {
                 // primary BAP environments from DB (real bap_id) and new (bap_id = -1)
@@ -6301,17 +6315,24 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
+                    // Which of the undeleted rows are auto rows that
+                    // already existed.
                     prevBapRowsAuto = from r in incidBapRowsUndel
                                       join pot in primaryBap on r.bap_habitat equals pot
                                       where _incidCurrentRow.incid != null && r.incid == _incidCurrentRow.incid
                                       select new BapEnvironment(false, false, r);
 
+                    // Which of the undeleted rows were previously user
+                    // added rows but should now be promoted to auto
+                    // rows as a result of changes to the IHS codes.
                     newBapRowsAuto = from r in incidBapRowsUndel
                                      join pot in primaryBap on r.bap_habitat equals pot
                                      where prevBapRowsAuto.Count(p => p.bap_habitat == r.bap_habitat) == 0
                                      select new BapEnvironment(false, false, r);
                 }
 
+                // Determine if there are any potential BAP rows that should
+                // be added as a result of changes to the IHS codes.
                 var potBap = from p in primaryBap
                              where prevBapRowsAuto.Count(a => a.bap_habitat == p) == 0
                              where incidBapRowsUndel.Count(row => row.bap_habitat == p) == 0
@@ -6329,6 +6350,8 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                // Concatenate the previous auto rows, the newly promoted auto
+                // rows and the potential BAP rows.
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>(
                     prevBapRowsAuto.Concat(newBapRowsAuto).Concat(potBap));
             }
@@ -6346,7 +6369,9 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
-                // no primary BAP, but user-added Db rows
+                // As there should be no primary BAP rows according to the
+                // IHS codes then the auto rows should be blank (because any
+                // undeleted rows must therefore now be considered as user rows.
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             }
             else if ((primaryBap != null) && (primaryBap.Count() > 0))
@@ -6363,7 +6388,9 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
-                // primary BAP, none in DB
+                // If there should be some primary BAP rows according to the
+                // IHS codes, but there are no existing undeleted rows, then
+                // all the primrary BAP codes must become new auto rows.
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>(
                     primaryBap.Select(p => new BapEnvironment(false, false, -1, Incid, p, null, null, null)));
             }
@@ -6381,9 +6408,13 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                // There shouldn't be any primary BAP rows according to the IHS
+                // codes, and there are no existing undeleted rows, so there are
+                // no auto rows.
                 _incidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             }
 
+            // Track any changes to the auto rows collection.
             _incidBapRowsAuto.CollectionChanged += _incidBapRowsAuto_CollectionChanged;
 
             //---------------------------------------------------------------------
@@ -6413,18 +6444,24 @@ namespace HLU.UI.ViewModel
 
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
-
             OnPropertyChanged("IncidBapHabitatsAuto");
 
+            // If there are undeleted rows and there are some auto rows
+            // then sort them out to determine which of the undeleted rows
+            // are considered as user added.
             if ((incidBapRowsUndel != null) && (_incidBapRowsAuto != null))
             {
                 List<BapEnvironment> prevBapRowsUser = null;
+                // If there were no user added rows before then there
+                // are no previous user added rows.
                 if (_incidBapRowsUser == null)
                 {
                     prevBapRowsUser = new List<BapEnvironment>();
                 }
                 else
                 {
+                    // If there were user added rows before then determine
+                    // which of them have not been promoted to auto rows.
                     prevBapRowsUser = (from r in _incidBapRowsUser
                                        where _incidCurrentRow.incid != null && r.incid == _incidCurrentRow.incid
                                        where _incidBapRowsAuto.Count(row => row.bap_habitat == r.bap_habitat) == 0
@@ -6455,12 +6492,16 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                // Concatenate the previous user added rows with any remaining
+                // undeleted rows that are not auto rows.
                 _incidBapRowsUser = new ObservableCollection<BapEnvironment>(prevBapRowsUser.Concat(
                     from r in incidBapRowsUndel
                     where _incidBapRowsAuto.Count(a => a.bap_habitat == r.bap_habitat) == 0
                     where prevBapRowsUser.Count(p => p.bap_habitat == r.bap_habitat) == 0
                     select new BapEnvironment(_bulkUpdateMode == true, true, r)));
             }
+                // If thereare undeleted rows but no auto rows then all the
+                // undeleted rows must be considered user added rows.
             else if (incidBapRowsUndel != null)
             {
                 //---------------------------------------------------------------------
@@ -6492,10 +6533,15 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                // Otherwise there can't be any user added rows.
                 _incidBapRowsUser = new ObservableCollection<BapEnvironment>();
             }
+
+            // Track any changes to the user rows collection.
             _incidBapRowsUser.CollectionChanged += _incidBapRowsUser_CollectionChanged;
 
+            // Concatenate the auto rows and the user rows to become the new list
+            // of BAP rows.
             BapEnvironment.BapEnvironmentList = _incidBapRowsAuto.Concat(_incidBapRowsUser);
 
             //---------------------------------------------------------------------
