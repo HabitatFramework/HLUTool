@@ -7904,7 +7904,7 @@ namespace HLU.UI.ViewModel
                                 modified_operation = r.lut_operationRow != null ? r.lut_operationRow.description : String.Empty,
                                 modified_incid = !r.Ismodified_incidNull() ? r.modified_incid : String.Empty,
                                 //---------------------------------------------------------------------
-                                // FIX: Always save all (both) of the history columns
+                                // FIX: 005 Always save all (both) of the history columns
                                 modified_ihs = r.Table.Columns.Cast<DataColumn>().Where(rc =>
                                     displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
                                     _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
@@ -8134,7 +8134,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource1HabitatType", "Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: Use skip value from settings rather than hard-coded value
+                // FIX: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource1BoundaryImportance))
@@ -8205,7 +8205,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource2HabitatType", "Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: Use skip value from settings rather than hard-coded value
+                // FIX: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource2BoundaryImportance))
@@ -8276,7 +8276,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource3HabitatType", "Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: Use skip value from settings rather than hard-coded value
+                // FIX: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource3BoundaryImportance))
@@ -8493,14 +8493,14 @@ namespace HLU.UI.ViewModel
                     error.Append(Environment.NewLine).Append("Process is mandatory for the history trail of every INCID");
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // If there are any IHS field errors then show an error on the tab label.
                 if (_ihsErrors != null && _ihsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // No need to check errors again here as they are already being checked
                 // whenever the IHS codes are changed.
                 //
@@ -8551,14 +8551,14 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
                 if (_detailsErrors != null && _detailsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Detail codes are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // No need to check errors again here as they are already being checked
                 // when the BAP fields are changed.
                 //
@@ -8599,7 +8599,7 @@ namespace HLU.UI.ViewModel
                     error.Append(Environment.NewLine).Append("Digitisation basemap is mandatory for every INCID");
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // If there are any Source field errors then show an error on the tab label.
                 if (((Source1Errors != null) && (Source1Errors.Count > 0)) ||
                     ((Source2Errors != null) && (Source2Errors.Count > 0)) ||
@@ -8608,7 +8608,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // Store the Source field errors so that they can be checked
                 // at the end to see if the Source tab label should also be flagged
                 // as in error.
@@ -8642,7 +8642,7 @@ namespace HLU.UI.ViewModel
                 string error = null;
 
                 //---------------------------------------------------------------------
-                // FIX: Show field errors on tab labels.
+                // FIX: 020 Show field errors on tab labels.
                 // Check the individual field errors to see if their parent tab label
                 // should be flagged as also in error.
                 switch (columnName)
