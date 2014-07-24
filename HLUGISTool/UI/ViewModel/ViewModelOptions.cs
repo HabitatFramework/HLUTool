@@ -89,7 +89,7 @@ namespace HLU.UI.ViewModel
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
 
             //---------------------------------------------------------------------
-            // FIX: Don't clear the map path when cancelling option updates
+            // FIX: 010 Don't clear the map path when cancelling option updates
             // Store the map path so that it can be reset if the user 
             // cancels updates to the options.
             _bakMapPath = _mapPath;
@@ -332,6 +332,7 @@ namespace HLU.UI.ViewModel
             {
                 _preferredGis = (int)value;
                 OnPropertyChanged("CanBrowseMap");
+                OnPropertyChanged("MapPath");
             }
         }
 
@@ -468,7 +469,7 @@ namespace HLU.UI.ViewModel
                 StringBuilder error = new StringBuilder();
 
                 //---------------------------------------------------------------------
-                // FIX: Validate that mandatory values are not blank
+                // FIX: 017 Validate that mandatory values are not blank
                 // Validate that the database timeout period, database page size and
                 // history rows to display are not null.
                 if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
@@ -490,7 +491,7 @@ namespace HLU.UI.ViewModel
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
                 //---------------------------------------------------------------------
-                // FIX: Allow the user to not display any of the history columns
+                // FIX: 006 Allow the user to not display any of the history columns
                 // Remove the validation enforcing the user to display at least one
                 // of the history columns because they are all updated when creating
                 // history regardless of whether the user wants to display any of them.
@@ -527,7 +528,7 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: Validate that mandatory values are not blank
+                    // FIX: 017 Validate that mandatory values are not blank
                     // Validate that the database timeout period, database page size and
                     // history rows to display are not null.
                     //---------------------------------------------------------------------
