@@ -225,7 +225,7 @@ namespace HLU.GISApplication
                 cond.Table = _incidMMTable;
                 cond.ColumnSystemType = _incidTable.incidColumn.DataType;
                 //---------------------------------------------------------------------
-                // FIX: Improve speed of 'Select current Incid on Map'
+                // FIX: 001 Improve speed of 'Select current Incid on Map'
                 // Use " INCID =" in SQL statement instrad of "INCID IN ()"
                 // if there is only on item in the list (as it is much quicker)
                 if (inList.Count == 1)

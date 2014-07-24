@@ -413,7 +413,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
-                // FIX: Always save all (both) of the history columns
+                // FIX: 005 Always save all (both) of the history columns
                 // Make sure that all the available history columns are updated when
                 // creating history even if the user only wants to display some of them.
                 return _gisIDColumns.Concat(_hluDS.incid_mm_polygons.Columns.Cast<DataColumn>()
@@ -436,7 +436,7 @@ namespace HLU.UI.ViewModel
                 switch (s.Replace(" ", String.Empty).ToLower())
                 {
                     //---------------------------------------------------------------------
-                    // FIX: Allow the user to reset only the database settings "/d"
+                    // FIX: 011 Allow the user to reset only the database settings "/d"
                     // or only the GIS settings "/g" instead of always both "/c"
                     case "/d":
                         DbFactory.ClearSettings();
@@ -1377,10 +1377,12 @@ namespace HLU.UI.ViewModel
             {
                 MessageBox.Show("No map features for the current incid are selected in the map.",
                     "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
+
             // If all of the features for the current incid have been
             // selected in GIS then update them all.
-            else if (_fragsIncidGisCount == _fragsIncidDbCount)
+            if (_fragsIncidGisCount == _fragsIncidDbCount)
             {
                 _saving = true;
                 _savingAttempted = false;
@@ -1425,11 +1427,19 @@ namespace HLU.UI.ViewModel
                     _saving = true;
                     _savingAttempted = false;
                     _viewModelUpd.Update();
+
+                    // Recount the number of toids and fragments for the current incid
+                    // selected in the GIS and in the database.
+                    CountToidFrags();
+
+                    // Refresh all the status type fields.
+                    RefreshStatus();
                 }
                 else
                 {
                     MessageBox.Show("The changes have not been applied - the update was cancelled.",
                         "HLU: Save Cancelled", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
                 }
             }
         }
@@ -2620,7 +2630,7 @@ namespace HLU.UI.ViewModel
                         goto case 1;
                     case 1:
                         //---------------------------------------------------------------------
-                        // FIX: Get the map selection in incid order
+                        // FIX: 022 Get the map selection in incid order
                         // Order the incids selected in the GIS so that the filter
                         // is sorted in incid order.
                         _incidsSelectedMap = _gisSelection.AsEnumerable()
@@ -3524,7 +3534,7 @@ namespace HLU.UI.ViewModel
                     else
                     {
                         //---------------------------------------------------------------------
-                        // FIX: Correctly select the first incid in filter
+                        // FIX: 023 Correctly select the first incid in filter
                         // If the table has paged backwards (because the required incid
                         // is lower than the page minimum) and if the row number being
                         // sought is the first (i.e. zero) then return the lowest incid.
@@ -3874,7 +3884,7 @@ namespace HLU.UI.ViewModel
                     return true; // new row;
                 case 1:
                     //---------------------------------------------------------------------
-                    // FIX: Don't flag existing invalid incid_bap rows as dirty
+                    // FIX: 004 Don't flag existing invalid incid_bap rows as dirty
                     // Only flag an incid_bap row that is invalid as dirty if it has
                     // been added by the user. This allows existing records to be
                     // viewed in the user interface without warning the user that
@@ -4277,7 +4287,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: Display user's name instead of their user_id
+                // FIX: 007 Display user's name instead of their user_id
                 // Display the created user's name from the lut_user table
                 // (if found) instead of the user_id
                 //
@@ -4296,7 +4306,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: Display user's name instead of their user_id
+                // FIX: 007 Display user's name instead of their user_id
                 // Display the last modified user's name from the lut_user table
                 // (if found) instead of the user_id
                 //
@@ -4368,7 +4378,7 @@ namespace HLU.UI.ViewModel
         #region IHS Tab
 
         //---------------------------------------------------------------------
-        // FIX: Show field errors on tab labels.
+        // FIX: 020 Show field errors on tab labels.
         // Set the Ihs tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -6115,7 +6125,7 @@ namespace HLU.UI.ViewModel
         #region Details Tab
 
         //---------------------------------------------------------------------
-        // FIX: Show field errors on tab labels.
+        // FIX: 020 Show field errors on tab labels.
         // Set the Details tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -6167,7 +6177,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: Allow 'None' habitats to be managed
+                // FIX: 015 Allow 'None' habitats to be managed
                 // Show all determination quality values in the drop-down list (instead
                 // of just 'Not present but close to definition') but validate the
                 // selected value later.
@@ -6395,7 +6405,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: Show field errors on tab labels.
+            // FIX: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
@@ -6430,7 +6440,7 @@ namespace HLU.UI.ViewModel
                     prevBapRowsUser.ForEach(delegate(BapEnvironment be)
                     {
                         //---------------------------------------------------------------------
-                        // FIX: Allow 'None' habitats to be managed
+                        // FIX: 003 Allow 'None' habitats to be managed
                         // Don't overwrite the determination quality value loaded from the
                         // database with 'Not present but close to definition' as other
                         // values may be valid and will be validated later.
@@ -6507,7 +6517,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: Show field errors on tab labels.
+            // FIX: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
@@ -6550,7 +6560,7 @@ namespace HLU.UI.ViewModel
             Changed = true;
 
             //---------------------------------------------------------------------
-            // FIX: Show field errors on tab labels.
+            // FIX: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
@@ -6575,7 +6585,7 @@ namespace HLU.UI.ViewModel
             Changed = true;
 
             //---------------------------------------------------------------------
-            // FIX: Show field errors on tab labels.
+            // FIX: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
@@ -6898,7 +6908,7 @@ namespace HLU.UI.ViewModel
         #region Sources Tab
 
         //---------------------------------------------------------------------
-        // FIX: Show field errors on tab labels.
+        // FIX: 020 Show field errors on tab labels.
         // Set the Sources tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -7009,10 +7019,13 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 021 Disable remaining source fields when source name is blank
         public bool IncidSource1Enabled
         {
             get { return (IncidSource1Id != null); }
         }
+        //---------------------------------------------------------------------
 
         public Date.VagueDateInstance IncidSource1Date
         {
@@ -7308,10 +7321,13 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 021 Disable remaining source fields when source name is blank
         public bool IncidSource2Enabled
         {
             get { return (IncidSource2Id != null); }
         }
+        //---------------------------------------------------------------------
 
         public Date.VagueDateInstance IncidSource2Date
         {
@@ -7569,10 +7585,13 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 021 Disable remaining source fields when source name is blank
         public bool IncidSource3Enabled
         {
             get { return (IncidSource3Id != null); }
         }
+        //---------------------------------------------------------------------
 
         public Date.VagueDateInstance IncidSource3Date
         {
@@ -7861,7 +7880,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIX: Always save all (both) of the history columns
+                    // FIX: 005 Always save all (both) of the history columns
                     // Figure out which history columns to display based on the user options
                     // now that all the available history columns are always update when
                     // creating history even if the user only wants to display some of them.

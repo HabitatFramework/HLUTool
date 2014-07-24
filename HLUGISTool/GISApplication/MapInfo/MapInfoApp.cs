@@ -442,7 +442,10 @@ namespace HLU.GISApplication.MapInfo
                         "Global Pen(1, 2, {2}) Global Brush(2, {2}, {3})", _hluMapWindowID, flashLayer,
                         (int)MapInfoConstants.Colors.RED, (int)MapInfoConstants.Colors.WHITE));
 
+                    //---------------------------------------------------------------------
+                    // FIX: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
                     for (int i = 0; i < 2; i++)
+                    //---------------------------------------------------------------------
                     {
                         _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Off", _hluMapWindowID, flashLayer));
                         Thread.Sleep(300);
@@ -702,7 +705,7 @@ namespace HLU.GISApplication.MapInfo
                     // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Only collect the history details and update the incid number if
                     // the each feature belongs to the old incid.
-                    if (_mapInfoApp.Eval(fragCommand) == oldIncid)
+                    if (_mapInfoApp.Eval(incidCommand) == oldIncid)
                     {
                         CollectHistory(ixGeom1, ixGeom2, readCommandTemplate, historyColumnNames, ref historyTable);
                         if (!String.IsNullOrEmpty(newToidFragmentColumnName))
@@ -1087,7 +1090,7 @@ namespace HLU.GISApplication.MapInfo
                         if (_mapInfoApp.Eval(incidCommand) == keepIncid)
                         {
                             //---------------------------------------------------------------------
-                            // FIX: Don't overwrite the geometry fields during logical merge
+                            // FIX: 013 Don't overwrite the geometry fields during logical merge
                             // Don't include the geometry fields in the update string when updating
                             // all the rows that are logically merging into the keep incid.
                             updateCommandTemplate = new StringBuilder(updateCommandTemplate).Append(_hluFieldNames.Where(fn =>
@@ -1106,7 +1109,7 @@ namespace HLU.GISApplication.MapInfo
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: Don't drop indexes unless processing > 500 rows
+                // FIX: 014 Don't drop indexes unless processing > 500 rows
                 // Dropping (and rebuilding) the indexes takes a long time
                 // so it is not worth it unless a lot of rows are going to
                 // be processed.
@@ -1495,8 +1498,11 @@ namespace HLU.GISApplication.MapInfo
             object MIObj1 = null;
             int stoploop = 0;
             int countloop = 0;
+            //---------------------------------------------------------------------
+            // FIX: 002 Increase the max timeout waiting for MI to start
             // Wait up to 30 seconds for MapInfo to start.
             while (stoploop != 1 || countloop > 30)
+            //---------------------------------------------------------------------
             {
                 try
                 {
@@ -1522,8 +1528,11 @@ namespace HLU.GISApplication.MapInfo
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            //---------------------------------------------------------------------
+            // FIX: 019 Pause before connecting to MapInfo to let it finish opening
             // Wait a couple of seconds after connecting to MapInfo to let it finish opening.
             System.Threading.Thread.Sleep(2000);
+            //---------------------------------------------------------------------
             return MIObj1;
 
         }

@@ -1257,6 +1257,9 @@ namespace HLU
                 IMxDocument mxDoc = (IMxDocument)_application.Document;
                 IActiveView activeView = mxDoc.FocusMap as IActiveView;
                 IScreenDisplay screenDisplay = activeView.ScreenDisplay;
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // FIX: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
                 FlashGeometry(geom, screenDisplay, 300, 2);
                 //---------------------------------------------------------------------
             }

@@ -248,7 +248,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
-                // FIX: Update the incid modified columns for the current incid
+                // FIX: 008 Update the incid modified columns for the current incid
                 // The incid modified columns (i.e. last modified user and date)
                 // should be updated for the active incid not the 'highest' incid
                 // which is what "_viewModelMain.CurrentIncid" represents.
@@ -276,8 +276,12 @@ namespace HLU.UI.ViewModel
                             GISApplication.GISApp.HistoryAdditionalFieldsDelimiter + 
                             _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName, 
                             _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.DataType)}).ToArray());
+
+                // If an error occurred when updating the GIS layer or
+                // if no history row were collected then throw an exception.
+                if ((historyTable == null) || (historyTable.Rows.Count == 0))
+                    throw new Exception("Failed to update GIS layer.");
                 //---------------------------------------------------------------------
-                if (historyTable == null) throw new Exception("Failed to update GIS layer.");
 
                 // update DB shadow copy of GIS layer
                 HluDataSet.incid_mm_polygonsDataTable polygons = new HluDataSet.incid_mm_polygonsDataTable();
@@ -305,7 +309,7 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
                 //---------------------------------------------------------------------
-                // FIX: Don't update the incid modified columns again
+                // FIX: 024 Don't update the incid modified columns again
                 // The incid modified columns (i.e. last modified user and date)
                 // have already been update above for the current incid.
                 //
@@ -382,7 +386,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: Don't update the ihs version when splitting features
+                // FIX: 009 Don't update the ihs version when splitting features
                 // Previously the ihs version was set to the latest version for
                 // new (cloned) incids which meant that a feature split into 2
                 // parts could result in one with the current 'old' ihs version
