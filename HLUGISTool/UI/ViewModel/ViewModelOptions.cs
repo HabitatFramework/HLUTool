@@ -332,7 +332,7 @@ namespace HLU.UI.ViewModel
             {
                 _preferredGis = (int)value;
                 OnPropertyChanged("CanBrowseMap");
-                OnPropertyChanged("MapPath");
+                OnPropertyChanged("MapDocument");
             }
         }
 
@@ -549,7 +549,7 @@ namespace HLU.UI.ViewModel
                         if (GisAppsEnabled && (PreferredGis == GISApplications.None))
                             error = "Please select your preferred GIS application.";
                         break;
-                    case "MapPath":
+                    case "MapDocument":
                         if (String.IsNullOrEmpty(MapDocument))
                         {
                             error = "Please enter a path to a GIS workspace.";
