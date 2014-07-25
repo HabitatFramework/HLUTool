@@ -40,6 +40,8 @@ namespace HLU
         private static ViewModelWindowSplash _splashViewModel;
         private WindowMain _mainWindow;
         private ViewModelWindowMain _mainViewModel;
+        private static Mutex _toolMutex = null;
+        private static Mutex _updaterMutex = null;
 
         public static ViewModelWindowSplash SplashViewModel
         {
@@ -137,6 +139,78 @@ namespace HLU
                     _threadSplashScreen.Abort();
             }
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            //---------------------------------------------------------------------
+            // CHANGED: CR30 (Database validation on start-up)
+            //
+            // Release the HLU Tool mutex if it exists.
+            if (_toolMutex != null)
+                _toolMutex.ReleaseMutex();
+
+            // Release the HLU Database Updater mutex if it exists.
+            if (_updaterMutex != null)
+                _updaterMutex.ReleaseMutex();
+
+            base.OnExit(e);
+            //---------------------------------------------------------------------
+        }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR30 (Database validation on start-up)
+        //
+        /// <summary>
+        /// Determines whether this is the first instance of the application
+        /// (in other words if the tool or database updater is already
+        /// running.
+        /// </summary>
+        /// <returns>True if the tool or database updater are not already
+        /// running, otherwise false if either is running.</returns>
+        protected static bool IsFirstInstance()
+        {
+            // Check that the tool is not already running.
+            bool createdNew;
+            _toolMutex = new Mutex(true, "Local\\HLUGisTool", out createdNew);
+
+            // If the tool (or database updater) is alread running then exit.
+            if (!createdNew)
+            {
+                MessageBox.Show("The HLU Tool is already running on this machine.\n\nApplication cannot start.", "HLU Tool",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                _toolMutex = null;
+
+                Application.Current.Shutdown();
+                return false;
+            }
+
+            // Keep the mutex referene alive until the normal
+            // termination of the program.
+            GC.KeepAlive(_toolMutex);
+
+            // Check that the database updater is not already running.
+            _updaterMutex = new Mutex(true, "Local\\HLUDbUpdater", out createdNew);
+
+            // If the tool (or database updater) is alread running then exit.
+            if (!createdNew)
+            {
+                MessageBox.Show("The HLU Database Updater is currently running on this machine.\n\nApplication cannot start.", "HLU Tool",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                _updaterMutex = null;
+
+                Application.Current.Shutdown();
+                return false;
+            }
+
+            // Keep the mutex referene alive until the normal
+            // termination of the program.
+            GC.KeepAlive(_updaterMutex);
+
+            return true;
+        }
+        //---------------------------------------------------------------------
 
         private void UpgradeSettings()
         {
