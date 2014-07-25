@@ -3012,7 +3012,13 @@ namespace HLU.UI.ViewModel
 
         public int NumIncidSelected
         {
-            get { return _incidSelection.Rows.Count; }
+            get 
+            {
+                if (_incidSelection == null)
+                    return 0;
+                else
+                    return _incidSelection.Rows.Count;
+            }
             set { }
         }
 
@@ -6293,8 +6299,10 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // CHANGED: CR2 (Apply button)
             // Remove any existing handlers before assigning a new collection.
-            _incidBapRowsAuto.CollectionChanged -= _incidBapRowsAuto_CollectionChanged;
-            _incidBapRowsUser.CollectionChanged -= _incidBapRowsUser_CollectionChanged;
+            if (_incidBapRowsAuto != null)
+                _incidBapRowsAuto.CollectionChanged -= _incidBapRowsAuto_CollectionChanged;
+            if (_incidBapRowsUser != null)
+                _incidBapRowsUser.CollectionChanged -= _incidBapRowsUser_CollectionChanged;
             //---------------------------------------------------------------------
             
             // Identify which primary BAP rows there should be from the
@@ -6583,9 +6591,9 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
                     else
-                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
                 }
             }
             else
@@ -6593,7 +6601,6 @@ namespace HLU.UI.ViewModel
 
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
-
             OnPropertyChanged("IncidBapHabitatsUser");
         }
 
@@ -6651,9 +6658,9 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
                     else
-                        UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
                 }
             }
             OnPropertyChanged("DetailsTabLabel");
@@ -6794,6 +6801,28 @@ namespace HLU.UI.ViewModel
         private void _incidBapRowsAuto_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged("Error");
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Track when the BAP primary records have changed so that the apply
+            // button will appear.
+            Changed = true;
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: 020 Show field errors on tab labels.
+            // Check if there are any errors in the primary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+            {
+                int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+            }
+            OnPropertyChanged("DetailsTabLabel");
+            //---------------------------------------------------------------------
         }
 
         private void _incidBapRowsUser_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -6820,6 +6849,50 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             OnPropertyChanged("Error");
+
+            //---------------------------------------------------------------------
+            // CHANGED: CR2 (Apply button)
+            // Track when the BAP secondary records have changed so that the apply
+            // button will appear.
+            Changed = true;
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: 020 Show field errors on tab labels.
+            // Check if there are any errors in the secondary BAP records to see
+            // if the Details tab label should be flagged as also in error.
+            if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+            {
+                int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                if (countInvalid > 0)
+                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                else
+                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+
+                // Check if there are any duplicates between the primary and 
+                // secondary BAP records.
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                {
+                    StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                                            group be by be.bap_habitat into g
+                                            where g.Count() > 1
+                                            select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                    if (beDups.Length > 2)
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
+                    else
+                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
+                }
+            }
+            OnPropertyChanged("DetailsTabLabel");
+
+            foreach (BapEnvironment be in _incidBapRowsUser)
+            {
+                if (be == null)
+                    be.DataChanged -= _incidBapRowsUser_DataChanged;
+                else if (be.bap_id == -1)
+                    be.DataChanged += _incidBapRowsUser_DataChanged;
+            }
+            //---------------------------------------------------------------------
         }
 
         #endregion

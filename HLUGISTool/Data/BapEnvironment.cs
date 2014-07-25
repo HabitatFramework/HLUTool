@@ -220,7 +220,8 @@ namespace HLU.Data
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                this.DataChanged(true);
+                if (this.DataChanged != null)
+                    this.DataChanged(true);
                 //---------------------------------------------------------------------
             }
         }
@@ -235,7 +236,8 @@ namespace HLU.Data
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                this.DataChanged(true);
+                if (this.DataChanged != null)
+                    this.DataChanged(true);
                 //---------------------------------------------------------------------
             }
         }
@@ -250,7 +252,8 @@ namespace HLU.Data
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                this.DataChanged(true);
+                if (this.DataChanged != null)
+                    this.DataChanged(true);
                 //---------------------------------------------------------------------
             }
         }
@@ -265,7 +268,8 @@ namespace HLU.Data
                 // CHANGED: CR2 (Apply button)
                 // Flag that the current record has changed so that the apply button
                 // will appear.
-                this.DataChanged(true);
+                if (this.DataChanged != null)
+                    this.DataChanged(true);
                 //---------------------------------------------------------------------
             }
         }
