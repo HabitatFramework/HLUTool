@@ -138,37 +138,43 @@ namespace HLU.Converters
         {
             if (codeColumnOrdinal == -1) return rows;
 
+            //---------------------------------------------------------------------
+            // FIX: 025 Add default sort order to all lookup tables
             if ((descriptionColumnOrdinal != -1) && (sortColumnOrdinal != -1))
                 return (from r in rows
                         select new
                         {
                             code = r.Field<string>(codeColumnOrdinal),
                             description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal),
-                            sort_order = r.Field<int>(sortColumnOrdinal)
-                        }).OrderBy(r => r.sort_order);
+                            sort_order = r.Field<int>(sortColumnOrdinal),
+                            sort_order2 = r.Field<int>(descriptionColumnOrdinal)
+                        }).OrderBy(r => r.sort_order).ThenBy(r => r.sort_order2);
             else if (descriptionColumnOrdinal != -1)
-                return from r in rows
+                return (from r in rows
                        select new
                        {
                            code = r.Field<string>(codeColumnOrdinal),
-                           description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal)
-                       };
+                           description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal),
+                           sort_order = r.Field<int>(descriptionColumnOrdinal)
+                       }).OrderBy(r => r.sort_order);
             else if (sortColumnOrdinal != -1)
                 return (from r in rows
                         select new
                         {
                             code = r.Field<string>(codeColumnOrdinal),
                             description = String.Empty,
-                            sort_order = r.Field<int>(sortColumnOrdinal)
-                        }).OrderBy(r => r.sort_order);
+                            sort_order = r.Field<int>(sortColumnOrdinal),
+                            sort_order2 = r.Field<int>(descriptionColumnOrdinal)
+                        }).OrderBy(r => r.sort_order).ThenBy(r => r.sort_order2);
             else
-                return from r in rows
+                return (from r in rows
                        select new
                        {
                            code = r.Field<string>(codeColumnOrdinal),
                            description = String.Empty,
                            sort_order = r.Field<int>(sortColumnOrdinal)
-                       };
+                       }).OrderBy(r => r.sort_order);
+            //---------------------------------------------------------------------
         }
 
         private string FormatDescription(DataRow r, int codeColumnOrdinal, int descriptionColumnOrdinal)
