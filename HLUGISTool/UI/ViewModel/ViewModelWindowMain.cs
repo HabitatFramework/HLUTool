@@ -4338,7 +4338,10 @@ namespace HLU.UI.ViewModel
                                 new HluTableAdapter<HluDataSet.lut_reasonDataTable, HluDataSet.lut_reasonRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_reasonDataTable) }, false);
                     }
-                    _reasonCodes = HluDataset.lut_reason.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _reasonCodes = HluDataset.lut_reason.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _reasonCodes;
             }
@@ -4364,7 +4367,10 @@ namespace HLU.UI.ViewModel
                                 new HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_processDataTable) }, false);
                     }
-                    _processCodes = HluDataset.lut_process.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _processCodes = HluDataset.lut_process.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _processCodes;
             }
@@ -4410,7 +4416,10 @@ namespace HLU.UI.ViewModel
                                 new HluTableAdapter<HluDataSet.lut_ihs_categoryDataTable, HluDataSet.lut_ihs_categoryRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_categoryDataTable) }, false);
                     }
-                    _ihsCategoryCodes = HluDataset.lut_ihs_category.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _ihsCategoryCodes = HluDataset.lut_ihs_category.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _ihsCategoryCodes;
             }
@@ -4715,7 +4724,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
                         else
-                            ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -4760,7 +4772,10 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix2);
 
                         if (q != null)
-                            ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                         else
                             ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
                     }
@@ -4811,7 +4826,10 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix3);
 
                         if (q != null)
-                            ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                         else
                             ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
                     }
@@ -5153,7 +5171,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
-                            ihsFormation1Codes = ClearRowIhsFormation(-2).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsFormation1Codes = ClearRowIhsFormation(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -5200,7 +5221,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
-                            ihsFormation2Codes = ClearRowIhsFormation(-1).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsFormation2Codes = ClearRowIhsFormation(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -5454,7 +5478,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
-                            ihsManagement1Codes = ClearRowIhsManagement(-2).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsManagement1Codes = ClearRowIhsManagement(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -5501,7 +5528,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
-                            ihsManagement2Codes = ClearRowIhsManagement(-1).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsManagement2Codes = ClearRowIhsManagement(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -5757,7 +5787,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
-                            ihsComplex1Codes = ClearRowIhsComplex(-2).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsComplex1Codes = ClearRowIhsComplex(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -5804,7 +5837,10 @@ namespace HLU.UI.ViewModel
                         if (q == null)
                             ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
-                            ihsComplex2Codes = ClearRowIhsComplex(-1).Concat(q).OrderBy(r => r.sort_order).ToArray();
+                            //---------------------------------------------------------------------
+                            // FIX: 025 Add default sort order to all lookup tables
+                            ihsComplex2Codes = ClearRowIhsComplex(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            //---------------------------------------------------------------------
                     }
                     else
                     {
@@ -6035,10 +6071,13 @@ namespace HLU.UI.ViewModel
                     _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 025 Add default sort order to all lookup tables
                 _lutIhsMatrixCodes = (from m in HluDataset.lut_ihs_matrix
                                       join h in HluDataset.lut_ihs_habitat_ihs_matrix on m.code equals h.code_matrix
                                       where h.code_habitat == IncidIhsHabitat
-                                      select m).OrderBy(m => m.sort_order).ToArray();
+                                      select m).OrderBy(m => m.sort_order).ThenBy(m => m.description).ToArray();
+                //---------------------------------------------------------------------
 
                 if (HluDataset.lut_ihs_formation.IsInitialized && HluDataset.lut_ihs_formation.Count == 0)
                 {
@@ -6048,10 +6087,13 @@ namespace HLU.UI.ViewModel
                     _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 025 Add default sort order to all lookup tables
                 _lutIhsFormationCodes = (from f in HluDataset.lut_ihs_formation
                                          join h in HluDataset.lut_ihs_habitat_ihs_formation on f.code equals h.code_formation
                                          where h.code_habitat == IncidIhsHabitat
-                                         select f).OrderBy(f => f.sort_order).ToArray();
+                                         select f).OrderBy(f => f.sort_order).ThenBy(f => f.description).ToArray();
+                //---------------------------------------------------------------------
 
                 if (HluDataset.lut_ihs_management.IsInitialized && HluDataset.lut_ihs_management.Count == 0)
                 {
@@ -6061,10 +6103,13 @@ namespace HLU.UI.ViewModel
                     _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 025 Add default sort order to all lookup tables
                 _lutIhsManagementCodes = (from m in HluDataset.lut_ihs_management
                                           join h in HluDataset.lut_ihs_habitat_ihs_management on m.code equals h.code_management
                                           where h.code_habitat == IncidIhsHabitat
-                                          select m).OrderBy(m => m.sort_order).ToArray();
+                                          select m).OrderBy(m => m.sort_order).ThenBy(m => m.description).ToArray();
+                //---------------------------------------------------------------------
 
                 if (HluDataset.lut_ihs_complex.IsInitialized && HluDataset.lut_ihs_complex.Count == 0)
                 {
@@ -6074,10 +6119,13 @@ namespace HLU.UI.ViewModel
                     _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 025 Add default sort order to all lookup tables
                 _lutIhsComplexCodes = (from c in HluDataset.lut_ihs_complex
                                        join h in HluDataset.lut_ihs_habitat_ihs_complex on c.code equals h.code_complex
                                        where h.code_habitat == incidIhsHabitat
-                                       select c).OrderBy(c => c.sort_order).ToArray();
+                                       select c).OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+                //---------------------------------------------------------------------
             }
             else
             {
@@ -6172,7 +6220,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 if (BapDeterminationQualityCodes != null)
-                    return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 else
                     return null;
             }
@@ -6189,7 +6240,10 @@ namespace HLU.UI.ViewModel
                 // selected value later.
                 if (BapDeterminationQualityCodes != null)
                     //return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
-                    return BapDeterminationQualityCodes.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    return BapDeterminationQualityCodes.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 else
                     return null;
                 //---------------------------------------------------------------------
@@ -6212,8 +6266,11 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset,
                             new Type[] { typeof(HluDataSet.lut_bap_quality_determinationDataTable) }, false);
                     }
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     _bapDeterminationQualityCodes =
-                        HluDataset.lut_bap_quality_determination.OrderBy(r => r.sort_order).ToArray();
+                        HluDataset.lut_bap_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _bapDeterminationQualityCodes;
             }
@@ -6235,8 +6292,11 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset,
                             new Type[] { typeof(HluDataSet.lut_bap_quality_interpretationDataTable) }, false);
                     }
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     _bapInterpretationQualityCodes =
-                        HluDataset.lut_bap_quality_interpretation.OrderBy(r => r.sort_order).ToArray();
+                        HluDataset.lut_bap_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _bapInterpretationQualityCodes;
             }
@@ -6938,7 +6998,11 @@ namespace HLU.UI.ViewModel
                             new HluTableAdapter<HluDataSet.lut_boundary_mapDataTable, HluDataSet.lut_boundary_mapRow>(_db);
                     _hluTableAdapterMgr.Fill(HluDataset,
                         new Type[] { typeof(HluDataSet.lut_boundary_mapDataTable) }, false);
-                    HluDataset.lut_boundary_map.DefaultView.Sort = HluDataset.lut_boundary_map.sort_orderColumn.ColumnName;
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    string sortCols = String.Concat(HluDataset.lut_boundary_map.sort_orderColumn.ColumnName, ", ", HluDataset.lut_boundary_map.descriptionColumn.ColumnName);
+                    HluDataset.lut_boundary_map.DefaultView.Sort = sortCols;
+                    //---------------------------------------------------------------------
                 }
                 return HluDataset.lut_boundary_map.DefaultView;
             }
@@ -7071,8 +7135,11 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     return HluDataset.lut_sources.AsEnumerable().Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ToArray();
+                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
@@ -7193,7 +7260,10 @@ namespace HLU.UI.ViewModel
                                 new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
                     }
-                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _sourceHabitatClassCodes;
             }
@@ -7238,9 +7308,12 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
 
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource1HabitatClass)
-                        .OrderBy(r => r.sort_order).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
@@ -7296,7 +7369,10 @@ namespace HLU.UI.ViewModel
                                 new HluTableAdapter<HluDataSet.lut_importanceDataTable, HluDataSet.lut_importanceRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
                     }
-                    _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ToArray();
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 return _sourceImportanceCodes;
             }
@@ -7374,8 +7450,11 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     return HluDataset.lut_sources.AsEnumerable().Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ToArray();
+                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
@@ -7521,9 +7600,12 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
 
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource2HabitatClass)
-                        .OrderBy(r => r.sort_order).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
@@ -7638,8 +7720,11 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     return HluDataset.lut_sources.AsEnumerable().Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ToArray();
+                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
@@ -7808,9 +7893,12 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
 
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource3HabitatClass)
-                        .OrderBy(r => r.sort_order).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
