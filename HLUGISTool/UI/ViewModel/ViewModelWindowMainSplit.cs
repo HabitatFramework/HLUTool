@@ -685,23 +685,55 @@ namespace HLU.UI.ViewModel
                         be.bap_id = _viewModelMain.RecIDs.NextIncidBapId;
                         be.incid = _viewModelMain.Incid;
                         newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
+
+                        //for (int i = 0; i < _viewModelMain.IncidBapTable.Columns.Count; i++)
+                        //    newRow[i] = be.ToItemArray()[i];
+
                         newRow.ItemArray = be.ToItemArray();
                         bapRows.Add(newRow);
                     }
-                    // If the row is updated get the new values from the bap
-                    // data grid and then add it to the local copy of rows.
-                    else if ((newRow = UpdateIncidBapRow(be)) != null)
+                    //// If the row is updated get the new values from the bap
+                    //// data grid and then add it to the local copy of rows.
+                    //else if ((newRow = UpdateIncidBapRow(be)) != null)
+                    //{
+                    //    bapRows.Add(newRow);
+                    //}
+                    else
                     {
+                        newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
+
+                        //for (int i = 0; i < _viewModelMain.IncidBapTable.Columns.Count; i++)
+                        //    newRow[i] = be.ToItemArray()[i];
+
+                        newRow.ItemArray = be.ToItemArray();
                         bapRows.Add(newRow);
                     }
                 }
 
-                // Restore the IHS Habitat back to it's original value. This
-                // will retrieve the auto and user bap rows from the database
-                // again so that they will no longer be flagged as changed.
-                _viewModelMain.IncidBapRowsUser = null;
-                _viewModelMain.IncidBapRowsAuto = null;
-                _viewModelMain.IncidIhsHabitat = _viewModelMain.IncidCurrentRow[_viewModelMain.IncidTable.ihs_habitatColumn.ColumnName].ToString();
+                // Discard any changes to the IncidBapTable table once a copy has been
+                // made.
+                _viewModelMain.IncidBapTable.RejectChanges();
+
+                // Remove any rows added by the edit that have been discarded but
+                // are still in the rows array.
+                for (int i = 0; i < _viewModelMain.IncidBapRows.Count(); i++)
+                {
+                    if ((_viewModelMain.IncidBapRows[i] != null) && (_viewModelMain.IncidBapRows[i].incidRow == null))
+                    {
+                        if (_viewModelMain.IncidBapRows[i].RowState != DataRowState.Detached)
+                            _viewModelMain.IncidBapRows[i].Delete();
+                        _viewModelMain.IncidBapRows[i] = null;
+                    }
+                }
+
+                //// Restore the IHS Habitat back to it's original value. This
+                //// will retrieve the auto and user bap rows from the database
+                //// again so that they will no longer be flagged as changed.
+                //_viewModelMain.IncidBapRowsUser = null;
+                //_viewModelMain.IncidBapRowsAuto = null;
+                //_viewModelMain.IncidBapRows = _viewModelMain.GetIncidChildRowsDb(relValues,
+                //    _hluTableAdapterMgr.incid_bapTableAdapter, ref incidBapTable);
+                //_viewModelMain.IncidIhsHabitat = _viewModelMain.IncidCurrentRow[_viewModelMain.IncidTable.ihs_habitatColumn.ColumnName].ToString();
 
                 // If there are any local rows ...
                 if ((bapRows != null) && (bapRows.Count > 0))
