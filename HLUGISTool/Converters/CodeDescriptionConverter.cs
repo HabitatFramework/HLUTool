@@ -147,16 +147,16 @@ namespace HLU.Converters
                             code = r.Field<string>(codeColumnOrdinal),
                             description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal),
                             sort_order = r.Field<int>(sortColumnOrdinal),
-                            sort_order2 = r.Field<int>(descriptionColumnOrdinal)
+                            sort_order2 = r.Field<string>(codeColumnOrdinal)
                         }).OrderBy(r => r.sort_order).ThenBy(r => r.sort_order2);
             else if (descriptionColumnOrdinal != -1)
                 return (from r in rows
-                       select new
-                       {
-                           code = r.Field<string>(codeColumnOrdinal),
-                           description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal),
-                           sort_order = r.Field<int>(descriptionColumnOrdinal)
-                       }).OrderBy(r => r.sort_order);
+                        select new
+                        {
+                            code = r.Field<string>(codeColumnOrdinal),
+                            description = FormatDescription(r, codeColumnOrdinal, descriptionColumnOrdinal),
+                            sort_order = r.Field<string>(descriptionColumnOrdinal)
+                        }).OrderBy(r => r.sort_order);
             else if (sortColumnOrdinal != -1)
                 return (from r in rows
                         select new
@@ -164,16 +164,16 @@ namespace HLU.Converters
                             code = r.Field<string>(codeColumnOrdinal),
                             description = String.Empty,
                             sort_order = r.Field<int>(sortColumnOrdinal),
-                            sort_order2 = r.Field<int>(descriptionColumnOrdinal)
+                            sort_order2 = r.Field<string>(codeColumnOrdinal)
                         }).OrderBy(r => r.sort_order).ThenBy(r => r.sort_order2);
             else
                 return (from r in rows
-                       select new
-                       {
-                           code = r.Field<string>(codeColumnOrdinal),
-                           description = String.Empty,
-                           sort_order = r.Field<int>(sortColumnOrdinal)
-                       }).OrderBy(r => r.sort_order);
+                        select new
+                        {
+                            code = r.Field<string>(codeColumnOrdinal),
+                            description = String.Empty,
+                            sort_order = r.Field<int>(sortColumnOrdinal)
+                        }).OrderBy(r => r.sort_order);
             //---------------------------------------------------------------------
         }
 
