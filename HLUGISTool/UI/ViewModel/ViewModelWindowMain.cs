@@ -336,12 +336,7 @@ namespace HLU.UI.ViewModel
                 // Check the assembly version is not earlier than the
                 // minimum required dataset application version.
                 if (!CheckVersion())
-                {
-                     MessageBox.Show("The database has been updated to a later version than the application.\n\n" +
-                        "The application must be upgraded before it can be run.",
-                        "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return false;
-                }
                 //---------------------------------------------------------------------
 
                 // wire up event handler for copy switches
@@ -500,19 +495,46 @@ namespace HLU.UI.ViewModel
 
             // Get the application version from the database.
             String lutAppVersion = "0.0.0";
+            String lutDbVersion = "0";
             if (_hluDS.lut_version.Count > 0)
+            {
                 lutAppVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).app_version;
+                lutDbVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).db_version;
+            }
             else
+            {
+                //MessageBox.Show("The database has been updated to a later version than the application.\n\n" +
+                //   "The application must be upgraded before it can be run.",
+                //   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
+            }
 
             Version assVersion = new Version(assemblyVersion);
             Version appVersion = new Version(lutAppVersion);
 
             // Compare the assembly and application versions.
             if (assVersion.CompareTo(appVersion) < 0)
+            {
+                MessageBox.Show(String.Format("The database has been updated to a later version than the application.\n\n" +
+                   "The minimum application version must be {0}.", appVersion.ToString()),
+                   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
-            else
-                return true;
+            }
+
+            // Get the minimum database version.
+            string minDbVersion = Settings.Default.MinimumDbVersion;
+
+            // Compare the minimum database version.
+            if (Base36.Base36ToNumber(lutDbVersion) < Base36.Base36ToNumber(minDbVersion))
+            {
+                MessageBox.Show(String.Format("The database must be updated to a later version.\n\n" +
+                   "The minimum database version must is {0}.",minDbVersion),
+                   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+
+
+            return true;
         }
 
         #endregion
