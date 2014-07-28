@@ -26,7 +26,8 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=L2400HT\\SQLEXPRESS;Initial Catalog=hlu;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ACEY\\SQLEXPRESS2012;Initial Catalog=HLUData_BMERC;Integrated Security" +
+            "=True")]
         public string HluConnectionString {
             get {
                 return ((string)(this["HluConnectionString"]));
