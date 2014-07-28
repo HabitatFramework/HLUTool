@@ -118,14 +118,24 @@ namespace HLU.Data
         {
             get
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR30 (Database validation on start-up)
+                // Get the ihs_version from the lut_version table instead of the
+                // lut_ihs_version table.
+                //
+                //var q = _hluDataset.lut_ihs_version.Where(r => r.ihs_version.ToLower() != "unknown");
+                //if (q.Count() > 0)
+                //    _ihsVersion = q.Max(r => r.ihs_version);
+                //if (String.IsNullOrEmpty(_ihsVersion))
+                //    _ihsVersion = "000.000.000";
+                //
                 if (String.IsNullOrEmpty(_ihsVersion))
-                {
-                    var q = _hluDataset.lut_ihs_version.Where(r => r.ihs_version.ToLower() != "unknown");
-                    if (q.Count() > 0)
-                        _ihsVersion = q.Max(r => r.ihs_version);
-                    if (String.IsNullOrEmpty(_ihsVersion))
+                    if (_hluDataset.lut_version.Count > 0)
+                        _ihsVersion = _hluDataset.lut_version.ElementAt(_hluDataset.lut_version.Count - 1).ihs_version;
+                    else
                         _ihsVersion = "000.000.000";
-                }
+                //---------------------------------------------------------------------
+
                 return _ihsVersion;
             }
         }

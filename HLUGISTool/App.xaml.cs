@@ -66,6 +66,9 @@ namespace HLU
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Check if the tool or database updater is already running.
+            if (!IsFirstInstance()) return;
+
             base.OnStartup(e);
             StartupArguments = e.Args;
 
