@@ -306,6 +306,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Base36.cs" />
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />

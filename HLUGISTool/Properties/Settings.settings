@@ -189,5 +189,8 @@
     <Setting Name="SubsetUpdateAction" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="MinimumDbVersion" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">7</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
