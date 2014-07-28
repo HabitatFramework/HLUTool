@@ -363,6 +363,13 @@
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
+    <Compile Include="Data\Model\HluDataSetOld.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HluDataSetOld.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowWarnOnSubsetUpdate.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
@@ -538,6 +545,17 @@
     </None>
     <None Include="Data\Model\HluDataSet.xss">
       <DependentUpon>HluDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Data\Model\HluDataSetOld.xsc">
+      <DependentUpon>HluDataSetOld.xsd</DependentUpon>
+    </None>
+    <None Include="Data\Model\HluDataSetOld.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>HluDataSetOld.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Data\Model\HluDataSetOld.xss">
+      <DependentUpon>HluDataSetOld.xsd</DependentUpon>
     </None>
     <None Include="Data\Model\HluGISLayer.xsc">
       <DependentUpon>HluGISLayer.xsd</DependentUpon>

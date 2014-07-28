@@ -269,6 +269,17 @@ namespace HLU.UI.ViewModel
                     string errorMessage;
                     if (!_db.ContainsDataSet(_hluDS, out errorMessage))
                     {
+                        // Check if the database contains the old lut_version
+                        // table structure.
+                        HluDataSetOld _hluDSOld = new HluDataSetOld();
+                        if (_db.ContainsDataSet(_hluDSOld, out errorMessage))
+                        {
+                            MessageBox.Show("The database has been updated to a later version than the application.\n\n" +
+                                "The application must be upgraded before it can be run.",
+                                "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return false;
+                        }
+
                         DbFactory.ClearSettings();
 
                         if (String.IsNullOrEmpty(errorMessage))
@@ -319,6 +330,19 @@ namespace HLU.UI.ViewModel
 
                 // create RecordIds object for the db
                 _recIDs = new RecordIds(_db, _hluDS, _hluTableAdapterMgr, GisLayerType);
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR30 (Database validation on start-up)
+                // Check the assembly version is not earlier than the
+                // minimum required dataset application version.
+                if (!CheckVersion())
+                {
+                     MessageBox.Show("The database has been updated to a later version than the application.\n\n" +
+                        "The application must be upgraded before it can be run.",
+                        "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return false;
+                }
+                //---------------------------------------------------------------------
 
                 // wire up event handler for copy switches
                 _copySwitches.PropertyChanged += new PropertyChangedEventHandler(_copySwitches_PropertyChanged);
@@ -461,6 +485,34 @@ namespace HLU.UI.ViewModel
                         break;
                 }
             }
+        }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR30 (Database validation on start-up)
+        /// <summary>
+        /// Check the assembly version is greater than or equal to the
+        /// application version from the lut_version table in the database.
+        /// </summary>
+        private bool CheckVersion()
+        {
+            // Get the assembly version.
+            String assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            // Get the application version from the database.
+            String lutAppVersion = "0.0.0";
+            if (_hluDS.lut_version.Count > 0)
+                lutAppVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).app_version;
+            else
+                return false;
+
+            Version assVersion = new Version(assemblyVersion);
+            Version appVersion = new Version(lutAppVersion);
+
+            // Compare the assembly and application versions.
+            if (assVersion.CompareTo(appVersion) < 0)
+                return false;
+            else
+                return true;
         }
 
         #endregion
