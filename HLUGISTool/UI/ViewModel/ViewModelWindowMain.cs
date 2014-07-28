@@ -7364,7 +7364,7 @@ namespace HLU.UI.ViewModel
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource1HabitatClass)
-                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
@@ -7656,7 +7656,7 @@ namespace HLU.UI.ViewModel
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource2HabitatClass)
-                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
@@ -7949,7 +7949,7 @@ namespace HLU.UI.ViewModel
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource3HabitatClass)
-                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
