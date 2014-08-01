@@ -5160,6 +5160,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.lut_ihs_matrixRow clearRow = _hluDS.lut_ihs_matrix.Newlut_ihs_matrixRow();
             clearRow.code = _codeDeleteRow;
             clearRow.sort_order = sortOrder;
+            clearRow.description = String.Empty;
             return new HluDataSet.lut_ihs_matrixRow[] { clearRow };
         }
 
@@ -5467,6 +5468,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.lut_ihs_formationRow clearRow = _hluDS.lut_ihs_formation.Newlut_ihs_formationRow();
             clearRow.code = _codeDeleteRow;
             clearRow.sort_order = sortOrder;
+            clearRow.description = String.Empty;
             return new HluDataSet.lut_ihs_formationRow[] { clearRow };
         }
         
@@ -5776,6 +5778,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.lut_ihs_managementRow clearRow = _hluDS.lut_ihs_management.Newlut_ihs_managementRow();
             clearRow.code = _codeDeleteRow;
             clearRow.sort_order = sortOrder;
+            clearRow.description = String.Empty;
             return new HluDataSet.lut_ihs_managementRow[] { clearRow };
         }
 
@@ -6085,6 +6088,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.lut_ihs_complexRow clearRow = _hluDS.lut_ihs_complex.Newlut_ihs_complexRow();
             clearRow.code = _codeDeleteRow;
             clearRow.sort_order = sortOrder;
+            clearRow.description = String.Empty;
             return new HluDataSet.lut_ihs_complexRow[] { clearRow };
         }
 
