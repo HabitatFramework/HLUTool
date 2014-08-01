@@ -662,7 +662,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("7")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
