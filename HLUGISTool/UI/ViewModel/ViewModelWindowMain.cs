@@ -274,8 +274,8 @@ namespace HLU.UI.ViewModel
                         HluDataSetOld _hluDSOld = new HluDataSetOld();
                         if (_db.ContainsDataSet(_hluDSOld, out errorMessage))
                         {
-                            MessageBox.Show("The database has been updated to a later version than the application.\n\n" +
-                                "The application must be upgraded before it can be run.",
+                            MessageBox.Show("The application has been upgraded to a later version than the database.\n\n" +
+                                "The database must be updated before the application can be run.",
                                 "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             return false;
                         }
