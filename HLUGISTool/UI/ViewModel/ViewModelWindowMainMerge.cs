@@ -224,6 +224,13 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.ClearFilter(false);
 
                             // Synch with the GIS selection.
+                            //---------------------------------------------------------------------
+                            // FIX: 027 Force refill of Incid table after split/merge
+                            // Force the Incid table to be refilled because it has been
+                            // updated directly in the database rather than via the
+                            // local copy.
+                            _viewModelMain.RefillIncidTable = true;
+                            //---------------------------------------------------------------------
                             _viewModelMain.ReadMapSelection(true);
                         }
                     }
@@ -365,6 +372,13 @@ namespace HLU.UI.ViewModel
                         _viewModelMain.ClearFilter(false);
 
                         // Synch with the GIS selection.
+                        //---------------------------------------------------------------------
+                        // FIX: 027 Force refill of Incid table after split/merge
+                        // Force the Incid table to be refilled because it has been
+                        // updated directly in the database rather than via the
+                        // local copy.
+                        _viewModelMain.RefillIncidTable = true;
+                        //---------------------------------------------------------------------
                         _viewModelMain.ReadMapSelection(true);
                     }
                     catch

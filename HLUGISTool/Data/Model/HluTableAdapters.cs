@@ -479,6 +479,7 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 typeof(HluDataSet.lut_ihs_habitat_ihs_managementDataTable), 
                 typeof(HluDataSet.lut_ihs_habitat_ihs_matrixDataTable), typeof(HluDataSet.lut_ihs_habitat_ihs_nvcDataTable), 
                 typeof(HluDataSet.lut_ihs_managementDataTable), typeof(HluDataSet.lut_ihs_matrixDataTable), 
+                typeof(HluDataSet.lut_importanceDataTable),
                 typeof(HluDataSet.lut_last_incidDataTable), typeof(HluDataSet.lut_operationDataTable), 
                 typeof(HluDataSet.lut_processDataTable), typeof(HluDataSet.lut_reasonDataTable), 
                 typeof(HluDataSet.lut_site_idDataTable), typeof(HluDataSet.lut_sourcesDataTable), 

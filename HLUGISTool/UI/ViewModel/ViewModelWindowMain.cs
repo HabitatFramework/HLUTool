@@ -225,6 +225,7 @@ namespace HLU.UI.ViewModel
         private List<string[]> _source3Errors;
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
+        private bool _refillIncidTable = false;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -817,6 +818,12 @@ namespace HLU.UI.ViewModel
             get { return _source3Errors; }
             set { _source3Errors = value; }
         }
+
+        internal bool RefillIncidTable
+        {
+            get { return _refillIncidTable; }
+            set { _refillIncidTable = true; }
+    }
 
         #endregion
 
@@ -3554,12 +3561,19 @@ namespace HLU.UI.ViewModel
             string seekIncid = (string)_incidSelection.DefaultView[seekRowNumber][0];
             HluDataSet.incidRow returnRow = _hluDS.incid.FindByincid(seekIncid);
 
-            if (returnRow != null)
+            //---------------------------------------------------------------------
+            // FIX: 027 Force refill of Incid table after split/merge
+            // Enable the Incid table to be forced to refill if it has been
+            // updated directly in the database rather than via the
+            // local copy.
+            if ((returnRow != null) && (!_refillIncidTable))
+            //---------------------------------------------------------------------
             {
                 return returnRow;
             }
             else
             {
+                _refillIncidTable = false;
                 int seekIncidNumber = RecordIds.IncidNumber(seekIncid);
                 int incidNumberPageMin;
                 int incidNumberPageMax;
@@ -4671,7 +4685,14 @@ namespace HLU.UI.ViewModel
 
                     _incidIhsHabitat = value;
                     _incidLastModifiedUser = UserID;
-                    _incidLastModifiedDate = DateTime.Now;
+                    //---------------------------------------------------------------------
+                    // FIX: 028 Only update DateTime fields to whole seconds
+                    // Fractions of a second can cause rounding differences when
+                    // comparing DateTime fields later in some databases.
+                    DateTime currDtTm = DateTime.Now;
+                    DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                    //---------------------------------------------------------------------
+                    _incidLastModifiedDate = nowDtTm;
                     OnPropertyChanged("IncidLastModifiedUser");
                     OnPropertyChanged("IncidLastModifiedDate");
 

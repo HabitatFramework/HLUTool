@@ -870,7 +870,13 @@ namespace HLU.Data.Connection
             int colType;
             if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
             {
-                string s = valueType == typeof(DateTime) ? ((DateTime)value).ToOADate().ToString() : value.ToString();
+                //---------------------------------------------------------------------
+                // FIX: 029 Update DateTime fields as strings not numbers
+                // Fractions of a second can cause rounding differences when
+                // comparing DateTime fields later in some databases so use
+                // DateTime strings not numbers containing fractions.
+                string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Replace("T", " ") : value.ToString();
+                //---------------------------------------------------------------------
                 switch ((OleDbType)colType)
                 {
                     case OleDbType.BSTR:
@@ -1204,8 +1210,8 @@ namespace HLU.Data.Connection
                     _quotePrefix = "[";
                     _quoteSuffix = "]";
                     _stringLiteralDelimiter = "\"";
-                    _dateLiteralPrefix = String.Empty; // "#";
-                    _dateLiteralSuffix = String.Empty; // "#";
+                    _dateLiteralPrefix = "#";
+                    _dateLiteralSuffix = "#";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
                     break;
@@ -1213,8 +1219,8 @@ namespace HLU.Data.Connection
                     _quotePrefix = "[";
                     _quoteSuffix = "]";
                     _stringLiteralDelimiter = "'";
-                    _dateLiteralPrefix = String.Empty; // "#";
-                    _dateLiteralSuffix = String.Empty; // "#";
+                    _dateLiteralPrefix = "'";
+                    _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
                     break;
@@ -1222,8 +1228,8 @@ namespace HLU.Data.Connection
                     _quotePrefix = "\"";
                     _quoteSuffix = "\"";
                     _stringLiteralDelimiter = "'";
-                    _dateLiteralPrefix = String.Empty; // "'";
-                    _dateLiteralSuffix = String.Empty; // "'";
+                    _dateLiteralPrefix = "'";
+                    _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
                     break;

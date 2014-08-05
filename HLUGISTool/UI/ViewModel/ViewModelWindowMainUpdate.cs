@@ -65,7 +65,14 @@ namespace HLU.UI.ViewModel
                 //{
                 IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
 
-                _viewModelMain.IncidCurrentRow.last_modified_date = DateTime.Now;
+                //---------------------------------------------------------------------
+                // FIX: 028 Only update DateTime fields to whole seconds
+                // Fractions of a second can cause rounding differences when
+                // comparing DateTime fields later in some databases.
+                DateTime currDtTm = DateTime.Now;
+                DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                //---------------------------------------------------------------------
+                _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
                 _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
 
@@ -298,10 +305,17 @@ namespace HLU.UI.ViewModel
 
         internal void UpdateIncidModifiedColumns(string incid)
         {
+            //---------------------------------------------------------------------
+            // FIX: 028 Only update DateTime fields to whole seconds
+            // Fractions of a second can cause rounding differences when
+            // comparing DateTime fields later in some databases.
+            DateTime currDtTm = DateTime.Now;
+            DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+            //---------------------------------------------------------------------
             if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
                 _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_dateColumn.ColumnName),
-                _viewModelMain.DataBase.QuoteValue(DateTime.Now),
+                _viewModelMain.DataBase.QuoteValue(nowDtTm),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_user_idColumn.ColumnName),
                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
