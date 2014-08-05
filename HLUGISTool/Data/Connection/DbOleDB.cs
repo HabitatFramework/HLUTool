@@ -871,7 +871,7 @@ namespace HLU.Data.Connection
             if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
             {
                 //---------------------------------------------------------------------
-                // FIX: 029 Update DateTime fields as strings not numbers
+                // FIX: 029 Update DateTime fields as strings to avoid fractions.
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases so use
                 // DateTime strings not numbers containing fractions.
