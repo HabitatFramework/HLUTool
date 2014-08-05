@@ -857,7 +857,12 @@ namespace HLU.Data.Connection
             int colType;
             if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
             {
-                string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Split('T')[0] : value.ToString();
+                //---------------------------------------------------------------------
+                // FIX: 030 Include time in DateTime fields with ODBC connections
+                // Ensure that updates to databases using ODBC connection type
+                // include the time when updating DateTime fields.
+                string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Replace("T", " ") : value.ToString();
+                //---------------------------------------------------------------------
                 switch ((OdbcType)colType)
                 {
                     case OdbcType.Char:
@@ -1145,8 +1150,8 @@ namespace HLU.Data.Connection
                     _quotePrefix = "[";
                     _quoteSuffix = "]";
                     _stringLiteralDelimiter = "'";
-                    _dateLiteralPrefix = "#";
-                    _dateLiteralSuffix = "#";
+                    _dateLiteralPrefix = "'";
+                    _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
                     break;

@@ -598,7 +598,11 @@ namespace HLU.GISApplication.MapInfo
 
                 // re-select split polygons (all rows in orignal selection)
                 List<SqlFilterCondition> reSelectionWhereClause;
-                var q = selectionWhereClause.Where(c => c.Column.ColumnName == _hluLayerStructure.toidColumn.ColumnName);
+                //---------------------------------------------------------------------
+                // FIX: 029 Ignore case when comparing column names
+                // Ignore case when comparing column names so that GIS layer
+                // names may be mixed/upper case.
+                var q = selectionWhereClause.Where(c => c.Column.ColumnName.ToLower() == _hluLayerStructure.toidColumn.ColumnName.ToLower());
                 if (q.Count() == 1)
                 {
                     selTable = CreateHistoryTable(_hluLayer, false, historyColumns);
@@ -964,7 +968,11 @@ namespace HLU.GISApplication.MapInfo
                 rollbackChanges = true;
 
                 // merge selected features into the target feature
+                //---------------------------------------------------------------------
+                // FIX: 026 Hide progress bars during MapInfo processing
+                _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Objects Combine Into Target Data {0}", toidFragIdClause));
+                _mapInfoApp.Do("Set ProgressBars On");
 
                 rollbackChanges = false;
 
@@ -1374,7 +1382,12 @@ namespace HLU.GISApplication.MapInfo
 
         private bool CommitChanges()
         {
+            //---------------------------------------------------------------------
+            // FIX: 026 Hide progress bars during MapInfo processing
+            _mapInfoApp.Do("Set ProgressBars Off");
             _mapInfoApp.Do(String.Format("Commit Table {0}", _hluLayer));
+            _mapInfoApp.Do("Set ProgressBars On");
+            //---------------------------------------------------------------------
 
             // if _hluLayer still flagged as edited save must have failed
             if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
