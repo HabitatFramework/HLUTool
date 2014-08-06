@@ -773,6 +773,7 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                         <RowDefinition />
+                                        <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="80*" />
@@ -780,65 +781,65 @@
                                         <ColumnDefinition Width="20" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label x:Name="LabelIhsCategory"
+                                    <Label x:Name="LabelHabitatClass"
                                            Grid.Row="0"
                                            Grid.Column="0"
                                            Margin="0,0,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
-                                           Content="Category" />
-                                    <Grid x:Name="GridIhsCategories"
-                                          Grid.Row="0"
-                                          Grid.Column="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox x:Name="ComboBoxIhsCategory"
-                                                  Grid.Row="0"
-                                                  Grid.Column="0"
-                                                  Margin="8,0,8,4"
-                                                  VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  IsEditable="False"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsCategoryCodes,
-                                                                        Mode=TwoWay,
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectedValue="{Binding IhsCategory}"
-                                                  SelectedValuePath="code"
-                                                  ToolTipService.ShowOnDisabled="True" />
-                                        <Label x:Name="LabelNvcCategory"
-                                               Grid.Row="0"
-                                               Grid.Column="1"
-                                               Margin="0,0,0,4"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Content="NVC" />
-                                        <ComboBox x:Name="ComboBoxNvcCategory"
-                                                  Grid.Row="0"
-                                                  Grid.Column="2"
-                                                  Margin="8,0,8,4"
-                                                  VerticalAlignment="Center"
-                                                  IsEditable="False"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding NvcCategoryCodes,
-                                                                        Mode=TwoWay,
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectedValue="{Binding NvcCategory}"
-                                                  ToolTipService.ShowOnDisabled="True" />
-                                    </Grid>
+                                           Content="Habitat Class" />
+                                    <ComboBox x:Name="ComboBoxHabitatClass"
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Margin="8,0,8,4"
+                                                VerticalAlignment="Center"
+                                                DisplayMemberPath="description"
+                                                IsEditable="False"
+                                                IsReadOnly="False"
+                                                ItemsSource="{Binding HabitatClassCodes,
+                                                                      UpdateSourceTrigger=PropertyChanged}"
+                                                SelectedValue="{Binding HabitatClass}"
+                                                SelectedValuePath="code"
+                                                ToolTipService.ShowOnDisabled="True" />
+
+                                    <Label x:Name="LabelHabitatType"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Margin="0,0,0,4"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Content="Habitat Type" />
+                                    <ComboBox x:Name="ComboBoxHabitatType"
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Margin="8,0,8,4"
+                                                VerticalAlignment="Center"
+                                                DisplayMemberPath="description"
+                                                IsEditable="True"
+                                                IsReadOnly="False"
+                                                IsEnabled="{Binding HabitatTypeEnabled,
+                                                                    Mode=OneWay}"
+                                                ItemsSource="{Binding HabitatTypeCodes,
+                                                                      ConverterParameter=code^description^sort_order,
+                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                      UpdateSourceTrigger=PropertyChanged}"
+                                                KeyUp="EditableComboBox_KeyUp"
+                                                SelectedValue="{Binding HabitatType,
+                                                                        ConverterParameter=code^description^sort_order,
+                                                                        Converter={StaticResource codeDescriptionConverter},
+                                                                        ValidatesOnDataErrors=True}"
+                                                SelectedValuePath="code"
+                                                ToolTipService.ShowOnDisabled="True" />
 
                                     <Label x:Name="LabelIhsHabitat"
-                                           Grid.Row="1"
+                                           Grid.Row="2"
                                            Grid.Column="0"
                                            Margin="0,0,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
-                                           Content="Habitat" />
+                                           Content="IHS Habitat" />
                                     <ComboBox x:Name="ComboBoxIhsHabitat"
-                                              Grid.Row="1"
+                                              Grid.Row="2"
                                               Grid.Column="1"
                                               Margin="8,0,8,4"
                                               VerticalAlignment="Center"
@@ -858,7 +859,7 @@
                                               SelectedValuePath="code"
                                               ToolTipService.ShowOnDisabled="True" />
                                     <CheckBox x:Name="CheckBoxCopyIhsHabitat"
-                                              Grid.Row="1"
+                                              Grid.Row="2"
                                               Grid.Column="2"
                                               Margin="0,0,0,4"
                                               HorizontalAlignment="Right"
@@ -868,20 +869,20 @@
                                                                   UpdateSourceTrigger=PropertyChanged}" />
 
                                     <Label x:Name="LabelNvcCodes"
-                                           Grid.Row="2"
+                                           Grid.Row="3"
                                            Grid.Column="0"
                                            Margin="0,0,0,0"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
-                                           Content="NVC Codes" />
+                                           Content="NVC Codes" Visibility="Collapsed" />
                                     <TextBox x:Name="TextBoxNvcCodes"
-                                             Grid.Row="2"
+                                             Grid.Row="3"
                                              Grid.Column="1"
                                              Margin="8,0,8,4"
                                              VerticalAlignment="Center"
                                              IsEnabled="False"
                                              Text="{Binding NvcCodes,
-                                                            Mode=OneWay}" />
+                                                            Mode=OneWay}" Visibility="Collapsed" />
                                 </Grid>
                             </GroupBox>
 

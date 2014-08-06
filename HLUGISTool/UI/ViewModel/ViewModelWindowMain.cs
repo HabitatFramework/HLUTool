@@ -135,7 +135,6 @@ namespace HLU.UI.ViewModel
         private HluDataSet.historyRow[] _incidHistoryRows;
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
-        private HluDataSet.lut_ihs_categoryRow[] _ihsCategoryCodes;
         private HluDataSet.lut_ihs_matrixRow[] _lutIhsMatrixCodes;
         private HluDataSet.lut_ihs_formationRow[] _lutIhsFormationCodes;
         private HluDataSet.lut_ihs_managementRow[] _lutIhsManagementCodes;
@@ -149,14 +148,15 @@ namespace HLU.UI.ViewModel
         private ObservableCollection<BapEnvironment> _incidBapRowsUser;
         private IEnumerable<HluDataSet.lut_ihs_habitatRow> _ihsHabitatCodes;
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
+        private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
+        private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
 
-        private string[] _nvcCategoryCodes;
         private double _incidArea;
         private double _incidLength;
         private string _process;
         private string _reason;
-        private string _nvcCategory;
-        private string _ihsCategory;
+        private string _habitatClass;
+        private string _habitatType;
         private bool _reasonProcessEnabled = true;
         private bool _tabControlDataEnabled = true;
         private bool _tabItemIhsEnabled = true;
@@ -3286,21 +3286,15 @@ namespace HLU.UI.ViewModel
                 _ihsHabitatCodes = null;
                 if (String.IsNullOrEmpty(_incidIhsHabitat))
                 {
-                    IhsCategory = null;
-                    NvcCategory = null;
+                    HabitatType = null;
                 }
                 else
                 {
-                    string cat = FindIhsCategory(_incidIhsHabitat);
-                    if (!String.IsNullOrEmpty(cat))
+                    string habType = FindHabitatType(_incidIhsHabitat);
+                    if (!String.IsNullOrEmpty(habType))
                     {
-                        IhsCategory = cat;
-                        OnPropertyChanged("IhsCategory");
-                    }
-                    else
-                    {
-                        NvcCategory = FindNvcCategory(_incidIhsHabitat);
-                        OnPropertyChanged("NvcCategory");
+                        HabitatType = habType;
+                        OnPropertyChanged("HabitatType");
                     }
                 }
 
@@ -4066,9 +4060,9 @@ namespace HLU.UI.ViewModel
 
         private void RefreshIhsTab()
         {
-            OnPropertyChanged("IhsCategoryCodes");
-            OnPropertyChanged("NvcCategoryCodes");
-            OnPropertyChanged("IhsCategory");
+            OnPropertyChanged("HabitatClassCodes");
+            OnPropertyChanged("HabitatTypeCodes");
+            OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             OnPropertyChanged("NvcCodes");
             RefreshIhsMulitplexValues();
@@ -4489,59 +4483,92 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        #region IHS Category
+        #region Habitat Class
 
-        public HluDataSet.lut_ihs_categoryRow[] IhsCategoryCodes
+        public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
         {
             get
             {
-                if (_ihsCategoryCodes == null)
+                if (_habitatClassCodes == null)
                 {
-                    if (HluDataset.lut_ihs_category.IsInitialized && (HluDataset.lut_ihs_category.Rows.Count == 0))
+                    if (HluDataset.lut_habitat_class.IsInitialized && (HluDataset.lut_habitat_class.Rows.Count == 0))
                     {
-                        if (_hluTableAdapterMgr.lut_ihs_categoryTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_categoryTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_categoryDataTable, HluDataSet.lut_ihs_categoryRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_categoryDataTable) }, false);
+                        if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
+                            _hluTableAdapterMgr.lut_habitat_classTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
                     }
-                    //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
-                    _ihsCategoryCodes = HluDataset.lut_ihs_category.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                    //---------------------------------------------------------------------
+                    _habitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    _habitatClassCodes = (from c in HluDataset.lut_habitat_class
+                                         join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
+                                         join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
+                                         select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
                 }
-                return _ihsCategoryCodes;
+                return _habitatClassCodes;
             }
-            set { }
         }
 
-        public string IhsCategory
+        public string HabitatClass
         {
-            get { return _ihsCategory; }
+            get {return _habitatClass; }
             set
             {
-                _ihsCategory = value;
+                _habitatClass = value;
 
-                if (!String.IsNullOrEmpty(_ihsCategory))
+                if (!String.IsNullOrEmpty(_habitatClass))
                 {
-                    _nvcCategory = null;
-                    switch (_gisLayerType)
+                    _habitatType = null;
+                }
+                else
+                {
+                    _habitatTypeCodes = null;
+                }
+
+                OnPropertyChanged("HabitatTypeCodes");
+                //if ((_habitatTypeCodes != null) && (_habitatTypeCodes.Count() == 1))
+                //    OnPropertyChanged("HabitatType");
+            }
+        }
+
+        public HluDataSet.lut_habitat_typeRow[] HabitatTypeCodes
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(HabitatClass))
+                {
+                    if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
                     {
-                        case GeometryTypes.Point:
-                            _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
-                                                    where h.is_local && h.point && h.category == IhsCategory
-                                                    select h;
-                            break;
-                        case GeometryTypes.Line:
-                            _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
-                                                    where h.is_local && h.line && h.category == IhsCategory
-                                                    select h;
-                            break;
-                        case GeometryTypes.Polygon:
-                            _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
-                                                    where h.is_local && h.polygon && h.category == IhsCategory
-                                                    select h;
-                            break;
+                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
+                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
+
+                    _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
+                                         join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
+                                         where t.habitat_class_code == HabitatClass
+                                         select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+
+                    return _habitatTypeCodes;
+                }
+                return null;
+            }
+        }
+
+        public string HabitatType
+        {
+            get { return _habitatType; }
+            set
+            {
+                _habitatType = value;
+
+                if (!String.IsNullOrEmpty(_habitatType))
+                {
+                    _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
+                                       join t in HluDataset.lut_habitat_type_ihs_habitat on h.code equals t.code_habitat
+                                       where h.is_local && t.code_habitat_type == HabitatType
+                                       select h;
                 }
                 else
                 {
@@ -4552,56 +4579,6 @@ namespace HLU.UI.ViewModel
                 if ((_ihsHabitatCodes != null) && (_ihsHabitatCodes.Count() == 1))
                     OnPropertyChanged("IncidIhsHabitat");
                 OnPropertyChanged("IhsHabitatListEnabled");
-                OnPropertyChanged("NvcCategory");
-                OnPropertyChanged("NvcCodes");
-            }
-        }
-
-        public string[] NvcCategoryCodes
-        {
-            get
-            {
-                if (_nvcCategoryCodes == null)
-                {
-                    if (HluDataset.lut_ihs_habitat_ihs_nvc.IsInitialized &&
-                        HluDataset.lut_ihs_habitat_ihs_nvc.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_habitat_ihs_nvcTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_habitat_ihs_nvcTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_habitat_ihs_nvcDataTable,
-                                    HluDataSet.lut_ihs_habitat_ihs_nvcRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_ihs_habitat_ihs_nvcDataTable) }, false);
-                    }
-                    _nvcCategoryCodes =
-                        HluDataset.lut_ihs_habitat_ihs_nvc.Select(r => r.code_nvc).Distinct().OrderBy(s => s).ToArray();
-                }
-                return _nvcCategoryCodes;
-            }
-            set { }
-        }
-
-        public string NvcCategory
-        {
-            get { return _nvcCategory; }
-            set
-            {
-                _nvcCategory = value;
-                if (!String.IsNullOrEmpty(_nvcCategory))
-                {
-                    _ihsCategory = null;
-                    _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
-                                            join n in HluDataset.lut_ihs_habitat_ihs_nvc on h.code equals n.code_habitat
-                                            where n.code_nvc == NvcCategory
-                                            select h;
-                }
-                else
-                {
-                    _ihsHabitatCodes = null;
-                }
-                OnPropertyChanged("IhsHabitatCodes");
-                OnPropertyChanged("IhsHabitatListEnabled");
-                OnPropertyChanged("IhsCategory");
                 OnPropertyChanged("NvcCodes");
             }
         }
@@ -4640,7 +4617,7 @@ namespace HLU.UI.ViewModel
                     if (_hluTableAdapterMgr.lut_ihs_habitatTableAdapter == null)
                         _hluTableAdapterMgr.lut_ihs_habitatTableAdapter =
                             new HluTableAdapter<HluDataSet.lut_ihs_habitatDataTable, HluDataSet.lut_ihs_habitatRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_categoryDataTable) }, false);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_habitatDataTable) }, false);
                 }
 
                 if (_ihsHabitatCodes != null)
@@ -4679,8 +4656,8 @@ namespace HLU.UI.ViewModel
                     if (_pasting && (_ihsHabitatCodes.Count(r => r.code == value) == 0))
                     {
                         _pasting = false;
-                        var q = HluDataset.lut_ihs_habitat.Where(r => r.code == value);
-                        if (q.Count() > 0) IhsCategory = q.First().category;
+                        var q = HluDataset.lut_habitat_type_ihs_habitat.Where(r => r.code_habitat == value);
+                        if (q.Count() > 0) HabitatType = q.First().code_habitat_type;
                     }
 
                     _incidIhsHabitat = value;
@@ -4722,58 +4699,18 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private string FindIhsCategory(string ihsHabitatCode)
+        private string FindHabitatType(string ihsHabitatCode)
         {
             if (!String.IsNullOrEmpty(ihsHabitatCode))
             {
-                if (_ihsHabitatCodes != null)
-                {
-                    IEnumerable<HluDataSet.lut_ihs_habitatRow> hCat = _ihsHabitatCodes.Where(h => h.code == ihsHabitatCode);
-                    if (hCat.Count() > 0) return hCat.First().category;
-                }
-                else if ((HluDataset != null) && (HluDataset.lut_ihs_habitat != null))
+                if ((_habitatTypeCodes != null) && ((HluDataset != null) && (HluDataset.lut_habitat_type_ihs_habitat != null)))
                 {
                     IEnumerable<string> q = null;
+                    q = from c in _habitatTypeCodes
+                        join t in HluDataset.lut_habitat_type_ihs_habitat on c.code equals t.code_habitat_type
+                        where t.code_habitat == ihsHabitatCode
+                        select c.code;
 
-                    switch (_gisLayerType)
-                    {
-                        case GeometryTypes.Point:
-                            q = from h in HluDataset.lut_ihs_habitat
-                                where h.is_local && h.point && h.code == ihsHabitatCode
-                                select h.category;
-                                break;
-                        case GeometryTypes.Line:
-                            q = from h in HluDataset.lut_ihs_habitat
-                                where h.is_local && h.line && h.code == ihsHabitatCode
-                                select h.category;
-                            break;
-                        case GeometryTypes.Polygon:
-                            q = from h in HluDataset.lut_ihs_habitat
-                                where h.is_local && h.polygon && h.code == ihsHabitatCode
-                                select h.category;
-                            break;
-                    }
-                    if ((q != null) && (q.Count() > 0)) return q.First();
-                }
-            }
-            return null;
-        }
-
-        private string FindNvcCategory(string ihsHabitatCode)
-        {
-            if (!String.IsNullOrEmpty(ihsHabitatCode))
-            {
-                if (_ihsHabitatCodes != null)
-                {
-                    IEnumerable<HluDataSet.lut_ihs_habitatRow> hCat = _ihsHabitatCodes.Where(h => h.code == ihsHabitatCode);
-                    if (hCat.Count() > 0) return hCat.First().category;
-                }
-                else if ((HluDataset != null) && (HluDataset.lut_ihs_habitat != null))
-                {
-                    IEnumerable<string> q = from h in HluDataset.lut_ihs_habitat
-                                            join n in HluDataset.lut_ihs_habitat_ihs_nvc on h.code equals n.code_habitat
-                                            where h.code == ihsHabitatCode
-                                            select n.code_nvc;
                     if ((q != null) && (q.Count() > 0)) return q.First();
                 }
             }
@@ -6299,7 +6236,7 @@ namespace HLU.UI.ViewModel
                 {
                     if (HluDataset.lut_habitat_type.IsInitialized && (HluDataset.lut_habitat_type.Rows.Count == 0))
                     {
-                        if (_hluTableAdapterMgr.lut_ihs_categoryTableAdapter == null)
+                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
                             _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
                                 new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);

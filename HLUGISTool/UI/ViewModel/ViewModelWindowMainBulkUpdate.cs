@@ -52,7 +52,7 @@ namespace HLU.UI.ViewModel
             _viewModelMain.BulkUpdateMode = true;
             _viewModelMain.TabItemHistoryEnabled = false;
 
-            _viewModelMain.IhsCategory = null;
+            _viewModelMain.HabitatType = null;
             _viewModelMain.IncidIhsHabitat = null;
 
             _viewModelMain.IncidCurrentRow = _viewModelMain.HluDataset.incid.NewincidRow();
