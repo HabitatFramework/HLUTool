@@ -58,8 +58,6 @@ namespace HLU.Data.Model {
         
         private lut_habitat_typeDataTable tablelut_habitat_type;
         
-        private lut_ihs_categoryDataTable tablelut_ihs_category;
-        
         private lut_ihs_complexDataTable tablelut_ihs_complex;
         
         private lut_ihs_formationDataTable tablelut_ihs_formation;
@@ -95,6 +93,8 @@ namespace HLU.Data.Model {
         private lut_sourcesDataTable tablelut_sources;
         
         private lut_userDataTable tablelut_user;
+        
+        private lut_habitat_type_ihs_habitatDataTable tablelut_habitat_type_ihs_habitat;
         
         private global::System.Data.DataRelation relationFK_lut_boundary_map_incid;
         
@@ -142,8 +142,6 @@ namespace HLU.Data.Model {
         
         private global::System.Data.DataRelation relationfk_ihs_matrix_lut_ihs_matrix;
         
-        private global::System.Data.DataRelation relationfk_incid_mm_polygons_lut_ihs_category;
-        
         private global::System.Data.DataRelation relationfk_incid_sources_incid;
         
         private global::System.Data.DataRelation relationfk_incid_sources_lut_habitat_class;
@@ -185,6 +183,10 @@ namespace HLU.Data.Model {
         private global::System.Data.DataRelation relationfk_lut_ihs_matrix_lut_habitat_type;
         
         private global::System.Data.DataRelation relationFK_incid_incid_mm_polygons;
+        
+        private global::System.Data.DataRelation relationfk_xref_habitat_type_lut_habitat_type;
+        
+        private global::System.Data.DataRelation relationfk_xref_habitat_type_lut_ihs_habitat;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
@@ -265,9 +267,6 @@ namespace HLU.Data.Model {
                 if ((ds.Tables["lut_habitat_type"] != null)) {
                     base.Tables.Add(new lut_habitat_typeDataTable(ds.Tables["lut_habitat_type"]));
                 }
-                if ((ds.Tables["lut_ihs_category"] != null)) {
-                    base.Tables.Add(new lut_ihs_categoryDataTable(ds.Tables["lut_ihs_category"]));
-                }
                 if ((ds.Tables["lut_ihs_complex"] != null)) {
                     base.Tables.Add(new lut_ihs_complexDataTable(ds.Tables["lut_ihs_complex"]));
                 }
@@ -321,6 +320,9 @@ namespace HLU.Data.Model {
                 }
                 if ((ds.Tables["lut_user"] != null)) {
                     base.Tables.Add(new lut_userDataTable(ds.Tables["lut_user"]));
+                }
+                if ((ds.Tables["lut_habitat_type_ihs_habitat"] != null)) {
+                    base.Tables.Add(new lut_habitat_type_ihs_habitatDataTable(ds.Tables["lut_habitat_type_ihs_habitat"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -514,16 +516,6 @@ namespace HLU.Data.Model {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public lut_ihs_categoryDataTable lut_ihs_category {
-            get {
-                return this.tablelut_ihs_category;
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Browsable(false)]
-        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
         public lut_ihs_complexDataTable lut_ihs_complex {
             get {
                 return this.tablelut_ihs_complex;
@@ -702,6 +694,16 @@ namespace HLU.Data.Model {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public lut_habitat_type_ihs_habitatDataTable lut_habitat_type_ihs_habitat {
+            get {
+                return this.tablelut_habitat_type_ihs_habitat;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
         public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
@@ -818,9 +820,6 @@ namespace HLU.Data.Model {
                 if ((ds.Tables["lut_habitat_type"] != null)) {
                     base.Tables.Add(new lut_habitat_typeDataTable(ds.Tables["lut_habitat_type"]));
                 }
-                if ((ds.Tables["lut_ihs_category"] != null)) {
-                    base.Tables.Add(new lut_ihs_categoryDataTable(ds.Tables["lut_ihs_category"]));
-                }
                 if ((ds.Tables["lut_ihs_complex"] != null)) {
                     base.Tables.Add(new lut_ihs_complexDataTable(ds.Tables["lut_ihs_complex"]));
                 }
@@ -874,6 +873,9 @@ namespace HLU.Data.Model {
                 }
                 if ((ds.Tables["lut_user"] != null)) {
                     base.Tables.Add(new lut_userDataTable(ds.Tables["lut_user"]));
+                }
+                if ((ds.Tables["lut_habitat_type_ihs_habitat"] != null)) {
+                    base.Tables.Add(new lut_habitat_type_ihs_habitatDataTable(ds.Tables["lut_habitat_type_ihs_habitat"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -1010,12 +1012,6 @@ namespace HLU.Data.Model {
                     this.tablelut_habitat_type.InitVars();
                 }
             }
-            this.tablelut_ihs_category = ((lut_ihs_categoryDataTable)(base.Tables["lut_ihs_category"]));
-            if ((initTable == true)) {
-                if ((this.tablelut_ihs_category != null)) {
-                    this.tablelut_ihs_category.InitVars();
-                }
-            }
             this.tablelut_ihs_complex = ((lut_ihs_complexDataTable)(base.Tables["lut_ihs_complex"]));
             if ((initTable == true)) {
                 if ((this.tablelut_ihs_complex != null)) {
@@ -1124,6 +1120,12 @@ namespace HLU.Data.Model {
                     this.tablelut_user.InitVars();
                 }
             }
+            this.tablelut_habitat_type_ihs_habitat = ((lut_habitat_type_ihs_habitatDataTable)(base.Tables["lut_habitat_type_ihs_habitat"]));
+            if ((initTable == true)) {
+                if ((this.tablelut_habitat_type_ihs_habitat != null)) {
+                    this.tablelut_habitat_type_ihs_habitat.InitVars();
+                }
+            }
             this.relationFK_lut_boundary_map_incid = this.Relations["FK_lut_boundary_map_incid"];
             this.relationfk_exports_fields_exports = this.Relations["fk_exports_fields_exports"];
             this.relationfk_habitat_history_incid = this.Relations["fk_habitat_history_incid"];
@@ -1147,7 +1149,6 @@ namespace HLU.Data.Model {
             this.relationfk_ihs_management_lut_ihs_management = this.Relations["fk_ihs_management_lut_ihs_management"];
             this.relationfk_ihs_matrix_incid = this.Relations["fk_ihs_matrix_incid"];
             this.relationfk_ihs_matrix_lut_ihs_matrix = this.Relations["fk_ihs_matrix_lut_ihs_matrix"];
-            this.relationfk_incid_mm_polygons_lut_ihs_category = this.Relations["fk_incid_mm_polygons_lut_ihs_category"];
             this.relationfk_incid_sources_incid = this.Relations["fk_incid_sources_incid"];
             this.relationfk_incid_sources_lut_habitat_class = this.Relations["fk_incid_sources_lut_habitat_class"];
             this.relationfk_incid_sources_lut_habitat_type = this.Relations["fk_incid_sources_lut_habitat_type"];
@@ -1169,6 +1170,8 @@ namespace HLU.Data.Model {
             this.relationfk_lut_ihs_management_lut_habitat_type = this.Relations["fk_lut_ihs_management_lut_habitat_type"];
             this.relationfk_lut_ihs_matrix_lut_habitat_type = this.Relations["fk_lut_ihs_matrix_lut_habitat_type"];
             this.relationFK_incid_incid_mm_polygons = this.Relations["FK_incid_incid_mm_polygons"];
+            this.relationfk_xref_habitat_type_lut_habitat_type = this.Relations["fk_xref_habitat_type_lut_habitat_type"];
+            this.relationfk_xref_habitat_type_lut_ihs_habitat = this.Relations["fk_xref_habitat_type_lut_ihs_habitat"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1213,8 +1216,6 @@ namespace HLU.Data.Model {
             base.Tables.Add(this.tablelut_habitat_class);
             this.tablelut_habitat_type = new lut_habitat_typeDataTable();
             base.Tables.Add(this.tablelut_habitat_type);
-            this.tablelut_ihs_category = new lut_ihs_categoryDataTable();
-            base.Tables.Add(this.tablelut_ihs_category);
             this.tablelut_ihs_complex = new lut_ihs_complexDataTable();
             base.Tables.Add(this.tablelut_ihs_complex);
             this.tablelut_ihs_formation = new lut_ihs_formationDataTable();
@@ -1251,6 +1252,8 @@ namespace HLU.Data.Model {
             base.Tables.Add(this.tablelut_sources);
             this.tablelut_user = new lut_userDataTable();
             base.Tables.Add(this.tablelut_user);
+            this.tablelut_habitat_type_ihs_habitat = new lut_habitat_type_ihs_habitatDataTable();
+            base.Tables.Add(this.tablelut_habitat_type_ihs_habitat);
             global::System.Data.ForeignKeyConstraint fkc;
             fkc = new global::System.Data.ForeignKeyConstraint("FK_lut_boundary_map_incid", new global::System.Data.DataColumn[] {
                         this.tablelut_boundary_map.codeColumn}, new global::System.Data.DataColumn[] {
@@ -1351,10 +1354,6 @@ namespace HLU.Data.Model {
                         this.tablelut_ihs_matrix.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_ihs_matrix.matrixColumn}, false);
             this.Relations.Add(this.relationfk_ihs_matrix_lut_ihs_matrix);
-            this.relationfk_incid_mm_polygons_lut_ihs_category = new global::System.Data.DataRelation("fk_incid_mm_polygons_lut_ihs_category", new global::System.Data.DataColumn[] {
-                        this.tablelut_ihs_category.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tableincid_mm_polygons.ihs_categoryColumn}, false);
-            this.Relations.Add(this.relationfk_incid_mm_polygons_lut_ihs_category);
             this.relationfk_incid_sources_incid = new global::System.Data.DataRelation("fk_incid_sources_incid", new global::System.Data.DataColumn[] {
                         this.tableincid.incidColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_sources.incidColumn}, false);
@@ -1439,6 +1438,14 @@ namespace HLU.Data.Model {
                         this.tableincid.incidColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_mm_polygons.incidColumn}, false);
             this.Relations.Add(this.relationFK_incid_incid_mm_polygons);
+            this.relationfk_xref_habitat_type_lut_habitat_type = new global::System.Data.DataRelation("fk_xref_habitat_type_lut_habitat_type", new global::System.Data.DataColumn[] {
+                        this.tablelut_habitat_type.codeColumn}, new global::System.Data.DataColumn[] {
+                        this.tablelut_habitat_type_ihs_habitat.code_habitat_typeColumn}, false);
+            this.Relations.Add(this.relationfk_xref_habitat_type_lut_habitat_type);
+            this.relationfk_xref_habitat_type_lut_ihs_habitat = new global::System.Data.DataRelation("fk_xref_habitat_type_lut_ihs_habitat", new global::System.Data.DataColumn[] {
+                        this.tablelut_ihs_habitat.codeColumn}, new global::System.Data.DataColumn[] {
+                        this.tablelut_habitat_type_ihs_habitat.code_habitatColumn}, false);
+            this.Relations.Add(this.relationfk_xref_habitat_type_lut_ihs_habitat);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1540,12 +1547,6 @@ namespace HLU.Data.Model {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private bool ShouldSerializelut_habitat_type() {
-            return false;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private bool ShouldSerializelut_ihs_category() {
             return false;
         }
         
@@ -1659,6 +1660,12 @@ namespace HLU.Data.Model {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private bool ShouldSerializelut_habitat_type_ihs_habitat() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void SchemaChanged(object sender, global::System.ComponentModel.CollectionChangeEventArgs e) {
             if ((e.Action == global::System.ComponentModel.CollectionChangeAction.Remove)) {
                 this.InitVars();
@@ -1764,9 +1771,6 @@ namespace HLU.Data.Model {
         public delegate void lut_habitat_typeRowChangeEventHandler(object sender, lut_habitat_typeRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public delegate void lut_ihs_categoryRowChangeEventHandler(object sender, lut_ihs_categoryRowChangeEvent e);
-        
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public delegate void lut_ihs_complexRowChangeEventHandler(object sender, lut_ihs_complexRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -1819,6 +1823,9 @@ namespace HLU.Data.Model {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public delegate void lut_userRowChangeEventHandler(object sender, lut_userRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public delegate void lut_habitat_type_ihs_habitatRowChangeEventHandler(object sender, lut_habitat_type_ihs_habitatRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -5389,21 +5396,18 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow Addincid_mm_polygonsRow(incidRow parentincidRowByFK_incid_incid_mm_polygons, string toid, string toid_fragment_id, lut_ihs_categoryRow parentlut_ihs_categoryRowByfk_incid_mm_polygons_lut_ihs_category, string ihs_summary, double shape_length, double shape_area) {
+            public incid_mm_polygonsRow Addincid_mm_polygonsRow(incidRow parentincidRowByFK_incid_incid_mm_polygons, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, double shape_length, double shape_area) {
                 incid_mm_polygonsRow rowincid_mm_polygonsRow = ((incid_mm_polygonsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         toid,
                         toid_fragment_id,
-                        null,
+                        ihs_category,
                         ihs_summary,
                         shape_length,
                         shape_area};
                 if ((parentincidRowByFK_incid_incid_mm_polygons != null)) {
                     columnValuesArray[0] = parentincidRowByFK_incid_incid_mm_polygons[0];
-                }
-                if ((parentlut_ihs_categoryRowByfk_incid_mm_polygons_lut_ihs_category != null)) {
-                    columnValuesArray[3] = parentlut_ihs_categoryRowByfk_incid_mm_polygons_lut_ihs_category[0];
                 }
                 rowincid_mm_polygonsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowincid_mm_polygonsRow);
@@ -7486,296 +7490,6 @@ namespace HLU.Data.Model {
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
                 attribute2.FixedValue = "lut_habitat_typeDataTable";
-                type.Attributes.Add(attribute2);
-                type.Particle = sequence;
-                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
-                if (xs.Contains(dsSchema.TargetNamespace)) {
-                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
-                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
-                    try {
-                        global::System.Xml.Schema.XmlSchema schema = null;
-                        dsSchema.Write(s1);
-                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
-                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
-                            s2.SetLength(0);
-                            schema.Write(s2);
-                            if ((s1.Length == s2.Length)) {
-                                s1.Position = 0;
-                                s2.Position = 0;
-                                for (; ((s1.Position != s1.Length) 
-                                            && (s1.ReadByte() == s2.ReadByte())); ) {
-                                    ;
-                                }
-                                if ((s1.Position == s1.Length)) {
-                                    return type;
-                                }
-                            }
-                        }
-                    }
-                    finally {
-                        if ((s1 != null)) {
-                            s1.Close();
-                        }
-                        if ((s2 != null)) {
-                            s2.Close();
-                        }
-                    }
-                }
-                xs.Add(dsSchema);
-                return type;
-            }
-        }
-        
-        /// <summary>
-        ///Represents the strongly named DataTable class.
-        ///</summary>
-        [global::System.Serializable()]
-        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class lut_ihs_categoryDataTable : global::System.Data.TypedTableBase<lut_ihs_categoryRow> {
-            
-            private global::System.Data.DataColumn columncode;
-            
-            private global::System.Data.DataColumn columndescription;
-            
-            private global::System.Data.DataColumn columnsort_order;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryDataTable() {
-                this.TableName = "lut_ihs_category";
-                this.BeginInit();
-                this.InitClass();
-                this.EndInit();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            internal lut_ihs_categoryDataTable(global::System.Data.DataTable table) {
-                this.TableName = table.TableName;
-                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
-                    this.CaseSensitive = table.CaseSensitive;
-                }
-                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
-                    this.Locale = table.Locale;
-                }
-                if ((table.Namespace != table.DataSet.Namespace)) {
-                    this.Namespace = table.Namespace;
-                }
-                this.Prefix = table.Prefix;
-                this.MinimumCapacity = table.MinimumCapacity;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected lut_ihs_categoryDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
-                    base(info, context) {
-                this.InitVars();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn codeColumn {
-                get {
-                    return this.columncode;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn descriptionColumn {
-                get {
-                    return this.columndescription;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn sort_orderColumn {
-                get {
-                    return this.columnsort_order;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            [global::System.ComponentModel.Browsable(false)]
-            public int Count {
-                get {
-                    return this.Rows.Count;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow this[int index] {
-                get {
-                    return ((lut_ihs_categoryRow)(this.Rows[index]));
-                }
-            }
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event lut_ihs_categoryRowChangeEventHandler lut_ihs_categoryRowChanging;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event lut_ihs_categoryRowChangeEventHandler lut_ihs_categoryRowChanged;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event lut_ihs_categoryRowChangeEventHandler lut_ihs_categoryRowDeleting;
-            
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event lut_ihs_categoryRowChangeEventHandler lut_ihs_categoryRowDeleted;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Addlut_ihs_categoryRow(lut_ihs_categoryRow row) {
-                this.Rows.Add(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow Addlut_ihs_categoryRow(string code, string description, int sort_order) {
-                lut_ihs_categoryRow rowlut_ihs_categoryRow = ((lut_ihs_categoryRow)(this.NewRow()));
-                object[] columnValuesArray = new object[] {
-                        code,
-                        description,
-                        sort_order};
-                rowlut_ihs_categoryRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowlut_ihs_categoryRow);
-                return rowlut_ihs_categoryRow;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow FindBycode(string code) {
-                return ((lut_ihs_categoryRow)(this.Rows.Find(new object[] {
-                            code})));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public override global::System.Data.DataTable Clone() {
-                lut_ihs_categoryDataTable cln = ((lut_ihs_categoryDataTable)(base.Clone()));
-                cln.InitVars();
-                return cln;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override global::System.Data.DataTable CreateInstance() {
-                return new lut_ihs_categoryDataTable();
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            internal void InitVars() {
-                this.columncode = base.Columns["code"];
-                this.columndescription = base.Columns["description"];
-                this.columnsort_order = base.Columns["sort_order"];
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            private void InitClass() {
-                this.columncode = new global::System.Data.DataColumn("code", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columncode);
-                this.columndescription = new global::System.Data.DataColumn("description", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columndescription);
-                this.columnsort_order = new global::System.Data.DataColumn("sort_order", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnsort_order);
-                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columncode}, true));
-                this.columncode.AllowDBNull = false;
-                this.columncode.Unique = true;
-                this.columncode.MaxLength = 2;
-                this.columndescription.AllowDBNull = false;
-                this.columndescription.MaxLength = 254;
-                this.columnsort_order.AllowDBNull = false;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow Newlut_ihs_categoryRow() {
-                return ((lut_ihs_categoryRow)(this.NewRow()));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new lut_ihs_categoryRow(builder);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override global::System.Type GetRowType() {
-                return typeof(lut_ihs_categoryRow);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanged(e);
-                if ((this.lut_ihs_categoryRowChanged != null)) {
-                    this.lut_ihs_categoryRowChanged(this, new lut_ihs_categoryRowChangeEvent(((lut_ihs_categoryRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowChanging(e);
-                if ((this.lut_ihs_categoryRowChanging != null)) {
-                    this.lut_ihs_categoryRowChanging(this, new lut_ihs_categoryRowChangeEvent(((lut_ihs_categoryRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleted(e);
-                if ((this.lut_ihs_categoryRowDeleted != null)) {
-                    this.lut_ihs_categoryRowDeleted(this, new lut_ihs_categoryRowChangeEvent(((lut_ihs_categoryRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
-                base.OnRowDeleting(e);
-                if ((this.lut_ihs_categoryRowDeleting != null)) {
-                    this.lut_ihs_categoryRowDeleting(this, new lut_ihs_categoryRowChangeEvent(((lut_ihs_categoryRow)(e.Row)), e.Action));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Removelut_ihs_categoryRow(lut_ihs_categoryRow row) {
-                this.Rows.Remove(row);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
-                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                HluDataSet ds = new HluDataSet();
-                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
-                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
-                any1.MinOccurs = new decimal(0);
-                any1.MaxOccurs = decimal.MaxValue;
-                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any1);
-                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
-                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
-                any2.MinOccurs = new decimal(1);
-                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
-                sequence.Items.Add(any2);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute1.Name = "namespace";
-                attribute1.FixedValue = ds.Namespace;
-                type.Attributes.Add(attribute1);
-                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
-                attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "lut_ihs_categoryDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -13368,6 +13082,288 @@ namespace HLU.Data.Model {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class lut_habitat_type_ihs_habitatDataTable : global::System.Data.TypedTableBase<lut_habitat_type_ihs_habitatRow> {
+            
+            private global::System.Data.DataColumn columncode_habitat_type;
+            
+            private global::System.Data.DataColumn columncode_habitat;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatDataTable() {
+                this.TableName = "lut_habitat_type_ihs_habitat";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal lut_habitat_type_ihs_habitatDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected lut_habitat_type_ihs_habitatDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn code_habitat_typeColumn {
+                get {
+                    return this.columncode_habitat_type;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn code_habitatColumn {
+                get {
+                    return this.columncode_habitat;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow this[int index] {
+                get {
+                    return ((lut_habitat_type_ihs_habitatRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_habitat_type_ihs_habitatRowChangeEventHandler lut_habitat_type_ihs_habitatRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_habitat_type_ihs_habitatRowChangeEventHandler lut_habitat_type_ihs_habitatRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_habitat_type_ihs_habitatRowChangeEventHandler lut_habitat_type_ihs_habitatRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_habitat_type_ihs_habitatRowChangeEventHandler lut_habitat_type_ihs_habitatRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Addlut_habitat_type_ihs_habitatRow(lut_habitat_type_ihs_habitatRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow Addlut_habitat_type_ihs_habitatRow(lut_habitat_typeRow parentlut_habitat_typeRowByfk_xref_habitat_type_lut_habitat_type, lut_ihs_habitatRow parentlut_ihs_habitatRowByfk_xref_habitat_type_lut_ihs_habitat) {
+                lut_habitat_type_ihs_habitatRow rowlut_habitat_type_ihs_habitatRow = ((lut_habitat_type_ihs_habitatRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        null,
+                        null};
+                if ((parentlut_habitat_typeRowByfk_xref_habitat_type_lut_habitat_type != null)) {
+                    columnValuesArray[0] = parentlut_habitat_typeRowByfk_xref_habitat_type_lut_habitat_type[1];
+                }
+                if ((parentlut_ihs_habitatRowByfk_xref_habitat_type_lut_ihs_habitat != null)) {
+                    columnValuesArray[1] = parentlut_ihs_habitatRowByfk_xref_habitat_type_lut_ihs_habitat[0];
+                }
+                rowlut_habitat_type_ihs_habitatRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowlut_habitat_type_ihs_habitatRow);
+                return rowlut_habitat_type_ihs_habitatRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow FindBycode_habitat_typecode_habitat(string code_habitat_type, string code_habitat) {
+                return ((lut_habitat_type_ihs_habitatRow)(this.Rows.Find(new object[] {
+                            code_habitat_type,
+                            code_habitat})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                lut_habitat_type_ihs_habitatDataTable cln = ((lut_habitat_type_ihs_habitatDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new lut_habitat_type_ihs_habitatDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal void InitVars() {
+                this.columncode_habitat_type = base.Columns["code_habitat_type"];
+                this.columncode_habitat = base.Columns["code_habitat"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            private void InitClass() {
+                this.columncode_habitat_type = new global::System.Data.DataColumn("code_habitat_type", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncode_habitat_type);
+                this.columncode_habitat = new global::System.Data.DataColumn("code_habitat", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncode_habitat);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columncode_habitat_type,
+                                this.columncode_habitat}, true));
+                this.columncode_habitat_type.AllowDBNull = false;
+                this.columncode_habitat_type.MaxLength = 11;
+                this.columncode_habitat.AllowDBNull = false;
+                this.columncode_habitat.MaxLength = 8;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow Newlut_habitat_type_ihs_habitatRow() {
+                return ((lut_habitat_type_ihs_habitatRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new lut_habitat_type_ihs_habitatRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(lut_habitat_type_ihs_habitatRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.lut_habitat_type_ihs_habitatRowChanged != null)) {
+                    this.lut_habitat_type_ihs_habitatRowChanged(this, new lut_habitat_type_ihs_habitatRowChangeEvent(((lut_habitat_type_ihs_habitatRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.lut_habitat_type_ihs_habitatRowChanging != null)) {
+                    this.lut_habitat_type_ihs_habitatRowChanging(this, new lut_habitat_type_ihs_habitatRowChangeEvent(((lut_habitat_type_ihs_habitatRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.lut_habitat_type_ihs_habitatRowDeleted != null)) {
+                    this.lut_habitat_type_ihs_habitatRowDeleted(this, new lut_habitat_type_ihs_habitatRowChangeEvent(((lut_habitat_type_ihs_habitatRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.lut_habitat_type_ihs_habitatRowDeleting != null)) {
+                    this.lut_habitat_type_ihs_habitatRowDeleting(this, new lut_habitat_type_ihs_habitatRowChangeEvent(((lut_habitat_type_ihs_habitatRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Removelut_habitat_type_ihs_habitatRow(lut_habitat_type_ihs_habitatRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                HluDataSet ds = new HluDataSet();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "lut_habitat_type_ihs_habitatDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class exportsRow : global::System.Data.DataRow {
@@ -14954,17 +14950,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow lut_ihs_categoryRow {
-                get {
-                    return ((lut_ihs_categoryRow)(this.GetParentRow(this.Table.ParentRelations["fk_incid_mm_polygons_lut_ihs_category"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["fk_incid_mm_polygons_lut_ihs_category"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow incidRow {
                 get {
                     return ((incidRow)(this.GetParentRow(this.Table.ParentRelations["FK_incid_incid_mm_polygons"])));
@@ -15794,63 +15779,15 @@ namespace HLU.Data.Model {
                     return ((lut_ihs_matrixRow[])(base.GetChildRows(this.Table.ChildRelations["fk_lut_ihs_matrix_lut_habitat_type"])));
                 }
             }
-        }
-        
-        /// <summary>
-        ///Represents strongly named DataRow class.
-        ///</summary>
-        public partial class lut_ihs_categoryRow : global::System.Data.DataRow {
-            
-            private lut_ihs_categoryDataTable tablelut_ihs_category;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            internal lut_ihs_categoryRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
-                this.tablelut_ihs_category = ((lut_ihs_categoryDataTable)(this.Table));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string code {
-                get {
-                    return ((string)(this[this.tablelut_ihs_category.codeColumn]));
-                }
-                set {
-                    this[this.tablelut_ihs_category.codeColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string description {
-                get {
-                    return ((string)(this[this.tablelut_ihs_category.descriptionColumn]));
-                }
-                set {
-                    this[this.tablelut_ihs_category.descriptionColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public int sort_order {
-                get {
-                    return ((int)(this[this.tablelut_ihs_category.sort_orderColumn]));
-                }
-                set {
-                    this[this.tablelut_ihs_category.sort_orderColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow[] Getincid_mm_polygonsRows() {
-                if ((this.Table.ChildRelations["fk_incid_mm_polygons_lut_ihs_category"] == null)) {
-                    return new incid_mm_polygonsRow[0];
+            public lut_habitat_type_ihs_habitatRow[] Getlut_habitat_type_ihs_habitatRows() {
+                if ((this.Table.ChildRelations["fk_xref_habitat_type_lut_habitat_type"] == null)) {
+                    return new lut_habitat_type_ihs_habitatRow[0];
                 }
                 else {
-                    return ((incid_mm_polygonsRow[])(base.GetChildRows(this.Table.ChildRelations["fk_incid_mm_polygons_lut_ihs_category"])));
+                    return ((lut_habitat_type_ihs_habitatRow[])(base.GetChildRows(this.Table.ChildRelations["fk_xref_habitat_type_lut_habitat_type"])));
                 }
             }
         }
@@ -16377,6 +16314,17 @@ namespace HLU.Data.Model {
                 }
                 else {
                     return ((lut_ihs_habitat_ihs_nvcRow[])(base.GetChildRows(this.Table.ChildRelations["fk_xref_nvc_lut_ihs_habitat"])));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow[] Getlut_habitat_type_ihs_habitatRows() {
+                if ((this.Table.ChildRelations["fk_xref_habitat_type_lut_ihs_habitat"] == null)) {
+                    return new lut_habitat_type_ihs_habitatRow[0];
+                }
+                else {
+                    return ((lut_habitat_type_ihs_habitatRow[])(base.GetChildRows(this.Table.ChildRelations["fk_xref_habitat_type_lut_ihs_habitat"])));
                 }
             }
         }
@@ -17565,6 +17513,65 @@ namespace HLU.Data.Model {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class lut_habitat_type_ihs_habitatRow : global::System.Data.DataRow {
+            
+            private lut_habitat_type_ihs_habitatDataTable tablelut_habitat_type_ihs_habitat;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal lut_habitat_type_ihs_habitatRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tablelut_habitat_type_ihs_habitat = ((lut_habitat_type_ihs_habitatDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string code_habitat_type {
+                get {
+                    return ((string)(this[this.tablelut_habitat_type_ihs_habitat.code_habitat_typeColumn]));
+                }
+                set {
+                    this[this.tablelut_habitat_type_ihs_habitat.code_habitat_typeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string code_habitat {
+                get {
+                    return ((string)(this[this.tablelut_habitat_type_ihs_habitat.code_habitatColumn]));
+                }
+                set {
+                    this[this.tablelut_habitat_type_ihs_habitat.code_habitatColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_typeRow lut_habitat_typeRow {
+                get {
+                    return ((lut_habitat_typeRow)(this.GetParentRow(this.Table.ParentRelations["fk_xref_habitat_type_lut_habitat_type"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["fk_xref_habitat_type_lut_habitat_type"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_ihs_habitatRow lut_ihs_habitatRow {
+                get {
+                    return ((lut_ihs_habitatRow)(this.GetParentRow(this.Table.ParentRelations["fk_xref_habitat_type_lut_ihs_habitat"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["fk_xref_habitat_type_lut_ihs_habitat"]);
+                }
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -18128,40 +18135,6 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_habitat_typeRow Row {
-                get {
-                    return this.eventRow;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataRowAction Action {
-                get {
-                    return this.eventAction;
-                }
-            }
-        }
-        
-        /// <summary>
-        ///Row event argument class
-        ///</summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public class lut_ihs_categoryRowChangeEvent : global::System.EventArgs {
-            
-            private lut_ihs_categoryRow eventRow;
-            
-            private global::System.Data.DataRowAction eventAction;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRowChangeEvent(lut_ihs_categoryRow row, global::System.Data.DataRowAction action) {
-                this.eventRow = row;
-                this.eventAction = action;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_ihs_categoryRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -18774,6 +18747,40 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_userRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public class lut_habitat_type_ihs_habitatRowChangeEvent : global::System.EventArgs {
+            
+            private lut_habitat_type_ihs_habitatRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRowChangeEvent(lut_habitat_type_ihs_habitatRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_habitat_type_ihs_habitatRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -25765,327 +25772,6 @@ SELECT habitat_class_code, code, name, description, is_local, sort_order FROM lu
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class lut_ihs_categoryTableAdapter : global::System.ComponentModel.Component {
-        
-        private global::System.Data.SqlClient.SqlDataAdapter _adapter;
-        
-        private global::System.Data.SqlClient.SqlConnection _connection;
-        
-        private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
-        
-        private bool _clearBeforeFill;
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public lut_ihs_categoryTableAdapter() {
-            this.ClearBeforeFill = true;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
-            get {
-                if ((this._adapter == null)) {
-                    this.InitAdapter();
-                }
-                return this._adapter;
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        internal global::System.Data.SqlClient.SqlConnection Connection {
-            get {
-                if ((this._connection == null)) {
-                    this.InitConnection();
-                }
-                return this._connection;
-            }
-            set {
-                this._connection = value;
-                if ((this.Adapter.InsertCommand != null)) {
-                    this.Adapter.InsertCommand.Connection = value;
-                }
-                if ((this.Adapter.DeleteCommand != null)) {
-                    this.Adapter.DeleteCommand.Connection = value;
-                }
-                if ((this.Adapter.UpdateCommand != null)) {
-                    this.Adapter.UpdateCommand.Connection = value;
-                }
-                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
-                    if ((this.CommandCollection[i] != null)) {
-                        ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
-                    }
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
-            get {
-                if ((this._commandCollection == null)) {
-                    this.InitCommandCollection();
-                }
-                return this._commandCollection;
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public bool ClearBeforeFill {
-            get {
-                return this._clearBeforeFill;
-            }
-            set {
-                this._clearBeforeFill = value;
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private void InitAdapter() {
-            this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
-            global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
-            tableMapping.SourceTable = "Table";
-            tableMapping.DataSetTable = "lut_ihs_category";
-            tableMapping.ColumnMappings.Add("code", "code");
-            tableMapping.ColumnMappings.Add("description", "description");
-            tableMapping.ColumnMappings.Add("sort_order", "sort_order");
-            this._adapter.TableMappings.Add(tableMapping);
-            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
-            this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = "DELETE FROM [dbo].[lut_ihs_category] WHERE (([code] = @Original_code) AND ([descr" +
-                "iption] = @Original_description) AND ([sort_order] = @Original_sort_order))";
-            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
-            this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[lut_ihs_category] ([code], [description], [sort_order]) VALUES" +
-                " (@code, @description, @sort_order);\r\nSELECT code, description, sort_order FROM " +
-                "lut_ihs_category WHERE (code = @code)";
-            this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
-            this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[lut_ihs_category] SET [code] = @code, [description] = @description, [sort_order] = @sort_order WHERE (([code] = @Original_code) AND ([description] = @Original_description) AND ([sort_order] = @Original_sort_order));
-SELECT code, description, sort_order FROM lut_ihs_category WHERE (code = @code)";
-            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private void InitConnection() {
-            this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HluConnectionString;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private void InitCommandCollection() {
-            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
-            this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
-            this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT code, description, sort_order FROM dbo.lut_ihs_category";
-            this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(HluDataSet.lut_ihs_categoryDataTable dataTable) {
-            this.Adapter.SelectCommand = this.CommandCollection[0];
-            if ((this.ClearBeforeFill == true)) {
-                dataTable.Clear();
-            }
-            int returnValue = this.Adapter.Fill(dataTable);
-            return returnValue;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual HluDataSet.lut_ihs_categoryDataTable GetData() {
-            this.Adapter.SelectCommand = this.CommandCollection[0];
-            HluDataSet.lut_ihs_categoryDataTable dataTable = new HluDataSet.lut_ihs_categoryDataTable();
-            this.Adapter.Fill(dataTable);
-            return dataTable;
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(HluDataSet.lut_ihs_categoryDataTable dataTable) {
-            return this.Adapter.Update(dataTable);
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(HluDataSet dataSet) {
-            return this.Adapter.Update(dataSet, "lut_ihs_category");
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow dataRow) {
-            return this.Adapter.Update(new global::System.Data.DataRow[] {
-                        dataRow});
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(global::System.Data.DataRow[] dataRows) {
-            return this.Adapter.Update(dataRows);
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_code, string Original_description, int Original_sort_order) {
-            if ((Original_code == null)) {
-                throw new global::System.ArgumentNullException("Original_code");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_code));
-            }
-            if ((Original_description == null)) {
-                throw new global::System.ArgumentNullException("Original_description");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_description));
-            }
-            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.DeleteCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.DeleteCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string code, string description, int sort_order) {
-            if ((code == null)) {
-                throw new global::System.ArgumentNullException("code");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(code));
-            }
-            if ((description == null)) {
-                throw new global::System.ArgumentNullException("description");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(description));
-            }
-            this.Adapter.InsertCommand.Parameters[2].Value = ((int)(sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
-            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.InsertCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.InsertCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string code, string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            if ((code == null)) {
-                throw new global::System.ArgumentNullException("code");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(code));
-            }
-            if ((description == null)) {
-                throw new global::System.ArgumentNullException("description");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(description));
-            }
-            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(sort_order));
-            if ((Original_code == null)) {
-                throw new global::System.ArgumentNullException("Original_code");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code));
-            }
-            if ((Original_description == null)) {
-                throw new global::System.ArgumentNullException("Original_description");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_description));
-            }
-            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.UpdateCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.UpdateCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            return this.Update(Original_code, description, sort_order, Original_code, Original_description, Original_sort_order);
-        }
-    }
-    
-    /// <summary>
-    ///Represents the connection and commands used to retrieve and save data.
-    ///</summary>
-    [global::System.ComponentModel.DesignerCategoryAttribute("code")]
-    [global::System.ComponentModel.ToolboxItem(true)]
-    [global::System.ComponentModel.DataObjectAttribute(true)]
-    [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
-        ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
-    [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
     public partial class lut_ihs_complexTableAdapter : global::System.ComponentModel.Component {
         
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
@@ -32255,6 +31941,318 @@ SELECT user_id, user_name, sort_order FROM lut_user WHERE (user_id = @user_id)";
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
         public virtual int Update(string user_name, int sort_order, string Original_user_id, string Original_user_name, int Original_sort_order) {
             return this.Update(Original_user_id, user_name, sort_order, Original_user_id, Original_user_name, Original_sort_order);
+        }
+    }
+    
+    /// <summary>
+    ///Represents the connection and commands used to retrieve and save data.
+    ///</summary>
+    [global::System.ComponentModel.DesignerCategoryAttribute("code")]
+    [global::System.ComponentModel.ToolboxItem(true)]
+    [global::System.ComponentModel.DataObjectAttribute(true)]
+    [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
+        ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+    public partial class lut_habitat_type_ihs_habitatTableAdapter : global::System.ComponentModel.Component {
+        
+        private global::System.Data.SqlClient.SqlDataAdapter _adapter;
+        
+        private global::System.Data.SqlClient.SqlConnection _connection;
+        
+        private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
+        
+        private bool _clearBeforeFill;
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public lut_habitat_type_ihs_habitatTableAdapter() {
+            this.ClearBeforeFill = true;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
+            get {
+                if ((this._adapter == null)) {
+                    this.InitAdapter();
+                }
+                return this._adapter;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection {
+            get {
+                if ((this._connection == null)) {
+                    this.InitConnection();
+                }
+                return this._connection;
+            }
+            set {
+                this._connection = value;
+                if ((this.Adapter.InsertCommand != null)) {
+                    this.Adapter.InsertCommand.Connection = value;
+                }
+                if ((this.Adapter.DeleteCommand != null)) {
+                    this.Adapter.DeleteCommand.Connection = value;
+                }
+                if ((this.Adapter.UpdateCommand != null)) {
+                    this.Adapter.UpdateCommand.Connection = value;
+                }
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
+                    if ((this.CommandCollection[i] != null)) {
+                        ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
+                    }
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
+            get {
+                if ((this._commandCollection == null)) {
+                    this.InitCommandCollection();
+                }
+                return this._commandCollection;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public bool ClearBeforeFill {
+            get {
+                return this._clearBeforeFill;
+            }
+            set {
+                this._clearBeforeFill = value;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitAdapter() {
+            this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
+            global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
+            tableMapping.SourceTable = "Table";
+            tableMapping.DataSetTable = "lut_habitat_type_ihs_habitat";
+            tableMapping.ColumnMappings.Add("code_habitat_type", "code_habitat_type");
+            tableMapping.ColumnMappings.Add("code_habitat", "code_habitat");
+            this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_habitat_type_ihs_habitat] WHERE (([code_habitat_type] = @Origina" +
+                "l_code_habitat_type) AND ([code_habitat] = @Original_code_habitat))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.InsertCommand.Connection = this.Connection;
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [lut_habitat_type_ihs_habitat] ([code_habitat_type], [code_habitat]) VALUES (@code_habitat_type, @code_habitat);
+SELECT code_habitat_type, code_habitat FROM lut_habitat_type_ihs_habitat WHERE (code_habitat = @code_habitat) AND (code_habitat_type = @code_habitat_type)";
+            this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_habitat_type_ihs_habitat] SET [code_habitat_type] = @code_habitat_type, [code_habitat] = @code_habitat WHERE (([code_habitat_type] = @Original_code_habitat_type) AND ([code_habitat] = @Original_code_habitat));
+SELECT code_habitat_type, code_habitat FROM lut_habitat_type_ihs_habitat WHERE (code_habitat = @code_habitat) AND (code_habitat_type = @code_habitat_type)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitConnection() {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HluConnectionString;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitCommandCollection() {
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
+            this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[0].Connection = this.Connection;
+            this._commandCollection[0].CommandText = "SELECT        code_habitat_type, code_habitat\r\nFROM            lut_habitat_type_i" +
+                "hs_habitat";
+            this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
+        public virtual int Fill(HluDataSet.lut_habitat_type_ihs_habitatDataTable dataTable) {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
+        public virtual HluDataSet.lut_habitat_type_ihs_habitatDataTable GetData() {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            HluDataSet.lut_habitat_type_ihs_habitatDataTable dataTable = new HluDataSet.lut_habitat_type_ihs_habitatDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet.lut_habitat_type_ihs_habitatDataTable dataTable) {
+            return this.Adapter.Update(dataTable);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet dataSet) {
+            return this.Adapter.Update(dataSet, "lut_habitat_type_ihs_habitat");
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow dataRow) {
+            return this.Adapter.Update(new global::System.Data.DataRow[] {
+                        dataRow});
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+            return this.Adapter.Update(dataRows);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(string Original_code_habitat_type, string Original_code_habitat) {
+            if ((Original_code_habitat_type == null)) {
+                throw new global::System.ArgumentNullException("Original_code_habitat_type");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_code_habitat_type));
+            }
+            if ((Original_code_habitat == null)) {
+                throw new global::System.ArgumentNullException("Original_code_habitat");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_code_habitat));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
+        public virtual int Insert(string code_habitat_type, string code_habitat) {
+            if ((code_habitat_type == null)) {
+                throw new global::System.ArgumentNullException("code_habitat_type");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(code_habitat_type));
+            }
+            if ((code_habitat == null)) {
+                throw new global::System.ArgumentNullException("code_habitat");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(code_habitat));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.InsertCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.InsertCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(string code_habitat_type, string code_habitat, string Original_code_habitat_type, string Original_code_habitat) {
+            if ((code_habitat_type == null)) {
+                throw new global::System.ArgumentNullException("code_habitat_type");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(code_habitat_type));
+            }
+            if ((code_habitat == null)) {
+                throw new global::System.ArgumentNullException("code_habitat");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(code_habitat));
+            }
+            if ((Original_code_habitat_type == null)) {
+                throw new global::System.ArgumentNullException("Original_code_habitat_type");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(Original_code_habitat_type));
+            }
+            if ((Original_code_habitat == null)) {
+                throw new global::System.ArgumentNullException("Original_code_habitat");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code_habitat));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(string Original_code_habitat_type, string Original_code_habitat) {
+            return this.Update(Original_code_habitat_type, Original_code_habitat, Original_code_habitat_type, Original_code_habitat);
         }
     }
 }
