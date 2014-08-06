@@ -21,6 +21,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -820,13 +821,13 @@
                                                 IsEnabled="{Binding HabitatTypeEnabled,
                                                                     Mode=OneWay}"
                                                 ItemsSource="{Binding HabitatTypeCodes,
-                                                                      ConverterParameter=code^description^sort_order,
-                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                      ConverterParameter=code^name^description^sort_order,
+                                                                      Converter={StaticResource codeNameDescriptionConverter},
                                                                       UpdateSourceTrigger=PropertyChanged}"
                                                 KeyUp="EditableComboBox_KeyUp"
                                                 SelectedValue="{Binding HabitatType,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
+                                                                        ConverterParameter=code^name^description^sort_order,
+                                                                        Converter={StaticResource codeNameDescriptionConverter},
                                                                         ValidatesOnDataErrors=True}"
                                                 SelectedValuePath="code"
                                                 ToolTipService.ShowOnDisabled="True" />
@@ -2017,13 +2018,13 @@
                                                                   Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Source1HabitatTypeCodes,
-                                                                    ConverterParameter=code^description^sort_order,
-                                                                    Converter={StaticResource codeDescriptionConverter},
+                                                                    ConverterParameter=code^name^description^sort_order,
+                                                                    Converter={StaticResource codeNameDescriptionConverter},
                                                                     UpdateSourceTrigger=PropertyChanged}"
                                               KeyUp="EditableComboBox_KeyUp"
                                               SelectedValue="{Binding IncidSource1HabitatType,
-                                                                      ConverterParameter=code^description^sort_order,
-                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                      ConverterParameter=code^name^description^sort_order,
+                                                                      Converter={StaticResource codeNameDescriptionConverter},
                                                                       ValidatesOnDataErrors=True}"
                                               SelectedValuePath="code"
                                               ToolTipService.ShowOnDisabled="True" />
@@ -2248,13 +2249,13 @@
                                                                   Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Source2HabitatTypeCodes,
-                                                                    ConverterParameter=code^description^sort_order,
-                                                                    Converter={StaticResource codeDescriptionConverter},
+                                                                    ConverterParameter=code^name^description^sort_order,
+                                                                    Converter={StaticResource codeNameDescriptionConverter},
                                                                     UpdateSourceTrigger=PropertyChanged}"
                                               KeyUp="EditableComboBox_KeyUp"
                                               SelectedValue="{Binding IncidSource2HabitatType,
-                                                                      ConverterParameter=code^description^sort_order,
-                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                      ConverterParameter=code^name^description^sort_order,
+                                                                      Converter={StaticResource codeNameDescriptionConverter},
                                                                       ValidatesOnDataErrors=True}"
                                               SelectedValuePath="code"
                                               ToolTipService.ShowOnDisabled="True" />
@@ -2479,13 +2480,13 @@
                                                                   Mode=OneWay}"
                                               IsReadOnly="False"
                                               ItemsSource="{Binding Source3HabitatTypeCodes,
-                                                                    ConverterParameter=code^description^sort_order,
-                                                                    Converter={StaticResource codeDescriptionConverter},
+                                                                    ConverterParameter=code^name^description^sort_order,
+                                                                    Converter={StaticResource codeNameDescriptionConverter},
                                                                     UpdateSourceTrigger=PropertyChanged}"
                                               KeyUp="EditableComboBox_KeyUp"
                                               SelectedValue="{Binding IncidSource3HabitatType,
-                                                                      ConverterParameter=code^description^sort_order,
-                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                      ConverterParameter=code^name^description^sort_order,
+                                                                      Converter={StaticResource codeNameDescriptionConverter},
                                                                       ValidatesOnDataErrors=True}"
                                               SelectedValuePath="code"
                                               ToolTipService.ShowOnDisabled="True" />
