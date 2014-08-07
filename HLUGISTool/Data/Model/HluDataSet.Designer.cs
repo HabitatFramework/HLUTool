@@ -6912,6 +6912,8 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columndescription;
             
+            private global::System.Data.DataColumn columnis_local;
+            
             private global::System.Data.DataColumn columnsort_order;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -6965,6 +6967,14 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn is_localColumn {
+                get {
+                    return this.columnis_local;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public global::System.Data.DataColumn sort_orderColumn {
                 get {
                     return this.columnsort_order;
@@ -7008,11 +7018,12 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_habitat_classRow Addlut_habitat_classRow(string code, string description, int sort_order) {
+            public lut_habitat_classRow Addlut_habitat_classRow(string code, string description, bool is_local, int sort_order) {
                 lut_habitat_classRow rowlut_habitat_classRow = ((lut_habitat_classRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         code,
                         description,
+                        is_local,
                         sort_order};
                 rowlut_habitat_classRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowlut_habitat_classRow);
@@ -7045,6 +7056,7 @@ namespace HLU.Data.Model {
             internal void InitVars() {
                 this.columncode = base.Columns["code"];
                 this.columndescription = base.Columns["description"];
+                this.columnis_local = base.Columns["is_local"];
                 this.columnsort_order = base.Columns["sort_order"];
             }
             
@@ -7055,6 +7067,8 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columncode);
                 this.columndescription = new global::System.Data.DataColumn("description", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columndescription);
+                this.columnis_local = new global::System.Data.DataColumn("is_local", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnis_local);
                 this.columnsort_order = new global::System.Data.DataColumn("sort_order", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnsort_order);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
@@ -7064,6 +7078,7 @@ namespace HLU.Data.Model {
                 this.columncode.MaxLength = 5;
                 this.columndescription.AllowDBNull = false;
                 this.columndescription.MaxLength = 254;
+                this.columnis_local.AllowDBNull = false;
                 this.columnsort_order.AllowDBNull = false;
             }
             
@@ -15569,6 +15584,17 @@ namespace HLU.Data.Model {
                 }
                 set {
                     this[this.tablelut_habitat_class.descriptionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool is_local {
+                get {
+                    return ((bool)(this[this.tablelut_habitat_class.is_localColumn]));
+                }
+                set {
+                    this[this.tablelut_habitat_class.is_localColumn] = value;
                 }
             }
             
@@ -25145,35 +25171,43 @@ SELECT code, description, sort_order FROM lut_boundary_map WHERE (code = @code)"
             tableMapping.ColumnMappings.Add("code", "code");
             tableMapping.ColumnMappings.Add("description", "description");
             tableMapping.ColumnMappings.Add("sort_order", "sort_order");
+            tableMapping.ColumnMappings.Add("is_local", "is_local");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = "DELETE FROM [dbo].[lut_habitat_class] WHERE (([code] = @Original_code) AND ([desc" +
-                "ription] = @Original_description) AND ([sort_order] = @Original_sort_order))";
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM lut_habitat_class\r\nWHERE        (code = @Original_code) AND (descript" +
+                "ion = @Original_description) AND (is_local = @Original_is_local) AND (sort_order" +
+                " = @Original_sort_order)";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 5, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 254, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 1, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[lut_habitat_class] ([code], [description], [sort_order]) VALUE" +
-                "S (@code, @description, @sort_order);\r\nSELECT code, description, sort_order FROM" +
-                " lut_habitat_class WHERE (code = @code)";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO lut_habitat_class\r\n                         (code, description, is_lo" +
+                "cal, sort_order)\r\nVALUES        (@code,@description,@is_local,@sort_order);  \r\nS" +
+                "ELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 5, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 254, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 1, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[lut_habitat_class] SET [code] = @code, [description] = @description, [sort_order] = @sort_order WHERE (([code] = @Original_code) AND ([description] = @Original_description) AND ([sort_order] = @Original_sort_order));
-SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE       lut_habitat_class
+SET                code = @code, description = @description, is_local = @is_local, sort_order = @sort_order
+WHERE        (code = @Original_code) AND (description = @Original_description) AND (is_local = @Original_is_local) AND (sort_order = @Original_sort_order);  
+SELECT code, description, is_local, sort_order FROM lut_habitat_class WHERE (code = @code)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 5, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 254, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 1, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 5, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 254, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 1, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -25189,7 +25223,8 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT code, description, sort_order FROM dbo.lut_habitat_class";
+            this._commandCollection[0].CommandText = "SELECT        code, description, is_local, sort_order\r\nFROM            lut_habita" +
+                "t_class";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -25250,7 +25285,7 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_code, string Original_description, int Original_sort_order) {
+        public virtual int Delete(string Original_code, string Original_description, global::System.Nullable<bool> Original_is_local, int Original_sort_order) {
             if ((Original_code == null)) {
                 throw new global::System.ArgumentNullException("Original_code");
             }
@@ -25263,7 +25298,13 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
             else {
                 this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_description));
             }
-            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_sort_order));
+            if ((Original_is_local.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((bool)(Original_is_local.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.DeleteCommand.Parameters[3].Value = ((int)(Original_sort_order));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -25284,7 +25325,7 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string code, string description, int sort_order) {
+        public virtual int Insert(string code, string description, global::System.Nullable<bool> is_local, int sort_order) {
             if ((code == null)) {
                 throw new global::System.ArgumentNullException("code");
             }
@@ -25297,7 +25338,13 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
             else {
                 this.Adapter.InsertCommand.Parameters[1].Value = ((string)(description));
             }
-            this.Adapter.InsertCommand.Parameters[2].Value = ((int)(sort_order));
+            if ((is_local.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[2].Value = ((bool)(is_local.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.InsertCommand.Parameters[3].Value = ((int)(sort_order));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -25318,7 +25365,7 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string code, string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
+        public virtual int Update(string code, string description, global::System.Nullable<bool> is_local, int sort_order, string Original_code, string Original_description, global::System.Nullable<bool> Original_is_local, int Original_sort_order) {
             if ((code == null)) {
                 throw new global::System.ArgumentNullException("code");
             }
@@ -25331,20 +25378,32 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
             else {
                 this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(description));
             }
-            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(sort_order));
+            if ((is_local.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((bool)(is_local.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[3].Value = ((int)(sort_order));
             if ((Original_code == null)) {
                 throw new global::System.ArgumentNullException("Original_code");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code));
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_code));
             }
             if ((Original_description == null)) {
                 throw new global::System.ArgumentNullException("Original_description");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_description));
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_description));
             }
-            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_sort_order));
+            if ((Original_is_local.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((bool)(Original_is_local.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[6].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(Original_sort_order));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -25365,8 +25424,8 @@ SELECT code, description, sort_order FROM lut_habitat_class WHERE (code = @code)
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            return this.Update(Original_code, description, sort_order, Original_code, Original_description, Original_sort_order);
+        public virtual int Update(string description, global::System.Nullable<bool> is_local, int sort_order, string Original_code, string Original_description, global::System.Nullable<bool> Original_is_local, int Original_sort_order) {
+            return this.Update(Original_code, description, is_local, sort_order, Original_code, Original_description, Original_is_local, Original_sort_order);
         }
     }
     
