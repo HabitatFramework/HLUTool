@@ -57,7 +57,8 @@ namespace HLU.UI.ViewModel
         private string _mapPath = Settings.Default.MapPath;
         private int _preferredGis = Settings.Default.PreferredGis;
         private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
-        private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -175,7 +176,8 @@ namespace HLU.UI.ViewModel
             Settings.Default.HistoryColumnOrdinals.AddRange(_historyColumns.Where(c => c.IsSelected)
                 .Select(c => _incidMMPolygonsTable.Columns[UnescapeAccessKey(c.Item)].Ordinal.ToString()).ToArray());
 
-            Settings.Default.SubsetUpdateAction = _subsetUpdateAction;
+            Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
+            Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
 
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
@@ -387,7 +389,7 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The preferred subset update action.
         /// </value>
-        public SubsetUpdateActions SubsetUpdateAction
+        public SubsetUpdateActions? SubsetUpdateAction
         {
             get { return (SubsetUpdateActions)_subsetUpdateAction; }
             set
@@ -396,6 +398,28 @@ namespace HLU.UI.ViewModel
             }
         }
         //---------------------------------------------------------------------
+
+        public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
+        {
+            get { return ViewModelWindowMain.HabitatClasses; }
+            set { }
+        }
+
+        public string PreferredHabitatClass
+        {
+            get
+            {
+                var q = HabitatClassCodes.Where(h => h.code == _preferredHabitatClass);
+                if (q.Count() > 0)
+                    return _preferredHabitatClass;
+                else
+                    return null;
+            }
+            set
+            {
+                _preferredHabitatClass = value;
+            }
+        }
 
         #endregion
 
@@ -490,6 +514,10 @@ namespace HLU.UI.ViewModel
                     string msg;
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
+                if (SubsetUpdateAction == null)
+                    error.Append("Please select the action to take when updating an incid subset.");
+                if (PreferredHabitatClass == null)
+                    error.Append("Please select your preferred habitat class.");
                 //---------------------------------------------------------------------
                 // FIX: 006 Allow the user to not display any of the history columns
                 // Remove the validation enforcing the user to display at least one
@@ -563,6 +591,14 @@ namespace HLU.UI.ViewModel
                     case "HistoryColumns":
                         if (_historyColumns.Count(h => h.IsSelected) == 0)
                             error = "Please select columns to be recorded in history trail.";
+                        break;
+                    case "SubsetUpdateAction":
+                        if (SubsetUpdateAction == null)
+                            error = "Please select the action to take when updating an incid subset.";
+                        break;
+                    case "PreferredHabitatClass":
+                        if (PreferredHabitatClass == null)
+                            error = "Please select your preferred habitat class.";
                         break;
                     case "SeasonSpring":
                         if (String.IsNullOrEmpty(SeasonSpring))
