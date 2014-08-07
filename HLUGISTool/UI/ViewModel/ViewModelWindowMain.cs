@@ -150,6 +150,7 @@ namespace HLU.UI.ViewModel
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
+        public static HluDataSet.lut_habitat_classRow[] HabitatClasses;
 
         private double _incidArea;
         private double _incidLength;
@@ -3282,12 +3283,8 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    string habType = FindHabitatType(_incidIhsHabitat);
-                    if (!String.IsNullOrEmpty(habType))
-                    {
-                        HabitatType = habType;
-                        OnPropertyChanged("HabitatType");
-                    }
+                    HabitatType = FindHabitatType(_incidIhsHabitat);
+                    OnPropertyChanged("HabitatType");
                 }
 
                 // Count the number of toids and fragments for the current incid
@@ -4495,7 +4492,10 @@ namespace HLU.UI.ViewModel
                     _habitatClassCodes = (from c in HluDataset.lut_habitat_class
                                          join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
                                          join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
+                                         where c.is_local
                                          select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+
+                    HabitatClasses = _habitatClassCodes;
                 }
                 return _habitatClassCodes;
             }
@@ -4503,7 +4503,12 @@ namespace HLU.UI.ViewModel
 
         public string HabitatClass
         {
-            get {return _habitatClass; }
+            get
+            {
+                if (_habitatClass == null)
+                    _habitatClass = Settings.Default.PreferredHabitatClass;
+                return _habitatClass;
+            }
             set
             {
                 _habitatClass = value;
@@ -4511,15 +4516,18 @@ namespace HLU.UI.ViewModel
                 if (!String.IsNullOrEmpty(_habitatClass))
                 {
                     _habitatType = null;
+                    OnPropertyChanged("HabitatTypeCodes");
+                    HabitatType = FindHabitatType(_incidIhsHabitat);
+                    OnPropertyChanged("HabitatType");
                 }
                 else
                 {
                     _habitatTypeCodes = null;
+                    OnPropertyChanged("HabitatTypeCodes");
                 }
 
-                OnPropertyChanged("HabitatTypeCodes");
-                //if ((_habitatTypeCodes != null) && (_habitatTypeCodes.Count() == 1))
-                //    OnPropertyChanged("HabitatType");
+                if ((_habitatTypeCodes != null) && (_habitatTypeCodes.Count() == 1))
+                    OnPropertyChanged("HabitatType");
             }
         }
 
@@ -4539,7 +4547,7 @@ namespace HLU.UI.ViewModel
 
                     _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
                                          join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
-                                         where t.habitat_class_code == HabitatClass
+                                         where t.is_local && t.habitat_class_code == HabitatClass
                                          select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
                     return _habitatTypeCodes;
@@ -4648,8 +4656,11 @@ namespace HLU.UI.ViewModel
                     if (_pasting && (_ihsHabitatCodes.Count(r => r.code == value) == 0))
                     {
                         _pasting = false;
-                        var q = HluDataset.lut_habitat_type_ihs_habitat.Where(r => r.code_habitat == value);
-                        if (q.Count() > 0) HabitatType = q.First().code_habitat_type;
+                        HabitatType = FindHabitatType(value);
+                        OnPropertyChanged("HabitatType");
+                        //var q = HluDataset.lut_habitat_type_ihs_habitat.Where(r => r.code_habitat == value
+                        //    && _habitatClassCodes.Count(h => h.code == r.code_habitat) == 1);
+                        //if (q.Count() > 0) HabitatType = q.First().code_habitat_type;
                     }
 
                     _incidIhsHabitat = value;
@@ -4695,6 +4706,11 @@ namespace HLU.UI.ViewModel
         {
             if (!String.IsNullOrEmpty(ihsHabitatCode))
             {
+                if (_habitatTypeCodes == null)
+                {
+                    // Force retrieval of habitat type codes if not already loaded.
+                    var dummy = HabitatTypeCodes;
+                }
                 if ((_habitatTypeCodes != null) && ((HluDataset != null) && (HluDataset.lut_habitat_type_ihs_habitat != null)))
                 {
                     IEnumerable<string> q = null;
@@ -7290,7 +7306,8 @@ namespace HLU.UI.ViewModel
                     }
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
-                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
                 return _sourceHabitatClassCodes;
@@ -7339,7 +7356,7 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource1HabitatClass)
+                        .Where(r => r.habitat_class_code == IncidSource1HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
@@ -7631,7 +7648,7 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource2HabitatClass)
+                        .Where(r => r.habitat_class_code == IncidSource2HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
@@ -7924,7 +7941,7 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource3HabitatClass)
+                        .Where(r => r.habitat_class_code == IncidSource3HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
