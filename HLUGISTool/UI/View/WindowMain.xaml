@@ -816,7 +816,7 @@
                                                 Margin="8,0,8,4"
                                                 VerticalAlignment="Center"
                                                 DisplayMemberPath="description"
-                                                IsEditable="False"
+                                                IsEditable="True"
                                                 IsReadOnly="False"
                                                 IsEnabled="{Binding HabitatTypeEnabled,
                                                                     Mode=OneWay}"
