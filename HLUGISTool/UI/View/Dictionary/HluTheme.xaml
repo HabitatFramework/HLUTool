@@ -3341,7 +3341,7 @@
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                           IsHitTestVisible="False" />
                         <TextBox x:Name="PART_EditableTextBox"
-                                 Margin="3,3,23,3"
+                                 Margin="1,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
                                  Background="{DynamicResource LightBrush}"
@@ -3568,7 +3568,7 @@
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                           IsHitTestVisible="False" />
                         <TextBox x:Name="PART_EditableTextBox"
-                                 Margin="3,3,23,3"
+                                 Margin="1,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
                                  Background="{DynamicResource LightBrush}"
