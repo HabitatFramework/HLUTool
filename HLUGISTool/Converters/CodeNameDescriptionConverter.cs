@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2013 Andy Foy
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -25,6 +25,12 @@ using HLU.Properties;
 
 namespace HLU.Converters
 {
+    //---------------------------------------------------------------------
+    // CHANGED: CR8 (Habitat types)
+    // A new converter class that generates the display value for
+    // habitat type fields by combining the code, name and
+    // description fields depending on their values.
+    //
     class CodeNameDescriptionConverter : IValueConverter
     {
         string _codeDeleteRow = Settings.Default.CodeDeleteRow;
@@ -304,4 +310,5 @@ namespace HLU.Converters
 
         #endregion
     }
+    //---------------------------------------------------------------------
 }

@@ -3276,6 +3276,11 @@ namespace HLU.UI.ViewModel
                 IncidCurrentRowDerivedValuesRetrieve();
                 GetIncidChildRows(IncidCurrentRow);
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR29 (Habitat classification and conversion to IHS)
+                // Clear the list of IHS codes then find the Habitat Type
+                // for the current incid IHS habitat (which will then reload
+                // the list of IHS codes).
                 _ihsHabitatCodes = null;
                 if (String.IsNullOrEmpty(_incidIhsHabitat))
                 {
@@ -3283,9 +3288,13 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
+                    // Find the first possible habitat type from the current
+                    // habitat class that cross-references to the selected
+                    // ihs habitat code.
                     HabitatType = FindHabitatType(_incidIhsHabitat);
                     OnPropertyChanged("HabitatType");
                 }
+                //---------------------------------------------------------------------
 
                 // Count the number of toids and fragments for the current incid
                 // selected in the GIS and in the database.
@@ -4474,6 +4483,18 @@ namespace HLU.UI.ViewModel
 
         #region Habitat Class
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR29 (Habitat classification and conversion to IHS)
+        // Replace the IHS Category and NVC Category fields with
+        // Habitat Class and Habitat Type fields.
+        //
+        /// <summary>
+        /// Gets the list of all local habitat class codes that have at
+        /// least one habitat type cross referenced to an IHS habitat.
+        /// </summary>
+        /// <value>
+        /// A list of habitat class codes.
+        /// </value>
         public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
         {
             get
@@ -4489,11 +4510,15 @@ namespace HLU.UI.ViewModel
                     }
                     _habitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat classes that are flagged as local.
                     _habitatClassCodes = (from c in HluDataset.lut_habitat_class
                                          join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
                                          join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
                                          where c.is_local
                                          select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+                    //---------------------------------------------------------------------
 
                     HabitatClasses = _habitatClassCodes;
                 }
@@ -4501,6 +4526,13 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the habitat class which will then load the list
+        /// of habitat types related to that class.
+        /// </summary>
+        /// <value>
+        /// The habitat class.
+        /// </value>
         public string HabitatClass
         {
             get
@@ -4515,8 +4547,15 @@ namespace HLU.UI.ViewModel
 
                 if (!String.IsNullOrEmpty(_habitatClass))
                 {
+                    // Clear the habitat type and then reload the list of
+                    // possible habitat types that relate to the selected
+                    // habitat class.
                     _habitatType = null;
                     OnPropertyChanged("HabitatTypeCodes");
+
+                    // Find the first possible habitat type from the current
+                    // habitat class that cross-references to the selected
+                    // ihs habitat code.
                     HabitatType = FindHabitatType(_incidIhsHabitat);
                     OnPropertyChanged("HabitatType");
                 }
@@ -4531,6 +4570,14 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets the list of all local habitat type codes related to
+        /// the selected habitat class that have at least one
+        /// cross reference to an IHS habitat.
+        /// </summary>
+        /// <value>
+        /// A list of habitat type codes.
+        /// </value>
         public HluDataSet.lut_habitat_typeRow[] HabitatTypeCodes
         {
             get
@@ -4556,6 +4603,13 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the habitat type which will then load the list
+        /// of ihs habitats related to that type.
+        /// </summary>
+        /// <value>
+        /// The habitat type.
+        /// </value>
         public string HabitatType
         {
             get { return _habitatType; }
@@ -4565,10 +4619,14 @@ namespace HLU.UI.ViewModel
 
                 if (!String.IsNullOrEmpty(_habitatType))
                 {
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat types that are flagged as local.
                     _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
                                        join t in HluDataset.lut_habitat_type_ihs_habitat on h.code equals t.code_habitat
                                        where h.is_local && t.code_habitat_type == HabitatType
                                        select h;
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
@@ -4582,7 +4640,16 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("NvcCodes");
             }
         }
+        //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Gets the string of NVC codes that are related to the selected
+        /// ihs habitat. It is used as an aid to the user to help double-
+        /// check they have selected the correct ihs habitat.
+        /// </summary>
+        /// <value>
+        /// The string of NVC codes related to the current ihs habitat.
+        /// </value>
         public string NvcCodes
         {
             get
@@ -4656,11 +4723,17 @@ namespace HLU.UI.ViewModel
                     if (_pasting && (_ihsHabitatCodes.Count(r => r.code == value) == 0))
                     {
                         _pasting = false;
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR29 (Habitat classification and conversion to IHS)
+                        // Find the first possible habitat type from the current
+                        // habitat class that cross-references to the selected
+                        // ihs habitat code.
                         HabitatType = FindHabitatType(value);
                         OnPropertyChanged("HabitatType");
                         //var q = HluDataset.lut_habitat_type_ihs_habitat.Where(r => r.code_habitat == value
                         //    && _habitatClassCodes.Count(h => h.code == r.code_habitat) == 1);
                         //if (q.Count() > 0) HabitatType = q.First().code_habitat_type;
+                        //---------------------------------------------------------------------
                     }
 
                     _incidIhsHabitat = value;
@@ -4702,6 +4775,19 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR29 (Habitat classification and conversion to IHS)
+        //
+        /// <summary>
+        /// Finds the first possible habitat type from the currently
+        /// selected habitat class and also cross-references to the
+        /// selected ihs habitat code.
+        /// </summary>
+        /// <param name="ihsHabitatCode">The selected ihs habitat code.</param>
+        /// <returns>
+        /// The first habitat type in the current habitat class that
+        /// cross-references to the selected ihs habitat code.
+        /// </returns>
         private string FindHabitatType(string ihsHabitatCode)
         {
             if (!String.IsNullOrEmpty(ihsHabitatCode))
@@ -4724,6 +4810,7 @@ namespace HLU.UI.ViewModel
             }
             return null;
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -7306,6 +7393,8 @@ namespace HLU.UI.ViewModel
                     }
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat classes that are flagged as local.
                     _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
@@ -7355,6 +7444,8 @@ namespace HLU.UI.ViewModel
 
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource1HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
@@ -7647,6 +7738,8 @@ namespace HLU.UI.ViewModel
 
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource2HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
@@ -7940,6 +8033,8 @@ namespace HLU.UI.ViewModel
 
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
                         .Where(r => r.habitat_class_code == IncidSource3HabitatClass && r.is_local)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
