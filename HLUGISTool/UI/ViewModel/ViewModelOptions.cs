@@ -399,12 +399,30 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR29 (Habitat classification and conversion to IHS)
+        // Add an option for the user to select their preferred
+        // habitat class which will be automatically selected when
+        // the tool first starts.
+        //
+        /// <summary>
+        /// Gets or sets the list of possible habitat class codes.
+        /// </summary>
+        /// <value>
+        /// The list of possible habitat class codes.
+        /// </value>
         public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
         {
             get { return ViewModelWindowMain.HabitatClasses; }
             set { }
         }
 
+        /// <summary>
+        /// Gets or sets the preferred habitat class.
+        /// </summary>
+        /// <value>
+        /// The preferred habitat class.
+        /// </value>
         public string PreferredHabitatClass
         {
             get
@@ -420,6 +438,7 @@ namespace HLU.UI.ViewModel
                 _preferredHabitatClass = value;
             }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -514,10 +533,19 @@ namespace HLU.UI.ViewModel
                     string msg;
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Validate the users preferred action when updating a
+                // subset of features for an incid.
                 if (SubsetUpdateAction == null)
                     error.Append("Please select the action to take when updating an incid subset.");
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // CHANGED: CR29 (Habitat classification and conversion to IHS)
+                // Validate the users preferred habitat class.
                 if (PreferredHabitatClass == null)
                     error.Append("Please select your preferred habitat class.");
+                //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
                 // FIX: 006 Allow the user to not display any of the history columns
                 // Remove the validation enforcing the user to display at least one
@@ -592,14 +620,23 @@ namespace HLU.UI.ViewModel
                         if (_historyColumns.Count(h => h.IsSelected) == 0)
                             error = "Please select columns to be recorded in history trail.";
                         break;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Validate the users preferred action when updating a
+                    // subset of features for an incid.
                     case "SubsetUpdateAction":
                         if (SubsetUpdateAction == null)
                             error = "Please select the action to take when updating an incid subset.";
                         break;
+                    //---------------------------------------------------------------------
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR29 (Habitat classification and conversion to IHS)
+                    // Validate the users preferred habitat class.
                     case "PreferredHabitatClass":
                         if (PreferredHabitatClass == null)
                             error = "Please select your preferred habitat class.";
                         break;
+                    //---------------------------------------------------------------------
                     case "SeasonSpring":
                         if (String.IsNullOrEmpty(SeasonSpring))
                             error = "Please enter a season name for spring.";
