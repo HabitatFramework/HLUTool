@@ -152,10 +152,6 @@ namespace HLU
             if (_toolMutex != null)
                 _toolMutex.ReleaseMutex();
 
-            // Release the HLU Database Updater mutex if it exists.
-            if (_updaterMutex != null)
-                _updaterMutex.ReleaseMutex();
-
             base.OnExit(e);
             //---------------------------------------------------------------------
         }
@@ -207,9 +203,9 @@ namespace HLU
                 return false;
             }
 
-            // Keep the mutex referene alive until the normal
-            // termination of the program.
-            GC.KeepAlive(_updaterMutex);
+            // Release the HLU Database Updater mutex.
+            if (_updaterMutex != null)
+                _updaterMutex.ReleaseMutex();
 
             return true;
         }
