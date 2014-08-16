@@ -257,6 +257,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\View\WindowNotifyOnSplitMerge.xaml">
+    <Page Include="UI\View\WindowSelectQuery.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -392,6 +393,8 @@
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
     <Compile Include="UI\View\WindowNotifyOnSplitMerge.xaml.cs">
       <DependentUpon>WindowNotifyOnSplitMerge.xaml</DependentUpon>
+    <Compile Include="UI\View\WindowSelectQuery.xaml.cs">
+      <DependentUpon>WindowSelectQuery.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View\WindowWarnOnSubsetUpdate.xaml.cs">
       <DependentUpon>WindowWarnOnSubsetUpdate.xaml</DependentUpon>
