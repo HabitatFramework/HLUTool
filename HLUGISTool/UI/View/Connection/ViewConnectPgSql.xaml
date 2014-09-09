@@ -1,62 +1,156 @@
 ﻿<Window x:Class="HLU.UI.View.Connection.ViewConnectPgSql"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
-    Title="{Binding Path=WindowTitle}" 
-        Height="512" Width="392" WindowStartupLocation="CenterScreen" Visibility="Collapsed" SizeToContent="Height" 
-        ShowInTaskbar="False" ResizeMode="NoResize" Background="{DynamicResource WindowBackgroundBrush}" 
-        Icon="..\..\..\Icons\HLUIcon.png" Activated="Window_Activated">
-
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="..\Dictionary\WindowDictionary.xaml" />
-                <ResourceDictionary Source="..\Dictionary\HluTheme.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
+        Title="{Binding Path=WindowTitle}"
+        Width="392"
+        Height="512"
+        Activated="Window_Activated"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Icon="..\..\..\Icons\HLUIcon.png"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        SizeToContent="Height"
+        Visibility="Collapsed"
+        WindowStartupLocation="CenterScreen">
 
     <StackPanel Name="StackPanelMain" Margin="4">
-        <GroupBox Name="GroupBoxHost" Header="Host" Margin="0,4,0,0" Padding="0">
-            <TextBox Name="TextBoxHost" Text="{Binding Path=Host, Mode=TwoWay, ValidatesOnDataErrors=True}" Margin="2" />
-        </GroupBox>
-        
-        <GroupBox Name="GroupBoxPort" Header="Port" Margin="0,4,0,0" Padding="0">
-            <TextBox Name="TextBoxPort" Text="{Binding Path=Port, Mode=TwoWay, ValidatesOnDataErrors=True}" Margin="2" />
-        </GroupBox>
-        
-        <GroupBox Name="GroupBoxSsl" Header="SSL Mode" Margin="0,4,0,0" Padding="0">
-            <ComboBox Name="ComboBoxSslMode" ItemsSource="{Binding Path=SslModes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding Path=SslMode}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" />
-        </GroupBox>
-        
-        <GroupBox Name="GroupBoxEncoding" Header="Encoding" Margin="0,4,0,0" Padding="0">
-            <ComboBox Name="ComboBoxEncoding" ItemsSource="{Binding Path=Encodings, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding Path=Encoding}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" />
-        </GroupBox>
-        
-        <GroupBox Name="GroupBoxUsername" Header="User Name" Margin="0,4,0,0" Padding="0">
-            <TextBox Name="TextBoxUserName" Text="{Binding Path=UserName, Mode=TwoWay, ValidatesOnDataErrors=True}" Margin="2" />
-        </GroupBox>
-        
-        <GroupBox Name="GroupBoxPassword" Header="Password" Margin="0,4,0,0" Padding="0">
-            <PasswordBox Name="TextBoxPassword" hlu:PasswordBoxAssistant.BindPassword="true" hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="2" ></PasswordBox>
+        <GroupBox Name="GroupBoxHost"
+                  Margin="0,4,0,0"
+                  Header="Host"
+                  Padding="0">
+            <TextBox Name="TextBoxHost"
+                     Margin="2"
+                     Text="{Binding Path=Host,
+                                    Mode=TwoWay,
+                                    ValidatesOnDataErrors=True}" />
         </GroupBox>
 
-        <GroupBox Name="GroupBoxDatabase" Header="Database" Margin="0,4,0,0" Padding="0">
-            <ComboBox Name="ComboBoxDatabase"  ItemsSource="{Binding Path=Databases, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedItem="{Binding Path=Database}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+        <GroupBox Name="GroupBoxPort"
+                  Margin="0,4,0,0"
+                  Header="Port"
+                  Padding="0">
+            <TextBox Name="TextBoxPort"
+                     Margin="2"
+                     Text="{Binding Path=Port,
+                                    Mode=TwoWay,
+                                    ValidatesOnDataErrors=True}" />
         </GroupBox>
 
-        <GroupBox Name="GroupBpxSearchPath" Header="Search Path" Margin="0,4,0,0" Padding="0">
-            <ComboBox Name="ComboBoxSearchPath"  ItemsSource="{Binding Path=Schemata, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=SearchPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedItem="{Binding Path=SearchPath}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+        <GroupBox Name="GroupBoxSsl"
+                  Margin="0,4,0,0"
+                  Header="SSL Mode"
+                  Padding="0">
+            <ComboBox Name="ComboBoxSslMode"
+                      Margin="0,4,0,0"
+                      IsEditable="True"
+                      IsReadOnly="False"
+                      ItemsSource="{Binding Path=SslModes,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+                      SelectedValue="{Binding Path=SslMode}" />
         </GroupBox>
-        
-        <Grid Margin="0,4,0,0" Height="23" Name="GridButtons" VerticalAlignment="Bottom">
+
+        <GroupBox Name="GroupBoxEncoding"
+                  Margin="0,4,0,0"
+                  Header="Encoding"
+                  Padding="0">
+            <ComboBox Name="ComboBoxEncoding"
+                      Margin="0,4,0,0"
+                      IsEditable="True"
+                      IsReadOnly="False"
+                      ItemsSource="{Binding Path=Encodings,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+                      SelectedValue="{Binding Path=Encoding}" />
+        </GroupBox>
+
+        <GroupBox Name="GroupBoxUsername"
+                  Margin="0,4,0,0"
+                  Header="User Name"
+                  Padding="0">
+            <TextBox Name="TextBoxUserName"
+                     Margin="2"
+                     Text="{Binding Path=UserName,
+                                    Mode=TwoWay,
+                                    ValidatesOnDataErrors=True}" />
+        </GroupBox>
+
+        <GroupBox Name="GroupBoxPassword"
+                  Margin="0,4,0,0"
+                  Header="Password"
+                  Padding="0">
+            <PasswordBox Name="TextBoxPassword"
+                         Margin="2"
+                         hlu:PasswordBoxAssistant.BindPassword="true"
+                         hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged,
+                                                                          ValidatesOnDataErrors=True}" />
+        </GroupBox>
+
+        <GroupBox Name="GroupBoxDatabase"
+                  Margin="0,4,0,0"
+                  Header="Database"
+                  Padding="0">
+            <ComboBox Name="ComboBoxDatabase"
+                      Margin="0,4,0,0"
+                      DropDownOpened="ComboBox_DropDownOpened"
+                      IsEditable="True"
+                      IsReadOnly="False"
+                      ItemsSource="{Binding Path=Databases,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding Path=Database}"
+                      Text="{Binding Path=Database,
+                                     Mode=TwoWay,
+                                     UpdateSourceTrigger=PropertyChanged,
+                                     ValidatesOnDataErrors=True}" />
+        </GroupBox>
+
+        <GroupBox Name="GroupBpxSearchPath"
+                  Margin="0,4,0,0"
+                  Header="Search Path"
+                  Padding="0">
+            <ComboBox Name="ComboBoxSearchPath"
+                      Margin="0,4,0,0"
+                      DropDownOpened="ComboBox_DropDownOpened"
+                      IsEditable="True"
+                      IsReadOnly="False"
+                      ItemsSource="{Binding Path=Schemata,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding Path=SearchPath}"
+                      Text="{Binding Path=SearchPath,
+                                     Mode=TwoWay,
+                                     UpdateSourceTrigger=PropertyChanged,
+                                     ValidatesOnDataErrors=True}" />
+        </GroupBox>
+
+        <Grid Name="GridButtons"
+              Height="23"
+              Margin="0,4,0,0"
+              VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="115*" />
                 <ColumnDefinition Width="82" />
                 <ColumnDefinition Width="82" />
             </Grid.ColumnDefinitions>
-            <Button Name="ButtonOk" Grid.Column="1" Command="{Binding Path=OkCommand}" ForceCursor="False" IsDefault="True" Margin="0,0,2,0">_OK</Button>
-            <Button Name="ButtonCancel" Grid.Column="2" Command="{Binding Path=CancelCommand}" IsCancel="True" Margin="2,0,0,0">_Cancel</Button>
+            <Button Name="ButtonOk"
+                    Grid.Column="1"
+                    Margin="0,0,2,0"
+                    Command="{Binding Path=OkCommand}"
+                    ForceCursor="False"
+                    IsDefault="True">
+                _OK
+            </Button>
+            <Button Name="ButtonCancel"
+                    Grid.Column="2"
+                    Margin="2,0,0,0"
+                    Command="{Binding Path=CancelCommand}"
+                    IsCancel="True">
+                _Cancel
+            </Button>
         </Grid>
     </StackPanel>
 </Window>
