@@ -19,7 +19,7 @@
                     xmlns:vsm="clr-namespace:System.Windows;assembly=WPFToolkit"
                     mc:Ignorable="d">
 
-    <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" />
+    <!-- <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" /> -->
 
     <!--  Main Colors  -->
 
@@ -170,8 +170,8 @@
                                                                         AncestorType={x:Type tkit:DataGridRow}},
                                          Path=(Validation.Errors).CurrentItem.ErrorContent}"
                        Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type tkit:DataGridRow}},
-                                            Path=(Validation.HasError),
-                                            Converter={StaticResource bool2VisibilityConverter}}" />
+                                            Path=(Validation.HasError)}" />
+                                            <!-- Converter={StaticResource bool2VisibilityConverter}}" /> -->
         </Grid>
     </ControlTemplate>
 
