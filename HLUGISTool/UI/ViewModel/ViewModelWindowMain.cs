@@ -1594,7 +1594,7 @@ namespace HLU.UI.ViewModel
                         // Logically split the features for the current incid into a new incid.
                         ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
                         _splitting = true;
-                        if (!vmSplit.Split())
+                        if (!vmSplit.LogicalSplit())
                         {
                             //MessageBox.Show("Could not complete logical split - update cancelled.\nPlease invoke the Split command before applying any updates.",
                             //    "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
