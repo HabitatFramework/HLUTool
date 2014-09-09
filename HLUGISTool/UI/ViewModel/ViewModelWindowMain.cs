@@ -3215,13 +3215,7 @@ namespace HLU.UI.ViewModel
 
         public int NumIncidSelected
         {
-            get 
-            {
-                if (_incidSelection == null)
-                    return 0;
-                else
-                    return _incidSelection.Rows.Count;
-            }
+            get { return _incidSelection != null ? _incidSelection.Rows.Count : 0; }
             set { }
         }
 
