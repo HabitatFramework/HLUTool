@@ -2907,7 +2907,7 @@
     </Style>
 
     <Style TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
-        <Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Template">
@@ -3418,7 +3418,11 @@
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
-                    <Border x:Name="Border" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0,0,0,0" Margin="3,2,3,2">
+                    <Border x:Name="Border"
+                            Margin="3,2,3,2"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="0,0,0,0">
                         <Grid Margin="0,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="17" Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup" />
