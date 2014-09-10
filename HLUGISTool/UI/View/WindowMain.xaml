@@ -1463,9 +1463,9 @@
                     <AdornerDecorator>
                         <Grid x:Name="GridTabItemDetails">
                             <Grid.RowDefinitions>
-                                <RowDefinition MinHeight="140" />
+                                <RowDefinition MinHeight="141" />
                                 <!--  Height="140"  -->
-                                <RowDefinition MinHeight="140" />
+                                <RowDefinition MinHeight="141" />
                                 <!--  Height="140"  -->
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -1864,46 +1864,80 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="Site">
-                                <Grid x:Name="GridBiosite" Margin="0,6,0,2">
+                                <Grid x:Name="GridSite" Margin="0,6,0,2">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" MinWidth="90" />
-                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" MinWidth="70" />
+                                        <ColumnDefinition Width="Auto" MinWidth="100" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="*" MinWidth="100" />
                                         <ColumnDefinition Width="20" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label x:Name="LabelBiositeName"
-                                           Grid.Row="0"
-                                           Grid.Column="0"
-                                           Margin="6,2,4,2"
-                                           HorizontalAlignment="Left"
-                                           VerticalAlignment="Center"
-                                           Content="Site Name" />
-                                    <TextBox x:Name="TextBoxBiositeName"
-                                             Grid.Row="0"
-                                             Grid.Column="1"
-                                             Grid.ColumnSpan="1"
-                                             Margin="4,2,8,2"
-                                             BorderThickness="1"
-                                             MaxLength="100"
-                                             Text="{Binding IncidSiteName,
-                                                            Mode=TwoWay,
-                                                            UpdateSourceTrigger=PropertyChanged,
-                                                            ValidatesOnDataErrors=True}"
-                                             TextWrapping="Wrap"
-                                             ToolTipService.ShowOnDisabled="True" />
-                                    <CheckBox x:Name="CheckBoxCopyIncidSiteName"
-                                              Grid.Row="0"
-                                              Grid.Column="3"
-                                              Margin="0,2,0,2"
-                                              HorizontalAlignment="Right"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding CopySwitches.CopyIncidSiteName,
-                                                                  Mode=TwoWay,
-                                                                  UpdateSourceTrigger=PropertyChanged}" />
-                                </Grid>
+										<Label x:Name="LabelSiteRef"
+											   Grid.Row="0"
+											   Grid.Column="0"
+											   Margin="6,2,4,4"
+											   HorizontalAlignment="Left"
+											   VerticalAlignment="Center"
+											   Content="Site Ref" />
+										<TextBox x:Name="TextBoxSiteRef"
+												 Grid.Row="0"
+												 Grid.Column="1"
+												 Grid.ColumnSpan="1"
+												 Margin="4,2,8,4"
+												 BorderThickness="1"
+												 MaxLength="16"
+												 HorizontalAlignment="Left"
+												 Width="180"
+												 Text="{Binding IncidSiteRef,
+																Mode=TwoWay,
+																UpdateSourceTrigger=PropertyChanged,
+																ValidatesOnDataErrors=True}"
+												 ToolTipService.ShowOnDisabled="True" />
+										<CheckBox x:Name="CheckBoxCopyIncidSiteRef"
+												  Grid.Row="0"
+												  Grid.Column="2"
+												  Margin="0,2,0,4"
+												  HorizontalAlignment="Right"
+												  VerticalAlignment="Center"
+												  IsChecked="{Binding CopySwitches.CopyIncidSiteRef,
+																	  Mode=TwoWay,
+																	  UpdateSourceTrigger=PropertyChanged}" />
+
+										<Label x:Name="LabelSiteName"
+												Grid.Row="1"
+												Grid.Column="0"
+												Margin="6,0,4,2"
+												HorizontalAlignment="Left"
+												VerticalAlignment="Center"
+												Content="Site Name" />
+										<TextBox x:Name="TextBoxSiteName"
+													Grid.Row="1"
+													Grid.Column="1"
+													Grid.ColumnSpan="3"
+													Margin="4,0,8,2"
+													BorderThickness="1"
+													MaxLength="100"
+													Text="{Binding IncidSiteName,
+																Mode=TwoWay,
+																UpdateSourceTrigger=PropertyChanged,
+																ValidatesOnDataErrors=True}"
+													TextWrapping="Wrap"
+													ToolTipService.ShowOnDisabled="True" />
+										<CheckBox x:Name="CheckBoxCopyIncidSiteName"
+													Grid.Row="1"
+													Grid.Column="4"
+													Margin="0,0,0,2"
+													HorizontalAlignment="Right"
+													VerticalAlignment="Center"
+													IsChecked="{Binding CopySwitches.CopyIncidSiteName,
+																		Mode=TwoWay,
+																		UpdateSourceTrigger=PropertyChanged}" />
+								</Grid>
                             </GroupBox>
                         </Grid>
                     </AdornerDecorator>
@@ -1925,12 +1959,12 @@
                     <AdornerDecorator>
                         <Grid x:Name="GridTabItemSources">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <!--  MinHeight="178" />  -->
-                                <RowDefinition Height="Auto"  />
-                                <!--  MinHeight="178" />  -->
-                                <RowDefinition Height="Auto"  />
-                                <!--  MinHeight="178" />  -->
+                                <RowDefinition Height="*"
+                                MinHeight="166" />
+                                <RowDefinition Height="*"
+                                MinHeight="166" />
+                                <RowDefinition Height="*"
+                                MinHeight="166" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="80*" />
@@ -2648,9 +2682,7 @@
                         <Grid x:Name="GridTabItemHistory">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"
-                                               MinHeight="520" />
-                                               <!--  MaxHeight="550" />  -->
-                                <!--  Height="350*"  -->
+                                               MinHeight="500" />
                                 <!--  <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />

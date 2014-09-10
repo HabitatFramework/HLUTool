@@ -4245,6 +4245,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidDigitisationBaseMap");
             OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
+            OnPropertyChanged("IncidSiteRef");
             OnPropertyChanged("IncidSiteName");
         }
 
@@ -7340,7 +7341,35 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Biosite
+        #region Site
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR37 (Site reference and site name)
+        // Display the site reference with the site name in the interface.
+        public string IncidSiteRef
+        {
+            get
+            {
+                if ((IncidCurrentRow != null) && !IncidCurrentRow.Issite_refNull())
+                    return IncidCurrentRow.site_ref;
+                else
+                    return null;
+            }
+            set
+            {
+                if ((IncidCurrentRow != null) && (value != null))
+                {
+                    IncidCurrentRow.site_ref = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+                }
+            }
+        }
+        //---------------------------------------------------------------------
 
         public string IncidSiteName
         {

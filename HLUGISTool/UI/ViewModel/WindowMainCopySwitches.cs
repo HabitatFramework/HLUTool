@@ -49,6 +49,7 @@ namespace HLU.UI.ViewModel
         private bool _copyIncidGeneralComments;
         private bool _copyIncidBoundaryBaseMap;
         private bool _copyIncidDigitisationBaseMap;
+        private bool _copyIncidSiteRef;
         private bool _copyIncidSiteName;
         private bool _copyIncidSource1Id;
         private bool _copyIncidSource1Date;
@@ -89,6 +90,7 @@ namespace HLU.UI.ViewModel
         private string _incidGeneralComments;
         private string _incidBoundaryBaseMap;
         private string _incidDigitisationBaseMap;
+        private string _incidSiteRef;
         private string _incidSiteName;
         private Nullable<int> _incidSource1Id;
         private Date.VagueDateInstance _incidSource1Date;
@@ -276,6 +278,20 @@ namespace HLU.UI.ViewModel
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidDigitisationBaseMaps"));
             }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR37 (Site reference and site name)
+        // Display the site reference with the site name in the interface.
+        public bool CopyIncidSiteRef
+        {
+            get { return _copyIncidSiteRef; }
+            set
+            {
+                _copyIncidSiteRef = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidSiteRef"));
+            }
+        }
+        //---------------------------------------------------------------------
 
         public bool CopyIncidSiteName
         {
@@ -630,6 +646,20 @@ namespace HLU.UI.ViewModel
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidDigitisationBaseMap"));
             }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR37 (Site reference and site name)
+        // Display the site reference with the site name in the interface.
+        public string IncidSiteRef
+        {
+            get { return _incidSiteRef; }
+            set
+            {
+                _incidSiteRef = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidSiteRef"));
+            }
+        }
+        //---------------------------------------------------------------------
 
         public string IncidSiteName
         {
