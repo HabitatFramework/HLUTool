@@ -4908,6 +4908,12 @@ namespace HLU.UI.ViewModel
                     }
                     IhsMultiplexCodes(_incidIhsHabitat);
                     RefreshIhsMulitplexCodes();
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
             }
         }
@@ -8401,7 +8407,7 @@ namespace HLU.UI.ViewModel
                                     displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
                                     _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
                                     .Aggregate(new StringBuilder(), (sb, hr) => sb.Append(String.Format("\n\t{0}: {1}",
-                                    hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "Modified ").Replace("_", " "),
+                                    hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "Previous ").Replace("_", " "),
                                     r[hr.ColumnName].ToString()))).ToString()
                                 //---------------------------------------------------------------------
                             } into g
@@ -8415,7 +8421,7 @@ namespace HLU.UI.ViewModel
                                 // CHANGED: CR11 (History tab)
                                 // Change the field names in history display to make it clearer
                                 // the fields are the previous (modified) values.
-                                String.Format("\n\tModified INCID: {0}", g.Key.modified_incid) +
+                                String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
                                 g.Key.modified_ihs +
                                 String.Format("\n\tModified Length: {0} [km]", g.Distinct(_histRowEqComp)
                                     .Sum(r => !r.Ismodified_lengthNull() ? Math.Round(r.modified_length / 1000, 3) : 0).ToString("f3")) +
