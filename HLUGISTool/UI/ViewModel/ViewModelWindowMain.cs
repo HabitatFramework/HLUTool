@@ -1341,12 +1341,19 @@ namespace HLU.UI.ViewModel
             get
             {
                 return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
-                    (_gisSelection != null) && (_incidsSelectedMapCount == 1) && 
-                    ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
-                    (_gisSelection.Rows.Count == 1));
+                    (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
+                    ((_gisSelection.Rows.Count > 0) &&
+                    ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
+                    (_gisSelection.Rows.Count == 1)) &&
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR7 (Split/merge options)
+                    // Only enable logical split menu/button if a subset of all the
+                    // features for the current incid have been selected.
+                    ((_toidsIncidGisCount != _toidsIncidDbCount) ||
+                    (_fragsIncidGisCount != _fragsIncidDbCount));
+                    //---------------------------------------------------------------------
             }
         }
-
         
         /// <summary>
         /// At least two features in selection that share the same incid, toid and toid_fragment_id
