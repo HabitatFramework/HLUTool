@@ -8384,7 +8384,7 @@ namespace HLU.UI.ViewModel
                                     r.modified_date.ToShortDateString() : String.Empty,
                                 //---------------------------------------------------------------------
                                 // CHANGED: CR4 (Modified date)
-                                // Display the modified_date column from the history wth both the
+                                // Display the modified_date column from the history with both the
                                 // date and time to avoid separate updates with identical details
                                 // (except the time) being merged together when displayed.
                                 modified_time = (!r.Ismodified_dateNull() && r.modified_date != r.modified_date.Date) ?
@@ -8401,23 +8401,29 @@ namespace HLU.UI.ViewModel
                                     displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
                                     _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
                                     .Aggregate(new StringBuilder(), (sb, hr) => sb.Append(String.Format("\n\t{0}: {1}",
-                                    hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "").Replace("_", " "),
+                                    hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "Modified ").Replace("_", " "),
                                     r[hr.ColumnName].ToString()))).ToString()
                                 //---------------------------------------------------------------------
                             } into g
                             select String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
                                 g.Key.modified_time, g.Key.modified_user_id) +
-                            //---------------------------------------------------------------------
+                                //---------------------------------------------------------------------
                                 String.Format("\n\tProcess: {0}", g.Key.modifid_process) +
                                 String.Format("\n\tReason: {0}", g.Key.modified_reason) +
                                 String.Format("\n\tOperation: {0}", g.Key.modified_operation) +
+                                //---------------------------------------------------------------------
+                                // CHANGED: CR11 (History tab)
+                                // Change the field names in history display to make it clearer
+                                // the fields are the previous (modified) values.
+                                String.Format("\n\tModified INCID: {0}", g.Key.modified_incid) +
                                 g.Key.modified_ihs +
-                                String.Format("\n\tINCID: {0}", g.Key.modified_incid) +
-                                String.Format("\n\tLength Modified: {0}", g.Distinct(_histRowEqComp)
-                                    .Sum(r => !r.Ismodified_lengthNull() ? r.modified_length : 0).ToString("f2")) +
-                                String.Format("\n\tArea Modified: {0}", g.Distinct(_histRowEqComp)
-                                    .Sum(r => !r.Ismodified_areaNull() ? r.modified_area : 0).ToString("f2")))
+                                String.Format("\n\tModified Length: {0} [km]", g.Distinct(_histRowEqComp)
+                                    .Sum(r => !r.Ismodified_lengthNull() ? Math.Round(r.modified_length / 1000, 3) : 0).ToString("f3")) +
+                                String.Format("\n\tModified Area: {0} [ha]", g.Distinct(_histRowEqComp)
+                                    .Sum(r => !r.Ismodified_areaNull() ? Math.Round(r.modified_area / 10000, 4) : 0).ToString("f4")))
                                 .Take(_historyDisplayLastN);
+                                //---------------------------------------------------------------------
+
                 }
             }
         }
