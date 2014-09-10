@@ -2651,7 +2651,7 @@
                         <Grid x:Name="GridTabItemHistory">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"
-                                               MinHeight="350" />
+                                               MinHeight="550" />
                                                <!--  MaxHeight="550" />  -->
                                 <!--  Height="350*"  -->
                                 <!--  <RowDefinition Height="Auto" />
