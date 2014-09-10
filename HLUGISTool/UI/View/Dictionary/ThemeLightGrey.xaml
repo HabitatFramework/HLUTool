@@ -1,10 +1,10 @@
 <!--  Theme used for HLU application based on Microsoft Expression Light.  -->
 
 <!--
-    // (c) Copyright Microsoft Corporation.
-    // This source is subject to Microsoft Public License (Ms-PL).
-    // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
-    // All other rights reserved.
+	// (c) Copyright Microsoft Corporation.
+	// This source is subject to Microsoft Public License (Ms-PL).
+	// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+	// All other rights reserved.
 -->
 
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -38,6 +38,7 @@
     <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />
     <SolidColorBrush x:Key="NormalBrush" Color="{StaticResource MainColor}" />
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF9B9999" />
+    <SolidColorBrush x:Key="DarkBorderBrush" Color="{StaticResource DarkColor}" />
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
     <SolidColorBrush x:Key="GlyphBrush" Color="#FFFFFFFF" />
 
@@ -48,14 +49,14 @@
         <GradientStop Offset="0.479" Color="#26FFFFFF" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFD6D6D6" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FFDDDDDD" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
         <GradientStop Offset="1" Color="{StaticResource BottomGradientSelectColor}" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF555555" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFD4D4D4" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
@@ -1375,8 +1376,8 @@
                     <Border BorderBrush="{DynamicResource DarkBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="2">
-                        <ScrollViewer Background="{DynamicResource DisabledBackgroundBrush}"
-                                      Foreground="Black"
+                        <ScrollViewer Background="{DynamicResource ControlBackgroundBrush}"
+                                      Foreground="{DynamicResource DisabledForegroundBrush}"
                                       Padding="2"
                                       VerticalScrollBarVisibility="Auto">
                             <ItemsPresenter />
@@ -3330,9 +3331,10 @@
             <Trigger Property="IsChecked" Value="true" />
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource DisabledForegroundBrush}" />
-                <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBorderBrush}" />
-                <Setter TargetName="grid" Property="Opacity" Value="0.8" />
+                <Setter Property="Stroke" TargetName="Arrow" Value="{DynamicResource DisabledForegroundBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource DisabledBorderBrush}"/>
+                <Setter Property="Fill" TargetName="TextRectangle" Value="{DynamicResource DisabledBackgroundBrush}" />
+                <Setter Property="Opacity" TargetName="grid" Value="0.8"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -3522,8 +3524,6 @@
                                 CornerRadius="2,2,2,2"
                                 IsHitTestVisible="False"
                                 Opacity="0" />
-
-
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
@@ -3545,18 +3545,21 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource BorderBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>
                         </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
@@ -3576,8 +3579,8 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="#FF000000" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}"/>
     </Style>
 
 
@@ -3987,18 +3990,21 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource BorderBrush}"/>
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
-                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>
                         </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
@@ -4018,8 +4024,8 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="#FF000000" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}"/>
     </Style>
 
     <Style TargetType="{x:Type PasswordBox}">
@@ -4220,6 +4226,27 @@
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="#FF000000" />
+    </Style>
+   
+    <Style x:Key="TabLabel" TargetType="{x:Type Label}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Label}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+										  Margin="4,2,4,2"
+                                          RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false" />
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
 
     <Style TargetType="{x:Type Label}">
@@ -4722,8 +4749,8 @@
                         </Border>
                         <Grid>
                             <ContentPresenter x:Name="ContentSite"
-                                              Margin="10,1,10,1"
-                                              HorizontalAlignment="Stretch"
+                                              Margin="6,1,6,1"
+                                              HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               ContentSource="Header"
                                               RecognizesAccessKey="True"

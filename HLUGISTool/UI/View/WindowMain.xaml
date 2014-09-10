@@ -793,7 +793,8 @@
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="IhsTabLabel"
-                                   Margin="4,2,4,4"
+                                   Style="{DynamicResource TabLabel}"
+                                   Margin="4,0,4,2"
                                    VerticalAlignment="Bottom"
                                    Content="{Binding IhsTabLabel,
                                                      ValidatesOnDataErrors=True}"
@@ -2649,13 +2650,13 @@
                         <Grid x:Name="GridTabItemHistory">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"
-                                               MinHeight="550"
-                                               MaxHeight="550" />
+                                               MinHeight="350" />
+                                               <!--  MaxHeight="550" />  -->
                                 <!--  Height="350*"  -->
+                                <!--  <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />  -->
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="80" />
@@ -2686,7 +2687,7 @@
             <DockPanel x:Name="DockPanelGetMapSelection"
                        Grid.Row="2"
                        Grid.Column="0"
-                       MaxHeight="25"
+                       MaxHeight="30"
                        Margin="0,4,0,0"
                        VerticalAlignment="Top"
                        Panel.ZIndex="5">

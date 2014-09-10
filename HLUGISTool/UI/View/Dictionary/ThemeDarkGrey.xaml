@@ -23,8 +23,6 @@
 
     <!--  Main Colors  -->
 
-<!--    <Color x:Key="MainColor">#FF595959</Color>  -->
-
     <Color x:Key="MainColor">#FF595959</Color>
     <Color x:Key="HoverColor">#FF303030</Color>
     <Color x:Key="DefaultColor">#FF9BB1C5</Color>
@@ -35,7 +33,7 @@
     <Color x:Key="BottomGradientSelectColor">#FF737373</Color>
 
     <Color x:Key="BlackColor">#FF000000</Color>
-    <Color x:Key="DarkColor">#FF444444</Color>
+    <Color x:Key="DarkColor">#FF4A4A4A</Color>
     <Color x:Key="MidColor">#FFAAAAAA</Color>
     <Color x:Key="LightColor">#FFDDDDDD</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
@@ -55,7 +53,7 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{StaticResource DarkColor}" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF4A4A4A" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
@@ -1379,8 +1377,8 @@
                     <Border BorderBrush="{DynamicResource DarkBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="2">
-                        <ScrollViewer Background="{DynamicResource NormalBrush}"
-                                      Foreground="{DynamicResource TextBrush}"
+                        <ScrollViewer Background="{DynamicResource LightBrush}"
+                                      Foreground="{DynamicResource DisabledTextBrush}"
                                       Padding="2"
                                       VerticalScrollBarVisibility="Auto">
                             <ItemsPresenter />
@@ -3550,10 +3548,16 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
@@ -3990,13 +3994,21 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource LightBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource LightBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
                         </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
@@ -4220,6 +4232,27 @@
         <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
     </Style>
 
+    <Style x:Key="TabLabel" TargetType="{x:Type Label}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Label}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+										  Margin="4,2,4,2"
+                                          RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false" />
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+
     <Style TargetType="{x:Type Label}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -4233,6 +4266,19 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false" />
+                        <!--  AM Start  -->
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                        </Trigger>
+                        <!--  AM End  -->
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -4796,6 +4842,14 @@
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.3" />
                         </Trigger>
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
