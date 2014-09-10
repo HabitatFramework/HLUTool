@@ -4,7 +4,7 @@
     xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
     Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" SizeToContent="Height" MinHeight="300"
-    Height="300" Width="500" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
+    Height="300" Width="600" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
 
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4" Width="Auto">
         <Grid>
