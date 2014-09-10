@@ -1,5 +1,5 @@
 ﻿
-<!--  Theme used for HBIC application based on Microsoft Exression Light.  -->
+<!--  Theme used for HLU application based on Microsoft Expression Light.  -->
 
 <!--
     // (c) Copyright Microsoft Corporation.
@@ -3519,10 +3519,17 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
@@ -3929,8 +3936,6 @@
                                 CornerRadius="2,2,2,2"
                                 IsHitTestVisible="False"
                                 Opacity="0" />
-
-
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
@@ -3952,10 +3957,17 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="IsReadOnly" Value="False" />
                             </MultiTrigger.Conditions>
 
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
+                        </Trigger>
+                        <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
@@ -4182,6 +4194,27 @@
         <Setter Property="BorderBrush" Value="#FF000000" />
     </Style>
 
+    <Style x:Key="TabLabel" TargetType="{x:Type Label}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Label}">
+                    <Grid>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+										  Margin="4,2,4,2"
+                                          RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false" />
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+
     <Style TargetType="{x:Type Label}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -4195,6 +4228,19 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false" />
+                        <!--  AM Start  -->
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                        </Trigger>
+                        <!--  AM End  -->
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -4757,6 +4803,14 @@
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="grid" Property="Opacity" Value="0.3" />
                         </Trigger>
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <Trigger Property="IsVisible" Value="True">
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                        </Trigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
