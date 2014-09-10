@@ -157,6 +157,14 @@
             <ToolBar x:Name="ToolBarMain"
                      Band="1"
                      BandIndex="1">
+                <Button Name="ButtonExit"
+                Command="{Binding Path=CloseCommand}"
+                ToolTip="Exit"
+                ToolTipService.ShowOnDisabled="True">
+                <Image Width="16"
+                Height="16"
+                Source="..\..\Icons\FileExit.png" />
+                </Button>
                 <Button Name="ButtonExport"
                         Command="{Binding Path=ExportCommand}"
                         IsEnabled="{Binding Path=CanExport}"
@@ -184,16 +192,6 @@
                            Height="16"
                            Source="..\..\Icons\EditPaste.png" />
                 </Button>
-                <!--
-                    <Button Name="ButtonExit"
-                    Command="{Binding Path=CloseCommand}"
-                    ToolTip="Exit"
-                    ToolTipService.ShowOnDisabled="True">
-                    <Image Width="16"
-                    Height="16"
-                    Source="..\..\Icons\FileExit.png" />
-                    </Button>
-                -->
                 <!--
                     <Button Name="ButtonBulkUpdate"
                     Command="{Binding Path=BulkUpdateCommand}"
@@ -794,7 +792,6 @@
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="IhsTabLabel"
-                                   Style="{DynamicResource TabLabel}"
                                    Margin="4,0,4,2"
                                    VerticalAlignment="Bottom"
                                    Content="{Binding IhsTabLabel,
@@ -826,7 +823,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="IHS Habitat">
-                                <Grid x:Name="GridCategories" Margin="0,6,0,0">
+                                <Grid x:Name="GridCategories" Margin="0,4,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -842,14 +839,14 @@
                                     <Label x:Name="LabelHabitatClass"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,2,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Habitat Class" />
                                     <ComboBox x:Name="ComboBoxHabitatClass"
                                                 Grid.Row="0"
                                                 Grid.Column="1"
-                                                Margin="8,0,8,4"
+                                                Margin="8,2,8,4"
                                                 VerticalAlignment="Center"
                                                 DisplayMemberPath="description"
                                                 IsEditable="False"
@@ -892,14 +889,14 @@
                                     <Label x:Name="LabelIhsHabitat"
                                            Grid.Row="2"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,0,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="IHS Habitat" />
                                     <ComboBox x:Name="ComboBoxIhsHabitat"
                                               Grid.Row="2"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,0,8,2"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               IsEditable="False"
@@ -919,7 +916,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsHabitat"
                                               Grid.Row="2"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,0,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsHabitat,
@@ -951,7 +948,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="IHS Matrix">
-                                <Grid x:Name="GridIhsMatrix" Margin="0,6,0,0">
+                                <Grid x:Name="GridIhsMatrix" Margin="0,4,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -966,14 +963,14 @@
                                     <Label x:Name="LabelIhsMatrix1"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,2,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Matrix 1" />
                                     <ComboBox x:Name="ComboBoxIhsMatrix1"
                                               Grid.Row="0"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,2,8,4"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -994,7 +991,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsMatrix1"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,4"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsMatrix1,
@@ -1046,14 +1043,14 @@
                                     <Label x:Name="LabelIhsMatrix3"
                                            Grid.Row="2"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,0,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Matrix 3" />
                                     <ComboBox x:Name="ComboBoxIhsMatrix3"
                                               Grid.Row="2"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,0,8,2"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1074,7 +1071,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsMatrix3"
                                               Grid.Row="2"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,0,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsMatrix3,
@@ -1092,7 +1089,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="IHS Formation">
-                                <Grid x:Name="GridIhsFormation" Margin="0,6,0,0">
+                                <Grid x:Name="GridIhsFormation" Margin="0,4,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -1106,14 +1103,14 @@
                                     <Label x:Name="LabelIhsFormation1"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,2,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Formation 1" />
                                     <ComboBox x:Name="ComboBoxIhsFormation1"
                                               Grid.Row="0"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,2,8,4"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1134,7 +1131,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsFormation1"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,4"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsFormation1,
@@ -1146,14 +1143,14 @@
                                     <Label x:Name="LabelIhsFormation2"
                                            Grid.Row="1"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,0,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Formation 2" />
                                     <ComboBox x:Name="ComboBoxIhsFormation2"
                                               Grid.Row="1"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,0,8,2"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1174,7 +1171,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsFormation2"
                                               Grid.Row="1"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,0,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsFormation2,
@@ -1192,7 +1189,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="IHS Management">
-                                <Grid x:Name="GridIhsManagement" Margin="0,6,0,0">
+                                <Grid x:Name="GridIhsManagement" Margin="0,4,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -1206,14 +1203,14 @@
                                     <Label x:Name="LabelIhsManagement1"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,2,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Management 1" />
                                     <ComboBox x:Name="ComboBoxIhsManagement1"
                                               Grid.Row="0"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,2,8,4"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1235,7 +1232,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsManagement1"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,4"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsManagement1,
@@ -1247,14 +1244,14 @@
                                     <Label x:Name="LabelIhsManagement2"
                                            Grid.Row="1"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,0,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Management 2" />
                                     <ComboBox x:Name="ComboBoxIhsManagement2"
                                               Grid.Row="1"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,0,8,2"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1275,7 +1272,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsManagement2"
                                               Grid.Row="1"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,0,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsManagement2,
@@ -1293,7 +1290,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="IHS Complex">
-                                <Grid x:Name="GridIhsComplex" Margin="0,6,0,0">
+                                <Grid x:Name="GridIhsComplex" Margin="0,4,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -1307,14 +1304,14 @@
                                     <Label x:Name="LabelIhsComplex1"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,2,0,4"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Complex 1" />
                                     <ComboBox x:Name="ComboBoxIhsComplex1"
                                               Grid.Row="0"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,2,8,4"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1335,7 +1332,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsComplex1"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,4"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsComplex1,
@@ -1347,14 +1344,14 @@
                                     <Label x:Name="LabelIhsComplex2"
                                            Grid.Row="1"
                                            Grid.Column="0"
-                                           Margin="0,0,0,4"
+                                           Margin="0,0,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="Complex 2" />
                                     <ComboBox x:Name="ComboBoxIhsComplex2"
                                               Grid.Row="1"
                                               Grid.Column="1"
-                                              Margin="8,0,8,4"
+                                              Margin="8,0,8,2"
                                               VerticalAlignment="Center"
                                               DisplayMemberPath="description"
                                               DropDownClosed="ComboBox_DropDownClosed"
@@ -1375,7 +1372,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIhsComplex2"
                                               Grid.Row="1"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,0,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidIhsComplex2,
@@ -1391,8 +1388,8 @@
                                       Grid.Row="5"
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
-                                      VerticalAlignment="Stretch"
-                                      Header="Summary">
+                                      VerticalAlignment="Stretch">
+                                      <!--  Header="Summary">  -->
                                 <Grid x:Name="GridSummary" Margin="0,4,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -1406,7 +1403,7 @@
                                     <Label x:Name="LabelIhsSummary"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="0,0,0,0"
+                                           Margin="0,2,0,2"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
                                            Content="IHS Summary" />
@@ -1421,7 +1418,7 @@
                                         <TextBox x:Name="TextBoxIhsSummary"
                                                  Grid.Row="0"
                                                  Grid.Column="0"
-                                                 Margin="8,0,8,0"
+                                                 Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  Text="{Binding IncidIhsSummary,
@@ -1437,7 +1434,7 @@
                                         <TextBox x:Name="TextBoxLegacyHabitat"
                                                  Grid.Row="0"
                                                  Grid.Column="2"
-                                                 Margin="8,0,8,0"
+                                                 Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  Text="{Binding IncidLegacyHabitat,
@@ -1466,9 +1463,9 @@
                     <AdornerDecorator>
                         <Grid x:Name="GridTabItemDetails">
                             <Grid.RowDefinitions>
-                                <RowDefinition MinHeight="173" />
+                                <RowDefinition MinHeight="140" />
                                 <!--  Height="140"  -->
-                                <RowDefinition MinHeight="173" />
+                                <RowDefinition MinHeight="140" />
                                 <!--  Height="140"  -->
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -1488,7 +1485,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="Priority Habitats">
-                                <Grid x:Name="GridBapHabitatsPrimary" Margin="0,10,0,2">
+                                <Grid x:Name="GridBapHabitatsPrimary" Margin="0,6,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
@@ -1502,7 +1499,7 @@
                                                    Grid.Row="0"
                                                    Grid.Column="0"
                                                    Grid.ColumnSpan="2"
-                                                   Margin="8,0,8,4"
+                                                   Margin="8,2,8,2"
                                                    AutoGenerateColumns="False"
                                                    BorderBrush="Black"
                                                    BorderThickness="1"
@@ -1603,7 +1600,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="Potential Priority Habitats">
-                                <Grid x:Name="GridBapHabitatsUser" Margin="0,10,0,2">
+                                <Grid x:Name="GridBapHabitatsUser" Margin="0,6,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
@@ -1617,7 +1614,7 @@
                                                    Grid.Row="0"
                                                    Grid.Column="0"
                                                    Grid.ColumnSpan="2"
-                                                   Margin="8,0,8,4"
+                                                   Margin="8,2,8,2"
                                                    AutoGenerateColumns="False"
                                                    BorderBrush="Black"
                                                    BorderThickness="1"
@@ -1730,7 +1727,7 @@
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
                                       Header="General Comments">
-                                <Grid x:Name="GridGeneralComments" Margin="0,10,0,2">
+                                <Grid x:Name="GridGeneralComments" Margin="0,6,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition MaxHeight="40" />
                                         <!--  Height="40"  -->
@@ -1746,7 +1743,7 @@
                                              Grid.Row="0"
                                              Grid.Column="0"
                                              Grid.ColumnSpan="2"
-                                             Margin="8,0,8,4"
+                                             Margin="8,2,8,2"
                                              BorderThickness="1"
                                              MaxLength="254"
                                              Text="{Binding IncidGeneralComments,
@@ -1758,7 +1755,7 @@
                                     <CheckBox x:Name="CheckBoxCopyGeneralComments"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidGeneralComments,
@@ -1773,7 +1770,7 @@
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
                                       Header="Maps">
-                                <Grid x:Name="GridMaps" Margin="0,8,0,4">
+                                <Grid x:Name="GridMaps" Margin="0,4,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
@@ -1799,14 +1796,14 @@
                                         <Label x:Name="LabelBoundaryBaseMap"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="8,0,8,4"
+                                               Margin="6,2,4,2"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
                                                Content="Boundary Map" />
                                         <ComboBox x:Name="ComboBoxIncidBoundaryBaseMap"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,4"
+                                                  Margin="4,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
@@ -1820,7 +1817,7 @@
                                         <CheckBox x:Name="CheckBoxCopyBoundaryBaseMap"
                                                   Grid.Row="0"
                                                   Grid.Column="2"
-                                                  Margin="0,0,0,4"
+                                                  Margin="0,2,0,2"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding CopySwitches.CopyIncidBoundaryBaseMap,
@@ -1829,14 +1826,14 @@
                                         <Label x:Name="LabelDigitisationBaseMap"
                                                Grid.Row="0"
                                                Grid.Column="3"
-                                               Margin="8,0,8,4"
+                                               Margin="8,2,4,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Digitisation Map" />
                                         <ComboBox x:Name="ComboBoxIncidDigitisationBaseMap"
                                                   Grid.Row="0"
                                                   Grid.Column="4"
-                                                  Margin="8,0,8,4"
+                                                  Margin="4,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="False"
@@ -1851,7 +1848,7 @@
                                     <CheckBox x:Name="CheckBoxCopyDigitisationBaseMap"
                                               Grid.Row="0"
                                               Grid.Column="2"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidDigitisationBaseMap,
@@ -1866,8 +1863,8 @@
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
                                       VerticalAlignment="Stretch"
-                                      Header="Biosite">
-                                <Grid x:Name="GridBiosite" Margin="0,10,0,4">
+                                      Header="Site">
+                                <Grid x:Name="GridBiosite" Margin="0,6,0,2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
@@ -1880,15 +1877,15 @@
                                     <Label x:Name="LabelBiositeName"
                                            Grid.Row="0"
                                            Grid.Column="0"
-                                           Margin="8,0,8,4"
+                                           Margin="6,2,4,2"
                                            HorizontalAlignment="Left"
                                            VerticalAlignment="Center"
-                                           Content="Biosite Name" />
+                                           Content="Site Name" />
                                     <TextBox x:Name="TextBoxBiositeName"
                                              Grid.Row="0"
                                              Grid.Column="1"
                                              Grid.ColumnSpan="1"
-                                             Margin="8,0,8,4"
+                                             Margin="4,2,8,2"
                                              BorderThickness="1"
                                              MaxLength="100"
                                              Text="{Binding IncidSiteName,
@@ -1900,7 +1897,7 @@
                                     <CheckBox x:Name="CheckBoxCopyIncidSiteName"
                                               Grid.Row="0"
                                               Grid.Column="3"
-                                              Margin="0,0,0,4"
+                                              Margin="0,2,0,2"
                                               HorizontalAlignment="Right"
                                               VerticalAlignment="Center"
                                               IsChecked="{Binding CopySwitches.CopyIncidSiteName,
@@ -1929,11 +1926,11 @@
                         <Grid x:Name="GridTabItemSources">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <!--  MinHeight="167"  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  MinHeight="167"  -->
-                                <RowDefinition Height="Auto" />
-                                <!--  MinHeight="167"  -->
+                                <!--  MinHeight="178" />  -->
+                                <RowDefinition Height="Auto"  />
+                                <!--  MinHeight="178" />  -->
+                                <RowDefinition Height="Auto"  />
+                                <!--  MinHeight="178" />  -->
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="80*" />
@@ -1946,7 +1943,7 @@
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
                                       Header="Source 1">
-                                <Grid x:Name="GridSource1" Margin="0,11,0,11">
+                                <Grid x:Name="GridSource1" Margin="0,6,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -2178,7 +2175,7 @@
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
                                       Header="Source 2">
-                                <Grid x:Name="GridSource2" Margin="0,11,0,11">
+                                <Grid x:Name="GridSource2" Margin="0,6,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -2409,7 +2406,7 @@
                                       Grid.Column="0"
                                       Grid.ColumnSpan="3"
                                       Header="Source 3">
-                                <Grid x:Name="GridSource3" Margin="0,11,0,11">
+                                <Grid x:Name="GridSource3" Margin="0,6,0,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition />
@@ -2651,7 +2648,7 @@
                         <Grid x:Name="GridTabItemHistory">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"
-                                               MinHeight="550" />
+                                               MinHeight="520" />
                                                <!--  MaxHeight="550" />  -->
                                 <!--  Height="350*"  -->
                                 <!--  <RowDefinition Height="Auto" />
@@ -2672,7 +2669,7 @@
                                       Header="Modification History">
                                 <ItemsControl x:Name="ItemsControlModificationHistory"
                                               Grid.Row="0"
-                                              Margin="8,8,8,8"
+                                              Margin="2,6,2,2"
                                               BorderThickness="2"
                                               Foreground="Black"
                                               ItemsSource="{Binding IncidHistory,

@@ -56,7 +56,7 @@
         <GradientStop Offset="1" Color="{StaticResource BottomGradientSelectColor}" />
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF555555" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF444444" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFD4D4D4" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
