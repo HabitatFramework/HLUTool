@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="540"
+        Width="510"
         Height="553"
         Activated="Window_Activated"
         Icon="..\..\Icons\HLUIcon.png"
@@ -374,10 +374,10 @@
                             <Label Name="LabelNotifyOnSplitMerge"
                                     Grid.Row="0"
                                     Grid.Column="3"
-                                    Margin="24,4,4,4"
+                                    Margin="4,4,4,4"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center">
-                                Notify After Completing Split / Merge?
+                                Notify After Completing Split/Merge?
                             </Label>
                             <CheckBox Name="CheckBoxNotifyOnSplitMerge"
                                         Grid.Row="0"
