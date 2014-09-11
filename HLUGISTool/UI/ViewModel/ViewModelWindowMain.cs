@@ -7623,17 +7623,11 @@ namespace HLU.UI.ViewModel
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR2 (Apply button)
-                    // Don't pre-populate the habitat type value if there is only one
-                    // possible value (as it triggers the data changed flag.
-                    //
-                    //if ((retArray.Length == 1) && (IncidSource1Id != null))
-                    //{
-                    //    IncidSource1HabitatType = retArray[0].code;
-                    //    OnPropertyChanged("IncidSource1HabitatType");
-                    //}
-                    //---------------------------------------------------------------------
+                    if ((retArray.Length == 1) && (IncidSource1Id != null))
+                    {
+                        IncidSource1HabitatType = retArray[0].code;
+                        OnPropertyChanged("IncidSource1HabitatType");
+                    }
 
                     return retArray;
                 }
