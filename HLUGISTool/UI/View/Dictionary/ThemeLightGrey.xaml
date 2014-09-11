@@ -57,7 +57,7 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF444444" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFD4D4D4" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFAFAFAF" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
 
@@ -4003,7 +4003,7 @@
 			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
 			                <Setter Property="Opacity" TargetName="Border" Value="0.8"/>

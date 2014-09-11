@@ -432,6 +432,7 @@
                                  Margin="8,0,8,4"
                                  VerticalAlignment="Center"
                                  IsEnabled="False"
+                                 IsReadOnly="True"
                                  Text="{Binding IncidArea,
                                                 Mode=OneWay,
                                                 ValidatesOnDataErrors=False}"
@@ -449,6 +450,7 @@
                                  Margin="8,0,4,4"
                                  VerticalAlignment="Center"
                                  IsEnabled="False"
+                                 IsReadOnly="True"
                                  Text="{Binding IncidLength,
                                                 Mode=OneWay,
                                                 ValidatesOnDataErrors=False}"
@@ -471,6 +473,7 @@
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding IncidCreatedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
@@ -494,6 +497,7 @@
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding IncidCreatedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
@@ -517,6 +521,7 @@
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding IncidLastModifiedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
@@ -540,6 +545,7 @@
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding IncidLastModifiedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
@@ -597,6 +603,7 @@
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding NumIncidSelected,
                                             Mode=OneWay}"
                              TextAlignment="Left" />
@@ -621,6 +628,7 @@
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding NumIncidSelectedMap,
                                             Mode=OneWay}"
                              TextAlignment="Left" />
@@ -637,6 +645,7 @@
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding NumToidSelectedMap,
                                             Mode=OneWay}"
                              TextAlignment="Left" />
@@ -653,6 +662,7 @@
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
+                             IsReadOnly="True"
                              Text="{Binding NumFragmentsSelectedMap,
                                             Mode=OneWay}"
                              TextAlignment="Left" />
@@ -1421,6 +1431,7 @@
                                                  Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
+					                             IsReadOnly="True"
                                                  Text="{Binding IncidIhsSummary,
                                                                 Mode=OneWay,
                                                                 ValidatesOnDataErrors=False}" />
@@ -1437,6 +1448,7 @@
                                                  Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
+					                             IsReadOnly="True"
                                                  Text="{Binding IncidLegacyHabitat,
                                                                 Mode=OneWay,
                                                                 ValidatesOnDataErrors=False}" />
@@ -1787,9 +1799,9 @@
                                           Grid.ColumnSpan="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" MinWidth="90" />
-                                            <ColumnDefinition Width="Auto" MinWidth="100" />
+                                            <ColumnDefinition Width="*" MinWidth="100" />
                                             <ColumnDefinition Width="20" />
-                                            <ColumnDefinition Width="Auto" MinWidth="100" />
+                                            <ColumnDefinition Width="*" MinWidth="100" />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
 
