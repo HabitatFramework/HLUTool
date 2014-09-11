@@ -54,11 +54,12 @@ namespace HLU.UI.ViewModel
         private int? _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
         private bool _bulkUpdateBlankRowMeansDelete = Settings.Default.BulkUpdateBlankRowMeansDelete;
 
-        private string _mapPath = Settings.Default.MapPath;
         private int _preferredGis = Settings.Default.PreferredGis;
-        private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
+        private string _mapPath = Settings.Default.MapPath;
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
+        private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
+        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -170,7 +171,6 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.MapPath = _mapPath;
             Settings.Default.PreferredGis = _preferredGis;
-            Settings.Default.WarnOnGISSelect = _warnOnGISSelect;
             
             Settings.Default.HistoryColumnOrdinals = new StringCollection();
             Settings.Default.HistoryColumnOrdinals.AddRange(_historyColumns.Where(c => c.IsSelected)
@@ -178,6 +178,9 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
+
+            Settings.Default.WarnOnGISSelect = _warnOnGISSelect;
+            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
 
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
@@ -350,12 +353,6 @@ namespace HLU.UI.ViewModel
             set { _historyColumns = value; }
         }
 
-        public bool WarnOnGISSelect
-        {
-            get { return _warnOnGISSelect; }
-            set { _warnOnGISSelect = value; }
-        }
-
         #endregion
 
         #region Interface
@@ -437,6 +434,39 @@ namespace HLU.UI.ViewModel
             {
                 _preferredHabitatClass = value;
             }
+        }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets or sets the choice of whether the user will
+        /// be warned before a GIS Select.
+        /// </summary>
+        /// <value>
+        /// If the user will be warned before a GIS Select.
+        /// </value>
+        public bool WarnOnGISSelect
+        {
+            get { return _warnOnGISSelect; }
+            set { _warnOnGISSelect = value; }
+        }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // A new option to enable the user to determine if they
+        // want to be notified following the completion of a
+        // split or merge.
+        //
+        /// <summary>
+        /// Gets or sets the choice of whether the user will
+        /// be notified when a split or merge has completed.
+        /// </summary>
+        /// <value>
+        /// If the user will be notified after a split or merge.
+        /// </value>
+        public bool NotifyOnSplitMerge
+        {
+            get { return _notifyOnSplitMerge; }
+            set { _notifyOnSplitMerge = value; }
         }
         //---------------------------------------------------------------------
 
