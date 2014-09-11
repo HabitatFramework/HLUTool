@@ -42,61 +42,91 @@ namespace HLU.UI.ViewModel
             _viewModelMain = viewModelMain;
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // Return true or false success so the main class knows
+        // whether to notify the user following the completion of
+        // the merge.
+        //
         /// <summary>
         /// There must be at least two selected features that either share the same toid but not the same incid,
         /// or they do not share the same incid.
         /// </summary>
-        internal void LogicalMerge()
+        internal bool LogicalMerge()
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
                 MessageBox.Show("Cannot logically merge: nothing is selected on the map.", "HLU: Logical Merge",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
             }
             else if (_viewModelMain.GisSelection.Rows.Count <= 1)
             {
                 MessageBox.Show("Cannot merge: map selection must contain more than one feature for a merge.",
                     "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
             }
             else if (_viewModelMain.IncidsSelectedMapCount > 1)
             {
                 // selected features do not share same incid
-                PerformLogicalMerge(false);
+                return PerformLogicalMerge(false);
             }
             else if ((_viewModelMain.ToidsSelectedMapCount == 1) && (_viewModelMain.IncidsSelectedMapCount > 1))
             {
                 // selected features share same toid but not incid
-                PerformLogicalMerge(true);
+                return PerformLogicalMerge(true);
             }
+            else
+                return false;
         }
+        //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // Return true or false success so the main class knows
+        // whether to notify the user following the completion of
+        // the merge.
+        //
         /// <summary>
         /// There must be at least two selected features that share the same incid and toid.
         /// </summary>
-        internal void PhysicalMerge()
+        internal bool PhysicalMerge()
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
                 MessageBox.Show("Cannot physically merge: nothing is selected on the map.", "HLU: Physical Merge",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
             }
             else if (_viewModelMain.GisSelection.Rows.Count <= 1)
             {
                 MessageBox.Show("Cannot physically merge: map selection must contain more than one feature for a merge.",
                     "HLU: Physical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
             }
             else if ((_viewModelMain.IncidsSelectedMapCount == 1) && (_viewModelMain.ToidsSelectedMapCount == 1))
             {
                 // selected features share same incid and toid
-                PerformPhysicalMerge();
+                return PerformPhysicalMerge();
             }
+            else
+                return false;
         }
+        //---------------------------------------------------------------------
 
-        private void PerformLogicalMerge(bool physicallyMerge)
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // Return true or false success so the main class knows
+        // whether to notify the user following the completion of
+        // the merge.
+        //
+        private bool PerformLogicalMerge(bool physicallyMerge)
         {
+            bool success = true;
             try
             {
-                if (_viewModelMain.IncidsSelectedMapCount <= 0) return;
+                if (_viewModelMain.IncidsSelectedMapCount <= 0)
+                    return false;
 
                 _mergeFeaturesWindow = new WindowMergeFeatures();
                 _mergeFeaturesWindow.Owner = App.Current.MainWindow;
@@ -261,11 +291,14 @@ namespace HLU.UI.ViewModel
             }
             catch (Exception ex)
             {
+                success = false;
                 MessageBox.Show("Merge operation failed. The error message returned was:\n\n" +
                     ex.Message, "HLU Merge Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally { _viewModelMain.ChangeCursor(Cursors.Arrow, null); }
+            return success;
         }
+        //---------------------------------------------------------------------
 
         private void _mergeFeaturesViewModelLogical_RequestClose(int selectedIndex)
         {
@@ -275,8 +308,15 @@ namespace HLU.UI.ViewModel
             _mergeResultFeatureIndex = selectedIndex;
         }
 
-        private void PerformPhysicalMerge()
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // Return true or false success so the main class knows
+        // whether to notify the user following the completion of
+        // the merge.
+        //
+        private bool PerformPhysicalMerge()
         {
+            bool success = true;
             try
             {
                 HluDataSet.incid_mm_polygonsDataTable selectTable = new HluDataSet.incid_mm_polygonsDataTable();
@@ -285,7 +325,7 @@ namespace HLU.UI.ViewModel
                     ViewModelWindowMain.IncidPageSize, selectTable), ref selectTable);
 
                 if (selectTable.Count == 0)
-                    return;
+                    return false;
                 else if (selectTable.Count != _viewModelMain.GisSelection.Rows.Count)
                     throw new Exception(String.Format("GIS Layer and database are out of sync:\n{0} map polygons, {1} rows in table {2}.", 
                         _viewModelMain.FragsSelectedMapCount, selectTable.Count, _viewModelMain.HluDataset.incid_mm_polygons.TableName));
@@ -408,11 +448,14 @@ namespace HLU.UI.ViewModel
             }
             catch (Exception ex)
             {
+                success = false;
                 MessageBox.Show("Merge operation failed. The error message returned was:\n\n" +
                     ex.Message, "HLU Merge Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally { _viewModelMain.ChangeCursor(Cursors.Arrow, null); }
+            return success;
         }
+        //---------------------------------------------------------------------
 
         private void _mergeFeaturesViewModelPhysical_RequestClose(int selectedIndex)
         {

@@ -198,5 +198,8 @@
     <Setting Name="InterfaceStyle" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">Original</Value>
     </Setting>
+    <Setting Name="NotifyOnSplitMerge" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

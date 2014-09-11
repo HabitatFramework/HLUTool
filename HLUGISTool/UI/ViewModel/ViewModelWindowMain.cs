@@ -112,11 +112,13 @@ namespace HLU.UI.ViewModel
         private WindowOptions _windowOptions;
         private WindowQueryBuilder _qryBuilderWindow;
         private WindowWarnOnGISSelect _windowWarnGISSelect;
+        private WindowNotifyOnSplitMerge _windowWarnSplitMerge;
         private WindowWarnOnSubsetUpdate _windowWarnSubsetUpdate;
         private WindowSwitchGISLayer _windowSwitchGISLayer;
         private ViewModelOptions _viewModelOptions;
         private ViewModelQueryBuilder _qryBuilderViewModel;
         private ViewModelWindowWarnOnGISSelect _viewModelWinWarnGISSelect;
+        private ViewModelWindowNotifyOnSplitMerge _viewModelWinWarnSplitMerge;
         private ViewModelWindowWarnOnSubsetUpdate _viewModelWinWarnSubsetUpdate;
         private ViewModelWindowMainBulkUpdate _viewModelBulkUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
@@ -1316,7 +1318,11 @@ namespace HLU.UI.ViewModel
             _autoSplit = true;
 
             ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-            vmSplit.LogicalSplit();
+            //---------------------------------------------------------------------
+            // CHANGED: CR39 (Split and merge complete messages)
+            // Notify the user following the completion of the split.
+            if (vmSplit.LogicalSplit()) NotifySplitMerge("Logical split completed.");
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -1330,7 +1336,11 @@ namespace HLU.UI.ViewModel
             _autoSplit = true;
 
             ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-            vmSplit.PhysicalSplit();
+            //---------------------------------------------------------------------
+            // CHANGED: CR39 (Split and merge complete messages)
+            // Notify the user following the completion of the split.
+            if (vmSplit.PhysicalSplit()) NotifySplitMerge("Physical split completed.");
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -1413,7 +1423,11 @@ namespace HLU.UI.ViewModel
             ReadMapSelection(false);
 
             ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
-            vmMerge.LogicalMerge();
+            //---------------------------------------------------------------------
+            // CHANGED: CR39 (Split and merge complete messages)
+            // Notify the user following the completion of the split.
+            if (vmMerge.LogicalMerge()) NotifySplitMerge("Logical merge completed.");
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -1425,7 +1439,11 @@ namespace HLU.UI.ViewModel
             ReadMapSelection(false);
 
             ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
-            vmMerge.PhysicalMerge();
+            //---------------------------------------------------------------------
+            // CHANGED: CR39 (Split and merge complete messages)
+            // Notify the user following the completion of the split.
+            if (vmMerge.PhysicalMerge()) NotifySplitMerge("Physical merge completed.");
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -1453,6 +1471,51 @@ namespace HLU.UI.ViewModel
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
         }
+
+        #endregion
+
+        #region Notify SplitMerge
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // Check the options to see if the user wants to be notified
+        // following the completion of a split or merge, and display
+        // the supplied message if they do.
+        //
+        /// <summary>
+        /// Notify the user following the completion of a split of merge
+        /// if the options specify they want to be notified.
+        /// </summary>
+        private void NotifySplitMerge(string msgText)
+        {
+            if (Settings.Default.NotifyOnSplitMerge)
+            {
+                _windowWarnSplitMerge = new WindowNotifyOnSplitMerge();
+                if ((_windowWarnSplitMerge.Owner = App.GetActiveWindow()) == null)
+                    throw (new Exception("No parent window loaded"));
+                _windowWarnSplitMerge.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+                // create ViewModel to which main window binds
+                _viewModelWinWarnSplitMerge = new ViewModelWindowNotifyOnSplitMerge(msgText);
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinWarnSplitMerge.RequestClose +=
+                    new ViewModelWindowNotifyOnSplitMerge.RequestCloseEventHandler(_viewModelWinWarnSplitMerge_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowWarnSplitMerge.DataContext = _viewModelWinWarnSplitMerge;
+
+                // show window
+                _windowWarnSplitMerge.ShowDialog();
+            }
+        }
+
+        void _viewModelWinWarnSplitMerge_RequestClose()
+        {
+            _viewModelWinWarnSplitMerge.RequestClose -= _viewModelWinWarnSplitMerge_RequestClose;
+            _windowWarnSplitMerge.Close();
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -2586,8 +2649,7 @@ namespace HLU.UI.ViewModel
                             if (CanPhysicallySplit)
                             {
                                 ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
-                                if (vmSplit.PhysicalSplit()) MessageBox.Show("Physical split completed.",
-                                    "HLU: Physical Split", MessageBoxButton.OK, MessageBoxImage.Information);
+                                if (vmSplit.PhysicalSplit()) NotifySplitMerge("Physical split completed.");
                             }
                             else
                             {
@@ -8446,6 +8508,9 @@ namespace HLU.UI.ViewModel
                                 // the fields are the previous (modified) values.
                                 String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
                                 g.Key.modified_ihs +
+                                //---------------------------------------------------------------------
+                                // FIX: 031 Show area/length in history as hectares/metres.
+                                // Show the area and length values in the history as hectares and metres.
                                 String.Format("\n\tModified Length: {0} [km]", g.Distinct(_histRowEqComp)
                                     .Sum(r => !r.Ismodified_lengthNull() ? Math.Round(r.modified_length / 1000, 3) : 0).ToString("f3")) +
                                 String.Format("\n\tModified Area: {0} [ha]", g.Distinct(_histRowEqComp)
