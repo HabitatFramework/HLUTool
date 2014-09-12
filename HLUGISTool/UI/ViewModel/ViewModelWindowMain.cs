@@ -222,6 +222,7 @@ namespace HLU.UI.ViewModel
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
         private List<string> _exportMdbs = new List<string>();
         private string _userName;
+        private string _dbVersion;
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
@@ -550,6 +551,8 @@ namespace HLU.UI.ViewModel
                 return false;
             }
 
+            // Store the database version for displaying in the 'About' box.
+            _dbVersion = lutDbVersion;
 
             return true;
         }
@@ -2146,12 +2149,16 @@ namespace HLU.UI.ViewModel
         private void AboutClicked(object param)
         {
             //---------------------------------------------------------------------
+            // CHANGED: CR30 (Database validation on startup)
+            // Show the database version in the 'About' box.
+            //
             // CHANGED: CR9 (Current userid)
             // Show the current userid and username together with the version
             // and copyright notice in the 'About' box.
             //
-            MessageBox.Show(App.Current.MainWindow, String.Format("   {0} Version:  {1}\n\n   Userid:   {2}\n   Username: {3}\n\n   {4}",
-                _displayName, Assembly.GetExecutingAssembly().GetName().Version.ToString(), UserID, UserName, AssemblyCopyright), 
+            MessageBox.Show(App.Current.MainWindow,
+                String.Format("   App Version :  {0}\n   Db Version :    {1}\n\n   Userid :        {2}\n   Username : {3}\n\n   {4}",
+                Assembly.GetExecutingAssembly().GetName().Version.ToString(), _dbVersion, UserID, UserName, AssemblyCopyright), 
                 String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
             //---------------------------------------------------------------------
         }
