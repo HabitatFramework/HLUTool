@@ -200,17 +200,24 @@ namespace HLU
                 TextBox tbx = (TextBox)cb.Template.FindName("PART_EditableTextBox", cb);
                 int caretIx = tbx.CaretIndex;
 
-                string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx - 1);
-                for (int i = 0; i < cb.Items.Count; i++)
+                //---------------------------------------------------------------------
+                // FIX: 031 Check combobox text is not null before finding list item
+                if (cb.Text != null)
+                //---------------------------------------------------------------------
                 {
-                    if (pi.GetValue(cb.Items[i], null).ToString().StartsWith(validText))
+                    string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx);
+                    //string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx - 1);
+                    for (int i = 0; i < cb.Items.Count; i++)
                     {
-                        cb.SelectedIndex = i;
-                        tbx.CaretIndex = caretIx;
-                        return;
+                        if (pi.GetValue(cb.Items[i], null).ToString().StartsWith(validText))
+                        {
+                            cb.SelectedIndex = i;
+                            tbx.CaretIndex = caretIx;
+                            return;
+                        }
                     }
+                    cb.Text = null;
                 }
-                cb.Text = null;
             }
         }
 
