@@ -1,12 +1,30 @@
-﻿
-<!--  Theme used for HLU application based on Microsoft Expression Light.  -->
-
-<!--
+﻿<!--
+    // HLUTool is used to view and maintain habitat and land use GIS data.
+    //
     // (c) Copyright Microsoft Corporation.
     // This source is subject to Microsoft Public License (Ms-PL).
     // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
     // All other rights reserved.
+    //
+    // Copyright © 2014 Sussex Biodiversity Record Centre
+    // 
+    // This file is part of HLUTool.
+    // 
+    // HLUTool is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU General Public License as published by
+    // the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    // 
+    // HLUTool is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY; without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU General Public License for more details.
+    // 
+    // You should have received a copy of the GNU General Public License
+    // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
+<!--  Theme used for HLU application based on Microsoft Expression Light.  -->
 
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
