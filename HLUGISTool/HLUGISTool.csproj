@@ -679,6 +679,7 @@
     <Resource Include="Icons\HLUIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\SwitchGISLayer.png" />
     <Resource Include="Icons\LogicalMerge.png" />
     <Resource Include="Icons\LogicalSplit.png" />
     <Resource Include="Icons\PhysicalMerge.png" />
