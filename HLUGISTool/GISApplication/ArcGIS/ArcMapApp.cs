@@ -192,6 +192,11 @@ namespace HLU.GISApplication.ArcGIS
         /// </summary>
         private int _unitDistance;
 
+        /// <summary>
+        /// Maximum (nominal) allowable length of a SQL query.
+        /// </summary>
+        private int _maxSqlLength = 30000;
+
         #endregion
 
         #region Constructor
@@ -662,6 +667,46 @@ namespace HLU.GISApplication.ArcGIS
                 return null;
             }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR12 (Select by attribute performance)
+        // Calculate the approximate length of the SQL statement that will be
+        // used in GIS so that it can be determined if the selection can be
+        // performed using a direct query or if a table join is needed.
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// Calculate the approximate length of the resulting SQL query.
+        /// </summary>
+        /// <param name="targetList">The target list of data columns.</param>
+        /// <param name="whereConds">The SQL WHERE conditions.</param>
+        /// <returns>Integer of the approximate length of the SQL statement that will
+        /// meet the where conditions.</returns>
+        public override int SqlLength(DataColumn[] targetList, List<SqlFilterCondition> whereConds)
+        {
+            if ((_arcMap == null) || (_hluLayer == null) || (_hluView == null) ||
+                (targetList == null) || (targetList.Length == 0))
+                return 0;
+
+            try
+            {
+                bool qualifyColumns = false;
+                bool additionalTables;
+                DataTable resultTable = null;
+
+                string subFields = TargetList(targetList, false, true, ref qualifyColumns, out resultTable);
+                string fromList = qualifyColumns ?
+                    FromList(false, targetList, false, ref whereConds, out additionalTables) : _hluLayer.Name;
+
+                int sqlLen = WhereClause(false, false, true, MapWhereClauseFields(_hluLayerStructure, whereConds)).Length;
+
+                return sqlLen;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public override void ReadMapSelection(ref DataTable resultTable)
         {
@@ -1201,6 +1246,14 @@ namespace HLU.GISApplication.ArcGIS
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Maximum (nominal) allowable length of a SQL query.
+        /// </summary>
+        public override int MaxSqlLength
+        {
+            get { return _maxSqlLength; }
         }
 
         /// <summary>

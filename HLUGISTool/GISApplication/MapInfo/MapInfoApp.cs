@@ -91,10 +91,21 @@ namespace HLU.GISApplication.MapInfo
 
         private int _hluMapWindowID = -1;
 
+        /// <summary>
+        /// Area unit of measurement.
+        /// </summary>
+        private string _unitArea = "sq m";
+
+        /// <summary>
+        /// Distance unit of measurement.
+        /// </summary>
         private string _unitDistance = "m";
 
-        private string _unitArea = "sq m";
-        
+        /// <summary>
+        /// Maximum (nominal) allowable length of a SQL query.
+        /// </summary>
+        private int _maxSqlLength = 2000;
+
         private string _historyGeom1ColumnName = ViewModelWindowMain.HistoryGeometry1ColumnName;
 
         private string _historyGeom2ColumnName = ViewModelWindowMain.HistoryGeometry2ColumnName;
@@ -218,6 +229,14 @@ namespace HLU.GISApplication.MapInfo
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Maximum (nominal) allowable length of a SQL query.
+        /// </summary>
+        public override int MaxSqlLength
+        {
+            get { return _maxSqlLength; }
         }
 
         public override object ApplicationObject
@@ -1889,6 +1908,48 @@ namespace HLU.GISApplication.MapInfo
             }
             catch { return null; }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR12 (Select by attribute performance)
+        // Calculate the approximate length of the SQL statement that will be
+        // used in GIS so that it can be determined if the selection can be
+        // performed using a direct query or if a table join is needed.
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// Calculate the approximate length of the resulting SQL query.
+        /// </summary>
+        /// <param name="targetList">The target list of data columns.</param>
+        /// <param name="whereConds">The SQL WHERE conditions.</param>
+        /// <returns>Integer of the approximate length of the SQL statement that will
+        /// meet the where conditions.</returns>
+        public override int SqlLength(DataColumn[] targetList, List<SqlFilterCondition> whereConds)
+        {
+            if ((_mapInfoApp == null) || (targetList == null) || (targetList.Length == 0))
+                return 0;
+
+            try
+            {
+                bool qualifyColumns = false;
+                bool additionalTables;
+                DataTable resultTable = null;
+
+                StringBuilder sbCommandText = new StringBuilder("SELECT ");
+                sbCommandText.Append(TargetList(targetList, true, false, ref qualifyColumns, out resultTable));
+                sbCommandText.Append(qualifyColumns ? FromList(true, targetList, true, ref whereConds,
+                    out additionalTables) : String.Format(" FROM {0}", _hluLayer));
+                sbCommandText.Append(WhereClause(true, true, false,
+                    MapWhereClauseFields(_hluLayerStructure, whereConds)));
+
+                int sqlLen = sbCommandText.Length;
+
+                return sqlLen;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        //---------------------------------------------------------------------
 
         private bool TableExists(string tableName)
         {
