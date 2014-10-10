@@ -4,7 +4,7 @@
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
         Width="510"
-        Height="638"
+        Height="672"
         Activated="Window_Activated"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -359,21 +359,6 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelWarnOnGISSelect"
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Margin="4,4,4,4"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center">
-                                Warn Before Using GIS table join?
-                            </Label>
-                            <CheckBox Name="CheckBoxWarnOnGISSelect"
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=WarnOnGISSelect}" />
-
                             <Label Name="LabelNotifyOnSplitMerge"
                                     Grid.Row="0"
                                     Grid.Column="3"
@@ -401,10 +386,11 @@
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="9*" MinWidth="170" />
+                            <ColumnDefinition Width="10*" />
                         </Grid.ColumnDefinitions>
 
                         <Grid Name="GridSQLSelect"
@@ -412,11 +398,10 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
 
                             <Label Name="LabelUseAdvancedSQL"
-                                    Grid.Row="0"
                                     Grid.Column="0"
                                     Margin="4,0,4,0"
                                     HorizontalAlignment="Left"
@@ -424,7 +409,6 @@
                                 Use Advanced Query Builder?
                             </Label>
                             <CheckBox Name="CheckBoxUseAdvancedSQL"
-                                        Grid.Row="0"
                                         Grid.Column="1"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -463,6 +447,30 @@
                                     Content="..."
                                     IsEnabled="{Binding Path=CanBrowseSql}" />
                         </Grid>
+
+                        <Grid Name="GridWarnBeforeGISSelect"
+                                Grid.Row="2"
+								Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+
+							<Label Name="LabelWarnBeforeGISSelect"
+									Grid.Column="0"
+									Margin="4,4,4,4"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Center">
+								Warn Before GIS Select?
+							</Label>
+							<ComboBox Name="ComboBoxWarnBeforeGISSelect"
+										Grid.Column="1"
+										Margin="4,4,4,4"
+										BorderThickness="1"
+										ItemsSource="{Binding Path=WarnBeforeGISSelectOptions}"
+										SelectedValue="{Binding Path=WarnBeforeGISSelect,
+																ValidatesOnDataErrors=True}" />
+						</Grid>
                     </Grid>
                 </GroupBox>
 

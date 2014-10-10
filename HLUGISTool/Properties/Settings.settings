@@ -159,8 +159,8 @@
     <Setting Name="PipeErrorInit" Type="System.Char" Scope="Application">
       <Value Profile="(Default)">~</Value>
     </Setting>
-    <Setting Name="WarnOnGISSelect" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="WarnBeforeGISSelect" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="HistoryAdditionalFieldsDelimiter" Type="System.String" Scope="Application">
       <Value Profile="(Default)">~~~</Value>

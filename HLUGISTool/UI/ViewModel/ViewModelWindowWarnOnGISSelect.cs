@@ -216,8 +216,14 @@ namespace HLU.UI.ViewModel
 
         public bool DoNotAskAgain
         {
-            get { return !Settings.Default.WarnOnGISSelect; }
-            set { Settings.Default.WarnOnGISSelect = !value; }
+            get { return false; }
+            set
+            {
+                if (Settings.Default.WarnBeforeGISSelect == 0)
+                    Settings.Default.WarnBeforeGISSelect = 1;
+                else if ((_selectByjoin) & (Settings.Default.WarnBeforeGISSelect == 1))
+                    Settings.Default.WarnBeforeGISSelect = 2;
+            }
         }
     }
 }
