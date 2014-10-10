@@ -166,7 +166,7 @@ namespace HLU.GISApplication
         }
 
         /// <summary>
-        /// Create a list of sql filter conditions jusing a table of selected Incids.
+        /// Create a list of sql filter conditions using a table of selected Incids.
         /// </summary>
         /// <param name="incidSelection">A DataTable containing the selected Incids.</param>
         /// <param name="gisApp">Which GIS system is being used.</param>
