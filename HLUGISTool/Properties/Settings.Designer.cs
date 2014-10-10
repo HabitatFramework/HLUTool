@@ -540,14 +540,14 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool WarnOnGISSelect {
+        public int WarnBeforeGISSelect {
             get {
-                return ((bool)(this["WarnOnGISSelect"]));
+                return ((int)(this["WarnBeforeGISSelect"]));
             }
             set {
-                this["WarnOnGISSelect"] = value;
+                this["WarnBeforeGISSelect"] = value;
             }
         }
         

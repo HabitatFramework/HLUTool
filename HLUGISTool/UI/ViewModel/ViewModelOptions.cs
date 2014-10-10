@@ -61,7 +61,7 @@ namespace HLU.UI.ViewModel
         private string _sqlPath = Settings.Default.SqlPath;
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
-        private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
+        private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
 
@@ -184,7 +184,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
 
-            Settings.Default.WarnOnGISSelect = _warnOnGISSelect;
+            Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
 
             Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
@@ -445,18 +445,43 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // A new option to enable the user to determine when to warn
+        // the user before performing a GIS selection.
+        // 
         /// <summary>
-        /// Gets or sets the choice of whether the user will
-        /// be warned before a GIS Select.
+        /// Gets or sets the list of available warn before GIS selection
+        /// options from the enum.
         /// </summary>
         /// <value>
-        /// If the user will be warned before a GIS Select.
+        /// The list of options for warning before any GIS selection.
         /// </value>
-        public bool WarnOnGISSelect
+        public WarnBeforeGISSelect[] WarnBeforeGISSelectOptions
         {
-            get { return _warnOnGISSelect; }
-            set { _warnOnGISSelect = value; }
+            get
+            {
+                return Enum.GetValues(typeof(WarnBeforeGISSelect)).Cast<WarnBeforeGISSelect>()
+                    .ToArray();
+            }
+            set { }
         }
+
+        /// <summary>
+        /// Gets or sets the preferred warning before any GIS selection option.
+        /// </summary>
+        /// <value>
+        /// The preferred option for warning before any GIS selection.
+        /// </value>
+        public WarnBeforeGISSelect? WarnBeforeGISSelect
+        {
+            get { return (WarnBeforeGISSelect)_warnBeforeGISSelect; }
+            set
+            {
+                _warnBeforeGISSelect = (int)value;
+            }
+        }
+        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR39 (Split and merge complete messages)
