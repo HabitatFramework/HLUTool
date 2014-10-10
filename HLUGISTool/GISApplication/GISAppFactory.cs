@@ -134,8 +134,7 @@ namespace HLU.GISApplication
                 if (openFileDlg.ShowDialog() == true)
                 {
                     if (File.Exists(openFileDlg.FileName))
-                        Settings.Default.MapPath = openFileDlg.FileName;
-                    return openFileDlg.FileName;
+                        return openFileDlg.FileName;
                 }
             }
             catch { }

@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using System.Windows.Forms;
 using HLU.Data.Model;
 using HLU.UI.ViewModel;
 using HLU.GISApplication;
@@ -43,6 +44,7 @@ namespace HLU.UI.ViewModel
         private ICommand _okCommand;
         private ICommand _cancelCommand;
         private ICommand _browseMapCommand;
+        private ICommand _browseSqlCommand;
         private string _displayName = "HLU Options";
         private SelectionList<string> _historyColumns;
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
@@ -56,10 +58,12 @@ namespace HLU.UI.ViewModel
 
         private int _preferredGis = Settings.Default.PreferredGis;
         private string _mapPath = Settings.Default.MapPath;
+        private string _sqlPath = Settings.Default.SqlPath;
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _warnOnGISSelect = Settings.Default.WarnOnGISSelect;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+        private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -68,6 +72,7 @@ namespace HLU.UI.ViewModel
         private string _vagueDateDelimiter = Settings.Default.VagueDateDelimiter;
 
         private string _bakMapPath;
+        private string _bakSqlPath;
 
         #endregion
 
@@ -181,6 +186,9 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.WarnOnGISSelect = _warnOnGISSelect;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+
+            Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
+            Settings.Default.SqlPath = _sqlPath;
 
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
@@ -469,6 +477,91 @@ namespace HLU.UI.ViewModel
             set { _notifyOnSplitMerge = value; }
         }
         //---------------------------------------------------------------------
+
+        #endregion
+
+        #region Sql Query
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by Attributes Interface)
+        // A new option to enable the user to use the new
+        // (advanced) 'Select by Attributes' form or the
+        // old (original) form.
+        //
+        /// <summary>
+        /// Gets or sets the choice of whether the user will
+        /// use the advanced 'Select by Attributes' form.
+        /// </summary>
+        /// <value>
+        /// If the user will use the advanced 'Select by Attributes'
+        /// form.
+        /// </value>
+        public bool UseAdvancedSQL
+        {
+            get { return _useAdvancedSQL; }
+            set { _useAdvancedSQL = value; }
+        }
+        //---------------------------------------------------------------------
+
+        public ICommand BrowseSqlCommand
+        {
+            get
+            {
+                if (_browseSqlCommand == null)
+                {
+                    Action<object> browseSqlAction = new Action<object>(this.BrowseSqlClicked);
+                    _browseSqlCommand = new RelayCommand(browseSqlAction, param => this.CanBrowseSql);
+                }
+
+                return _browseSqlCommand;
+            }
+        }
+
+        public bool CanBrowseSql
+        {
+            get { return _useAdvancedSQL == true; }
+        }
+
+        private void BrowseSqlClicked(object param)
+        {
+            _bakSqlPath = _sqlPath;
+            SqlPath = String.Empty;
+            SqlPath = GetSqlPath();
+
+            if (String.IsNullOrEmpty(SqlPath))
+            {
+                SqlPath = _bakSqlPath;
+            }
+            OnPropertyChanged("SqlPath");
+        }
+
+        public string SqlPath
+        {
+            get { return _sqlPath; }
+            set { _sqlPath = value; }
+        }
+
+        public static string GetSqlPath()
+        {
+            try
+            {
+                string sqlPath = Settings.Default.SqlPath;
+
+                FolderBrowserDialog openFolderDlg = new FolderBrowserDialog();
+                openFolderDlg.Description = "Select Sql Query Default Directory";
+                openFolderDlg.SelectedPath = sqlPath;
+                //openFolderDlg.RootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                openFolderDlg.ShowNewFolderButton = true;
+                if (openFolderDlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (Directory.Exists(openFolderDlg.SelectedPath))
+                        return openFolderDlg.SelectedPath;
+                }
+            }
+            catch { }
+
+            return null;
+        }
 
         #endregion
 
