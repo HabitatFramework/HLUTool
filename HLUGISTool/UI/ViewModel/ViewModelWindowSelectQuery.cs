@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Odbc;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -58,6 +59,8 @@ namespace HLU.UI.ViewModel
         private ICommand _addColumnCommand;
         private ICommand _addOperatorCommand;
         private ICommand _addValueCommand;
+
+        private Dictionary<Type, Int32> _typeMapSystemToSQL = new Dictionary<Type, int>();
 
         private string _displayName = "Advanced Query Builder";
         private Cursor _cursorType = Cursors.Arrow;
@@ -163,7 +166,7 @@ namespace HLU.UI.ViewModel
                 try
                 {
                     IDataReader dataReader = _db.ExecuteReader(String.Format(
-                        "SELECT DISTINCT {0} FROM {1}",
+                        "SELECT DISTINCT {0} FROM {1} WHERE {0} IS NOT NULL ORDER BY {0}",
                         _db.QuoteIdentifier(Column.ColumnName),
                         _db.QualifyTableName(Table.TableName)),
                         _db.Connection.ConnectionTimeout, CommandType.Text);
@@ -171,8 +174,14 @@ namespace HLU.UI.ViewModel
                     if (dataReader == null) throw new Exception(String.Format("Error reading values from {0}.{1}", Table.TableName, Column.ColumnName));
 
                     Dictionary<string, object> q = new Dictionary<string, object>();
-                    while (dataReader.Read())
+                    long i = 0;
+                    while (dataReader.Read() && i < 1000)
+                    {
+                        string temp = dataReader.GetValue(0).ToString();
+                        object temp2 = dataReader.GetValue(0);
                         q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
+                        i += 1;
+                    }
 
                     dataReader.Close();
 
@@ -472,6 +481,10 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("Table");
                 OnPropertyChanged("Columns");
                 OnPropertyChanged("ColumnIsEnabled");
+
+                _queryValues = null;
+                OnPropertyChanged("QueryValues");
+                OnPropertyChanged("QueryValueIsEnabled");
             }
         }
 
@@ -621,7 +634,7 @@ namespace HLU.UI.ViewModel
 
         public object QueryValue
         {
-            get { return _queryValue != null ? _queryValue.ToString() : null; }
+            get { return _queryValue != null ? _queryValue : null; }
             set
             {
                 //if (String.IsNullOrEmpty(_queryValueText) || (_queryValueRegex.Split(_queryValueText).Length > 1))
@@ -630,7 +643,7 @@ namespace HLU.UI.ViewModel
                 _cursorType = Cursors.Arrow;
                 OnPropertyChanged("CursorType");
                 OnPropertyChanged("QueryValue");
-                OnPropertyChanged("QueryValueText");
+                //OnPropertyChanged("QueryValueText");
             }
         }
 
@@ -748,9 +761,9 @@ namespace HLU.UI.ViewModel
         private void AddColumnCommandClick(object param)
         {
             if (string.IsNullOrEmpty(SqlWhereClause) || SqlWhereClause.EndsWith(" "))
-                SqlWhereClause += _db.QuoteIdentifier(Table.TableName) + "." + _db.QuoteIdentifier(Column.ColumnName);
+                SqlWhereClause += QuoteIdentifier(Table.TableName) + "." + QuoteIdentifier(Column.ColumnName);
             else
-                SqlWhereClause += String.Concat(" ", _db.QuoteIdentifier(Table.TableName), ".", _db.QuoteIdentifier(Column.ColumnName));
+                SqlWhereClause += String.Concat(" ", QuoteIdentifier(Table.TableName), ".", QuoteIdentifier(Column.ColumnName));
 
             OnPropertyChanged("SqlWhereClause");
         }
@@ -848,9 +861,9 @@ namespace HLU.UI.ViewModel
         private void AddValueCommandClick(object param)
         {
             if (string.IsNullOrEmpty(SqlWhereClause) || SqlWhereClause.EndsWith(" "))
-                SqlWhereClause += _db.QuoteValue(QueryValue);
+                SqlWhereClause += QuoteValue(QueryValue);
             else
-                SqlWhereClause += String.Concat(" ", _db.QuoteValue(QueryValue));
+                SqlWhereClause += String.Concat(" ", QuoteValue(QueryValue));
 
 
             OnPropertyChanged("SqlWhereClause");
@@ -999,6 +1012,143 @@ namespace HLU.UI.ViewModel
                 return (ok == true);
             }
             catch { return false; }
+        }
+
+        #endregion
+
+        #region Quotes & Qualifiers
+
+        public string QuoteIdentifier(string identifier)
+        {
+            if (!String.IsNullOrEmpty(identifier))
+            {
+                if (!identifier.StartsWith(QuotePrefix)) identifier = identifier.Insert(0, QuotePrefix);
+                if (!identifier.EndsWith(QuoteSuffix)) identifier += QuoteSuffix;
+            }
+            return identifier;
+        }
+
+        public string QuotePrefix { get { return "["; } }
+
+        public string QuoteSuffix { get { return "]"; } }
+
+        public string StringLiteralDelimiter { get { return "\""; } }
+
+        public string DateLiteralPrefix { get { return "#"; } }
+
+        public string DateLiteralSuffix { get { return "#"; } }
+
+        public string WildcardSingleMatch { get { return "_"; } }
+
+        public string WildcardManyMatch { get { return "%"; } }
+
+        /// <summary>
+        /// Does not escape string delimiter or other special characters.
+        /// Does check if value is already quoted.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string QuoteValue(object value)
+        {
+            if (value == null) return "NULL";
+            Type valueType = value.GetType();
+            int colType;
+
+            if (_typeMapSystemToSQL == null || _typeMapSystemToSQL.Count() == 0)
+            {
+                Dictionary<Type, int> typeMapSystemToSQLAdd = new Dictionary<Type, int>();
+                typeMapSystemToSQLAdd.Add(typeof(Object), (int)OdbcType.VarBinary);
+                typeMapSystemToSQLAdd.Add(typeof(Boolean), (int)OdbcType.Bit);
+                typeMapSystemToSQLAdd.Add(typeof(SByte), (int)OdbcType.Int);
+                typeMapSystemToSQLAdd.Add(typeof(Byte), (int)OdbcType.TinyInt);
+                typeMapSystemToSQLAdd.Add(typeof(Int16), (int)OdbcType.SmallInt);
+                typeMapSystemToSQLAdd.Add(typeof(UInt16), (int)OdbcType.SmallInt);
+                typeMapSystemToSQLAdd.Add(typeof(Int32), (int)OdbcType.Int);
+                typeMapSystemToSQLAdd.Add(typeof(UInt32), (int)OdbcType.Int);
+                typeMapSystemToSQLAdd.Add(typeof(Int64), (int)OdbcType.BigInt);
+                typeMapSystemToSQLAdd.Add(typeof(UInt64), (int)OdbcType.BigInt);
+                typeMapSystemToSQLAdd.Add(typeof(Single), (int)OdbcType.Real);
+                typeMapSystemToSQLAdd.Add(typeof(Double), (int)OdbcType.Double);
+                typeMapSystemToSQLAdd.Add(typeof(Decimal), (int)OdbcType.Decimal);
+                typeMapSystemToSQLAdd.Add(typeof(DateTime), (int)OdbcType.DateTime);
+                typeMapSystemToSQLAdd.Add(typeof(TimeSpan), (int)OdbcType.DateTime);
+                typeMapSystemToSQLAdd.Add(typeof(Byte[]), (int)OdbcType.VarBinary);
+                typeMapSystemToSQLAdd.Add(typeof(Guid), (int)OdbcType.UniqueIdentifier);
+                if (Settings.Default.DbIsUnicode)
+                {
+                    typeMapSystemToSQLAdd.Add(typeof(Char), (int)OdbcType.NChar);
+                    typeMapSystemToSQLAdd.Add(typeof(String), (int)OdbcType.NText);
+                    typeMapSystemToSQLAdd.Add(typeof(Char[]), (int)OdbcType.NText);
+                }
+                else
+                {
+                    typeMapSystemToSQLAdd.Add(typeof(Char), (int)OdbcType.Char);
+                    typeMapSystemToSQLAdd.Add(typeof(String), (int)OdbcType.Text);
+                    typeMapSystemToSQLAdd.Add(typeof(Char[]), (int)OdbcType.Text);
+                }
+
+                foreach (KeyValuePair<Type, int> kv in typeMapSystemToSQLAdd)
+                {
+                    if (!_typeMapSystemToSQL.ContainsKey(kv.Key))
+                        _typeMapSystemToSQL.Add(kv.Key, kv.Value);
+                }
+
+                if (Settings.Default.DbIsUnicode)
+                {
+                    ReplaceType(typeof(Char), (int)OdbcType.NChar, _typeMapSystemToSQL);
+                    ReplaceType(typeof(String), (int)OdbcType.NText, _typeMapSystemToSQL);
+                    ReplaceType(typeof(Char[]), (int)OdbcType.NText, _typeMapSystemToSQL);
+                }
+                else
+                {
+                    ReplaceType(typeof(Char), (int)OdbcType.Char, _typeMapSystemToSQL);
+                    ReplaceType(typeof(String), (int)OdbcType.Text, _typeMapSystemToSQL);
+                    ReplaceType(typeof(Char[]), (int)OdbcType.Text, _typeMapSystemToSQL);
+                }
+            }
+
+            if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
+            {
+                string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Replace("T", " ") : value.ToString();
+                switch ((OdbcType)colType)
+                {
+                    case OdbcType.Char:
+                    case OdbcType.NChar:
+                    case OdbcType.NText:
+                    case OdbcType.NVarChar:
+                    case OdbcType.Text:
+                    case OdbcType.VarChar:
+                        if (s.Length == 0) return StringLiteralDelimiter + StringLiteralDelimiter;
+                        if (!s.StartsWith(StringLiteralDelimiter)) s = StringLiteralDelimiter + s;
+                        if (!s.EndsWith(StringLiteralDelimiter)) s += StringLiteralDelimiter;
+                        return s;
+                    case OdbcType.Date:
+                    case OdbcType.DateTime:
+                    case OdbcType.SmallDateTime:
+                    case OdbcType.Time:
+                    case OdbcType.Timestamp:
+                        if (s.Length == 0) return DateLiteralPrefix + DateLiteralSuffix;
+                        if (!s.StartsWith(DateLiteralPrefix)) s = DateLiteralPrefix + s;
+                        if (!s.EndsWith(DateLiteralSuffix)) s += DateLiteralSuffix;
+                        return s;
+                    default:
+                        return s;
+                }
+            }
+            else
+            {
+                return value.ToString();
+            }
+        }
+
+        protected void ReplaceType(Type sysType, int dbTypeNew, Dictionary<Type, int> typeDictionary)
+        {
+            int dbTypeOld;
+            if (typeDictionary.TryGetValue(sysType, out dbTypeOld) && (dbTypeOld != dbTypeNew))
+            {
+                typeDictionary.Remove(sysType);
+                typeDictionary.Add(sysType, dbTypeNew);
+            }
         }
 
         #endregion
