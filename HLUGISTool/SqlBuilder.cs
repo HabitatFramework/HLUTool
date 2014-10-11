@@ -285,6 +285,32 @@ namespace HLU
             return FromList(includeFrom, quoteIdentifiers, colTables.Select(t => t.TableName).ToArray());
         }
 
+        /// <summary>
+        /// Create a string of database tables that the data will be selected from.
+        /// </summary>
+        /// <param name="includeFrom">If set to <c>true</c> include 'FROM' in the returned string.</param>
+        /// <param name="quoteIdentifiers">If set to <c>true</c> wrap identifiers in quotes.</param>
+        /// <param name="targetColumns">The target columns to be selected.</param>
+        /// <param name="fromTables">A list of the tables to select from.</param>
+        /// <param name="whereClause">The where clause statements generated to satisfy the table joins.</param>
+        /// <param name="additionalTables">Set to <c>true</c> if tables, in addition to those relating
+        /// to the target columns, are required.</param>
+        /// <returns>A string of database tables to select from.</returns>
+        public string FromList(bool includeFrom, bool quoteIdentifiers, DataColumn[] targetColumns,
+            List<DataTable> fromTables, ref List<SqlFilterCondition> whereClause, out bool additionalTables)
+        {
+            DataTable[] colTables = targetColumns.Select(c => c.Table).Distinct().ToArray();
+            var whereTables = fromTables.Distinct().Where(t => !colTables.Contains(t));
+
+            int numTables = colTables.Length;
+            colTables = colTables.Concat(whereTables).ToArray();
+            additionalTables = colTables.Length > numTables;
+
+            whereClause = JoinClause(colTables).ToList();
+
+            return FromList(includeFrom, quoteIdentifiers, colTables.Select(t => t.TableName).ToArray());
+        }
+
         public string FromList(bool includeFrom, bool quoteIdentifiers, string[] tableNames)
         {
             if ((tableNames == null) || (tableNames.Length == 0)) return String.Empty;

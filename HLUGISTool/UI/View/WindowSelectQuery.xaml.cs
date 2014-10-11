@@ -17,8 +17,10 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
+using System.Reflection;
 using HLU.UI.UserControls;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Collections.Generic;
 
 namespace HLU.UI.View
@@ -26,45 +28,60 @@ namespace HLU.UI.View
     /// <summary>
     /// Interaction logic for WindowOptions.xaml
     /// </summary>
-    public partial class WindowOptions : Window
+    public partial class WindowSelectQuery : Window
     {
-        public WindowOptions()
+        public WindowSelectQuery()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Fakes a click on each history column list item so that their checkboxes are properly initialised.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Window_Activated(object sender, System.EventArgs e)
+        private void EditableComboBox_KeyUp(object sender, KeyEventArgs e)
         {
-            List<DependencyObject> listBoxes = new List<DependencyObject>();
-            FindControls.GetChildren(this, typeof(ListBox), ref listBoxes);
-
-            foreach (ListBox l in listBoxes)
-            {
-                if ((l.Items.Count > 0) && 
-                    (l.Items[0].GetType().ToString().StartsWith(this.GetType().Namespace.Replace("View", "UserControls") + ".SelectionItem")))
-                    ForceIsSelectedUpdate(l);
-            }
-
-
+            ValidateComboboxText(sender as ComboBox);
         }
 
-        private void ForceIsSelectedUpdate(ListBox listBoxControl)
+        private void ValidateComboboxText(ComboBox cb)
         {
-            for (int i = 0; i < listBoxControl.Items.Count; i++)
+            if ((cb == null) || (cb.Items.Count == 0)) return;
+
+            PropertyInfo pi = cb.Items[0].GetType().GetProperty(cb.DisplayMemberPath);
+
+            for (int i = 0; i < cb.Items.Count; i++)
             {
-                SelectionItem<string> it = listBoxControl.Items[i] as SelectionItem<string>;
-                if (it.IsSelected)
+                if (pi.GetValue(cb.Items[i], null).ToString().Equals(cb.Text))
+                    return;
+            }
+
+            if (cb.SelectedIndex != -1)
+            {
+                cb.Text = pi.GetValue(cb.SelectedItem, null).ToString();
+            }
+            else
+            {
+                TextBox tbx = (TextBox)cb.Template.FindName("PART_EditableTextBox", cb);
+                int caretIx = tbx.CaretIndex;
+
+                //---------------------------------------------------------------------
+                // FIX: 031 Check combobox text is not null before finding list item
+                if (cb.Text != null)
+                //---------------------------------------------------------------------
                 {
-                    it.IsSelected = !it.IsSelected;
-                    it.IsSelected = !it.IsSelected;
-                    listBoxControl.SelectedItems.Add(listBoxControl.Items[i]);
+                    string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx);
+                    //string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx - 1);
+                    for (int i = 0; i < cb.Items.Count; i++)
+                    {
+                        if (pi.GetValue(cb.Items[i], null).ToString().StartsWith(validText))
+                        {
+                            cb.SelectedIndex = i;
+                            tbx.CaretIndex = caretIx;
+                            return;
+                        }
+                    }
+                    cb.Text = null;
                 }
             }
         }
+
     }
+
 }

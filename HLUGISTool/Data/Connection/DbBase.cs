@@ -420,6 +420,57 @@ namespace HLU.Data.Connection
             }
         }
 
+        public int SqlCount(DataTable[] targetTables, List<SqlFilterCondition> whereConds, string sqlWhereClause)
+        {
+            if ((targetTables == null) || (targetTables.Length == 0)) return 0;
+
+            try
+            {
+                // Determine if the column names need qualifiying.
+                bool qualifyColumns = targetTables.Length > 1;
+
+                // Create a string of the tables to query based on the the
+                // target columns to select and the list of from tables.
+                bool additionalTables;
+                List<SqlFilterCondition> fromConds = new List<SqlFilterCondition>();
+                DataColumn[] targetColumns = new DataColumn[0];
+                string fromList = FromList(true, true, targetTables, ref whereConds, out additionalTables);
+
+                // Force the column names to be qualified if there are any
+                // additional tables.
+                qualifyColumns |= additionalTables;
+
+                // Build a sql command.
+                StringBuilder sbCommandText = new StringBuilder("SELECT COUNT(*) AS N");
+
+                // Append the tables to select from.
+                sbCommandText.Append(fromList);
+
+                // Append the where clauses relating to the from table joins.
+                string fromClause = WhereClause(true, true, qualifyColumns, whereConds);
+                sbCommandText.Append(fromClause);
+
+                // Append any additional where clauses passed.
+                if (string.IsNullOrEmpty(fromClause))
+                    sbCommandText.Append("WHERE ").Append(sqlWhereClause);
+                else
+                    sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
+
+                // Execute the sql command to count the number of records.
+                object result = ExecuteScalar(sbCommandText.ToString(), 0, CommandType.Text);
+
+                int numRows = 0;
+                if (result != null) numRows = Convert.ToInt32(result);
+
+                return numRows;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = ex.Message;
+                return 0;
+            }
+        }
+
         #endregion
 
         #region Protected
@@ -896,7 +947,60 @@ namespace HLU.Data.Connection
                 return new DataTable();
             }
         }
-        
+
+        public DataTable SqlSelect(bool selectDistinct, DataColumn[] targetColumns, List<DataTable> sqlFromTables, string sqlWhereClause)
+        {
+            if ((targetColumns == null) || (targetColumns.Length == 0)) return new DataTable();
+
+            try
+            {
+                // Declare a new empty result data table.
+                DataTable resultTable = null;
+
+                // Determine if the column names need qualifiying.
+                bool qualifyColumns = QualifyColumnNames(targetColumns);
+
+                // Create a string of the tables to query based on the the
+                // target columns to select and the list of from tables.
+                bool additionalTables;
+                List<SqlFilterCondition> fromConds = new List<SqlFilterCondition>();
+                string fromList = FromList(true, true, targetColumns, sqlFromTables, ref fromConds, out additionalTables);
+
+                // Force the column names to be qualified if there are any
+                // additional tables.
+                qualifyColumns |= additionalTables;
+
+                // Build a sql command.
+                StringBuilder sbCommandText = new StringBuilder(selectDistinct ? "SELECT DISTINCT " : "SELECT ");
+
+                // Append the columns to be selected.
+                sbCommandText.Append(TargetList(targetColumns, true, false, ref qualifyColumns, out resultTable));
+
+                // Append the tables to select from.
+                sbCommandText.Append(fromList);
+
+                // Append the where clauses relating to the from table joins.
+                string fromClause = WhereClause(true, true, qualifyColumns, fromConds);
+                sbCommandText.Append(fromClause);
+
+                // Append any additional where clauses passed.
+                if (string.IsNullOrEmpty(fromClause))
+                    sbCommandText.Append(" WHERE ").Append(sqlWhereClause);
+                else
+                    sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
+
+                // Fill the result table using the sql command.
+                FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
+
+                return resultTable;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = ex.Message;
+                return new DataTable();
+            }
+        }
+
         #endregion
 
         #region Public Abstract
