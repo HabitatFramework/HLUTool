@@ -63,7 +63,7 @@ namespace HLU.UI.ViewModel
     public enum WarnBeforeGISSelect
     {
         Always,
-        Join,
+        Joins,
         Never
     };
 
@@ -2380,7 +2380,8 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // CHANGED: CR12 (Select by attribute performance)
                     // Find the expected number of incids to be selected in GIS.
-                    int expectedNumIncids = ExpectedSelectionIncids(_incidSelectionWhereClause);
+                    //int expectedNumIncids = ExpectedSelectionIncids(_incidSelectionWhereClause);
+                    int expectedNumIncids = _incidSelection.Rows.Count;
                     //---------------------------------------------------------------------
 
                     ChangeCursor(Cursors.Wait, "Processing ...");
@@ -2474,8 +2475,13 @@ namespace HLU.UI.ViewModel
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
+                        // Replace any connection type specific qualifiers and delimeters.
+                        string newWhereClause = null;
+                        if (sqlWhereClause != null)
+                            newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
+
                         // create a selection DataTable of PK values of IncidTable
-                        _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, sqlWhereClause);
+                        _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
                     }
                     else
                     {
@@ -2499,7 +2505,8 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // CHANGED: CR12 (Select by attribute performance)
                     // Find the expected number of incids to be selected in GIS.
-                    int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
+                    //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
+                    int expectedNumIncids = _incidSelection.Rows.Count;
                     //---------------------------------------------------------------------
 
                     ChangeCursor(Cursors.Wait, "Processing ...");
@@ -2533,7 +2540,7 @@ namespace HLU.UI.ViewModel
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
 
                         // Reset the cursor back to normal.
@@ -2556,7 +2563,7 @@ namespace HLU.UI.ViewModel
                 {
                     _incidSelection = null;
                     ChangeCursor(Cursors.Arrow, null);
-                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU",
+                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally { RefreshStatus(); }
@@ -3176,11 +3183,11 @@ namespace HLU.UI.ViewModel
                     HluDataSet.incid_mm_polygonsDataTable t = new HluDataSet.incid_mm_polygonsDataTable();
                     DataTable[] selTables = new DataTable[] { t }.ToArray();
 
-                    var fromTables = sqlFromTables.Distinct().Where(q => !selTables.Contains(q));
+                    var fromTables = sqlFromTables.Distinct().Where(q => !selTables.Select(s => s.TableName).Contains(q.TableName));
                     DataTable[] whereTables = selTables.Concat(fromTables).ToArray();
                     
                     DataRelation rel;
-                    IEnumerable<SqlFilterCondition> joinCond = whereTables.Select(st =>
+                    IEnumerable<SqlFilterCondition> joinCond = fromTables.Select(st =>
                         st.GetType() == typeof(HluDataSet.incidDataTable) ?
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", st.Columns[_hluDS.incid.incidColumn.Ordinal]) :
                         (rel = GetRelation(_hluDS.incid, st)) != null ?
@@ -3240,11 +3247,11 @@ namespace HLU.UI.ViewModel
 
                     DataTable[] selTables = new DataTable[] { t }.ToArray();
 
-                    var fromTables = sqlFromTables.Distinct().Where(q => !selTables.Contains(q));
+                    var fromTables = sqlFromTables.Distinct().Where(q => !selTables.Select(s => s.TableName).Contains(q.TableName));
                     DataTable[] whereTables = selTables.Concat(fromTables).ToArray();
 
                     DataRelation rel;
-                    IEnumerable<SqlFilterCondition> joinCond = whereTables.Select(st =>
+                    IEnumerable<SqlFilterCondition> joinCond = fromTables.Select(st =>
                         st.GetType() == typeof(HluDataSet.incidDataTable) ?
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", st.Columns[_hluDS.incid.incidColumn.Ordinal]) :
                         (rel = GetRelation(_hluDS.incid, st)) != null ?
@@ -8857,6 +8864,138 @@ namespace HLU.UI.ViewModel
         private int NextIncidBapId { get { return _recIDs.NextIncidBapId; } }
 
         private int NextIncidSourceId { get { return _recIDs.NextIncidSourceId; } }
+
+        #endregion
+
+        #region SQLUpdater
+
+        /// <summary>
+        /// Replaces any string or date delimeters with connection type specific
+        /// versions and qualifies any table names.
+        /// </summary>
+        /// <param name="words">The words.</param>
+        /// <returns></returns>
+        internal String ReplaceStringQualifiers(String sqlcmd)
+        {
+            // Check if a table name (delimited by '[]' characters) is found
+            // in the sql command.
+            int i1 = 0;
+            int i2 = 0;
+            String start = String.Empty;
+            String end = String.Empty;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("[", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("]", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the table name.
+                        string table = sqlcmd.Substring(i1 + 1, i2 - i1 - 1);
+
+                        // Split the table name from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace the table name with a qualified table name.
+                        sqlcmd = start + _db.QualifyTableName(table) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+
+            // Check if any strings are found (delimited by single quotes)
+            // in the sql command.
+            i1 = 0;
+            i2 = 0;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("'", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("'", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the text string.
+                        string text = sqlcmd.Substring(i1 + 1, i2 - i1 - 1);
+
+                        // Split the text string from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace any wild characters found in the text.
+                        if (start.TrimEnd().EndsWith(" LIKE"))
+                        {
+                            text.Replace("_", _db.WildcardSingleMatch);
+                            text.Replace("%", _db.WildcardManyMatch);
+                        }
+
+                        // Replace the text delimiters with the correct delimiters.
+                        sqlcmd = start + _db.QuoteValue(text) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+
+            // Check if any dates are found (delimited by '#' characters)
+            // in the sql command.
+            i1 = 0;
+            i2 = 0;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("#", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("#", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the date string.
+                        DateTime dt;
+                        DateTime.TryParse(sqlcmd.Substring(i1 + 1, i2 - i1 - 1), out dt);
+
+                        // Split the date string from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace the date delimiters with the correct delimiters.
+                        sqlcmd = start + _db.QuoteValue(dt) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+            return sqlcmd;
+        }
 
         #endregion
 
