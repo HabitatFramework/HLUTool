@@ -65,23 +65,25 @@ namespace HLU.UI.ViewModel
         private string _displayName = "Advanced Query Builder";
         private Cursor _cursorType = Cursors.Arrow;
 
-        private Dictionary<string, DataTable> _tables;
-        private DataTable _table;
-        private DataColumn _column;
         private DbBase _db;
 
+        private Dictionary<string, DataTable> _tables;
         private string[] _comparisonOperators;
-        private string _comparisonOperator;
         private Dictionary<string, object> _queryValues;
-        private string _queryValueText;
-        private object _queryValue;
 
-        private string _sqlFromTables;
-        private string _sqlWhereClause;
+        private static DataTable _table;
+        private static DataColumn _column;
+        private static string _comparisonOperator;
+        private static object _queryValue;
+
+        private static string _sqlFromTables;
+        private static string _sqlWhereClause;
 
         private string _descriptionFieldName = Settings.Default.LutDescriptionFieldName;
         private int _descriptionFieldOrdinal = Settings.Default.LutDescriptionFieldOrdinal;
         private Regex _queryValueRegex = new Regex(@"\s+:\s+", RegexOptions.IgnoreCase); // @"\A(?<code>[^:\s]+)\s+:\s+(?<desc>[^:]+)\z", RegexOptions.IgnoreCase);
+
+        private long _lastValueCounter = 0;
 
         #endregion
 
@@ -162,10 +164,15 @@ namespace HLU.UI.ViewModel
                 _cursorType = Cursors.Wait;
                 OnPropertyChanged("CursorType");
 
+                // Create a data reader to retrieve the rows for
+                // the required column.
+                IDataReader dataReader = null;
 
                 try
                 {
-                    IDataReader dataReader = _db.ExecuteReader(String.Format(
+                    // Load the data reader to retrieve the rows for
+                    // the required column.
+                    dataReader = _db.ExecuteReader(String.Format(
                         "SELECT DISTINCT {0} FROM {1} WHERE {0} IS NOT NULL ORDER BY {0}",
                         _db.QuoteIdentifier(Column.ColumnName),
                         _db.QualifyTableName(Table.TableName)),
@@ -173,18 +180,29 @@ namespace HLU.UI.ViewModel
 
                     if (dataReader == null) throw new Exception(String.Format("Error reading values from {0}.{1}", Table.TableName, Column.ColumnName));
 
+                    // Define a new dictionary to hold the column values.
                     Dictionary<string, object> q = new Dictionary<string, object>();
+
+                    // Load the dictionary with the first/next 1000 values.
                     long i = 0;
-                    while (dataReader.Read() && i < 1000)
+                    while (i < (_lastValueCounter + 1000) && dataReader.Read())
                     {
-                        string temp = dataReader.GetValue(0).ToString();
-                        object temp2 = dataReader.GetValue(0);
-                        q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
+                        if (i >= _lastValueCounter)
+                        {
+                            q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
+                        }
                         i += 1;
                     }
 
-                    dataReader.Close();
+                    // If the last record has been reached.
+                    if (i != (_lastValueCounter + 1000))
+                        // Set the last value counter to flag this.
+                        _lastValueCounter = -1;
+                    else
+                        // Move the last value counter on.
+                        _lastValueCounter = i;
 
+                    // Set the combobox of values to the new dictionary.
                     _queryValues = q;
                 }
                 catch (Exception ex)
@@ -192,17 +210,19 @@ namespace HLU.UI.ViewModel
                     MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     //throw;
                 }
-
-
-                //DataView view = new DataView(Table);
-                //DataTable distinctValues = new DataTable();
-                //distinctValues = view.ToTable(true, Column.ColumnName);
-                //var q = distinctValues.AsEnumerable();
-                //_queryValues = q.ToDictionary(r => r[0].ToString(), r => r[0]);
+                finally
+                {
+                    // Close the data reader.
+                    if (!dataReader.IsClosed)
+                        dataReader.Close();
+                }
 
             }
             else
+            {
                 _queryValues = null;
+                _lastValueCounter = 0;
+            }
 
             OnPropertyChanged("QueryValues");
             OnPropertyChanged("QueryValueIsEnabled");
@@ -219,7 +239,27 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (Column != null && QueryValues == null);
+                if ((Table != null) || (Column != null))
+                {
+                    // Find the related lookup tables for the selected table and column
+                    IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
+                    IEnumerable<DataRelation> lutRelations = parentRelations.Where(r => r.ChildTable == Table &&
+                        r.ParentTable.TableName.StartsWith("lut_", StringComparison.CurrentCultureIgnoreCase) &&
+                        r.ChildColumns.Length == 1 && r.ChildColumns.Contains(Column));
+
+                    // Return false if there is only one related lookup table
+                    // (because the dropdown list will load automatically).
+                    if (lutRelations != null && lutRelations.Count() == 1)
+                        return false;
+                    // Return false if the last record has already been reached.
+                    else if (_lastValueCounter == -1)
+                        return false;
+                    else
+                        return true;
+                }
+                else
+                    // Return false if there is no table or column selected.
+                    return false;
             }
         }
 
@@ -299,6 +339,77 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void VerifyCommandClick(object param)
         {
+            if ((SqlFromTables != null) && (SqlWhereClause != null))
+            {
+                try
+                {
+                    ChangeCursor(Cursors.Wait);
+
+                    // Get a list of all the possible query tables.
+                    List<DataTable> tables = new List<DataTable>();
+                    if ((ViewModelWindowSelectQuery.HluDatasetStatic != null))
+                    {
+                        tables = ViewModelWindowSelectQuery.HluDatasetStatic.incid.ChildRelations
+                            .Cast<DataRelation>().Select(r => r.ChildTable).ToList();
+                        tables.Add(ViewModelWindowSelectQuery.HluDatasetStatic.incid);
+                    }
+
+                    // Split the string of query table names created by the
+                    // user in the form into an array.
+                    string[] fromTables = SqlFromTables.Split(',').Select(s => s.Trim(' ')).Distinct().ToArray();
+
+                    // Select only the database tables that are in the query array.
+                    List<DataTable> whereTables = tables.Where(t => fromTables.Contains(t.TableName)).ToList();
+
+                    // Parse the SQL to see if it is valid.
+                    if (whereTables.Count() > 0)
+                    {
+                        // Replace any connection type specific qualifiers and delimeters.
+                        string newWhereClause = null;
+                        if (SqlWhereClause != null)
+                            newWhereClause = ReplaceStringQualifiers(SqlWhereClause);
+
+                        // Validate the SQL by trying to select the top 1 row.
+                        int validSql = _db.SqlParse(HluDatasetStatic.incid.PrimaryKey, whereTables, newWhereClause);
+
+                        // The SQL is valid.
+                        if (validSql == 1)
+                        {
+                            // Warn the user that the SQL is invalid.
+                            MessageBox.Show(App.Current.MainWindow, "SQL is valid.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        // The SQL is valid but did not return any rows.
+                        else if (validSql == 0)
+                        {
+                            // Warn the user that no rows were returned.
+                            MessageBox.Show(App.Current.MainWindow, "SQL is valid but no records were returned.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        // The SQL is not valid.
+                        else if (validSql == -1)
+                        {
+                            // Warn the user that the SQL is invalid.
+                            MessageBox.Show(App.Current.MainWindow, "SQL is invalid.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    else
+                        // Warn the user that the no valid tables were found.
+                        MessageBox.Show(App.Current.MainWindow, "No valid tables were found.", "HLU Query",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    // Reset the cursor back to normal.
+                    ChangeCursor(Cursors.Arrow);
+                }
+                catch (Exception ex)
+                {
+                    ChangeCursor(Cursors.Arrow);
+                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally { }
+            }
         }
 
         /// <summary>
@@ -349,7 +460,8 @@ namespace HLU.UI.ViewModel
         /// <value></value>
         /// <returns></returns>
         /// <remarks></remarks>
-        private bool CanOk { get { return String.IsNullOrEmpty(Error); } }
+        private bool CanOk { get { return (String.IsNullOrEmpty(Error) &&
+            !String.IsNullOrEmpty(SqlFromTables) && !String.IsNullOrEmpty(SqlWhereClause)); } }
 
         #endregion
 
@@ -436,7 +548,7 @@ namespace HLU.UI.ViewModel
                 if (_saveCommand == null)
                 {
                     Action<object> saveAction = new Action<object>(this.SaveCommandClick);
-                    _saveCommand = new RelayCommand(saveAction);
+                    _saveCommand = new RelayCommand(saveAction, param => this.CanSave);
                 }
 
                 return _saveCommand;
@@ -452,6 +564,14 @@ namespace HLU.UI.ViewModel
         {
             SaveSQLQuery();
         }
+
+        /// <summary>
+        /// Determine if the Save button can be clicked.
+        /// </summary>
+        /// <value></value>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        private bool CanSave { get { return (!String.IsNullOrEmpty(SqlFromTables) && !String.IsNullOrEmpty(SqlWhereClause)); } }
 
         #endregion
 
@@ -483,6 +603,7 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("ColumnIsEnabled");
 
                 _queryValues = null;
+                _lastValueCounter = 0;
                 OnPropertyChanged("QueryValues");
                 OnPropertyChanged("QueryValueIsEnabled");
             }
@@ -517,9 +638,12 @@ namespace HLU.UI.ViewModel
                 {
                     _column = column;
                     OnPropertyChanged("Column");
+
                     _queryValues = null;
+                    _lastValueCounter = 0;
                     OnPropertyChanged("QueryValues");
                     OnPropertyChanged("QueryValueIsEnabled");
+                    OnPropertyChanged("CanGetValues");
                 }
             }
         }
@@ -553,8 +677,6 @@ namespace HLU.UI.ViewModel
             {
                 _comparisonOperator = value;
                 OnPropertyChanged("ComparisonOperator");
-                OnPropertyChanged("QueryValues");
-                OnPropertyChanged("QueryValueIsEnabled");
             }
         }
 
@@ -576,7 +698,7 @@ namespace HLU.UI.ViewModel
                     // Return null if there is no table or column selected.
                     if ((Table == null) || (Column == null))
                     {
-                        _queryValues = null;
+                        _lastValueCounter = 0;
                         return _queryValues;
                     }
 
@@ -616,14 +738,18 @@ namespace HLU.UI.ViewModel
 
                         _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
                             " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
+
+                        OnPropertyChanged("QueryValueIsEnabled");
                         return _queryValues;
                     }
                     else
                     {
+                        OnPropertyChanged("QueryValueIsEnabled");
                         _queryValues = null;
                     }
                 }
 
+                OnPropertyChanged("QueryValueIsEnabled");
                 return _queryValues;
             }
             set
@@ -637,36 +763,13 @@ namespace HLU.UI.ViewModel
             get { return _queryValue != null ? _queryValue : null; }
             set
             {
-                //if (String.IsNullOrEmpty(_queryValueText) || (_queryValueRegex.Split(_queryValueText).Length > 1))
-                    _queryValue = value;
+                _queryValue = value;
 
                 _cursorType = Cursors.Arrow;
                 OnPropertyChanged("CursorType");
                 OnPropertyChanged("QueryValue");
-                //OnPropertyChanged("QueryValueText");
             }
         }
-
-        //public string QueryValueText
-        //{
-        //    get { return _queryValue != null ? _queryValue : null; }
-        //    set
-        //    {
-        //        _cursorType = Cursors.Arrow;
-        //        OnPropertyChanged("CursorType");
-
-        //        if ((_queryValueText == null) || !_queryValueText.Equals(value))
-        //        {
-        //            if (!String.IsNullOrEmpty(value))
-        //                _queryValueText = _queryValueRegex.Split(value)[0];
-        //            else
-        //                _queryValueText = value;
-
-        //            _queryValue = _queryValueText;
-        //            OnPropertyChanged("QueryValueText");
-        //        }
-        //    }
-        //}
 
         public bool QueryValueIsEnabled
         {
@@ -761,9 +864,9 @@ namespace HLU.UI.ViewModel
         private void AddColumnCommandClick(object param)
         {
             if (string.IsNullOrEmpty(SqlWhereClause) || SqlWhereClause.EndsWith(" "))
-                SqlWhereClause += QuoteIdentifier(Table.TableName) + "." + QuoteIdentifier(Column.ColumnName);
+                SqlWhereClause += QuoteIdentifier(Table.TableName) + "." + Column.ColumnName;
             else
-                SqlWhereClause += String.Concat(" ", QuoteIdentifier(Table.TableName), ".", QuoteIdentifier(Column.ColumnName));
+                SqlWhereClause += String.Concat(" ", QuoteIdentifier(Table.TableName), ".", Column.ColumnName);
 
             OnPropertyChanged("SqlWhereClause");
         }
@@ -902,28 +1005,93 @@ namespace HLU.UI.ViewModel
 
         #region Load/Save
 
-        public bool LoadSQLQuery()
+        public void LoadSQLQuery()
         {
             // Load the query dialog from file
             string filePath = Settings.Default.SqlPath;
             string fileName = null;
 
-            if (!Directory.Exists(filePath))
-                filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            // Load the file contents into the dialog
-            if (LoadSQLQueryFile(ref filePath, ref fileName))
+            try
             {
+                if (!Directory.Exists(filePath))
+                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Load the file contents into the dialog
+                if (LoadSQLQueryFile(ref filePath, ref fileName))
+                {
+                    if (!File.Exists(fileName))
+                    {
+                        throw new Exception(String.Format("File {0} was not found!", fileName));
+                    }
+
+                    // Read all the lines in the script into an array.
+                    string[] lines = File.ReadAllLines(fileName);
+
+                    // Process each line in the script.
+                    foreach (string line in lines)
+                    {
+                        // Remove any leading or trailing spaces from the line.
+                        string sqlCmd = line.Trim();
+
+                        // Skip the line if it is empty.
+                        if ((sqlCmd.Length == 0) || (string.IsNullOrEmpty(sqlCmd)))
+                            continue;
+
+                        // Break the line command into words.
+                        string[] words = sqlCmd.Split(' ');
+
+                        // If there are not enough words then skip to the next line.
+                        if (words.Length < 1)
+                            continue;
+
+                        string removeString;
+                        int findIndex;
+                        // Split the tables and where lines into parts.
+                        switch (words[0].ToLower())
+                        {
+                            case "tables":
+                                removeString = "Tables";
+                                findIndex = sqlCmd.IndexOf(removeString);
+                                string fromTables = (findIndex < 0)
+                                    ? sqlCmd
+                                    : sqlCmd.Remove(findIndex, removeString.Length);
+
+                                SqlFromTables = fromTables.Trim().TrimStart('{').TrimEnd('}').Trim();
+                                break;
+                            case "where":
+                                removeString = "Where";
+                                findIndex = sqlCmd.IndexOf(removeString);
+                                string whereClause = (findIndex < 0)
+                                    ? sqlCmd
+                                    : sqlCmd.Remove(findIndex, removeString.Length);
+
+                                SqlWhereClause = whereClause.Trim().TrimStart('{').TrimEnd('}').Trim();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    OnPropertyChanged("SqlFromTables");
+                    OnPropertyChanged("SqlWhereClause");
+                }
             }
 
-            // If the existing file path does not exist
-            // then save the new path in the settings
-            if (!Directory.Exists(filePath) && filePath != null)
+            catch (Exception ex)
             {
-                Settings.Default.SqlPath = filePath;
-                Settings.Default.Save();
+                MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            return true;
+            finally 
+            {
+
+                // If the existing file path does not exist
+                // then save the new path in the settings
+                if (!Directory.Exists(Settings.Default.SqlPath) && filePath != null)
+                {
+                    Settings.Default.SqlPath = filePath;
+                    Settings.Default.Save();
+                }
+            }
         }
 
         private bool LoadSQLQueryFile(ref string queryPath, ref string queryFile)
@@ -957,28 +1125,53 @@ namespace HLU.UI.ViewModel
             catch { return false; }
         }
 
-        public bool SaveSQLQuery()
+        public void SaveSQLQuery()
         {
             // Save the query dialog to file
             string filePath = Settings.Default.SqlPath;
             string fileName = null;
 
-            if (!Directory.Exists(filePath))
-                filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            // Save the dialog contents to the file
-            if (SaveSQLQueryFile(ref filePath, ref fileName))
+            try
             {
+                if (!Directory.Exists(filePath))
+                    filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                // Save the dialog contents to the file
+                if (SaveSQLQueryFile(ref filePath, ref fileName))
+                {
+                    // Create an array of lines.
+                    string[] lines = new string[2];
+
+                    // Store the dialog values to the array.
+                    lines[0] = String.Format("Tables {0}{1}{2}", "{", SqlFromTables, "}");
+                    lines[1] = String.Format("Where {0}{1}{2}", "{", SqlWhereClause, "}");
+
+                    // Write all the lines in the array to the script file.
+                    File.WriteAllLines(fileName, lines);
+
+                    if (!File.Exists(fileName))
+                    {
+                        throw new Exception(String.Format("File {0} was not created!", fileName));
+                    }
+                }
             }
 
-            // If the existing file path does not exist
-            // then save the new path in the settings
-            if (!Directory.Exists(filePath) && filePath != null)
+            catch (Exception ex)
             {
-                Settings.Default.SqlPath = filePath;
-                Settings.Default.Save();
+                MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            return true;
+            finally
+            {
+
+                // If the existing file path does not exist
+                // then save the new path in the settings
+                if (!Directory.Exists(Settings.Default.SqlPath) && filePath != null)
+                {
+                    Settings.Default.SqlPath = filePath;
+                    Settings.Default.Save();
+                }
+            }
         }
 
         public bool SaveSQLQueryFile(ref string queryPath, ref string queryFile)
@@ -995,23 +1188,150 @@ namespace HLU.UI.ViewModel
                 bool ?ok = saveFileDlg.ShowDialog();
                 if (ok == true)
                 {
-                    if (!File.Exists(saveFileDlg.FileName))
-                    {
-                        queryFile = saveFileDlg.FileName;
-                    }
-                    else
-                    {
-                        queryFile = null;
-                    }
+                    queryFile = saveFileDlg.FileName;
+                    queryPath = Path.GetDirectoryName(queryFile);
                 }
                 else
                 {
                     queryFile = null;
+                    queryPath = null;
                 }
 
                 return (ok == true);
             }
             catch { return false; }
+        }
+
+        #endregion
+
+        #region SQLUpdater
+
+        /// <summary>
+        /// Replaces any string or date delimeters with connection type specific
+        /// versions and qualifies any table names.
+        /// </summary>
+        /// <param name="words">The words.</param>
+        /// <returns></returns>
+        internal String ReplaceStringQualifiers(String sqlcmd)
+        {
+            // Check if a table name (delimited by '[]' characters) is found
+            // in the sql command.
+            int i1 = 0;
+            int i2 = 0;
+            String start = String.Empty;
+            String end = String.Empty;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("[", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("]", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the table name.
+                        string table = sqlcmd.Substring(i1 + 1, i2 - i1 - 1);
+
+                        // Split the table name from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace the table name with a qualified table name.
+                        sqlcmd = start + _db.QualifyTableName(table) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+
+            // Check if any strings are found (delimited by single quotes)
+            // in the sql command.
+            i1 = 0;
+            i2 = 0;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("'", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("'", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the text string.
+                        string text = sqlcmd.Substring(i1 + 1, i2 - i1 - 1);
+
+                        // Split the text string from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace any wild characters found in the text.
+                        if (start.TrimEnd().EndsWith(" LIKE"))
+                        {
+                            text.Replace("_", _db.WildcardSingleMatch);
+                            text.Replace("%", _db.WildcardManyMatch);
+                        }
+
+                        // Replace the text delimiters with the correct delimiters.
+                        sqlcmd = start + _db.QuoteValue(text) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+
+            // Check if any dates are found (delimited by '#' characters)
+            // in the sql command.
+            i1 = 0;
+            i2 = 0;
+
+            while ((i1 != -1) && (i2 != -1))
+            {
+                i1 = sqlcmd.IndexOf("#", i2);
+                if (i1 != -1)
+                {
+                    i2 = sqlcmd.IndexOf("#", i1 + 1);
+                    if (i2 != -1)
+                    {
+                        // Strip out the date string.
+                        DateTime dt;
+                        DateTime.TryParse(sqlcmd.Substring(i1 + 1, i2 - i1 - 1), out dt);
+
+                        // Split the date string from the rest of the sql command.
+                        if (i1 == 0)
+                            start = String.Empty;
+                        else
+                            start = sqlcmd.Substring(0, i1);
+
+                        if (i2 == sqlcmd.Length - 1)
+                            end = String.Empty;
+                        else
+                            end = sqlcmd.Substring(i2 + 1);
+
+                        // Replace the date delimiters with the correct delimiters.
+                        sqlcmd = start + _db.QuoteValue(dt) + end;
+
+                        // Reposition the last index.
+                        i2 = sqlcmd.Length - end.Length;
+                    }
+                }
+            }
+            return sqlcmd;
         }
 
         #endregion
@@ -1032,7 +1352,7 @@ namespace HLU.UI.ViewModel
 
         public string QuoteSuffix { get { return "]"; } }
 
-        public string StringLiteralDelimiter { get { return "\""; } }
+        public string StringLiteralDelimiter { get { return "\'"; } }
 
         public string DateLiteralPrefix { get { return "#"; } }
 
@@ -1153,6 +1473,20 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
+        #region Cursor
+
+        public Cursor WindowCursor { get { return _cursorType; } }
+
+        public void ChangeCursor(Cursor cursorType)
+        {
+            _cursorType = cursorType;
+            OnPropertyChanged("WindowCursor");
+            if (cursorType == Cursors.Wait)
+                DispatcherHelper.DoEvents();
+        }
+
+        #endregion
+
         #region IDataErrorInfo Members
 
         public string Error
@@ -1181,5 +1515,6 @@ namespace HLU.UI.ViewModel
         }
 
         #endregion
+
     }
 }

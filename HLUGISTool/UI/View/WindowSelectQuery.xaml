@@ -22,7 +22,8 @@
 
     <DockPanel Margin="4,4,4,4"
                HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch">
+               VerticalAlignment="Stretch"
+               Cursor="{Binding WindowCursor}">
 
 		<GroupBox Name="GroupBoxSelectQuery"
 					Height="Auto"

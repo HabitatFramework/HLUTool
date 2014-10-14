@@ -452,7 +452,7 @@ namespace HLU.Data.Connection
 
                 // Append any additional where clauses passed.
                 if (string.IsNullOrEmpty(fromClause))
-                    sbCommandText.Append("WHERE ").Append(sqlWhereClause);
+                    sbCommandText.Append(" WHERE (").Append(sqlWhereClause).Append(")");
                 else
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
 
@@ -985,7 +985,7 @@ namespace HLU.Data.Connection
 
                 // Append any additional where clauses passed.
                 if (string.IsNullOrEmpty(fromClause))
-                    sbCommandText.Append(" WHERE ").Append(sqlWhereClause);
+                    sbCommandText.Append(" WHERE (").Append(sqlWhereClause).Append(")");
                 else
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
 
@@ -998,6 +998,73 @@ namespace HLU.Data.Connection
             {
                 _errorMessage = ex.Message;
                 return new DataTable();
+            }
+        }
+
+        public int SqlParse(DataColumn[] targetColumns, List<DataTable> sqlFromTables, string sqlWhereClause)
+        {
+            if ((targetColumns == null) || (targetColumns.Length == 0)) return 0;
+
+            try
+            {
+                // Declare a new empty result data table.
+                DataTable resultTable = null;
+
+                // Determine if the column names need qualifiying.
+                bool qualifyColumns = QualifyColumnNames(targetColumns);
+
+                // Create a string of the tables to query based on the the
+                // target columns to select and the list of from tables.
+                bool additionalTables;
+                List<SqlFilterCondition> fromConds = new List<SqlFilterCondition>();
+                string fromList = FromList(true, true, targetColumns, sqlFromTables, ref fromConds, out additionalTables);
+
+                // Force the column names to be qualified if there are any
+                // additional tables.
+                qualifyColumns |= additionalTables;
+
+                // Build two sql commands.
+                StringBuilder sbCommandText = new StringBuilder("SELECT TOP 1 ");
+
+                // Append the columns to be selected.
+                string targetList = TargetList(targetColumns, true, false, ref qualifyColumns, out resultTable);
+                sbCommandText.Append(targetList);
+
+                // Append the tables to select from.
+                sbCommandText.Append(fromList);
+
+                // Append the where clauses relating to the from table joins.
+                string fromClause = WhereClause(true, true, qualifyColumns, fromConds);
+                sbCommandText.Append(fromClause);
+
+                // Append any additional where clauses passed.
+                if (string.IsNullOrEmpty(fromClause))
+                    sbCommandText.Append(" WHERE ").Append(sqlWhereClause);
+                else
+                    sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
+
+                // Execute the sql command to count the number of records.
+                int numRows = 0;
+                object result = ExecuteNonQuery(sbCommandText.ToString(), 0, CommandType.Text);
+                if (result != null) numRows = Convert.ToInt32(result);
+
+                // If the result is not zero then the SQL is invalid.
+                if (numRows != 0) return numRows;
+
+                // Fill the result table using the sql command.
+                FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
+                if (resultTable != null) numRows = resultTable.Rows.Count;
+
+                //// Execute the sql command to count the number of records.
+                //result = ExecuteScalar(sbCountText.ToString(), 0, CommandType.Text);
+                //if (result != null) numRows = Convert.ToInt32(result);
+
+                return numRows;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = ex.Message;
+                return 0;
             }
         }
 
