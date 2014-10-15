@@ -126,7 +126,7 @@ namespace HLU.UI.ViewModel
         #region GetValues Command
 
         /// <summary>
-        /// Create GetValues button command.
+        /// Set GetValues button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -178,14 +178,16 @@ namespace HLU.UI.ViewModel
                     // Define a new dictionary to hold the column values.
                     Dictionary<string, object> q = new Dictionary<string, object>();
 
-                    // Load the dictionary with the first/next n values.
+                    // Load the dictionary with the first/next n values
+                    // (based on the max value in the user settings.
                     long i = 0;
                     while (i < (_lastValueCounter + _getValueRows) && dataReader.Read())
                     {
                         if (i >= _lastValueCounter)
                         {
+                            // Add the key (string) and value (object) to the dictionary
+                            // (if the key already exists the value will be updated).
                             q[dataReader.GetValue(0).ToString()] = dataReader.GetValue(0);
-                            //q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
                         }
                         i += 1;
                     }
@@ -864,9 +866,6 @@ namespace HLU.UI.ViewModel
             set
             {
                 _queryValue = value;
-
-                //_cursorType = Cursors.Arrow;
-                //OnPropertyChanged("CursorType");
                 OnPropertyChanged("QueryValue");
             }
         }
