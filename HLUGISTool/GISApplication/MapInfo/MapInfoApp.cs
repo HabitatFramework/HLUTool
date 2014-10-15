@@ -104,7 +104,7 @@ namespace HLU.GISApplication.MapInfo
         /// <summary>
         /// Maximum (nominal) allowable length of a SQL query.
         /// </summary>
-        private int _maxSqlLength = 2000;
+        private int _maxSqlLength = Settings.Default.MaxSqlLengthMapInfo;
 
         private string _historyGeom1ColumnName = ViewModelWindowMain.HistoryGeometry1ColumnName;
 
@@ -1989,9 +1989,9 @@ namespace HLU.GISApplication.MapInfo
                 "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
             if (String.IsNullOrEmpty(tableName) || !TableExists(tableName)) return;
 
-            // Check that the table is the same as the current HLU layer and if
-            // return an empty result table.
-            if (tableName != _hluLayer) return;
+            // Check that the table is the same as the expected table
+            // and if not return an empty result table.
+            if (tableName != selName) return;
             //---------------------------------------------------------------------
             
             int numSelected = -1;
