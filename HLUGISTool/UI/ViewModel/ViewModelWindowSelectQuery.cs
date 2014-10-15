@@ -69,6 +69,7 @@ namespace HLU.UI.ViewModel
 
         private Dictionary<string, DataTable> _tables;
         private string[] _comparisonOperators;
+        private int? _getValueRows = Settings.Default.GetValueRows;
         private Dictionary<string, object> _queryValues;
 
         private static DataTable _table;
@@ -110,11 +111,6 @@ namespace HLU.UI.ViewModel
             get { return _displayName; }
         }
 
-        public Cursor CursorType
-        {
-            get { return _cursorType; }
-        }
-
         #endregion
 
         #region RequestClose
@@ -130,7 +126,7 @@ namespace HLU.UI.ViewModel
         #region GetValues Command
 
         /// <summary>
-        /// Create GetValues button command
+        /// Create GetValues button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -150,7 +146,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when GetValues button is clicked
+        /// Handles events when the GetValues button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -161,8 +157,7 @@ namespace HLU.UI.ViewModel
             if ((Table != null) && (Column != null))
             {
                 // Show the wait cursor whilst loading the values.
-                _cursorType = Cursors.Wait;
-                OnPropertyChanged("CursorType");
+                ChangeCursor(Cursors.Wait);
 
                 // Create a data reader to retrieve the rows for
                 // the required column.
@@ -183,19 +178,20 @@ namespace HLU.UI.ViewModel
                     // Define a new dictionary to hold the column values.
                     Dictionary<string, object> q = new Dictionary<string, object>();
 
-                    // Load the dictionary with the first/next 1000 values.
+                    // Load the dictionary with the first/next n values.
                     long i = 0;
-                    while (i < (_lastValueCounter + 1000) && dataReader.Read())
+                    while (i < (_lastValueCounter + _getValueRows) && dataReader.Read())
                     {
                         if (i >= _lastValueCounter)
                         {
-                            q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
+                            q[dataReader.GetValue(0).ToString()] = dataReader.GetValue(0);
+                            //q.Add(dataReader.GetValue(0).ToString(), dataReader.GetValue(0));
                         }
                         i += 1;
                     }
 
                     // If the last record has been reached.
-                    if (i != (_lastValueCounter + 1000))
+                    if (i != (_lastValueCounter + _getValueRows))
                         // Set the last value counter to flag this.
                         _lastValueCounter = -1;
                     else
@@ -204,11 +200,16 @@ namespace HLU.UI.ViewModel
 
                     // Set the combobox of values to the new dictionary.
                     _queryValues = q;
+
+                    // Reset the cursor back to normal.
+                    ChangeCursor(Cursors.Arrow);
                 }
                 catch (Exception ex)
                 {
+                    // Reset the cursor back to normal.
+                    ChangeCursor(Cursors.Arrow);
+
                     MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //throw;
                 }
                 finally
                 {
@@ -216,7 +217,6 @@ namespace HLU.UI.ViewModel
                     if (!dataReader.IsClosed)
                         dataReader.Close();
                 }
-
             }
             else
             {
@@ -225,7 +225,6 @@ namespace HLU.UI.ViewModel
             }
 
             OnPropertyChanged("QueryValues");
-            OnPropertyChanged("QueryValueIsEnabled");
 
         }
 
@@ -235,11 +234,15 @@ namespace HLU.UI.ViewModel
         /// <value></value>
         /// <returns></returns>
         /// <remarks></remarks>
-        private bool CanGetValues
+        public bool CanGetValues
         {
             get
             {
-                if ((Table != null) || (Column != null))
+                // Return false by default (e.g. if
+                // there is no table or column selected).
+                bool canGet = false;
+
+                if ((Table != null) && (Column != null))
                 {
                     // Find the related lookup tables for the selected table and column
                     IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
@@ -247,19 +250,53 @@ namespace HLU.UI.ViewModel
                         r.ParentTable.TableName.StartsWith("lut_", StringComparison.CurrentCultureIgnoreCase) &&
                         r.ChildColumns.Length == 1 && r.ChildColumns.Contains(Column));
 
-                    // Return false if there is only one related lookup table
-                    // (because the dropdown list will load automatically).
-                    if (lutRelations != null && lutRelations.Count() == 1)
-                        return false;
-                    // Return false if the last record has already been reached.
-                    else if (_lastValueCounter == -1)
-                        return false;
+                    // If there are no related lookup tables (or there are
+                    // more than one relations for the current table and
+                    // column) the dropdown list will load automatically.
+                    if (lutRelations == null || lutRelations.Count() != 1)
+                        // Return true if the last record has not been reached.
+                        if (_lastValueCounter != -1)
+                            canGet = true;
+                }
+
+                // Update the button tool tip.
+                OnPropertyChanged("GetValuesToolTip");
+
+                return canGet;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of rows to get.
+        /// </summary>
+        /// <value>
+        /// The number of rows to get.
+        /// </value>
+        public int? GetValueRows
+        {
+            get { return (_getValueRows != null && _getValueRows <= 0) ? 1000 : _getValueRows; }
+            set { _getValueRows = value; }
+        }
+
+        /// <summary>
+        /// Gets the tool tip to display for the GetValues button.
+        /// </summary>
+        /// <value>
+        /// The GetValues button tool tip.
+        /// </value>
+        public string GetValuesToolTip
+        {
+            get
+            {
+                if (Column != null)
+                {
+                    if (_lastValueCounter == 0)
+                        return String.Format("Get first {0} values for column '{1}'", GetValueRows, Column.ColumnName);
                     else
-                        return true;
+                        return String.Format("Get next {0} values for column '{1}'", GetValueRows, Column.ColumnName);
                 }
                 else
-                    // Return false if there is no table or column selected.
-                    return false;
+                    return null;
             }
         }
 
@@ -268,7 +305,7 @@ namespace HLU.UI.ViewModel
         #region Clear Command
 
         /// <summary>
-        /// Create Clear button command
+        /// Set the Clear button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -288,7 +325,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Clear button is clicked
+        /// Handles events when the Clear button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -313,7 +350,7 @@ namespace HLU.UI.ViewModel
         #region Verify Command
 
         /// <summary>
-        /// Create Verify button command
+        /// Set the Verify button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -333,7 +370,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Verify button is clicked
+        /// Handles events when the Verify button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -343,6 +380,7 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
+                    // Show the wait cursor whilst verifying the sql.
                     ChangeCursor(Cursors.Wait);
 
                     // Get a list of all the possible query tables.
@@ -364,33 +402,36 @@ namespace HLU.UI.ViewModel
                     // Parse the SQL to see if it is valid.
                     if (whereTables.Count() > 0)
                     {
-                        // Replace any connection type specific qualifiers and delimeters.
+                        // Replace any connection type specific qualifiers and delimiters.
                         string newWhereClause = null;
                         if (SqlWhereClause != null)
                             newWhereClause = ReplaceStringQualifiers(SqlWhereClause);
 
                         // Validate the SQL by trying to select the top 1 row.
-                        int validSql = _db.SqlParse(HluDatasetStatic.incid.PrimaryKey, whereTables, newWhereClause);
+                        string validity = _db.SqlValidate(HluDatasetStatic.incid.PrimaryKey, whereTables, newWhereClause);
+
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow);
 
                         // The SQL is valid.
-                        if (validSql == 1)
+                        if (validity == "1")
                         {
                             // Warn the user that the SQL is invalid.
                             MessageBox.Show(App.Current.MainWindow, "SQL is valid.", "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         // The SQL is valid but did not return any rows.
-                        else if (validSql == 0)
+                        else if (validity == "0")
                         {
                             // Warn the user that no rows were returned.
                             MessageBox.Show(App.Current.MainWindow, "SQL is valid but no records were returned.", "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                         // The SQL is not valid.
-                        else if (validSql == -1)
+                        else if (validity != null)
                         {
                             // Warn the user that the SQL is invalid.
-                            MessageBox.Show(App.Current.MainWindow, "SQL is invalid.", "HLU Query",
+                            MessageBox.Show(App.Current.MainWindow, String.Format("Sql is invalid.\n\n{0}", validity), "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
@@ -398,13 +439,12 @@ namespace HLU.UI.ViewModel
                         // Warn the user that the no valid tables were found.
                         MessageBox.Show(App.Current.MainWindow, "No valid tables were found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                    // Reset the cursor back to normal.
-                    ChangeCursor(Cursors.Arrow);
                 }
                 catch (Exception ex)
                 {
+                    // Reset the cursor back to normal.
                     ChangeCursor(Cursors.Arrow);
+
                     MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -425,7 +465,7 @@ namespace HLU.UI.ViewModel
         #region Ok Command
 
         /// <summary>
-        /// Create Ok button command
+        /// Set the Ok button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -445,7 +485,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Ok button is clicked
+        /// Handles events when the Ok button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -468,7 +508,7 @@ namespace HLU.UI.ViewModel
         #region Cancel Command
 
         /// <summary>
-        /// Create Cancel button command
+        /// Set the Cancel button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -488,7 +528,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Cancel button is clicked
+        /// Handles events when the Cancel button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -502,7 +542,7 @@ namespace HLU.UI.ViewModel
         #region Load Command
 
         /// <summary>
-        /// Create Load button command
+        /// Set the Load button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -522,7 +562,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Load button is clicked
+        /// Handles events when the Load button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -536,7 +576,7 @@ namespace HLU.UI.ViewModel
         #region Save Command
 
         /// <summary>
-        /// Create Save button command
+        /// Set the Save button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -556,7 +596,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Save button is clicked
+        /// Handles events when the Save button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -577,21 +617,34 @@ namespace HLU.UI.ViewModel
 
         #region Table
 
+        /// <summary>
+        /// Gets or sets the list of valid data tables that can be queried.
+        /// </summary>
+        /// <value>
+        /// The list of valid tables.
+        /// </value>
         public Dictionary<string, DataTable> Tables
         {
             get
             {
-                if ((_tables == null) && ((ViewModelWindowSelectQuery.HluDatasetStatic != null)))
+                if ((_tables == null) && ((HluDatasetStatic != null)))
                 {
-                    _tables = ViewModelWindowSelectQuery.HluDatasetStatic.incid.ChildRelations
-                        .Cast<DataRelation>().ToDictionary(r => r.ChildTable.TableName, r => r.ChildTable);
-                    _tables.Add("incid", ViewModelWindowSelectQuery.HluDatasetStatic.incid);
+                    _tables = HluDatasetStatic.incid.ChildRelations
+                        .Cast<DataRelation>().OrderBy(r => r.ChildTable.TableName).ToDictionary(r => r.ChildTable.TableName, r => r.ChildTable);
+                    _tables.Add("incid", HluDatasetStatic.incid);
                 }
-                return _tables;
+                //return _tables;
+                return _tables.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
             }
             set { }
         }
 
+        /// <summary>
+        /// Gets or sets the current data table.
+        /// </summary>
+        /// <value>
+        /// The current data table.
+        /// </value>
         public DataTable Table
         {
             get { return _table; }
@@ -605,7 +658,7 @@ namespace HLU.UI.ViewModel
                 _queryValues = null;
                 _lastValueCounter = 0;
                 OnPropertyChanged("QueryValues");
-                OnPropertyChanged("QueryValueIsEnabled");
+                //OnPropertyChanged("QueryValueIsEnabled");
             }
         }
 
@@ -613,6 +666,12 @@ namespace HLU.UI.ViewModel
 
         #region Column
 
+        /// <summary>
+        /// Gets or sets the list of valid data columns that can be queried.
+        /// </summary>
+        /// <value>
+        /// The list of valid columns for the current table.
+        /// </value>
         public Dictionary<string, DataColumn> Columns
         {
             get
@@ -625,6 +684,12 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
+        /// <summary>
+        /// Gets or sets the current data column.
+        /// </summary>
+        /// <value>
+        /// The current data column.
+        /// </value>
         public DataColumn Column
         {
             get { return _column; }
@@ -642,12 +707,18 @@ namespace HLU.UI.ViewModel
                     _queryValues = null;
                     _lastValueCounter = 0;
                     OnPropertyChanged("QueryValues");
-                    OnPropertyChanged("QueryValueIsEnabled");
+                    //OnPropertyChanged("QueryValueIsEnabled");
                     OnPropertyChanged("CanGetValues");
                 }
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the column combobox is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the column combobox is enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool ColumnIsEnabled
         {
             get { return Table != null; }
@@ -657,6 +728,12 @@ namespace HLU.UI.ViewModel
 
         #region Operator
 
+        /// <summary>
+        /// Gets the list of valid comparison operators.
+        /// </summary>
+        /// <value>
+        /// The list of valid comparison operators.
+        /// </value>
         public string[] ComparisonOperators
         {
             get 
@@ -664,12 +741,18 @@ namespace HLU.UI.ViewModel
                 if (_comparisonOperators == null)
                 {
                     _comparisonOperators = new string[] { "=", "<", ">", "<=", ">=", "<>", "(", ")", "AND", "OR",
-                        "contains", "begins with", "ends with", "IS NULL", "IS NOT NULL", "LIKE", "IN ()", "NOT IN ()" };
+                        "IS NULL", "IS NOT NULL", "LIKE", "NOT LIKE", "IN ()", "NOT IN ()" };
                 }
                 return _comparisonOperators;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current comparison operator.
+        /// </summary>
+        /// <value>
+        /// The current comparison operator.
+        /// </value>
         public string ComparisonOperator
         {
             get { return _comparisonOperator; }
@@ -680,6 +763,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the comparison operator combobox is enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the comparison operator combobox is enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool ComparisonOperatorIsEnabled
         {
             get { return Column != null; }
@@ -689,6 +778,13 @@ namespace HLU.UI.ViewModel
 
         #region Value
 
+        /// <summary>
+        /// Gets or sets the list of unique data values relating to the
+        /// current data table and column.
+        /// </summary>
+        /// <value>
+        /// The list of unique data values for the current table and column.
+        /// </value>
         public Dictionary<string, object> QueryValues
         {
             get
@@ -702,10 +798,6 @@ namespace HLU.UI.ViewModel
                         return _queryValues;
                     }
 
-                    // Show the wait cursor whilst loading the values.
-                    _cursorType = Cursors.Wait;
-                    OnPropertyChanged("CursorType");
-
                     // Find the related lookup tables for the selected table and column
                     IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
                     IEnumerable<DataRelation> lutRelations = parentRelations.Where(r => r.ChildTable == Table &&
@@ -718,6 +810,9 @@ namespace HLU.UI.ViewModel
                     // column and description values.
                     if (lutRelations.Count() == 1)
                     {
+                        // Show the wait cursor whilst loading the values.
+                        ChangeCursor(Cursors.Wait);
+
                         lutRelation = lutRelations.ElementAt(0);
                         DataTable lut = lutRelation.ParentTable;
                         DataColumn lutColumn = lutRelation.ParentColumns[0];
@@ -739,12 +834,11 @@ namespace HLU.UI.ViewModel
                         _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
                             " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
 
-                        OnPropertyChanged("QueryValueIsEnabled");
-                        return _queryValues;
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow);
                     }
                     else
                     {
-                        OnPropertyChanged("QueryValueIsEnabled");
                         _queryValues = null;
                     }
                 }
@@ -758,6 +852,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current data value.
+        /// </summary>
+        /// <value>
+        /// The current data value.
+        /// </value>
         public object QueryValue
         {
             get { return _queryValue != null ? _queryValue : null; }
@@ -765,20 +865,22 @@ namespace HLU.UI.ViewModel
             {
                 _queryValue = value;
 
-                _cursorType = Cursors.Arrow;
-                OnPropertyChanged("CursorType");
+                //_cursorType = Cursors.Arrow;
+                //OnPropertyChanged("CursorType");
                 OnPropertyChanged("QueryValue");
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the QueryValue combobox is enabled.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the QueryValue combobox is enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool QueryValueIsEnabled
         {
             get { return _queryValues != null; }
         }
-
-        #endregion
-
-        #region GetValues
 
         #endregion
 
@@ -787,7 +889,7 @@ namespace HLU.UI.ViewModel
         #region Add Table
 
         /// <summary>
-        /// Create AddTable button command
+        /// Set the AddTable button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -807,7 +909,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when AddTable button is clicked
+        /// Handles events when the AddTable button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -837,7 +939,7 @@ namespace HLU.UI.ViewModel
         #region Add Column
 
         /// <summary>
-        /// Create AddColumn button command
+        /// Set the AddColumn button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -857,7 +959,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when AddColumn button is clicked
+        /// Handles events when the AddColumn button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -887,7 +989,7 @@ namespace HLU.UI.ViewModel
         #region Add Operator
 
         /// <summary>
-        /// Create AddOperator button command
+        /// Set the AddOperator button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -907,7 +1009,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when AddOperator button is clicked
+        /// Handles events when the AddOperator button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -937,7 +1039,7 @@ namespace HLU.UI.ViewModel
         #region Add Value
 
         /// <summary>
-        /// Create AddValue button command
+        /// Set the AddValue button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -957,7 +1059,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when AddValue button is clicked
+        /// Handles events when the AddValue button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -989,12 +1091,26 @@ namespace HLU.UI.ViewModel
 
         #region SQL
 
+        /// <summary>
+        /// Gets or sets the string of data tables to use in the
+        /// FROM clause of the SQL.
+        /// </summary>
+        /// <value>
+        /// The string of data tables to use in the FROM clause of the SQL.
+        /// </value>
         public string SqlFromTables
         {
             get { return _sqlFromTables; }
             set { _sqlFromTables = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the string of conditions to use in the
+        /// WHERE clause of the SQL.
+        /// </summary>
+        /// <value>
+        /// The string of conditions to use in the WHERE clause of the SQL.
+        /// </value>
         public string SqlWhereClause
         {
             get { return _sqlWhereClause; }
@@ -1005,6 +1121,10 @@ namespace HLU.UI.ViewModel
 
         #region Load/Save
 
+        /// <summary>
+        /// Loads an existing SQL query.
+        /// </summary>
+        /// <exception cref="System.Exception"></exception>
         public void LoadSQLQuery()
         {
             // Load the query dialog from file
@@ -1094,6 +1214,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Prompts the user to select an existing SQL query file to load.
+        /// </summary>
+        /// <param name="queryPath">The path of the SQL query to load.</param>
+        /// <param name="queryFile">The file name of the SQL query to load.</param>
+        /// <returns></returns>
         private bool LoadSQLQueryFile(ref string queryPath, ref string queryFile)
         {
             try
@@ -1125,6 +1251,10 @@ namespace HLU.UI.ViewModel
             catch { return false; }
         }
 
+        /// <summary>
+        /// Loads an existing SQL query.
+        /// </summary>
+        /// <exception cref="System.Exception"></exception>
         public void SaveSQLQuery()
         {
             // Save the query dialog to file
@@ -1174,6 +1304,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Prompts the user to enter a file name to save the SQL query to.
+        /// </summary>
+        /// <param name="queryPath">The path to save the SQL query to.</param>
+        /// <param name="queryFile">The file name to save the SQL query to.</param>
+        /// <returns></returns>
         public bool SaveSQLQueryFile(ref string queryPath, ref string queryFile)
         {
             try
@@ -1207,7 +1343,7 @@ namespace HLU.UI.ViewModel
         #region SQLUpdater
 
         /// <summary>
-        /// Replaces any string or date delimeters with connection type specific
+        /// Replaces any string or date delimiters with connection type specific
         /// versions and qualifies any table names.
         /// </summary>
         /// <param name="words">The words.</param>
@@ -1338,6 +1474,12 @@ namespace HLU.UI.ViewModel
 
         #region Quotes & Qualifiers
 
+        /// <summary>
+        /// Add quote characters to the specified string (if not
+        /// already present).
+        /// </summary>
+        /// <param name="identifier">The string to add quotes to.</param>
+        /// <returns></returns>
         public string QuoteIdentifier(string identifier)
         {
             if (!String.IsNullOrEmpty(identifier))
@@ -1461,6 +1603,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Replaces the specified database data type.
+        /// </summary>
+        /// <param name="sysType">Type of the system.</param>
+        /// <param name="dbTypeNew">The database type new.</param>
+        /// <param name="typeDictionary">The type dictionary to replace the values in.</param>
         protected void ReplaceType(Type sysType, int dbTypeNew, Dictionary<Type, int> typeDictionary)
         {
             int dbTypeOld;
@@ -1475,6 +1623,12 @@ namespace HLU.UI.ViewModel
 
         #region Cursor
 
+        /// <summary>
+        /// Gets the cursor type to use when the cursor is over the window.
+        /// </summary>
+        /// <value>
+        /// The window cursor type.
+        /// </value>
         public Cursor WindowCursor { get { return _cursorType; } }
 
         public void ChangeCursor(Cursor cursorType)
