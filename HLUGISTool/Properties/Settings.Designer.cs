@@ -733,5 +733,45 @@ namespace HLU.Properties {
                 this["SqlPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int GetValueRows {
+            get {
+                return ((int)(this["GetValueRows"]));
+            }
+            set {
+                this["GetValueRows"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50000")]
+        public int MaxGetValueRows {
+            get {
+                return ((int)(this["MaxGetValueRows"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public int MaxSqlLengthMapInfo {
+            get {
+                return ((int)(this["MaxSqlLengthMapInfo"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30000")]
+        public int MaxSqlLengthArcGIS {
+            get {
+                return ((int)(this["MaxSqlLengthArcGIS"]));
+            }
+        }
     }
 }
