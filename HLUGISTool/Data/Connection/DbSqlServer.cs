@@ -508,6 +508,47 @@ namespace HLU.Data.Connection
             finally { if (previousConnectionState == ConnectionState.Closed) _connection.Close(); }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // Execute a SQL query to check if it is valid. Errors
+        // will be thrown back to the calling method.
+        //
+        /// <summary>
+        /// Validates the SQL query by executing it and throwing
+        /// any execeptions raised back to the calling method.
+        /// </summary>
+        /// <param name="sql">The SQL query to validate (which should be a non-update query).</param>
+        /// <param name="commandTimeout">The command timeout.</param>
+        /// <param name="commandType">Type of the sql command.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Sql is null or empty</exception>
+        public override bool ValidateQuery(string sql, int commandTimeout, CommandType commandType)
+        {
+            _errorMessage = String.Empty;
+            if (String.IsNullOrEmpty(sql)) throw (new Exception("Sql is null or empty"));
+
+            ConnectionState previousConnectionState = _connection.State;
+            try
+            {
+                _command.CommandType = commandType;
+                _command.CommandTimeout = commandTimeout;
+                _command.CommandText = sql;
+
+                if (_transaction != null) _command.Transaction = _transaction;
+                _commandBuilder.RefreshSchema();
+                if ((_connection.State & ConnectionState.Open) != ConnectionState.Open) _connection.Open();
+                _command.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = ex.Message;
+                throw ex;
+            }
+            finally { if (previousConnectionState == ConnectionState.Closed) _connection.Close(); }
+        }
+        //---------------------------------------------------------------------
+
         public override bool BeginTransaction(bool commitPrevious, IsolationLevel isolationLevel)
         {
             try
