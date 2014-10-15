@@ -4,7 +4,7 @@
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
         Width="540"
-        Height="478"
+        Height="480"
 		MaxHeight="800"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -89,6 +89,7 @@
 								Margin="4,0,0,0"
 								Width="40"
 								Command="{Binding Path=AddTableCommand}"
+								Focusable="False"	
 								IsDefault="False">
 							Add
 						</Button>
@@ -119,6 +120,7 @@
 								Margin="4,0,0,0"
 								Width="40"
 								Command="{Binding Path=AddColumnCommand}"
+								Focusable="False"	
 								IsDefault="False">
 							Add
 						</Button>
@@ -147,6 +149,7 @@
 								Margin="4,0,0,0"
 								Width="40"
 								Command="{Binding Path=AddOperatorCommand}"
+								Focusable="False"	
 								IsDefault="False">
 							Add
 						</Button>
@@ -169,7 +172,9 @@
 									SelectedValue="{Binding Path=QueryValue,
 															ValidatesOnDataErrors=True}"
 									SelectedValuePath="Value"
-									DisplayMemberPath="Key" />
+									ItemContainerStyle="{DynamicResource ComboBoxItemStyle}"
+									DisplayMemberPath="Key">
+						</ComboBox>
 						<Button Name="ButtonAddValue"
 								Grid.Row="7"
 								Grid.Column="1"
@@ -177,6 +182,7 @@
 								Margin="4,0,0,0"
 								Width="40"
 								Command="{Binding Path=AddValueCommand}"
+								Focusable="False"	
 								IsDefault="False">
 							Add
 						</Button>
@@ -188,7 +194,9 @@
 								Width="70"
 								Command="{Binding Path=GetValuesCommand}"
 								IsEnabled="{Binding Path=GetValuesIsEnabled}"
-								IsDefault="False">
+								Focusable="False"	
+								IsDefault="False"
+								ToolTip="{Binding Path=GetValuesToolTip}">
 							Get Values
 						</Button>
 
@@ -255,7 +263,7 @@
 
 				</Grid>
 
-				<Grid Name="GridButtons" Grid.Row="1" Margin="0,8,0,0">
+				<Grid Name="GridButtons" Grid.Row="1" Margin="0,8,0,4">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="24" />
 						<RowDefinition Height="8" />
