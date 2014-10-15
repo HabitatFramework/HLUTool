@@ -195,7 +195,7 @@ namespace HLU.GISApplication.ArcGIS
         /// <summary>
         /// Maximum (nominal) allowable length of a SQL query.
         /// </summary>
-        private int _maxSqlLength = 30000;
+        private int _maxSqlLength = Settings.Default.MaxSqlLengthArcGIS;
 
         #endregion
 
