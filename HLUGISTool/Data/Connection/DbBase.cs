@@ -363,6 +363,13 @@ namespace HLU.Data.Connection
             catch { return null; }
         }
 
+        /// <summary>
+        /// Count the number database rows that match the list of
+        /// WHERE conditions.
+        /// </summary>
+        /// <param name="targetColumns">The target database columns.</param>
+        /// <param name="whereConds">The list of where conds.</param>
+        /// <returns>An integer of the number of rows matching the SQL.</returns>
         public int SqlCount(DataColumn[] targetColumns, List<SqlFilterCondition> whereConds)
         {
             if ((targetColumns == null) || (targetColumns.Length == 0)) return 0;
@@ -391,6 +398,13 @@ namespace HLU.Data.Connection
             }
         }
 
+        /// <summary>
+        /// Count the number database rows that match the list of
+        /// WHERE conditions.
+        /// </summary>
+        /// <param name="targetTables">The target database tables.</param>
+        /// <param name="whereConds">The list of where conds.</param>
+        /// <returns>An integer of the number of rows matching the SQL.</returns>
         public int SqlCount(DataTable[] targetTables, List<SqlFilterCondition> whereConds)
         {
             if ((targetTables == null) || (targetTables.Length == 0) ||
@@ -420,6 +434,19 @@ namespace HLU.Data.Connection
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // Count the number of database rows using a WHERE statement
+        // based on both a list of conditions and a free-text string.
+        // 
+        /// <summary>
+        /// Count the number database rows that match the list of
+        /// WHERE conditions and string of WHERE clauses.
+        /// </summary>
+        /// <param name="targetTables">The target database tables.</param>
+        /// <param name="whereConds">The list of where conds.</param>
+        /// <param name="sqlWhereClause">The string of where clauses.</param>
+        /// <returns>An integer of the number of rows matching the SQL.</returns>
         public int SqlCount(DataTable[] targetTables, List<SqlFilterCondition> whereConds, string sqlWhereClause)
         {
             if ((targetTables == null) || (targetTables.Length == 0)) return 0;
@@ -470,6 +497,7 @@ namespace HLU.Data.Connection
                 return 0;
             }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -893,6 +921,15 @@ namespace HLU.Data.Connection
             return sbTargetList.ToString();
         }
 
+        /// <summary>
+        /// Select database records using a SQL statement based on an array
+        /// of target columns to select, a list of tables to select from, and
+        /// a list of where conditions.
+        /// </summary>
+        /// <param name="selectDistinct">if set to <c>true</c> select only DISTINCT values.</param>
+        /// <param name="targetColumns">The target columns to select.</param>
+        /// <param name="whereConds">The list of where conds to apply.</param>
+        /// <returns></returns>
         public override DataTable SqlSelect(bool selectDistinct, DataColumn[] targetColumns, List<SqlFilterCondition> whereConds)
         {
             if ((targetColumns == null) || (targetColumns.Length == 0)) return new DataTable();
@@ -920,6 +957,15 @@ namespace HLU.Data.Connection
             }
         }
 
+        /// <summary>
+        /// Select database records using a SQL statement based on an array
+        /// of target tables to select from, a list of tables to select from, and
+        /// a list of where conditions.
+        /// </summary>
+        /// <param name="selectDistinct">if set to <c>true</c> select only DISTINCT values.</param>
+        /// <param name="targetTables">The target tables to select from.</param>
+        /// <param name="whereConds">The list of where conds to apply.</param>
+        /// <returns></returns>
         public override DataTable SqlSelect(bool selectDistinct, DataTable[] targetTables, List<SqlFilterCondition> whereConds)
         {
             if ((targetTables == null) || (targetTables.Length == 0) ||
@@ -948,6 +994,21 @@ namespace HLU.Data.Connection
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // Count the number of database rows using a WHERE statement
+        // based on both a list of conditions and a free-text string.
+        // 
+        /// <summary>
+        /// Select database records using a SQL statement based on an array
+        /// of target columns to select, a list of tables to select from, and
+        /// a string of where clauses.
+        /// </summary>
+        /// <param name="selectDistinct">if set to <c>true</c> select only DISTINCT values.</param>
+        /// <param name="targetColumns">The target columns to select.</param>
+        /// <param name="sqlFromTables">The tables to select from.</param>
+        /// <param name="sqlWhereClause">The where clauses to apply.</param>
+        /// <returns></returns>
         public DataTable SqlSelect(bool selectDistinct, DataColumn[] targetColumns, List<DataTable> sqlFromTables, string sqlWhereClause)
         {
             if ((targetColumns == null) || (targetColumns.Length == 0)) return new DataTable();
@@ -1000,10 +1061,23 @@ namespace HLU.Data.Connection
                 return new DataTable();
             }
         }
+        //---------------------------------------------------------------------
 
-        public int SqlParse(DataColumn[] targetColumns, List<DataTable> sqlFromTables, string sqlWhereClause)
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // Execute the SQL statement to check if it is valid and
+        // see if it returns at least one record.
+        // 
+        /// <summary>
+        /// SQLs the validate.
+        /// </summary>
+        /// <param name="targetColumns">The target columns.</param>
+        /// <param name="sqlFromTables">The SQL from tables.</param>
+        /// <param name="sqlWhereClause">The SQL where clause.</param>
+        /// <returns></returns>
+        public string SqlValidate(DataColumn[] targetColumns, List<DataTable> sqlFromTables, string sqlWhereClause)
         {
-            if ((targetColumns == null) || (targetColumns.Length == 0)) return 0;
+            if ((targetColumns == null) || (targetColumns.Length == 0)) return "Error verifying Sql";
 
             try
             {
@@ -1043,30 +1117,34 @@ namespace HLU.Data.Connection
                 else
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
 
-                // Execute the sql command to count the number of records.
-                int numRows = 0;
-                object result = ExecuteNonQuery(sbCommandText.ToString(), 0, CommandType.Text);
-                if (result != null) numRows = Convert.ToInt32(result);
+                // Execute the sql command to check it is valid.
+                bool valid = false;
+                try
+                {
+                    valid = ValidateQuery(sbCommandText.ToString(), 0, CommandType.Text);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
 
-                // If the result is not zero then the SQL is invalid.
-                if (numRows != 0) return numRows;
+                // If the sql is not valid then return error.
+                if (!valid) return "Sql is invalid";
 
                 // Fill the result table using the sql command.
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
+                int numRows = 0;
                 if (resultTable != null) numRows = resultTable.Rows.Count;
 
-                //// Execute the sql command to count the number of records.
-                //result = ExecuteScalar(sbCountText.ToString(), 0, CommandType.Text);
-                //if (result != null) numRows = Convert.ToInt32(result);
-
-                return numRows;
+                return numRows.ToString();
             }
             catch (Exception ex)
             {
                 _errorMessage = ex.Message;
-                return 0;
+                return _errorMessage;
             }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -1107,6 +1185,8 @@ namespace HLU.Data.Connection
         public abstract int ExecuteNonQuery(string sql, int commandTimeout, CommandType commandType);
 
         public abstract object ExecuteScalar(string sql, int commandTimeout, CommandType commandType);
+
+        public abstract bool ValidateQuery(string sql, int commandTimeout, CommandType commandType);
 
         public abstract int Update<T>(T table, string insertCommand, string updateCommand, string deleteCommand) where T : DataTable;
 
