@@ -64,6 +64,7 @@ namespace HLU.UI.ViewModel
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
+        private int? _getValueRows = Settings.Default.GetValueRows;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -189,6 +190,7 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
             Settings.Default.SqlPath = _sqlPath;
+            Settings.Default.GetValueRows = (int)_getValueRows;
 
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
@@ -447,6 +449,25 @@ namespace HLU.UI.ViewModel
 
         //---------------------------------------------------------------------
         // CHANGED: CR5 (Select by attributes interface)
+        // A new option to enable the user to select how many rows
+        // to retrieve when getting values for a data column when
+        // building a sql query.
+        // 
+        /// <summary>
+        /// Gets or sets the maximum number of value rows to retrieve.
+        /// </summary>
+        /// <value>
+        /// The maximum get value rows.
+        /// </value>
+        public int? GetValueRows
+        {
+            get { return _getValueRows; }
+            set { _getValueRows = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
         // A new option to enable the user to determine when to warn
         // the user before performing a GIS selection.
         // 
@@ -503,8 +524,6 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        #endregion
-
         #region Sql Query
 
         //---------------------------------------------------------------------
@@ -524,10 +543,25 @@ namespace HLU.UI.ViewModel
         public bool UseAdvancedSQL
         {
             get { return _useAdvancedSQL; }
-            set { _useAdvancedSQL = value; }
+            set
+            {
+                _useAdvancedSQL = value;
+                OnPropertyChanged("CanBrowseSql");
+            }
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // A new option to enable the user to set the default
+        // folder for saving and loading SQL queries.
+        // 
+        /// <summary>
+        /// Get the browse SQL command.
+        /// </summary>
+        /// <value>
+        /// The browse SQL command.
+        /// </value>
         public ICommand BrowseSqlCommand
         {
             get
@@ -542,11 +576,22 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the user can browse for
+        /// the default SQL folder.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the user can browse for the default SQL folder; otherwise, <c>false</c>.
+        /// </value>
         public bool CanBrowseSql
         {
             get { return _useAdvancedSQL == true; }
         }
 
+        /// <summary>
+        /// Action when the browse SQL button is clicked.
+        /// </summary>
+        /// <param name="param"></param>
         private void BrowseSqlClicked(object param)
         {
             _bakSqlPath = _sqlPath;
@@ -560,12 +605,22 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("SqlPath");
         }
 
+        /// <summary>
+        /// Gets or sets the default SQL folder path.
+        /// </summary>
+        /// <value>
+        /// The SQL path.
+        /// </value>
         public string SqlPath
         {
             get { return _sqlPath; }
             set { _sqlPath = value; }
         }
 
+        /// <summary>
+        /// Prompt the user to set the default SQL folder path.
+        /// </summary>
+        /// <returns></returns>
         public static string GetSqlPath()
         {
             try
@@ -587,6 +642,9 @@ namespace HLU.UI.ViewModel
 
             return null;
         }
+        //---------------------------------------------------------------------
+
+        #endregion
 
         #endregion
 
@@ -695,6 +753,16 @@ namespace HLU.UI.ViewModel
                     error.Append("Please select your preferred habitat class.");
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
+                // CHANGED: CR5 (Select by attributes interface)
+                // Validate the maximum number of rows to be retrieved
+                // when getting values for a data column when building
+                // a sql query.
+                if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
+                    error.Append("\n" + "Number of value rows to be retrieved must be greater than 0.");
+                if (Convert.ToInt32(GetValueRows) > Settings.Default.MaxGetValueRows)
+                    error.Append("\n" + String.Format("Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows));
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
                 // FIX: 006 Allow the user to not display any of the history columns
                 // Remove the validation enforcing the user to display at least one
                 // of the history columns because they are all updated when creating
@@ -783,6 +851,18 @@ namespace HLU.UI.ViewModel
                     case "PreferredHabitatClass":
                         if (PreferredHabitatClass == null)
                             error = "Please select your preferred habitat class.";
+                        break;
+                    //---------------------------------------------------------------------
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR5 (Select by attributes interface)
+                    // Validate the maximum number of rows to be retrieved
+                    // when getting values for a data column when building
+                    // a sql query.
+                    case "GetValueRows":
+                        if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
+                            error = "Number of value rows to be retrieved must be greater than 0.";
+                        if (Convert.ToInt32(GetValueRows) > Settings.Default.MaxGetValueRows)
+                            error = String.Format("Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows);
                         break;
                     //---------------------------------------------------------------------
                     case "SeasonSpring":
