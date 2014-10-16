@@ -651,9 +651,6 @@
     <Resource Include="Icons\FileExport.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\SelectByAttributes.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Icons\EditCopy.png" />
   </ItemGroup>
   <ItemGroup>
@@ -687,11 +684,13 @@
     <Resource Include="Icons\HLUIcon.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\ReapplyFilter.png" />
     <Resource Include="Icons\SwitchGISLayer.png" />
     <Resource Include="Icons\LogicalMerge.png" />
     <Resource Include="Icons\LogicalSplit.png" />
     <Resource Include="Icons\PhysicalMerge.png" />
     <Resource Include="Icons\PhysicalSplit.png" />
+    <Resource Include="Icons\FilterByAttributes.png" />
     <Content Include="Icons\HLU32.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
