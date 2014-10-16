@@ -2323,6 +2323,9 @@ namespace HLU.UI.ViewModel
                         i = j;
                     }
 
+                    // Backup the current selection (filter).
+                    DataTable incidSelectionBackup = _incidSelection;
+
                     // create a selection DataTable of PK values of IncidTable
                     if (_incidSelectionWhereClause.Count > 0)
                     {
@@ -2398,6 +2401,11 @@ namespace HLU.UI.ViewModel
                             ChangeCursor(Cursors.Arrow, null);
                             //---------------------------------------------------------------------
                         }
+                        else
+                        {
+                            // Restore the previous selection (filter).
+                            _incidSelection = incidSelectionBackup;
+                        }
                     }
                     else
                     {
@@ -2405,7 +2413,8 @@ namespace HLU.UI.ViewModel
                         MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        _incidSelection = null;
+                        // Restore the previous selection (filter).
+                        _incidSelection = incidSelectionBackup;
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
@@ -2497,6 +2506,9 @@ namespace HLU.UI.ViewModel
                     // Select only the database tables that are in the query array.
                     List<DataTable> whereTables = tables.Where(t => fromTables.Contains(t.TableName)).ToList();
 
+                    // Backup the current selection (filter).
+                    DataTable incidSelectionBackup = _incidSelection;
+
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
@@ -2572,6 +2584,11 @@ namespace HLU.UI.ViewModel
                             ChangeCursor(Cursors.Arrow, null);
                             //---------------------------------------------------------------------
                         }
+                        else
+                        {
+                            // Restore the previous selection (filter).
+                            _incidSelection = incidSelectionBackup;
+                        }
                     }
                     else
                     {
@@ -2579,7 +2596,8 @@ namespace HLU.UI.ViewModel
                         MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        _incidSelection = null;
+                        // Restore the previous selection (filter).
+                        _incidSelection = incidSelectionBackup;
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
