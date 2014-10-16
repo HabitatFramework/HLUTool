@@ -28,7 +28,7 @@ namespace HLU.UI.ViewModel
     {
         #region Fields
 
-        private string _displayName = "GIS Selection";
+        private string _displayName = "Select by Attributes";
         private int _gisFeaturesNum;
         private int _gisIncidNum;
         private string _gisFeaturesType;
@@ -86,7 +86,7 @@ namespace HLU.UI.ViewModel
         #region Yes Command
 
         /// <summary>
-        /// Create Yes button command
+        /// Set Yes button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -106,7 +106,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Yes button is clicked
+        /// Handles events when the Yes button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -121,7 +121,7 @@ namespace HLU.UI.ViewModel
         #region No Command
 
         /// <summary>
-        /// Create No button command
+        /// Set No button command.
         /// </summary>
         /// <value></value>
         /// <returns></returns>
@@ -141,7 +141,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Handles event when Cancel button is clicked
+        /// Handles events when the Cancel button is clicked.
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
@@ -154,7 +154,7 @@ namespace HLU.UI.ViewModel
 
         public string GroupBoxWarnOnGISSelectHeader
         {
-            get { return String.Format("Expected Number of Selected {0}s", _gisFeaturesType); }
+            get { return String.Format("Expected number of selected {0}s & incids", _gisFeaturesType); }
             set { }
         }
 
@@ -179,7 +179,7 @@ namespace HLU.UI.ViewModel
                 {
                     labelMsg.Append(String.Format("This operation is expected to select {0} incid{1} on the map.\n" +
                         "The expected number of {2}s could not be determined.",
-                        _gisIncidNum.ToString(CultureInfo.CurrentCulture),
+                        String.Format(CultureInfo.CurrentCulture, "{0:N0}", _gisIncidNum),
                         _gisIncidNum > 1 ? "s" : String.Empty,
                         _gisFeaturesType));
                 }
@@ -187,17 +187,17 @@ namespace HLU.UI.ViewModel
                 {
                     labelMsg.Append(String.Format("This operation is expected to select {0} {1}{2} on the map.\n" +
                         "The expected number of incids could not be determined.",
-                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture),
+                        String.Format(CultureInfo.CurrentCulture, "{0:N0}", _gisFeaturesNum),
                         _gisFeaturesType,
                         _gisFeaturesNum > 1 ? "s" : String.Empty));
                 }
                 else
                 {
                     labelMsg.Append(String.Format("This operation is expected to select {0} {1}{2} from {3} incid{4} on the map.",
-                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture),
+                        String.Format(CultureInfo.CurrentCulture, "{0:N0}", _gisFeaturesNum),
                         _gisFeaturesType,
                         _gisFeaturesNum > 1 ? "s" : String.Empty,
-                        _gisIncidNum.ToString(CultureInfo.CurrentCulture),
+                        String.Format(CultureInfo.CurrentCulture, "{0:N0}", _gisIncidNum),
                         _gisIncidNum > 1 ? "s" : String.Empty));
                 }
 
@@ -219,10 +219,15 @@ namespace HLU.UI.ViewModel
             get { return false; }
             set
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR12 (Select by attribute performance)
+                // Only set the warning down a 'notch' based on the
+                // current warning level.
                 if (Settings.Default.WarnBeforeGISSelect == 0)
                     Settings.Default.WarnBeforeGISSelect = 1;
                 else if ((_selectByjoin) & (Settings.Default.WarnBeforeGISSelect == 1))
                     Settings.Default.WarnBeforeGISSelect = 2;
+                //---------------------------------------------------------------------
             }
         }
     }
