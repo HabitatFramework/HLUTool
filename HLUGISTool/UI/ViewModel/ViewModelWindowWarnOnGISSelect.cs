@@ -28,7 +28,7 @@ namespace HLU.UI.ViewModel
     {
         #region Fields
 
-        private string _displayName = "Select by Attributes";
+        private string _displayName = "Select on Map";
         private int _gisFeaturesNum;
         private int _gisIncidNum;
         private string _gisFeaturesType;
