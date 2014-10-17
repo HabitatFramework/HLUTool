@@ -200,26 +200,30 @@ namespace HLU.GISApplication
             {
                 if (item.Count() < 3)
                 {
-                    inList.AddRange(item.Select(t => gisApp.QuoteValue(t.Incid)));
+                    if (gisApp != null)
+                        inList.AddRange(item.Select(t => gisApp.QuoteValue(t.Incid)));
+                    else
+                        inList.AddRange(item.Select(t => t.Incid));
                 }
                 else
                 {
                     cond = new SqlFilterCondition();
                     cond.BooleanOperator = "OR";
                     cond.OpenParentheses = "(";
-                    cond.Column = _incidTable.incidColumn;
-                    cond.Table = _incidTable;
-                    cond.ColumnSystemType = _incidTable.incidColumn.DataType;
+                    cond.Column = _incidMMTable.incidColumn;
+                    cond.Table = _incidMMTable;
+                    cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                     cond.Operator = ">=";
                     cond.Value = item.First().Incid;
                     cond.CloseParentheses = String.Empty;
                     whereClause.Add(cond);
+
                     cond = new SqlFilterCondition();
                     cond.BooleanOperator = "AND";
                     cond.OpenParentheses = String.Empty;
-                    cond.Column = _incidTable.incidColumn;
-                    cond.Table = _incidTable;
-                    cond.ColumnSystemType = _incidTable.incidColumn.DataType;
+                    cond.Column = _incidMMTable.incidColumn;
+                    cond.Table = _incidMMTable;
+                    cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                     cond.Operator = "<=";
                     cond.Value = item.Last().Incid;
                     cond.CloseParentheses = ")";
@@ -244,7 +248,7 @@ namespace HLU.GISApplication
                 cond.OpenParentheses = "(";
                 cond.Column = _incidMMTable.incidColumn;
                 cond.Table = _incidMMTable;
-                cond.ColumnSystemType = _incidTable.incidColumn.DataType;
+                cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                 //---------------------------------------------------------------------
                 // FIX: 001 Improve speed of 'Select current Incid on Map'
                 // Use " INCID =" in SQL statement instrad of "INCID IN ()"
