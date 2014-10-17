@@ -684,7 +684,7 @@
     <Resource Include="Icons\HLUIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\ReapplyFilter.png" />
+    <Resource Include="Icons\SelectAllOnMap.png" />
     <Resource Include="Icons\SwitchGISLayer.png" />
     <Resource Include="Icons\LogicalMerge.png" />
     <Resource Include="Icons\LogicalSplit.png" />
