@@ -626,7 +626,6 @@
     <Content Include="Icons\HLU32.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Icons\SwitchGISLayer.png" />
     <Resource Include="Icons\HLUSplashBg.png" />
     <Resource Include="Icons\websedit-ag-bar.gif" />
   </ItemGroup>
