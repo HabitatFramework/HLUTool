@@ -94,9 +94,10 @@ namespace HLU.UI.ViewModel
         private ICommand _navigatePreviousCommand;
         private ICommand _navigateNextCommand;
         private ICommand _navigateLastCommand;
-        private ICommand _selectByAttributesCommand;
-        private ICommand _clearFilterCommand;
+        private ICommand _filterByAttributesCommand;
         private ICommand _selectOnMapCommand;
+        private ICommand _selectAllOnMapCommand;
+        private ICommand _clearFilterCommand;
         private ICommand _readMapSelectionCommand;
         private ICommand _selectByIncidCommand;
         private ICommand _switchGisLayerCommand;
@@ -2208,25 +2209,25 @@ namespace HLU.UI.ViewModel
 
         #region Select
 
-        #region Select by Attributes Command
+        #region Filter by Attributes Command
 
         /// <summary>
-        /// SelectByAttributes command.
+        /// FilterByAttributes command.
         /// </summary>
-        public ICommand SelectByAttributesCommand
+        public ICommand FilterByAttributesCommand
         {
             get
             {
-                if (_selectByAttributesCommand == null)
+                if (_filterByAttributesCommand == null)
                 {
-                    Action<object> selectByAttributesAction = new Action<object>(this.SelectByAttributesClicked);
-                    _selectByAttributesCommand = new RelayCommand(selectByAttributesAction, param => this.CanSelectByAttributes);
+                    Action<object> filterByAttributesAction = new Action<object>(this.FilterByAttributesClicked);
+                    _filterByAttributesCommand = new RelayCommand(filterByAttributesAction, param => this.CanFilterByAttributes);
                 }
-                return _selectByAttributesCommand;
+                return _filterByAttributesCommand;
             }
         }
 
-        private void SelectByAttributesClicked(object param)
+        private void FilterByAttributesClicked(object param)
         {
             //---------------------------------------------------------------------
             // CHANGED: CR5 (Select by attributes interface)
@@ -2240,7 +2241,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
         }
 
-        private bool CanSelectByAttributes
+        private bool CanFilterByAttributes
         {
             get { return _bulkUpdateMode == false && IncidCurrentRow != null; }
         }
@@ -2343,16 +2344,6 @@ namespace HLU.UI.ViewModel
                         _incidSelection = null;
                     }
 
-                    // Build a where clause list for the incids to be selected.
-                    List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
-                    whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp);
-
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR12 (Select by attribute performance)
-                    // Calculate the length of the SQL statement to be sent to GIS.
-                    int sqlLen = _gisApp.SqlLength(_gisIDColumns, whereClause);
-                    //---------------------------------------------------------------------
-
                     // Find the expected number of features to be selected in GIS.
                     int expectedNumFeatures = ExpectedSelectionFeatures(_incidSelectionWhereClause);
 
@@ -2365,18 +2356,12 @@ namespace HLU.UI.ViewModel
 
                     ChangeCursor(Cursors.Wait, "Processing ...");
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR12 (Select by attribute performance)
-                    // If the length exceeds the maximum for the GIS application then
-                    // perform the selection using a join.
-                    bool selectByJoin = (sqlLen > _gisApp.MaxSqlLength);
-
                     // If there are any records in the selection (and the tool is
                     // not currently in bulk update mode).
                     if (IsFiltered)
                     {
                         // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, selectByJoin, expectedNumFeatures, expectedNumIncids))
+                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
                         {
                             //---------------------------------------------------------------------
                             // CHANGED: CR21 (Select current incid in map)
@@ -2392,32 +2377,35 @@ namespace HLU.UI.ViewModel
                             // Set the filter back to the first incid.
                             SetFilter();
 
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
                                 MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
-
-                            // Reset the cursor back to normal.
-                            ChangeCursor(Cursors.Arrow, null);
                             //---------------------------------------------------------------------
                         }
                         else
                         {
                             // Restore the previous selection (filter).
                             _incidSelection = incidSelectionBackup;
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
                         }
                     }
                     else
                     {
-                        // Warn the user that no records were found
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-
                         // Restore the previous selection (filter).
                         _incidSelection = incidSelectionBackup;
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found
+                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
                 catch (Exception ex)
@@ -2526,16 +2514,6 @@ namespace HLU.UI.ViewModel
                         _incidSelection = null;
                     }
 
-                    // Build a where clause list for the incids to be selected.
-                    List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
-                    whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp);
-
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR12 (Select by attribute performance)
-                    // Calculate the length of the SQL statement to be sent to GIS.
-                    int sqlLen = _gisApp.SqlLength(_gisIDColumns, whereClause);
-                    //---------------------------------------------------------------------
-
                     // Find the expected number of features to be selected in GIS.
                     int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
 
@@ -2548,18 +2526,12 @@ namespace HLU.UI.ViewModel
 
                     ChangeCursor(Cursors.Wait, "Processing ...");
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR12 (Select by attribute performance)
-                    // If the length exceeds the maximum for the GIS application then
-                    // perform the selection using a join.
-                    bool selectByJoin = (sqlLen > _gisApp.MaxSqlLength);
-
                     // If there are any records in the selection (and the tool is
                     // not currently in bulk update mode).
                     if (IsFiltered)
                     {
                         // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, selectByJoin, expectedNumFeatures, expectedNumIncids))
+                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
                         {
                             //---------------------------------------------------------------------
                             // CHANGED: CR21 (Select current incid in map)
@@ -2575,32 +2547,35 @@ namespace HLU.UI.ViewModel
                             // Set the filter back to the first incid.
                             SetFilter();
 
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
                                 MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
-
-                            // Reset the cursor back to normal.
-                            ChangeCursor(Cursors.Arrow, null);
                             //---------------------------------------------------------------------
                         }
                         else
                         {
                             // Restore the previous selection (filter).
                             _incidSelection = incidSelectionBackup;
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
                         }
                     }
                     else
                     {
-                        // Warn the user that no records were found
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-
                         // Restore the previous selection (filter).
                         _incidSelection = incidSelectionBackup;
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found
+                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
                 catch (Exception ex)
@@ -2666,13 +2641,14 @@ namespace HLU.UI.ViewModel
                 ChangeCursor(Cursors.Arrow, null);
             }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
         #region Select On Map Command
 
         /// <summary>
-        /// ShowOnMap command.
+        /// SelectOnMap command.
         /// </summary>
         public ICommand SelectOnMapCommand
         {
@@ -2742,7 +2718,7 @@ namespace HLU.UI.ViewModel
                 _incidSelection.Rows.Add(selRow);
 
                 // Select all the features for the current incid in GIS.
-                PerformGisSelection(false, false, -1, -1);
+                PerformGisSelection(false, -1, -1);
 
                 // If a multi-incid filter was previously active then restore it.
                 if (multiIncidFilter)
@@ -3003,7 +2979,7 @@ namespace HLU.UI.ViewModel
                 _incidSelection.Rows.Add(selRow);
 
                 // Select all the features for the current incid in GIS.
-                PerformGisSelection(false, false, -1, -1);
+                PerformGisSelection(false, -1, -1);
 
                 // Analyse the results of the GIS selection by counting the number of
                 // incids, toids and fragments selected.
@@ -3037,6 +3013,102 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
         }
+
+        #endregion
+
+        #region Select All On Map Command
+
+        //---------------------------------------------------------------------
+        // FIX: 032 Enable users to select all filtered incids on map.
+        // Enable all the incids in the current filter to be selected
+        // in GIS.
+        //
+        /// <summary>
+        /// SelectAllOnMap command.
+        /// </summary>
+        public ICommand SelectAllOnMapCommand
+        {
+            get
+            {
+                if (_selectAllOnMapCommand == null)
+                {
+                    Action<object> selectAllOnMapAction = new Action<object>(this.SelectAllOnMapClicked);
+                    _selectAllOnMapCommand = new RelayCommand(selectAllOnMapAction, param => this.IsFiltered);
+                }
+                return _selectAllOnMapCommand;
+            }
+        }
+
+        private void SelectAllOnMapClicked(object param)
+        {
+            // Select all the incids in the active filter in GIS.
+            SelectAllOnMap();
+        }
+
+        /// <summary>
+        /// Select all the incids in the active filter in GIS.
+        /// </summary>
+        protected void SelectAllOnMap()
+        {
+            // If there are any records in the selection (and the tool is
+            // not currently in bulk update mode).
+            if (IsFiltered)
+            {
+                try
+                {
+                    ChangeCursor(Cursors.Wait, "Processing ...");
+
+                    // Backup the current selection (filter).
+                    DataTable incidSelectionBackup = _incidSelection;
+
+                    // Build a where clause list for the incids to be selected.
+                    List<List<SqlFilterCondition>> whereClause = new List<List<SqlFilterCondition>>();
+                    whereClause.Add(ScratchDb.GisWhereClause(_incidSelection, null));
+
+                    // Find the expected number of features to be selected in GIS.
+                    int expectedNumFeatures = ExpectedSelectionFeatures(whereClause);
+
+                    // Find the expected number of incids to be selected in GIS.
+                    int expectedNumIncids = _incidSelection.Rows.Count;
+
+                    // Select the required incid(s) in GIS.
+                    if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
+                    {
+                        // Analyse the results of the GIS selection by counting the number of
+                        // incids, toids and fragments selected.
+                        AnalyzeGisSelectionSet(true);
+
+                        // Set the filter back to the first incid.
+                        SetFilter();
+
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found.
+                        if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        // Restore the previous selection (filter).
+                        _incidSelection = incidSelectionBackup;
+
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow, null);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _incidSelection = null;
+                    ChangeCursor(Cursors.Arrow, null);
+                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally { RefreshStatus(); }
+            }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -3210,19 +3282,58 @@ namespace HLU.UI.ViewModel
                 try
                 {
                     HluDataSet.incid_mm_polygonsDataTable t = new HluDataSet.incid_mm_polygonsDataTable();
+                    DataTable[] selTables = new DataTable[] { t }.ToArray();
 
                     IEnumerable<DataTable> queryTables = whereClause.SelectMany(cond => cond.Select(c => c.Table)).Distinct();
-                    DataTable[] selTables = new DataTable[] { t }.Union(queryTables).ToArray();
+                    //DataTable[] selTables = new DataTable[] { t }.Union(queryTables).ToArray();
+
+                    var fromTables = queryTables.Distinct().Where(q => !selTables.Select(s => s.TableName).Contains(q.TableName));
+                    DataTable[] whereTables = selTables.Concat(fromTables).ToArray();
+
                     DataRelation rel;
-                    IEnumerable<SqlFilterCondition> joinCond = queryTables.Select(st =>
+                    IEnumerable<SqlFilterCondition> joinCond = fromTables.Select(st =>
                         st.GetType() == typeof(HluDataSet.incidDataTable) ? 
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", st.Columns[_hluDS.incid.incidColumn.Ordinal]) :
                         (rel = GetRelation(_hluDS.incid, st)) != null ?
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", rel.ChildColumns[0]) : null).Where(c => c != null);
 
+                    // If there is only one long list then chunk
+                    // it up into smaller lists.
+                    if (whereClause.Count == 1)
+                    {
+                        try
+                        {
+                            List<SqlFilterCondition> whereCond = new List<SqlFilterCondition>();
+                            whereCond = whereClause[0];
+                            whereClause = whereCond.ChunkClause(IncidPageSize).ToList();
+                        }
+                        catch { }
+                    }
+
                     int numFeatures = 0;
                     for (int i = 0; i < whereClause.Count; i++)
+                    {
+                        // If the where conditions are going to be appended
+                        // to some join conditions then change the boolean
+                        // operator before the first where condition to "AND"
+                        // and wrap the where conditions in an extra set of
+                        // parentheses.
+                        if (joinCond.Count() != 0)
+                        {
+                            List<SqlFilterCondition> whereCond = new List<SqlFilterCondition>();
+                            whereCond = whereClause[i];
+
+                            SqlFilterCondition cond = new SqlFilterCondition();
+                            cond = whereCond[0];
+                            cond.BooleanOperator = "AND";
+                            cond.OpenParentheses = "((";
+
+                            cond = whereCond[whereCond.Count - 1];
+                            cond.CloseParentheses = "))";
+                        }
+
                         numFeatures += _db.SqlCount(selTables, joinCond.Concat(whereClause[i]).ToList());
+                    }
 
                     return numFeatures;
                 }
@@ -3282,14 +3393,27 @@ namespace HLU.UI.ViewModel
         // the GIS selection so that methods that call this method
         // can control if/when these things are done.
         //
-        private bool PerformGisSelection(bool confirmSelect, bool selectByJoin, int expectedNumFeatures, int expectedNumIncids)
+        private bool PerformGisSelection(bool confirmSelect, int expectedNumFeatures, int expectedNumIncids)
         {
             if (_gisApp != null)
             {
+                ChangeCursor(Cursors.Wait, "Processing ...");
+
+                // Build a where clause list for the incids to be selected.
                 List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
                 whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp);
 
-                ChangeCursor(Cursors.Wait, "Processing ...");
+                //---------------------------------------------------------------------
+                // CHANGED: CR12 (Select by attribute performance)
+                // Calculate the length of the SQL statement to be sent to GIS.
+                int sqlLen = _gisApp.SqlLength(_gisIDColumns, whereClause);
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR12 (Select by attribute performance)
+                // If the length exceeds the maximum for the GIS application then
+                // perform the selection using a join.
+                bool selectByJoin = (sqlLen > _gisApp.MaxSqlLength);
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR12 (Select by attribute performance)

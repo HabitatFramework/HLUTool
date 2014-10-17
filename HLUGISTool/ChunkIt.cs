@@ -255,5 +255,22 @@ namespace HLU
                 return GetEnumerator();
             }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 032 Enable users to select all filtered incids on map.
+        /// <summary>
+        /// Break a list of items into chunks of a specific size.
+        /// </summary>
+        public static IEnumerable<List<T>> ChunkClause<T>(this IEnumerable<T> source, int chunksize)
+        {
+            if (chunksize <= 0) throw new ArgumentException("Chunk size must be greater than zero.", "chunksize");
+            while (source.Any())
+            {
+                yield return source.Take(chunksize).ToList();
+                source = source.Skip(chunksize);
+            }
+        }
+        //---------------------------------------------------------------------
+        
     }
 }

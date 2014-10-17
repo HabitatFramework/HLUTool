@@ -85,18 +85,22 @@
                           IsEnabled="{Binding CanZoomSelection}" />
             </MenuItem>
             <MenuItem Header="_Select">
-                <MenuItem x:Name="MenuItemSelectByAttributes"
-                          Command="{Binding SelectByAttributesCommand}"
-                          Header="Select by _Attributes"
-                          IsEnabled="{Binding CanSelectByAttributes}" />
-                <MenuItem x:Name="MenuItemClearFilter"
-                          Command="{Binding ClearFilterCommand}"
-                          Header="_Clear Filter"
-                          IsEnabled="{Binding IsFiltered}" />
+                <MenuItem x:Name="MenuItemFilterByAttributes"
+                          Command="{Binding FilterByAttributesCommand}"
+                          Header="Filter by _Attributes"
+                          IsEnabled="{Binding CanFilterByAttributes}" />
                 <MenuItem x:Name="MenuItemSelectOnMap"
                           Command="{Binding SelectOnMapCommand}"
                           Header="Select C_urrent INCID on Map"
                           IsEnabled="{Binding CanSelectOnMap}" />
+                <MenuItem x:Name="MenuItemSelectAllOnMap"
+                          Command="{Binding SelectAllOnMapCommand}"
+                          Header="Select _All Filtered INCIDs on Map"
+                          IsEnabled="{Binding IsFiltered}" />
+                <MenuItem x:Name="MenuItemClearFilter"
+                          Command="{Binding ClearFilterCommand}"
+                          Header="_Clear Filter"
+                          IsEnabled="{Binding IsFiltered}" />
                 <MenuItem x:Name="MenuItemGetMapSelection"
                           Command="{Binding ReadMapSelectionCommand}"
                           Header="Get _Map Selection"
@@ -166,7 +170,7 @@
                 Height="16"
                 Source="..\..\Icons\FileExit.png" />
                 </Button>
-                <Button Name="ButtonExport"
+<!--                <Button Name="ButtonExport"
                         Command="{Binding Path=ExportCommand}"
                         IsEnabled="{Binding Path=CanExport}"
                         ToolTip="Export"
@@ -174,7 +178,7 @@
                     <Image Width="16"
                            Height="16"
                            Source="..\..\Icons\FileExport.png" />
-                </Button>
+                </Button>  -->
                 <Button x:Name="ButtonCopy"
                         Command="{Binding CopyCommand}"
                         IsEnabled="{Binding CanCopy}"
@@ -252,14 +256,14 @@
             <ToolBar x:Name="ToolBarSelect"
                      Band="1"
                      BandIndex="3">
-                <Button x:Name="ButtonSelectByAttributes"
-                        Command="{Binding SelectByAttributesCommand}"
-                        IsEnabled="{Binding CanSelectByAttributes}"
-                        ToolTip="Select by Attributes"
+                <Button x:Name="ButtonFilterByAttributes"
+                        Command="{Binding FilterByAttributesCommand}"
+                        IsEnabled="{Binding CanFilterByAttributes}"
+                        ToolTip="Filter by Attributes"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
                            Height="16"
-                           Source="..\..\Icons\SelectByAttributes.png" />
+                           Source="..\..\Icons\FilterByAttributes.png" />
                 </Button>
                 <Button x:Name="ButtonSelectOnMap"
                         Command="{Binding SelectOnMapCommand}"
@@ -269,6 +273,15 @@
                     <Image Width="16"
                            Height="16"
                            Source="..\..\Icons\SelectOnMap.png" />
+                </Button>
+                <Button x:Name="ButtonSelectAllOnMap"
+                        Command="{Binding SelectAllOnMapCommand}"
+                        IsEnabled="{Binding IsFiltered}"
+                        ToolTip="Select All Filtered INCIDs on Map"
+                        ToolTipService.ShowOnDisabled="True">
+                    <Image Width="16"
+                           Height="16"
+                           Source="..\..\Icons\SelectAllOnMap.png" />
                 </Button>
                 <Button x:Name="ButtonClearFilter"
                         Command="{Binding ClearFilterCommand}"
