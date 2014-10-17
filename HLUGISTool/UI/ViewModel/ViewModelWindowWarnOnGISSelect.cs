@@ -17,6 +17,7 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Text;
 using System.Globalization;
 using System.Windows.Input;
 using HLU.Properties;
@@ -29,7 +30,9 @@ namespace HLU.UI.ViewModel
 
         private string _displayName = "GIS Selection";
         private int _gisFeaturesNum;
-        private ViewModelWindowMain.GeometryTypes _gisFeaturesType;
+        private int _gisIncidNum;
+        private string _gisFeaturesType;
+        private bool _selectByjoin;
         private ICommand _noCommand;
         private ICommand _yesCommand;
 
@@ -37,10 +40,22 @@ namespace HLU.UI.ViewModel
 
         #region ctor
 
-        public ViewModelWindowWarnOnGISSelect(int numFeatures, ViewModelWindowMain.GeometryTypes typeFeatures)
+        public ViewModelWindowWarnOnGISSelect(int numFeatures, int numIncids, ViewModelWindowMain.GeometryTypes typeFeatures, bool selectByjoin)
         {
+            // Store the expected number of features to be selected in GIS.
             _gisFeaturesNum = numFeatures;
-            _gisFeaturesType = typeFeatures;
+            //---------------------------------------------------------------------
+            // CHANGED: CR12 (Select by attribute performance)
+            // Store the expected number of incids to be selected in GIS.
+            _gisIncidNum = numIncids;
+            // If the type of feature is not known then just use 'feature'.
+            if (typeFeatures != ViewModelWindowMain.GeometryTypes.Unknown)
+                _gisFeaturesType = typeFeatures.ToString().ToLower();
+            else
+                _gisFeaturesType = "feature";
+            // Store if a GIS table join will be used to perform the selection.
+            _selectByjoin = selectByjoin;
+            //---------------------------------------------------------------------
         }
 
         #endregion
@@ -147,25 +162,54 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_gisFeaturesNum < 0)
+                //---------------------------------------------------------------------
+                // CHANGED: CR12 (Select by attribute performance)
+                // Display the expected number of features and/or the expected
+                // number of incids to be selected in GIS, depending upon which
+                // values are valid.
+                StringBuilder labelMsg = new StringBuilder();
+                if (_gisFeaturesNum < 0 && _gisIncidNum < 0)
                 {
-                    return String.Format("Could not determine the number of {0}{1} expected to be " + 
-                        "selected on the map by this operation.\nWould you like to proceed?",
-                        _gisFeaturesType.ToString().ToLower(), _gisFeaturesNum > 1 ? "s" : String.Empty);
+                    labelMsg.Append(String.Format("Could not determine the number of {0}{1} or incids expected to be " +
+                        "selected on the map by this operation.",
+                        _gisFeaturesType,
+                        _gisFeaturesNum > 1 ? "s" : String.Empty));
                 }
-                else if (_gisFeaturesType == ViewModelWindowMain.GeometryTypes.Unknown)
+                else if (_gisFeaturesNum < 0)
                 {
-                    return String.Format("The expected number of {0}{1} selected on the map could not be determined.\n" +
-                        "This operation will select {0}{1} on the map related to {2} INCIDs.\nWould you like to proceed?",
-                        _gisFeaturesType.ToString().ToLower(), _gisFeaturesNum > 1 ? "s" : String.Empty, 
-                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture));
+                    labelMsg.Append(String.Format("This operation is expected to select {0} incid{1} on the map.\n" +
+                        "The expected number of {2}s could not be determined.",
+                        _gisIncidNum.ToString(CultureInfo.CurrentCulture),
+                        _gisIncidNum > 1 ? "s" : String.Empty,
+                        _gisFeaturesType));
+                }
+                else if (_gisIncidNum < 0)
+                {
+                    labelMsg.Append(String.Format("This operation is expected to select {0} {1}{2} on the map.\n" +
+                        "The expected number of incids could not be determined.",
+                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture),
+                        _gisFeaturesType,
+                        _gisFeaturesNum > 1 ? "s" : String.Empty));
                 }
                 else
                 {
-                    return String.Format("This operation is expected to select {0} {1}{2} on the map.\nWould you like to proceed?",
-                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture), _gisFeaturesType.ToString().ToLower(), 
-                        _gisFeaturesNum > 1 ? "s" : String.Empty);
+                    labelMsg.Append(String.Format("This operation is expected to select {0} {1}{2} from {3} incid{4} on the map.",
+                        _gisFeaturesNum.ToString(CultureInfo.CurrentCulture),
+                        _gisFeaturesType,
+                        _gisFeaturesNum > 1 ? "s" : String.Empty,
+                        _gisIncidNum.ToString(CultureInfo.CurrentCulture),
+                        _gisIncidNum > 1 ? "s" : String.Empty));
                 }
+
+                // Advise the user that a GIS table join will be used to
+                // perform the selection.
+                if (_selectByjoin)
+                    labelMsg.Append("\n\nThe operation will be performed using a table join in GIS which make take some time.");
+
+                labelMsg.Append("\n\nWould you like to proceed?");
+
+                return labelMsg.ToString();
+                //---------------------------------------------------------------------
             }
             set { }
         }

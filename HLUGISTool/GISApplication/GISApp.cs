@@ -48,6 +48,11 @@ namespace HLU.GISApplication
         public abstract AreaUnits AreaUnit { set; }
 
         /// <summary>
+        /// Maximum (nominal) allowable length of a SQL query.
+        /// </summary>
+        public abstract int MaxSqlLength { get; }
+
+        /// <summary>
         /// Type of GIS application.
         /// </summary>
         public abstract GISApplications ApplicationType { get; }
@@ -145,6 +150,23 @@ namespace HLU.GISApplication
         public abstract DataTable SqlSelect(string scratchMdbPath, string selectionTableName, DataColumn[] targetColumns);
 
         public abstract DataTable SqlSelect(bool selectDistinct, bool addGeometryInfo, DataColumn[] targetColumns, List<SqlFilterCondition> whereConds);
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR12 (Select by attribute performance)
+        // Calculate the approximate length of the SQL statement that will be
+        // used in GIS so that it can be determined if the selection can be
+        // performed using a direct query or if a table join is needed.
+        //
+        /// <summary>
+        /// Calculate the approximate length of the SQL statement that will be used
+        /// in GIS to meet the where conditions.
+        /// </summary>
+        /// <param name="targetColumns">The column names to return in the SQL query.</param>
+        /// <param name="whereConds">List of the where conditions to be met.</param>
+        /// <returns>Integer of the approximate length of the SQL statement that will be required
+        /// in GIS to meet the where conditions.</returns>
+        public abstract int SqlLength(DataColumn[] targetColumns, List<SqlFilterCondition> whereConds);
+        //---------------------------------------------------------------------
 
         protected abstract bool IsHluWorkspace();
 
