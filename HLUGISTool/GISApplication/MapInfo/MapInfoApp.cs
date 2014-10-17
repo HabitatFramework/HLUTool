@@ -1708,7 +1708,7 @@ namespace HLU.GISApplication.MapInfo
                     joinTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
 
                 string joinTableNameQuoted = QuoteIdentifier(joinTable);
-                string hluLayerNameQutote = QuoteIdentifier(_hluLayer);
+                string hluLayerNameQuoted = QuoteIdentifier(_hluLayer);
 
                 List<string> joinCondList = new List<string>();
 
@@ -1716,13 +1716,13 @@ namespace HLU.GISApplication.MapInfo
                 {
                     string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", joinTable,
                         QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
-                    joinCondList.Add(String.Format("{0}.{1} = {2}.{3}", hluLayerNameQutote,
+                    joinCondList.Add(String.Format("{0}.{1} = {2}.{3}", hluLayerNameQuoted,
                         GetFieldName(_hluLayerStructure.Columns[colName].Ordinal), joinTableNameQuoted,
                         QuoteIdentifier(colName)));
                 }
 
                 _mapInfoApp.Do(String.Format("Select {0} From {1}, {2} Where {3}", _hluColumnList, 
-                    hluLayerNameQutote, joinTableNameQuoted, String.Join(" AND ", joinCondList.ToArray())));
+                    hluLayerNameQuoted, joinTableNameQuoted, String.Join(" AND ", joinCondList.ToArray())));
                 
                 string selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
@@ -1991,7 +1991,7 @@ namespace HLU.GISApplication.MapInfo
 
             // Check that the table is the same as the expected table
             // and if not return an empty result table.
-            if (tableName != selName) return;
+            if ((tableName != selName) && (tableName != _hluLayer)) return;
             //---------------------------------------------------------------------
             
             int numSelected = -1;
