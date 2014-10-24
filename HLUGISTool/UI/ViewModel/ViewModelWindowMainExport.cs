@@ -50,6 +50,8 @@ namespace HLU.UI.ViewModel
             _windowExport.Owner = App.Current.MainWindow;
             _windowExport.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
+            // Fill any export formats if there are any export fields
+            // defined for the export format.
             _viewModelMain.HluTableAdapterManager.exportsTableAdapter.ClearBeforeFill = true;
             _viewModelMain.HluTableAdapterManager.exportsTableAdapter.Fill(_viewModelMain.HluDataset.exports,
                 String.Format("EXISTS (SELECT {0}.{1} FROM {0} WHERE {0}.{1} = {2}.{3})",
@@ -58,6 +60,8 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports.TableName),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports.export_idColumn.ColumnName)));
 
+            // If there are no exports formats defined that have any
+            // export fields then exit.
             if (_viewModelMain.HluDataset.exports.Count == 0)
             {
                 MessageBox.Show("Cannot export: there are no export formats defined.",
@@ -65,6 +69,8 @@ namespace HLU.UI.ViewModel
                 return;
             }
 
+            // Display the export interface to prompt the user
+            // to select which export format they want to use.
             _viewModelExport = new ViewModelExport(_viewModelMain.GisSelection == null ? 0 :
                 _viewModelMain.GisSelection.Rows.Count, _viewModelMain.GISApplication.HluLayerName,
                 _viewModelMain.GISApplication.ApplicationType, _viewModelMain.HluDataset.exports);
@@ -81,6 +87,8 @@ namespace HLU.UI.ViewModel
             _viewModelExport.RequestClose -= _viewModelExport_RequestClose;
             _windowExport.Close();
 
+            // If the user selected an export format then
+            // perform the export using that format.
             if (exportID != -1)
             {
                 DispatcherHelper.DoEvents();
