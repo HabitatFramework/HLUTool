@@ -22,3 +22,10 @@ namespace HLU.Data.Model {
     {
     }
 }
+
+namespace HLU.Data.Model.HluDataSetTableAdapters {
+    
+    
+    public partial class exports_fieldsTableAdapter {
+    }
+}
