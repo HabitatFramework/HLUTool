@@ -384,6 +384,8 @@ namespace HLU.GISApplication.ArcGIS
             }
         }
 
+        public override string ConcatenateOperator { get { return "&"; } }
+
         public override string QuoteIdentifier(string identifier)
         {
             if (!String.IsNullOrEmpty(identifier))
