@@ -1215,12 +1215,17 @@ namespace HLU.GISApplication.MapInfo
                 ClosePreviousSelection();
 
                 // Perform a sql join between the feature layer and the attribute table
+                //---------------------------------------------------------------------
+                // FIX: 026 Hide progress bars during MapInfo processing
+                _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Select {0}, {1} From {2}, {3} Where {2}.{4} = {3}.{5}", 
                     ColumnList(_hluLayer, null, false), ColumnList(attributeTable, 
                     new string[] { _hluLayerStructure.incidColumn.ColumnName }, false),
                     QuoteIdentifier(_hluLayer), QuoteIdentifier(attributeTable), 
                     QuoteIdentifier(GetFieldName(_hluLayerStructure.incidColumn.Ordinal)),
                     QuoteIdentifier(_hluLayerStructure.incidColumn.ColumnName)));
+                _mapInfoApp.Do("Set ProgressBars On");
+                //---------------------------------------------------------------------
  
                 // Get the name of the new selection table
                 selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
@@ -1230,8 +1235,13 @@ namespace HLU.GISApplication.MapInfo
                 if (string.IsNullOrEmpty(selTable)) return false;
 
                 // Save the joined table as the new export table
+                //---------------------------------------------------------------------
+                // FIX: 026 Hide progress bars during MapInfo processing
+                _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Commit Table {0} As {1}",
                     QuoteIdentifier(selTable), QuoteValue(outTabPath)));
+                _mapInfoApp.Do("Set ProgressBars On");
+                //---------------------------------------------------------------------
 
                 // Close the exported table
                 _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(selTable)));
@@ -1246,8 +1256,11 @@ namespace HLU.GISApplication.MapInfo
                 string geomCol1Name = "shape_length";
                 string geomCol2Name = "shape_area";
 
-                // If the exported table doesn't alreadt have a length or area field then add them
-                if (!HasColumn(outTable, "shape_length") || !HasColumn(outTable, "shape_area"))
+                //---------------------------------------------------------------------
+                // CHANGED: CR13 (Export features performance)
+                // Only update the geometry columns for all exported rows if new
+                // geometry columns have been added to the table.
+                if (!HasColumn(outTable, geomCol1Name) || !HasColumn(outTable, geomCol2Name))
                 {
                     geomCol1Name = "ShapeInfo1";
                     geomCol2Name = "ShapeInfo2";
@@ -1256,52 +1269,80 @@ namespace HLU.GISApplication.MapInfo
                     string doubleMIType = ((MapInfoConstants.ColumnType)doubleTypeInt).ToString().Replace("COL_TYPE_", "");
                     _mapInfoApp.Do(String.Format("Alter Table {0} (Add {1} {3}, {2} {3})",
                         outTable, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), doubleMIType));
+
+                    // Count the number of rows in the export table
+                    int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
+                        outTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
+
+                    // Fetch the first row from the export table
+                    double geom1;
+                    double geom2;
+                    string fetchCommand = String.Format("Fetch Next From {0}", outTable);
+                    _mapInfoApp.Do(String.Format("Fetch First From {0}", outTable));
+
+                    // Loop through all the export table rows updating their geometry
+                    for (int i = 1; i <= numRows; i++)
+                    {
+                        GetGeometryInfo(outTable, out geom1, out geom2);
+
+                        _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
+                            outTable, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, i));
+
+                        _mapInfoApp.Do(fetchCommand);
+                    }
+
+                    // Save the export table updates
+                    //---------------------------------------------------------------------
+                    // FIX: 026 Hide progress bars during MapInfo processing
+                    _mapInfoApp.Do("Set ProgressBars Off");
+                    _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
+                    _mapInfoApp.Do("Set ProgressBars On");
+                    //---------------------------------------------------------------------
                 }
+                //---------------------------------------------------------------------
 
-                // Count the number of rows in the export table
-                int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
-                    outTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
-
-                // Fetch the first row from the export table
-                double geom1;
-                double geom2;
-                string fetchCommand = String.Format("Fetch Next From {0}", outTable);
-                _mapInfoApp.Do(String.Format("Fetch First From {0}", outTable));
-
-                // Loop through all the export table rows updating their geometry
-                for (int i = 1; i <= numRows; i++)
+                //---------------------------------------------------------------------
+                // CHANGED: CR16 (Adding exported features)
+                // Ask the user if they want to add the new export table to the
+                // current map window (i.e. keep it open).
+                if (TableExists(outTable))
                 {
-                    GetGeometryInfo(outTable, out geom1, out geom2);
-
-                    _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
-                        outTable, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, i));
-
-                    _mapInfoApp.Do(fetchCommand);
+                    MessageBoxResult userResponse = MessageBoxResult.No;
+                    userResponse = MessageBox.Show("The export operation succeeded.\n\nAdd the exported layer to the current map?", "HLU: Export",
+                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    // Add the already open layer to the map window.
+                    if (userResponse == MessageBoxResult.Yes)
+                    {
+                        _mapInfoApp.Do(String.Format("Add Map Window {0} Layer {1}", _hluMapWindowID, outTable));
+                    }
+                    else
+                        // Close the export table.
+                        _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(outTable)));
                 }
-
-                // Save the export table updates
-                _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
-
-                MessageBox.Show("The export operation succeeded.", "HLU: Export",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-
+                else
+                    throw new Exception("The export operation failed.");
+                //---------------------------------------------------------------------
                 return true;
             }
             catch (Exception ex)
             {
+                // Close the export table (if it exists).
+                if (TableExists(outTable))
+                    _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(outTable)));
+
                 MessageBox.Show("Export failed. The error message returned was:\n\n" + ex.Message,
                     "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             finally
             {
-                // Close the temporary attribute table, export table and temporary selection table
+                // Close the temporary attribute, temporary selection tables
+                // (if they exist).
                 if (TableExists(attributeTable))
                     _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(attributeTable)));
-                if (TableExists(outTable))
-                    _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(outTable)));
                 if (TableExists(selTable))
                     _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(selTable)));
+
             }
         }
 
@@ -2477,10 +2518,14 @@ namespace HLU.GISApplication.MapInfo
 
             for (int i = 1; i <= numColumns; i++)
             {
+                //---------------------------------------------------------------------
+                // FIX: 033 Don't add length or area fields to export layers
+                // if they already exist in mixed/upper case.
                 if (_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
                     tableName, QuoteValue(String.Format("Col{0}", i)),
-                    (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME)) == columnName)
+                    (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME)).ToLower() == columnName.ToLower())
                     return true;
+                //---------------------------------------------------------------------
             }
 
             return false;
