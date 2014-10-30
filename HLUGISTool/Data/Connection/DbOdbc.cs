@@ -1189,6 +1189,7 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "#";
                     _wildcardSingleMatch = "?";
                     _wildcardManyMatch = "*";
+                    _concatenateOperator = "&";
                     break;
                 case Backends.SqlServer:
                     _quotePrefix = "[";
@@ -1198,6 +1199,7 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
+                    _concatenateOperator = "+";
                     break;
                 default:
                     _quotePrefix = "\"";
@@ -1207,6 +1209,7 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
+                    _concatenateOperator = "&";
                     break;
             }
         }
