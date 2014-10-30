@@ -30,6 +30,7 @@ using HLU.Data.Model;
 using HLU.GISApplication;
 using HLU.Properties;
 using HLU.UI.View;
+using HLU.Data;
 
 namespace HLU.UI.ViewModel
 {
@@ -38,6 +39,11 @@ namespace HLU.UI.ViewModel
         ViewModelWindowMain _viewModelMain;
         private WindowExport _windowExport;
         private ViewModelExport _viewModelExport;
+
+        private string _lastTableName;
+        private int _tableCount;
+        private int _fieldCount;
+        private int _sourceOrdinal;
 
         public ViewModelWindowMainExport(ViewModelWindowMain viewModelMain)
         {
@@ -50,7 +56,7 @@ namespace HLU.UI.ViewModel
             _windowExport.Owner = App.Current.MainWindow;
             _windowExport.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            // Fill any export formats if there are any export fields
+            // Fill all export formats if there are any export fields
             // defined for the export format.
             _viewModelMain.HluTableAdapterManager.exportsTableAdapter.ClearBeforeFill = true;
             _viewModelMain.HluTableAdapterManager.exportsTableAdapter.Fill(_viewModelMain.HluDataset.exports,
@@ -92,21 +98,37 @@ namespace HLU.UI.ViewModel
             if (exportID != -1)
             {
                 DispatcherHelper.DoEvents();
-                Export(exportID, exportDescriptions, selectedOnly);
+                Export(exportID, selectedOnly);
             }
         }
 
-        private void Export(int userExportId, bool exportDescriptions, bool selectedOnly)
+        /// <summary>
+        /// Exports the combined GIS and database data using
+        /// the specified export format.
+        /// </summary>
+        /// <param name="userExportId">The export format selected by the user.</param>
+        /// <param name="exportDescriptions">If set to <c>true</c> export field descriptions instead of their code.</param>
+        /// <param name="selectedOnly">If set to <c>true</c> export only selected incids/features.</param>
+        /// <exception cref="System.Exception">
+        /// Failed to find a table alias that does not match a table name in the HLU dataset
+        /// or
+        /// No export fields are defined for format 'x'
+        /// or
+        /// Export query did not retrieve any rows
+        /// </exception>
+        private void Export(int userExportId, bool selectedOnly)
         {
             string tempPath = null;
 
             try
             {
+                // Create a new unique table name to export to.
                 string tableAlias = GetTableAlias();
                 if (tableAlias == null)
-                    throw new Exception("Failed to find a table alias that does not match a table name in the HLU dataset.");
+                    throw new Exception("Failed to find a table alias that does not match a table name in the HLU dataset");
 
-                // refresh export fields from DB
+                // Retrieve the export fields for the export format
+                // selected by the user from the database.
                 _viewModelMain.HluTableAdapterManager.exportsFieldsTableAdapter.ClearBeforeFill = true;
                 _viewModelMain.HluTableAdapterManager.exportsFieldsTableAdapter.Fill(
                     _viewModelMain.HluDataset.exports_fields, String.Format("{0} = {1} ORDER BY {2}, {3}",
@@ -117,22 +139,29 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.DataBase.QuoteIdentifier(
                     _viewModelMain.HluDataset.exports_fields.field_ordinalColumn.ColumnName)));
 
+                // Exit if there are no export fields for this format
+                // (this should not be possible).
                 if (_viewModelMain.HluDataset.exports_fields.Count == 0)
-                    throw new Exception(String.Format("No export fields are defined for format '{0}'.",
+                    throw new Exception(String.Format("No export fields are defined for format '{0}'",
                         _viewModelMain.HluDataset.exports.FindByexport_id(userExportId).export_name));
 
+                // Build a new export data table and also determine
+                // the number of output fields, a string of the output
+                // field names, the from SQL clause, and the incid
+                // field ordinal.
                 DataTable exportTable;
-                List<int> fieldCountList;
+                int[][] fieldMapTemplate;
                 StringBuilder targetList;
                 StringBuilder fromClause;
                 int incidOrdinal;
-                ExportJoins(exportDescriptions, tableAlias, out exportTable,
-                    out fieldCountList, out targetList, out fromClause, out incidOrdinal);
+                ExportJoins(tableAlias, out exportTable,
+                    out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal);
 
-                string whereClause = String.Empty;
-
+                // Set the export filter conditions, depending if all
+                // the records are to be exported or only the selected
+                // features.
                 List<List<SqlFilterCondition>> exportFilter = null;
-                if (!_viewModelExport.SelectedOnly)
+                if (!selectedOnly)
                 {
                     SqlFilterCondition cond = new SqlFilterCondition("AND",
                         _viewModelMain.IncidTable, _viewModelMain.IncidTable.incidColumn, null);
@@ -150,19 +179,26 @@ namespace HLU.UI.ViewModel
                     exportFilter = _viewModelMain.IncidSelectionWhereClause;
                 }
 
+                // Union the constituent parts of the export query
+                // together into a single SQL string.
                 string sql = ScratchDb.UnionQuery(targetList.ToString(), fromClause.ToString(),
                     incidOrdinal, exportFilter, _viewModelMain.DataBase);
 
                 _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting ...");
 
+                // Export the attribute data to a temporary database.
                 int exportRowCount;
-                tempPath = ExportMdb(sql, exportTable, incidOrdinal, fieldCountList, out exportRowCount);
+                tempPath = ExportMdb(sql, exportTable, incidOrdinal, ref fieldMapTemplate, out exportRowCount);
 
+                // Call the GIS application export method to join the
+                // temporary attribute data to the GIS feature layer
+                // and save them as a new GIS layer.
                 if (!String.IsNullOrEmpty(tempPath) && (exportRowCount > 0))
                     _viewModelMain.GISApplication.Export(tempPath, exportTable.TableName, exportRowCount);
                 else
                     throw new Exception("Export query did not retrieve any rows");
 
+                // Remove the current record filter.
                 _viewModelMain.IncidSelection = null;
                 _viewModelMain.GisSelection = null;
                 _viewModelMain.OnPropertyChanged("IsFiltered");
@@ -189,13 +225,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private void ExportJoins(bool exportDescriptions, string tableAlias, out DataTable exportTable,
-            out List<int> fieldCountList, out StringBuilder targetList, out StringBuilder fromClause,
+        private void ExportJoins(string tableAlias, out DataTable exportTable,
+            out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause,
             out int incidOrdinal)
         {
             exportTable = new DataTable("HluExport");
-            List<int> lutDescrColOrdinals = new List<int>();
-            fieldCountList = new List<int>();
+            List<ExportField> exportFields = new List<ExportField>();
             targetList = new StringBuilder();
             List<string> fromList = new List<string>();
             List<string> leftJoined = new List<string>();
@@ -204,25 +239,24 @@ namespace HLU.UI.ViewModel
             int tableAliasNum = 1;
             bool firstJoin = true;
             incidOrdinal = -1;
+            _lastTableName = null;
+            _fieldCount = 0;
 
-            foreach (HluDataSet.exports_fieldsRow r in 
+            //
+            foreach (HluDataSet.exports_fieldsRow r in
                 _viewModelMain.HluDataset.exports_fields.OrderBy(r => r.field_ordinal))
             {
+                if (r.table_name.ToLower() == "<none>")
+                {
+                    AddExportColumn(0, r.table_name, r.column_name, r.field_name,
+                        r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
+                        ref exportFields);
+                    continue;
+                }
+
                 bool multipleFields = false;
                 if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.fields_countColumn))
-                {
-                    fieldCountList.Add(r.fields_count);
                     multipleFields = true;
-                }
-                else
-                {
-                    if ((r.table_name == _viewModelMain.HluDataset.incid.TableName) &&
-                        (r.column_name == _viewModelMain.HluDataset.incid.incidColumn.ColumnName))
-                    {
-                        incidOrdinal = fieldCountList.Count;
-                    }
-                    fieldCountList.Add(0);
-                }
 
                 string currTable = _viewModelMain.DataBase.QualifyTableName(r.table_name);
                 if (!fromList.Contains(currTable))
@@ -250,7 +284,10 @@ namespace HLU.UI.ViewModel
                     }
                 }
 
-                var relations = exportDescriptions ? _viewModelMain.HluDataRelations.Where(rel =>
+                // Get the relationships for the table/column if
+                // a value from a lookup table is required.
+                string fieldFormat = !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null;
+                var relations = ((fieldFormat != null) && (fieldFormat == "Both" || fieldFormat == "Lookup")) ? _viewModelMain.HluDataRelations.Where(rel =>
                     rel.ChildTable.TableName == r.table_name && rel.ChildColumns
                     .Count(ch => ch.ColumnName == r.column_name) == 1) : new DataRelation[0];
 
@@ -259,9 +296,9 @@ namespace HLU.UI.ViewModel
                     case 0:
                         targetList.Append(String.Format(",{0}.{1} AS {2}", currTable,
                             _viewModelMain.DataBase.QuoteIdentifier(r.column_name), r.field_name));
-                        AddExportColumn(multipleFields ? r.fields_count : 0, r.field_name,
-                            _viewModelMain.HluDataset.Tables[r.table_name].Columns[r.column_name], ref exportTable,
-                            ref lutDescrColOrdinals);
+                        AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
+                            r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
+                            ref exportFields);
                         break;
                     case 1:
                         DataRelation lutRelation = relations.ElementAt(0);
@@ -270,24 +307,65 @@ namespace HLU.UI.ViewModel
                         string parentTableAlias = tableAlias + tableAliasNum++;
                         fromList.Add(parentTable);
 
-                        if (lutRelation.ParentTable.Columns.Contains(ViewModelWindowMain.LutDescriptionFieldName))
+                        //
+                        string lutFieldName;
+                        int lutFieldOrdinal;
+                        if ((r.table_name == "incid_sources") && (Regex.IsMatch(r.column_name, @"(_id)", RegexOptions.IgnoreCase)))
                         {
-                            targetList.Append(String.Format(",{0}.{1} AS {2}", parentTableAlias,
-                                _viewModelMain.DataBase.QuoteIdentifier(
-                                ViewModelWindowMain.LutDescriptionFieldName), r.field_name));
-                            AddExportColumn(multipleFields ? r.fields_count : 0, r.field_name,
-                                lutRelation.ParentTable.Columns[ViewModelWindowMain.LutDescriptionFieldName],
-                                ref exportTable, ref lutDescrColOrdinals);
+                            lutFieldName = ViewModelWindowMain.LutSourceFieldName;
+                            lutFieldOrdinal = ViewModelWindowMain.LutSourceFieldOrdinal - 1;
                         }
-                        else if (lutRelation.ParentTable.Columns.Count >= ViewModelWindowMain.LutDescriptionFieldOrdinal)
+                        else if ((r.table_name == "incid") && (Regex.IsMatch(r.column_name, @"(_user_id)", RegexOptions.IgnoreCase)))
                         {
-                            targetList.Append(String.Format(",{0}.{1} AS {2}", 
-                                parentTableAlias, _viewModelMain.DataBase.QuoteIdentifier(
-                                lutRelation.ParentTable.Columns[ViewModelWindowMain.LutDescriptionFieldOrdinal - 1].ColumnName),
-                                r.field_name));
-                            AddExportColumn(multipleFields ? r.fields_count : 0, r.field_name,
-                                lutRelation.ParentTable.Columns[ViewModelWindowMain.LutDescriptionFieldOrdinal - 1],
-                                ref exportTable, ref lutDescrColOrdinals);
+                            lutFieldName = ViewModelWindowMain.LutUserFieldName;
+                            lutFieldOrdinal = ViewModelWindowMain.LutUserFieldOrdinal - 1;
+                        }
+                        else
+                        {
+                            lutFieldName = ViewModelWindowMain.LutDescriptionFieldName;
+                            lutFieldOrdinal = ViewModelWindowMain.LutDescriptionFieldOrdinal - 1;
+                        }
+
+                        //
+                        if (lutRelation.ParentTable.Columns.Contains(lutFieldName))
+                        {
+                            if ((fieldFormat != null) && (fieldFormat == "Both"))
+                                targetList.Append(String.Format(",{0}.{1} {5} {6} {5} {2}.{3} AS {4}",
+                                    currTable,
+                                    _viewModelMain.DataBase.QuoteIdentifier(r.column_name),
+                                    parentTableAlias,
+                                    _viewModelMain.DataBase.QuoteIdentifier(lutFieldName),
+                                    r.field_name,
+                                    _viewModelMain.DataBase.ConcatenateOperator,
+                                    _viewModelMain.DataBase.QuoteValue(" : ")));
+                            else
+                                targetList.Append(String.Format(",{0}.{1} AS {2}",
+                                    parentTableAlias,
+                                    _viewModelMain.DataBase.QuoteIdentifier(lutFieldName),
+                                    r.field_name));
+                            AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
+                                r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
+                                ref exportFields);
+                        }
+                        else if (lutRelation.ParentTable.Columns.Count >= lutFieldOrdinal)
+                        {
+                            if ((fieldFormat != null) && (fieldFormat == "Both"))
+                                targetList.Append(String.Format(",{0}.{1} {5} {6} {5} {2}.{3} AS {4}",
+                                    currTable,
+                                    _viewModelMain.DataBase.QuoteIdentifier(r.column_name),
+                                    parentTableAlias,
+                                    _viewModelMain.DataBase.QuoteIdentifier(lutRelation.ParentTable.Columns[lutFieldOrdinal].ColumnName),
+                                    r.field_name,
+                                    _viewModelMain.DataBase.ConcatenateOperator,
+                                    _viewModelMain.DataBase.QuoteValue(" : ")));
+                            else
+                                targetList.Append(String.Format(",{0}.{1} AS {2}",
+                                    parentTableAlias,
+                                    _viewModelMain.DataBase.QuoteIdentifier(lutRelation.ParentTable.Columns[lutFieldOrdinal].ColumnName),
+                                    r.field_name));
+                            AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
+                                r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
+                                ref exportFields);
                         }
                         else
                         {
@@ -317,12 +395,95 @@ namespace HLU.UI.ViewModel
                 }
             }
 
+            // Create a new field map template with as many items
+            // as there are input fields.
+            fieldMapTemplate = new int[exportFields.Max(e => e.FieldOrdinal) + 1][];
+
+            // Loop through all the export fields, adding them as columns
+            // in the export table and adding them to the field map template.
+            int fieldTotal = 0;
+            _sourceOrdinal = -1;
+            foreach (ExportField f in exportFields.OrderBy(f => f.FieldOrder))
+            {
+                // Add the field as a new column in the export table.
+                DataColumn c = new DataColumn(f.FieldName, f.FieldType);
+                if (f.AutoNum == true)
+                {
+                    c.AutoIncrement = true;
+                    c.AutoIncrementSeed = 1;
+                    c.AutoIncrementStep = 1;
+                }
+                if (f.FieldLength > 0)
+                    c.MaxLength = f.FieldLength;
+                exportTable.Columns.Add(c);
+
+                // If the field will not be sourced from the database.
+                if (f.FieldOrdinal == -1)
+                {
+                    // Increment the total number of fields to be exported.
+                    fieldTotal += 1;
+
+                    // Skip adding the field to the field map template.
+                    continue;
+                }
+
+                // If the field is not repeated and refers to the incid column
+                // in the incid table then store the output field position for use
+                // later as the primary index field ordinal.
+                if ((f.FieldsCount == 0) && ((f.TableName == _viewModelMain.HluDataset.incid.TableName) &&
+                    (f.ColumnName == _viewModelMain.HluDataset.incid.incidColumn.ColumnName)))
+                    incidOrdinal = fieldTotal;
+
+                // If the field refers to the source_id column in the
+                // incid_source table then store the input field ordinal for use
+                // later as the unique incid_source field ordinal.
+                if ((f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) &&
+                    (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName))
+                    _sourceOrdinal = f.FieldOrdinal;
+
+                // Set the field mapping for the current field ordinal.
+                List<int> fieldMap;
+                if ((fieldMapTemplate[f.FieldOrdinal] != null) && (f.AutoNum != true))
+                    fieldMap = fieldMapTemplate[f.FieldOrdinal].ToList();
+                else
+                {
+                    fieldMap = new List<int>();
+                    fieldMap.Add(f.FieldOrdinal);
+                }
+
+                // Add the current field number to the field map for
+                // this field ordinal.
+                fieldMap.Add(fieldTotal);
+
+                // Update the field map template for this field ordinal.
+                fieldMapTemplate[f.FieldOrdinal] = fieldMap.ToArray();
+
+                // Increment the total number of fields to be exported.
+                fieldTotal += 1;
+            }
+
+            // If any incid_source fields are in the export file but
+            // the source_id column is not then include that field
+            // so that different sources can be identified.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0) &&
+                (_sourceOrdinal == -1))
+            {
+                // Add the field to the input table.
+                targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                    _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName));
+
+                // Store the input field ordinal for use
+                // later as the unique incid_source field ordinal.
+                _sourceOrdinal = exportFields.Max(e => e.FieldOrdinal) + 1;
+            }
+
+            // Set the incid field as the primary key to the table.
             exportTable.PrimaryKey = new DataColumn[] { exportTable.Columns[incidOrdinal] };
             if (targetList.Length > 1) targetList.Remove(0, 1);
         }
 
         private string ExportMdb(string sql, DataTable exportTable, int incidOrdinal,
-            List<int> fieldCountList, out int exportRowCount)
+            ref int[][] fieldMap, out int exportRowCount)
         {
             exportRowCount = -1;
             DbOleDb dbOut = null;
@@ -345,14 +506,19 @@ namespace HLU.UI.ViewModel
                     Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
                     Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
                 dbOut.CreateTable(exportTable);
+
                 DataSet datasetOut = new DataSet("Export");
 
                 IDbDataAdapter adapterOut = dbOut.CreateAdapter(exportTable);
+                adapterOut.MissingSchemaAction = MissingSchemaAction.AddWithKey;
                 adapterOut.Fill(datasetOut);
                 int[] pkOrdinals = exportTable.PrimaryKey.Select(c => c.Ordinal).ToArray();
                 exportTable.PrimaryKey = pkOrdinals.Select(o => exportTable.Columns[o]).ToArray();
                 adapterOut.TableMappings.Clear();
                 adapterOut.TableMappings.Add(exportTable.TableName, datasetOut.Tables[0].TableName);
+
+                DataTable exportTable2 = exportTable;
+
                 exportTable = datasetOut.Tables[0];
 
                 DataRow exportRow = null;
@@ -361,10 +527,10 @@ namespace HLU.UI.ViewModel
                 using (IDataReader reader = _viewModelMain.DataBase.ExecuteReader(sql, 
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text))
                 {
-                    int runTotal = 0;
-                    int[][] fieldMapTemplate = fieldCountList.Select((i, index) =>
-                        new int[] { index, index + runTotal, i, (runTotal += i - (i > 0 ? 1 : 0)) })
-                        .Select(e => new int[] { e[0], e[1], e[1] + e[2] }).ToArray();
+                    //int runTotal = 0;
+                    //int[][] fieldMapTemplate = fieldCountList.Select((i, index) =>
+                    //    new int[] { index, index + runTotal, i, (runTotal += i - (i > 0 ? 1 : 0)) })
+                    //    .Select(e => new int[] { e[0], e[1], e[1] + e[2] }).ToArray();
 
                     int[] dupsAllowed = (from e in exportTable.Columns.Cast<DataColumn>()
                                          let q = from c in _viewModelMain.HluDataset.incid_sources.Columns.Cast<DataColumn>()
@@ -375,48 +541,115 @@ namespace HLU.UI.ViewModel
                                              n + @"(_[0-9]+)*\z", RegexOptions.IgnoreCase)) == 1
                                          select e.Ordinal).ToArray();
 
-                    int[][] fieldMap = new int[fieldMapTemplate.Length][];
                     string currIncid = String.Empty;
                     string prevIncid = String.Empty;
+                    int fieldIndex = 1;
 
                     while (reader.Read())
                     {
+                        // Get the current incid.
                         currIncid = reader.GetString(incidOrdinal);
+
+                        // If this incid is different to the last record's incid
+                        // then process all the fields.
                         if (currIncid != prevIncid)
                         {
+                            // Store the last incid.
                             prevIncid = currIncid;
-                            fieldMap = fieldMapTemplate.Select(a => new int[] { a[0], a[1], a[2] }).ToArray();
+                            fieldIndex = 1;
+
+                            // If the last export row has not been saved then
+                            // save it now.
                             if (exportRow != null)
                             {
                                 exportTable.Rows.Add(exportRow);
                                 rowAdded = true;
                             }
+                            
+                            // Create a new export row ready for the next values.
                             exportRow = exportTable.NewRow();
                             rowAdded = false;
+
+                            // Loop through all the fields in the field map
+                            // to transfer the values from the input reader
+                            // to the correct field in the export row.
                             for (int i = 0; i < fieldMap.GetLength(0); i++)
                             {
-                                object item = reader.GetValue(fieldMap[i][0]);
-                                if (item != DBNull.Value)
-                                    exportRow[fieldMap[i][1]] = reader.GetValue(fieldMap[i][0]);
-                                fieldMap[i][1]++;
+                                // If this field is mapped from the input reader
+                                // then copy it to the export table.
+                                if (fieldMap[i][0] == -1)
+                                {
+                                    exportRow[fieldMap[i][fieldIndex]] = null;
+                                }
+                                else
+                                {
+                                    // Store the input value of the current column.
+                                    object item = reader.GetValue(fieldMap[i][0]);
+
+                                    // If the value is not null.
+                                    if (item != DBNull.Value)
+                                    {
+                                        // Get the maximum length of the column.
+                                        int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
+
+                                        // If the maximum length of the column is shorter
+                                        // than the value then truncate the value as it
+                                        // is transferred  to the export row.
+                                        if ((fieldLength != -1) && (fieldLength < item.ToString().Length))
+                                            exportRow[fieldMap[i][fieldIndex]] = item.ToString().Substring(0, fieldLength);
+                                        else
+                                            exportRow[fieldMap[i][fieldIndex]] = item;
+                                    }
+                                }
                             }
                         }
                         else
                         {
+                            // Increment the index position for the field map.
+                            fieldIndex += 1;
+
+                            // Loop through all the fields in the field map
+                            // to transfer the values from the input reader
+                            // to the correct field in the export row.
                             for (int i = 0; i < fieldMap.GetLength(0); i++)
                             {
-                                if (fieldMap[i][1] < fieldMap[i][2])
+                                // Only process fields that have multiple outputs
+                                // specified in the field map.
+                                if (fieldIndex < fieldMap[i].Length)
                                 {
-                                    object item = reader.GetValue(fieldMap[i][0]);
-                                    if ((item != DBNull.Value) && (!item.Equals(exportRow[fieldMap[i][1] - 1]) ||
-                                        (Array.IndexOf(dupsAllowed, fieldMap[i][1]) != -1)))
-                                        exportRow[fieldMap[i][1]++] = item;
+                                    // If this field is mapped from the input reader
+                                    // then copy it to the export table.
+                                    if (fieldMap[i][1] != null)
+                                    {
+                                        // Store the input value of the current column.
+                                        object item = reader.GetValue(fieldMap[i][0]);
+
+                                        // If the value is not null and the value is different
+                                        // to the last value for this incid, or the column is
+                                        // allowed to have duplicates.
+                                        if ((item != DBNull.Value) && (!item.Equals(exportRow[fieldMap[i][fieldIndex - 1]]) ||
+                                            (Array.IndexOf(dupsAllowed, fieldMap[i][fieldIndex]) != -1)))
+                                        {
+                                            // Get the maximum length of the column.
+                                            int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
+
+                                            // If the maximum length of the column is shorter
+                                            // than the value then truncate the value as it
+                                            // is transferred  to the export row.
+                                            if ((fieldLength != -1) && (fieldLength < item.ToString().Length))
+                                                exportRow[fieldMap[i][fieldIndex]] = item.ToString().Substring(0, fieldLength);
+                                            else
+                                                exportRow[fieldMap[i][fieldIndex]] = item;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
+                // If the last export row has not been saved then
+                // save it now.
                 if (!rowAdded && (exportRow != null)) exportTable.Rows.Add(exportRow);
 
                 exportRowCount = adapterOut.Update(datasetOut);
@@ -442,25 +675,123 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private void AddExportColumn(int numFields, string columnName, DataColumn templateColumn,
-            ref DataTable exportTable, ref List<int> lutDescrColOrdinals)
+        /// <summary>
+        /// Adds the export column to the export table.
+        /// </summary>
+        /// <param name="numFields">The number of occurrences of this field.</param>
+        /// <param name="columnName">The name of the exported column.</param>
+        /// <param name="dataType">The data type of the column.</param>
+        /// <param name="maxLength">The maximum length of the column.</param>
+        /// <param name="exportTable">The export table.</param>
+        /// <param name="lutDescrColOrdinals">The lut description col ordinals.</param>
+        private void AddExportColumn(int numFields, string tableName, string columnName, string fieldName, int fieldType, int maxLength,
+            string fieldFormat, ref List<ExportField> exportFields)
         {
+            Type dataType = null;
+            int fieldLength = 0;
+            bool autoNum = false;
+
+            switch (fieldType)
+            {
+                case 3:     // Integer
+                    dataType = System.Type.GetType("System.Int32");
+                    break;
+                case 6:     // Single
+                    dataType = System.Type.GetType("System.Single");
+                    break;
+                case 7:     // Double
+                    dataType = System.Type.GetType("System.Double");
+                    break;
+                case 8:     // Date/Time
+                    dataType = System.Type.GetType("System.DateTime");
+                    break;
+                case 10:    // Text
+                    dataType = System.Type.GetType("System.String");
+                    fieldLength = maxLength;
+                    break;
+                case 99:    // Autonumber
+                    dataType = System.Type.GetType("System.Int32");
+                    autoNum = true;
+                    break;
+                default:
+                    dataType = System.Type.GetType("System.String");
+                    fieldLength = maxLength;
+                    break;
+            }
+
+            //DataColumn c = new DataColumn(columnName, dataType);
+            //c.AutoIncrement = autoNum;
+            //c.MaxLength = maxLength;
+            //exportTable.Columns.Add(c);
+
+            // If this field has multiple occurrences.
             if (numFields > 0)
             {
+                // Increment the number of times the same table has
+                // been referenced.
+                if (tableName == _lastTableName)
+                    _tableCount += 1;
+                else
+                    _tableCount = 1;
+
                 for (int i = 1; i <= numFields; i++)
                 {
-                    DataColumn c = new DataColumn(String.Format("{0}_{1}", columnName, i), 
-                        templateColumn.DataType);
-                    c.MaxLength = templateColumn.MaxLength;
-                    exportTable.Columns.Add(c);
+                    ExportField fld = new ExportField();
+
+                    if (tableName.ToLower() == "<none>")
+                        fld.FieldOrdinal = -1;
+                    else
+                        fld.FieldOrdinal = _fieldCount;
+                    fld.TableName = tableName;
+                    fld.ColumnName = columnName;
+                    fld.FieldName = String.Format("{0}_{1}", fieldName, i);
+                    fld.FieldType = dataType;
+
+                    // If the table is the same as the last table then
+                    // interweave the repeated fields.
+                    int fieldNum;
+                    int fieldCount = exportFields.Count + 1;
+                    if (_tableCount == 1)
+                        fieldNum = fieldCount * 10;
+                    else
+                        fieldNum = ((fieldCount - (numFields * (_tableCount - 1))) * 10) + (_tableCount - 1);
+
+                    fld.FieldOrder = fieldNum;
+                    fld.FieldLength = fieldLength;
+                    fld.FieldsCount = numFields;
+                    fld.FieldFormat = fieldFormat;
+                    fld.AutoNum = autoNum;
+
+                    exportFields.Add(fld);
                 }
             }
             else
             {
-                DataColumn c = new DataColumn(columnName, templateColumn.DataType);
-                c.MaxLength = templateColumn.MaxLength;
-                exportTable.Columns.Add(c);
+                ExportField fld = new ExportField();
+                if (tableName.ToLower() == "<none>")
+                    fld.FieldOrdinal = -1;
+                else
+                    fld.FieldOrdinal = _fieldCount;
+                fld.TableName = tableName;
+                fld.ColumnName = columnName;
+                fld.FieldName = fieldName;
+                fld.FieldType = dataType;
+                fld.FieldOrder = (exportFields.Count + 1) * 10;
+                fld.FieldLength = fieldLength;
+                fld.FieldsCount = numFields;
+                fld.FieldFormat = fieldFormat;
+                fld.AutoNum = autoNum;
+
+                exportFields.Add(fld);
             }
+
+            // Store the last table referenced.
+            _lastTableName = tableName;
+
+            // Increment the field counter.
+            if (tableName.ToLower() != "<none>")
+                _fieldCount += 1;
+
         }
 
         private string RelationJoinClause(string joinType, string currTable, bool parentLeft,
