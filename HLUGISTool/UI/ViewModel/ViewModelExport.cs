@@ -35,7 +35,6 @@ namespace HLU.UI.ViewModel
         private HluDataSet.exportsDataTable _exportFormats;
         private int _exportID = -1;
         private bool _selectedOnly;
-        private bool _exportDescriptions = false;
         private int _selectedNumber;
         private GISApplications _gisApp;
 
@@ -81,7 +80,7 @@ namespace HLU.UI.ViewModel
         #region RequestClose
 
         // declare the delegate since using non-generic pattern
-        public delegate void RequestCloseEventHandler(int exportID, bool exportDescriptions, bool selectedOnly);
+        public delegate void RequestCloseEventHandler(int exportID, bool selectedOnly);
 
         // declare the event
         public event RequestCloseEventHandler RequestClose;
@@ -117,7 +116,7 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
-            this.RequestClose(_exportID, _exportDescriptions, _selectedOnly);
+            this.RequestClose(_exportID, _selectedOnly);
         }
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void CancelCommandClick(object param)
         {
-            this.RequestClose(-1, false, false);
+            this.RequestClose(-1, false);
         }
 
         #endregion
@@ -192,17 +191,6 @@ namespace HLU.UI.ViewModel
         public string SelectedNumber
         {
             get { return HaveSelection ? String.Format("({0} selected)", _selectedNumber) : String.Empty; }
-        }
-
-        public bool ExportDescriptions
-        {
-            get { return CanExportDescriptions && _exportDescriptions; }
-            set { if (CanExportDescriptions) _exportDescriptions = value; }
-        }
-
-        public bool CanExportDescriptions
-        {
-            get { return _gisApp != GISApplications.MapInfo; }
         }
 
         #region IDataErrorInfo Members

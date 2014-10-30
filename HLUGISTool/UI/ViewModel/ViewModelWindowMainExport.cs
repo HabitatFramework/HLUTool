@@ -88,7 +88,7 @@ namespace HLU.UI.ViewModel
             _windowExport.ShowDialog();
         }
 
-        private void _viewModelExport_RequestClose(int exportID, bool exportDescriptions, bool selectedOnly)
+        private void _viewModelExport_RequestClose(int exportID, bool selectedOnly)
         {
             _viewModelExport.RequestClose -= _viewModelExport_RequestClose;
             _windowExport.Close();
@@ -107,7 +107,6 @@ namespace HLU.UI.ViewModel
         /// the specified export format.
         /// </summary>
         /// <param name="userExportId">The export format selected by the user.</param>
-        /// <param name="exportDescriptions">If set to <c>true</c> export field descriptions instead of their code.</param>
         /// <param name="selectedOnly">If set to <c>true</c> export only selected incids/features.</param>
         /// <exception cref="System.Exception">
         /// Failed to find a table alias that does not match a table name in the HLU dataset
@@ -312,12 +311,12 @@ namespace HLU.UI.ViewModel
                         //
                         string lutFieldName;
                         int lutFieldOrdinal;
-                        if ((r.table_name == "incid_sources") && (Regex.IsMatch(r.column_name, @"(_id)", RegexOptions.IgnoreCase)))
+                        if ((r.table_name == _viewModelMain.HluDataset.incid_sources.TableName) && (Regex.IsMatch(r.column_name, @"(_id)", RegexOptions.IgnoreCase)))
                         {
                             lutFieldName = ViewModelWindowMain.LutSourceFieldName;
                             lutFieldOrdinal = ViewModelWindowMain.LutSourceFieldOrdinal - 1;
                         }
-                        else if ((r.table_name == "incid") && (Regex.IsMatch(r.column_name, @"(_user_id)", RegexOptions.IgnoreCase)))
+                        else if ((r.table_name == _viewModelMain.HluDataset.incid.TableName) && (Regex.IsMatch(r.column_name, @"(_user_id)", RegexOptions.IgnoreCase)))
                         {
                             lutFieldName = ViewModelWindowMain.LutUserFieldName;
                             lutFieldOrdinal = ViewModelWindowMain.LutUserFieldOrdinal - 1;
@@ -475,14 +474,6 @@ namespace HLU.UI.ViewModel
             // Store which export fields can be allowed to have duplicate
             // values (i.e. the incid_source fields).
             dupsAllowed = dupFields.ToArray();
-            //(from e in exportTable.Columns.Cast<DataColumn>()
-            //                 let q = from c in _viewModelMain.HluDataset.incid_sources.Columns.Cast<DataColumn>()
-            //                         where !Regex.IsMatch(c.ColumnName,
-            //                            @"(\Aincid\z|_(importance|id)\z)", RegexOptions.IgnoreCase)
-            //                         select c.ColumnName
-            //                 where q.Count(n => Regex.IsMatch(e.ColumnName,
-            //                     n + @"(_[0-9]+)*\z", RegexOptions.IgnoreCase)) == 1
-            //                 select e.Ordinal).ToArray();
 
             // If any incid_source fields are in the export file but
             // the source_id column is not then include that field
@@ -740,11 +731,6 @@ namespace HLU.UI.ViewModel
                     fieldLength = maxLength;
                     break;
             }
-
-            //DataColumn c = new DataColumn(columnName, dataType);
-            //c.AutoIncrement = autoNum;
-            //c.MaxLength = maxLength;
-            //exportTable.Columns.Add(c);
 
             // If this field has multiple occurrences.
             if (numFields > 0)
