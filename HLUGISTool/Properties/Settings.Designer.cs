@@ -773,5 +773,41 @@ namespace HLU.Properties {
                 return ((int)(this["MaxSqlLengthArcGIS"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("source_name")]
+        public string LutSourceFieldName {
+            get {
+                return ((string)(this["LutSourceFieldName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int LutSourceFieldOrdinal {
+            get {
+                return ((int)(this["LutSourceFieldOrdinal"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("user_name")]
+        public string LutUserFieldName {
+            get {
+                return ((string)(this["LutUserFieldName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int LutUserFieldOrdinal {
+            get {
+                return ((int)(this["LutUserFieldOrdinal"]));
+            }
+        }
     }
 }
