@@ -52,6 +52,7 @@ namespace HLU.Data.Connection
         private string _dateLiteralSuffix;
         private string _wildcardSingleMatch;
         private string _wildcardManyMatch;
+        private string _concatenateOperator;
         #endregion
 
         #region Constructor
@@ -884,6 +885,8 @@ namespace HLU.Data.Connection
         public override string WildcardSingleMatch { get { return _wildcardSingleMatch; } }
 
         public override string WildcardManyMatch { get { return _wildcardManyMatch; } }
+
+        public override string ConcatenateOperator { get { return _concatenateOperator; } }
 
         /// <summary>
         /// Does not escape string delimiter or other special characters.

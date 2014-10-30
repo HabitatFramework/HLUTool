@@ -175,6 +175,8 @@ namespace HLU
 
         public abstract string WildcardManyMatch { get; }
 
+        public abstract string ConcatenateOperator { get; }
+
         public abstract string QuoteValue(object value);
 
         public abstract DataTable SqlSelect(bool selectDistinct, DataColumn[] targetColumns, List<SqlFilterCondition> whereConds);

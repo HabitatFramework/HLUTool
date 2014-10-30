@@ -821,6 +821,8 @@ namespace HLU.Data.Connection
 
         public override string WildcardManyMatch { get { return "%"; } }
 
+        public override string ConcatenateOperator { get { return "+"; } }
+
         /// <summary>
         /// Does not escape string delimiter or other special characters.
         /// Does check if value is already quoted.
