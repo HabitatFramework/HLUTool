@@ -56,7 +56,7 @@
                            VerticalAlignment="Center">
                         Don't ask again
                     </Label>
-                    <CheckBox Name="CheckBoxExportDescriptions"
+                    <CheckBox Name="CheckBoxDontAsk"
                               Grid.Row="2"
                               Grid.Column="1"
                               Margin="0,4,0,4"
