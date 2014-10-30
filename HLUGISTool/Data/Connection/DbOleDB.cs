@@ -52,6 +52,7 @@ namespace HLU.Data.Connection
         private string _dateLiteralSuffix;
         private string _wildcardSingleMatch;
         private string _wildcardManyMatch;
+        private string _concatenateOperator;
         
         #endregion
 
@@ -898,6 +899,8 @@ namespace HLU.Data.Connection
 
         public override string WildcardManyMatch { get { return _wildcardManyMatch; } }
 
+        public override string ConcatenateOperator { get { return _concatenateOperator; } }
+
         /// <summary>
         /// Does not escape string delimiter or other special characters.
         /// Does check if value is already quoted.
@@ -1255,6 +1258,8 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "#";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
+                    _concatenateOperator = "&";
+
                     break;
                 case Backends.SqlServer:
                     _quotePrefix = "[";
@@ -1264,6 +1269,7 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
+                    _concatenateOperator = "+";
                     break;
                 default:
                     _quotePrefix = "\"";
@@ -1273,6 +1279,7 @@ namespace HLU.Data.Connection
                     _dateLiteralSuffix = "'";
                     _wildcardSingleMatch = "_";
                     _wildcardManyMatch = "%";
+                    _concatenateOperator = "&";
                     break;
             }
         }
