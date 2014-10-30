@@ -327,6 +327,7 @@
     <Compile Include="Base36.cs" />
     <Compile Include="Converters\CodeNameDescriptionConverter.cs" />
     <Compile Include="Converters\NullableValueConverter.cs" />
+    <Compile Include="Data\ExportField.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
     <Compile Include="Data\Model\HluDataSetOld.Designer.cs">
