@@ -1669,6 +1669,8 @@ namespace HLU.GISApplication.MapInfo
         
         public override string WildcardManyMatch { get { return "%"; } }
 
+        public override string ConcatenateOperator { get { return "+"; } }
+
         private void PopulateTypeMaps()
         {
             _typeMapSystemToSQL = new Dictionary<Type, int>();
