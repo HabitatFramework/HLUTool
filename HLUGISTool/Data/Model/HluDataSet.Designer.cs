@@ -2415,6 +2415,12 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnfields_count;
             
+            private global::System.Data.DataColumn columnfield_type;
+            
+            private global::System.Data.DataColumn columnfield_length;
+            
+            private global::System.Data.DataColumn columnfield_format;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public exports_fieldsDataTable() {
@@ -2514,6 +2520,30 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn field_typeColumn {
+                get {
+                    return this.columnfield_type;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn field_lengthColumn {
+                get {
+                    return this.columnfield_length;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn field_formatColumn {
+                get {
+                    return this.columnfield_format;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -2549,7 +2579,7 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public exports_fieldsRow Addexports_fieldsRow(int export_field_id, exportsRow parentexportsRowByfk_exports_fields_exports, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, int fields_count) {
+            public exports_fieldsRow Addexports_fieldsRow(int export_field_id, exportsRow parentexportsRowByfk_exports_fields_exports, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, int fields_count, int field_type, int field_length, string field_format) {
                 exports_fieldsRow rowexports_fieldsRow = ((exports_fieldsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         export_field_id,
@@ -2559,7 +2589,10 @@ namespace HLU.Data.Model {
                         column_ordinal,
                         field_name,
                         field_ordinal,
-                        fields_count};
+                        fields_count,
+                        field_type,
+                        field_length,
+                        field_format};
                 if ((parentexportsRowByfk_exports_fields_exports != null)) {
                     columnValuesArray[1] = parentexportsRowByfk_exports_fields_exports[0];
                 }
@@ -2600,6 +2633,9 @@ namespace HLU.Data.Model {
                 this.columnfield_name = base.Columns["field_name"];
                 this.columnfield_ordinal = base.Columns["field_ordinal"];
                 this.columnfields_count = base.Columns["fields_count"];
+                this.columnfield_type = base.Columns["field_type"];
+                this.columnfield_length = base.Columns["field_length"];
+                this.columnfield_format = base.Columns["field_format"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2621,6 +2657,12 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnfield_ordinal);
                 this.columnfields_count = new global::System.Data.DataColumn("fields_count", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnfields_count);
+                this.columnfield_type = new global::System.Data.DataColumn("field_type", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnfield_type);
+                this.columnfield_length = new global::System.Data.DataColumn("field_length", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnfield_length);
+                this.columnfield_format = new global::System.Data.DataColumn("field_format", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnfield_format);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnexport_field_id}, true));
                 this.columnexport_field_id.AllowDBNull = false;
@@ -2633,6 +2675,8 @@ namespace HLU.Data.Model {
                 this.columncolumn_ordinal.AllowDBNull = false;
                 this.columnfield_name.MaxLength = 128;
                 this.columnfield_ordinal.AllowDBNull = false;
+                this.columnfield_type.AllowDBNull = false;
+                this.columnfield_length.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -13588,6 +13632,44 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int field_type {
+                get {
+                    return ((int)(this[this.tableexports_fields.field_typeColumn]));
+                }
+                set {
+                    this[this.tableexports_fields.field_typeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int field_length {
+                get {
+                    return ((int)(this[this.tableexports_fields.field_lengthColumn]));
+                }
+                set {
+                    this[this.tableexports_fields.field_lengthColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string field_format {
+                get {
+                    try {
+                        return ((string)(this[this.tableexports_fields.field_formatColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'field_format\' in table \'exports_fields\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableexports_fields.field_formatColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public exportsRow exportsRow {
                 get {
                     return ((exportsRow)(this.GetParentRow(this.Table.ParentRelations["fk_exports_fields_exports"])));
@@ -13619,6 +13701,18 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void Setfields_countNull() {
                 this[this.tableexports_fields.fields_countColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isfield_formatNull() {
+                return this.IsNull(this.tableexports_fields.field_formatColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setfield_formatNull() {
+                this[this.tableexports_fields.field_formatColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -19562,23 +19656,93 @@ SELECT app_version, db_version, ihs_version FROM lut_version WHERE (app_version 
             tableMapping.ColumnMappings.Add("column_ordinal", "column_ordinal");
             tableMapping.ColumnMappings.Add("field_name", "field_name");
             tableMapping.ColumnMappings.Add("field_ordinal", "field_ordinal");
+            tableMapping.ColumnMappings.Add("fields_count", "fields_count");
+            tableMapping.ColumnMappings.Add("field_type", "field_type");
+            tableMapping.ColumnMappings.Add("field_length", "field_length");
+            tableMapping.ColumnMappings.Add("field_format", "field_format");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [dbo].[exports_fields] WHERE (([export_field_id] = @Original_export_field_id) AND ([export_id] = @Original_export_id) AND ([table_name] = @Original_table_name) AND ([column_name] = @Original_column_name) AND ([column_ordinal] = @Original_column_ordinal) AND ((@IsNull_field_name = 1 AND [field_name] IS NULL) OR ([field_name] = @Original_field_name)) AND ([field_ordinal] = @Original_field_ordinal))";
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM exports_fields\r\nWHERE        (export_field_id = @Original_export_fiel" +
+                "d_id) AND (export_id = @Original_export_id) AND (table_name = @Original_table_na" +
+                "me) AND \r\n                         (column_name = @Original_column_name) AND (co" +
+                "lumn_ordinal = @Original_column_ordinal) AND (@IsNull_field_name = 1) AND (field" +
+                "_name IS NULL) AND \r\n                         (field_ordinal = @Original_field_o" +
+                "rdinal) AND (@IsNull_fields_count = 1) AND (fields_count IS NULL) AND (field_typ" +
+                "e = @Original_field_type) AND \r\n                         (field_length = @Origin" +
+                "al_field_length) AND (@IsNull_field_format = 1) AND (field_format IS NULL) OR\r\n " +
+                "                        (export_field_id = @Original_export_field_id) AND (expor" +
+                "t_id = @Original_export_id) AND (table_name = @Original_table_name) AND \r\n      " +
+                "                   (column_name = @Original_column_name) AND (column_ordinal = @" +
+                "Original_column_ordinal) AND (field_name = @Original_field_name) AND \r\n         " +
+                "                (field_ordinal = @Original_field_ordinal) AND (@IsNull_fields_co" +
+                "unt = 1) AND (fields_count IS NULL) AND (field_type = @Original_field_type) AND " +
+                "\r\n                         (field_length = @Original_field_length) AND (@IsNull_" +
+                "field_format = 1) AND (field_format IS NULL) OR\r\n                         (expor" +
+                "t_field_id = @Original_export_field_id) AND (export_id = @Original_export_id) AN" +
+                "D (table_name = @Original_table_name) AND \r\n                         (column_nam" +
+                "e = @Original_column_name) AND (column_ordinal = @Original_column_ordinal) AND (" +
+                "@IsNull_field_name = 1) AND (field_name IS NULL) AND \r\n                         " +
+                "(field_ordinal = @Original_field_ordinal) AND (fields_count = @Original_fields_c" +
+                "ount) AND (field_type = @Original_field_type) AND \r\n                         (fi" +
+                "eld_length = @Original_field_length) AND (@IsNull_field_format = 1) AND (field_f" +
+                "ormat IS NULL) OR\r\n                         (export_field_id = @Original_export_" +
+                "field_id) AND (export_id = @Original_export_id) AND (table_name = @Original_tabl" +
+                "e_name) AND \r\n                         (column_name = @Original_column_name) AND" +
+                " (column_ordinal = @Original_column_ordinal) AND (field_name = @Original_field_n" +
+                "ame) AND \r\n                         (field_ordinal = @Original_field_ordinal) AN" +
+                "D (fields_count = @Original_fields_count) AND (field_type = @Original_field_type" +
+                ") AND \r\n                         (field_length = @Original_field_length) AND (@I" +
+                "sNull_field_format = 1) AND (field_format IS NULL) OR\r\n                         " +
+                "(export_field_id = @Original_export_field_id) AND (export_id = @Original_export_" +
+                "id) AND (table_name = @Original_table_name) AND \r\n                         (colu" +
+                "mn_name = @Original_column_name) AND (column_ordinal = @Original_column_ordinal)" +
+                " AND (@IsNull_field_name = 1) AND (field_name IS NULL) AND \r\n                   " +
+                "      (field_ordinal = @Original_field_ordinal) AND (@IsNull_fields_count = 1) A" +
+                "ND (fields_count IS NULL) AND (field_type = @Original_field_type) AND \r\n        " +
+                "                 (field_length = @Original_field_length) AND (field_format = @Or" +
+                "iginal_field_format) OR\r\n                         (export_field_id = @Original_e" +
+                "xport_field_id) AND (export_id = @Original_export_id) AND (table_name = @Origina" +
+                "l_table_name) AND \r\n                         (column_name = @Original_column_nam" +
+                "e) AND (column_ordinal = @Original_column_ordinal) AND (field_name = @Original_f" +
+                "ield_name) AND \r\n                         (field_ordinal = @Original_field_ordin" +
+                "al) AND (@IsNull_fields_count = 1) AND (fields_count IS NULL) AND (field_type = " +
+                "@Original_field_type) AND \r\n                         (field_length = @Original_f" +
+                "ield_length) AND (field_format = @Original_field_format) OR\r\n                   " +
+                "      (export_field_id = @Original_export_field_id) AND (export_id = @Original_e" +
+                "xport_id) AND (table_name = @Original_table_name) AND \r\n                        " +
+                " (column_name = @Original_column_name) AND (column_ordinal = @Original_column_or" +
+                "dinal) AND (@IsNull_field_name = 1) AND (field_name IS NULL) AND \r\n             " +
+                "            (field_ordinal = @Original_field_ordinal) AND (fields_count = @Origi" +
+                "nal_fields_count) AND (field_type = @Original_field_type) AND \r\n                " +
+                "         (field_length = @Original_field_length) AND (field_format = @Original_f" +
+                "ield_format) OR\r\n                         (export_field_id = @Original_export_fi" +
+                "eld_id) AND (export_id = @Original_export_id) AND (table_name = @Original_table_" +
+                "name) AND \r\n                         (column_name = @Original_column_name) AND (" +
+                "column_ordinal = @Original_column_ordinal) AND (field_name = @Original_field_nam" +
+                "e) AND \r\n                         (field_ordinal = @Original_field_ordinal) AND " +
+                "(fields_count = @Original_fields_count) AND (field_type = @Original_field_type) " +
+                "AND \r\n                         (field_length = @Original_field_length) AND (fiel" +
+                "d_format = @Original_field_format)";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_field_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_field_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_table_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "table_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_column_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "column_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_column_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "column_ordinal", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_field_id", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "export_field_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_id", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "export_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_table_name", global::System.Data.SqlDbType.NVarChar, 128, global::System.Data.ParameterDirection.Input, 0, 0, "table_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_column_name", global::System.Data.SqlDbType.NVarChar, 128, global::System.Data.ParameterDirection.Input, 0, 0, "column_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_column_ordinal", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "column_ordinal", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_field_name", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_ordinal", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_ordinal", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "field_ordinal", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_fields_count", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_type", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "field_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_length", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "field_length", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_field_format", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_name", global::System.Data.SqlDbType.NVarChar, 128, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_fields_count", global::System.Data.SqlDbType.Int, 4, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_format", global::System.Data.SqlDbType.NVarChar, 40, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[exports_fields] ([export_field_id], [export_id], [table_name], [column_name], [column_ordinal], [field_name], [field_ordinal]) VALUES (@export_field_id, @export_id, @table_name, @column_name, @column_ordinal, @field_name, @field_ordinal);
-SELECT export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal FROM exports_fields WHERE (export_field_id = @export_field_id)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[exports_fields] ([export_field_id], [export_id], [table_name], [column_name], [column_ordinal], [field_name], [field_ordinal], [fields_count], [field_type], [field_length], [field_format]) VALUES (@export_field_id, @export_id, @table_name, @column_name, @column_ordinal, @field_name, @field_ordinal, @fields_count, @field_type, @field_length, @field_format);
+SELECT export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal, fields_count, field_type, field_length, field_format FROM exports_fields WHERE (export_field_id = @export_field_id)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@export_field_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_field_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@export_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -19587,10 +19751,14 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@column_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "column_ordinal", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_ordinal", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@fields_count", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_type", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_type", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_length", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_length", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_format", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[exports_fields] SET [export_field_id] = @export_field_id, [export_id] = @export_id, [table_name] = @table_name, [column_name] = @column_name, [column_ordinal] = @column_ordinal, [field_name] = @field_name, [field_ordinal] = @field_ordinal WHERE (([export_field_id] = @Original_export_field_id) AND ([export_id] = @Original_export_id) AND ([table_name] = @Original_table_name) AND ([column_name] = @Original_column_name) AND ([column_ordinal] = @Original_column_ordinal) AND ((@IsNull_field_name = 1 AND [field_name] IS NULL) OR ([field_name] = @Original_field_name)) AND ([field_ordinal] = @Original_field_ordinal));
-SELECT export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal FROM exports_fields WHERE (export_field_id = @export_field_id)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[exports_fields] SET [export_field_id] = @export_field_id, [export_id] = @export_id, [table_name] = @table_name, [column_name] = @column_name, [column_ordinal] = @column_ordinal, [field_name] = @field_name, [field_ordinal] = @field_ordinal, [fields_count] = @fields_count, [field_type] = @field_type, [field_length] = @field_length, [field_format] = @field_format WHERE (([export_field_id] = @Original_export_field_id) AND ([export_id] = @Original_export_id) AND ([table_name] = @Original_table_name) AND ([column_name] = @Original_column_name) AND ([column_ordinal] = @Original_column_ordinal) AND ((@IsNull_field_name = 1 AND [field_name] IS NULL) OR ([field_name] = @Original_field_name)) AND ([field_ordinal] = @Original_field_ordinal) AND ((@IsNull_fields_count = 1 AND [fields_count] IS NULL) OR ([fields_count] = @Original_fields_count)) AND ([field_type] = @Original_field_type) AND ([field_length] = @Original_field_length) AND ((@IsNull_field_format = 1 AND [field_format] IS NULL) OR ([field_format] = @Original_field_format)));
+SELECT export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal, fields_count, field_type, field_length, field_format FROM exports_fields WHERE (export_field_id = @export_field_id)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@export_field_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_field_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@export_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -19599,6 +19767,10 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@column_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "column_ordinal", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_ordinal", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@fields_count", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_type", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_type", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_length", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_length", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@field_format", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_field_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_field_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_export_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "export_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_table_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "table_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -19607,6 +19779,12 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_field_name", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_name", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_name", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_ordinal", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_ordinal", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_fields_count", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_fields_count", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "fields_count", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_type", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_length", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_length", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_field_format", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_field_format", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "field_format", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -19623,7 +19801,8 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT export_field_id, export_id, table_name, column_name, column_ordinal, field" +
-                "_name, field_ordinal FROM dbo.exports_fields";
+                "_name, field_ordinal, fields_count, field_type, field_length, field_format FROM " +
+                "dbo.exports_fields";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -19684,7 +19863,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, string Original_field_name, int Original_field_ordinal) {
+        public virtual int Delete(int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, int Original_field_ordinal, int Original_field_type, int Original_field_length, string Original_field_name, global::System.Nullable<int> Original_fields_count, string Original_field_format) {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_export_field_id));
             this.Adapter.DeleteCommand.Parameters[1].Value = ((int)(Original_export_id));
             if ((Original_table_name == null)) {
@@ -19700,15 +19879,33 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_column_name));
             }
             this.Adapter.DeleteCommand.Parameters[4].Value = ((int)(Original_column_ordinal));
+            this.Adapter.DeleteCommand.Parameters[6].Value = ((int)(Original_field_ordinal));
+            this.Adapter.DeleteCommand.Parameters[8].Value = ((int)(Original_field_type));
+            this.Adapter.DeleteCommand.Parameters[9].Value = ((int)(Original_field_length));
             if ((Original_field_name == null)) {
                 this.Adapter.DeleteCommand.Parameters[5].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[6].Value = global::System.DBNull.Value;
+                this.Adapter.DeleteCommand.Parameters[11].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[5].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[6].Value = ((string)(Original_field_name));
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((string)(Original_field_name));
             }
-            this.Adapter.DeleteCommand.Parameters[7].Value = ((int)(Original_field_ordinal));
+            if ((Original_fields_count.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[12].Value = ((int)(Original_fields_count.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[12].Value = global::System.DBNull.Value;
+            }
+            if ((Original_field_format == null)) {
+                this.Adapter.DeleteCommand.Parameters[10].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[13].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[10].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((string)(Original_field_format));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -19729,7 +19926,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int export_field_id, int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal) {
+        public virtual int Insert(int export_field_id, int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, global::System.Nullable<int> fields_count, int field_type, int field_length, string field_format) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(export_field_id));
             this.Adapter.InsertCommand.Parameters[1].Value = ((int)(export_id));
             if ((table_name == null)) {
@@ -19752,6 +19949,20 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.InsertCommand.Parameters[5].Value = ((string)(field_name));
             }
             this.Adapter.InsertCommand.Parameters[6].Value = ((int)(field_ordinal));
+            if ((fields_count.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[7].Value = ((int)(fields_count.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.InsertCommand.Parameters[8].Value = ((int)(field_type));
+            this.Adapter.InsertCommand.Parameters[9].Value = ((int)(field_length));
+            if ((field_format == null)) {
+                this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[10].Value = ((string)(field_format));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -19772,7 +19983,29 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(int export_field_id, int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, string Original_field_name, int Original_field_ordinal) {
+        public virtual int Update(
+                    int export_field_id, 
+                    int export_id, 
+                    string table_name, 
+                    string column_name, 
+                    int column_ordinal, 
+                    string field_name, 
+                    int field_ordinal, 
+                    global::System.Nullable<int> fields_count, 
+                    int field_type, 
+                    int field_length, 
+                    string field_format, 
+                    int Original_export_field_id, 
+                    int Original_export_id, 
+                    string Original_table_name, 
+                    string Original_column_name, 
+                    int Original_column_ordinal, 
+                    string Original_field_name, 
+                    int Original_field_ordinal, 
+                    global::System.Nullable<int> Original_fields_count, 
+                    int Original_field_type, 
+                    int Original_field_length, 
+                    string Original_field_format) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(export_field_id));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((int)(export_id));
             if ((table_name == null)) {
@@ -19795,30 +20028,62 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(field_name));
             }
             this.Adapter.UpdateCommand.Parameters[6].Value = ((int)(field_ordinal));
-            this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(Original_export_field_id));
-            this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(Original_export_id));
+            if ((fields_count.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(fields_count.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(field_type));
+            this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(field_length));
+            if ((field_format == null)) {
+                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(field_format));
+            }
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_export_field_id));
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((int)(Original_export_id));
             if ((Original_table_name == null)) {
                 throw new global::System.ArgumentNullException("Original_table_name");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(Original_table_name));
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_table_name));
             }
             if ((Original_column_name == null)) {
                 throw new global::System.ArgumentNullException("Original_column_name");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(Original_column_name));
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_column_name));
             }
-            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_column_ordinal));
+            this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(Original_column_ordinal));
             if ((Original_field_name == null)) {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_field_name));
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((string)(Original_field_name));
             }
-            this.Adapter.UpdateCommand.Parameters[14].Value = ((int)(Original_field_ordinal));
+            this.Adapter.UpdateCommand.Parameters[18].Value = ((int)(Original_field_ordinal));
+            if ((Original_fields_count.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((int)(Original_fields_count.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[21].Value = ((int)(Original_field_type));
+            this.Adapter.UpdateCommand.Parameters[22].Value = ((int)(Original_field_length));
+            if ((Original_field_format == null)) {
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[24].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[24].Value = ((string)(Original_field_format));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -19839,8 +20104,29 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, string Original_field_name, int Original_field_ordinal) {
-            return this.Update(Original_export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal, Original_export_field_id, Original_export_id, Original_table_name, Original_column_name, Original_column_ordinal, Original_field_name, Original_field_ordinal);
+        public virtual int Update(
+                    int export_id, 
+                    string table_name, 
+                    string column_name, 
+                    int column_ordinal, 
+                    string field_name, 
+                    int field_ordinal, 
+                    global::System.Nullable<int> fields_count, 
+                    int field_type, 
+                    int field_length, 
+                    string field_format, 
+                    int Original_export_field_id, 
+                    int Original_export_id, 
+                    string Original_table_name, 
+                    string Original_column_name, 
+                    int Original_column_ordinal, 
+                    string Original_field_name, 
+                    int Original_field_ordinal, 
+                    global::System.Nullable<int> Original_fields_count, 
+                    int Original_field_type, 
+                    int Original_field_length, 
+                    string Original_field_format) {
+            return this.Update(Original_export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal, fields_count, field_type, field_length, field_format, Original_export_field_id, Original_export_id, Original_table_name, Original_column_name, Original_column_ordinal, Original_field_name, Original_field_ordinal, Original_fields_count, Original_field_type, Original_field_length, Original_field_format);
         }
     }
     
