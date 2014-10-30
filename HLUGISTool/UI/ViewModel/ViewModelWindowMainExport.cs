@@ -25,12 +25,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.Globalization;
 using HLU.Data.Connection;
 using HLU.Data.Model;
 using HLU.GISApplication;
 using HLU.Properties;
 using HLU.UI.View;
 using HLU.Data;
+using HLU.Date;
 
 namespace HLU.UI.ViewModel
 {
@@ -43,7 +45,10 @@ namespace HLU.UI.ViewModel
         private string _lastTableName;
         private int _tableCount;
         private int _fieldCount;
-        private int _sourceOrdinal;
+        private int _sourceIdOrdinal;
+        private List<int> _sourceDateStartOrdinals;
+        private List<int> _sourceDateEndOrdinals;
+        private List<int> _sourceDateTypeOrdinals;
 
         public ViewModelWindowMainExport(ViewModelWindowMain viewModelMain)
         {
@@ -154,7 +159,8 @@ namespace HLU.UI.ViewModel
                 StringBuilder fromClause;
                 int incidOrdinal;
                 int[] dupsAllowed;
-                ExportJoins(tableAlias, out exportTable,
+                List<ExportField> exportFields = new List<ExportField>();
+                ExportJoins(tableAlias, ref exportFields, out exportTable,
                     out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal, out dupsAllowed);
 
                 // Set the export filter conditions, depending if all
@@ -188,7 +194,7 @@ namespace HLU.UI.ViewModel
 
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
-                tempPath = ExportMdb(sql, exportTable, incidOrdinal, dupsAllowed, ref fieldMapTemplate, out exportRowCount);
+                tempPath = ExportMdb(sql, exportFields, exportTable, incidOrdinal, dupsAllowed, ref fieldMapTemplate, out exportRowCount);
 
                 // Call the GIS application export method to join the
                 // temporary attribute data to the GIS feature layer
@@ -225,12 +231,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private void ExportJoins(string tableAlias, out DataTable exportTable,
+        private void ExportJoins(string tableAlias, ref List<ExportField> exportFields, out DataTable exportTable,
             out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause,
             out int incidOrdinal, out int[] dupsAllowed)
         {
             exportTable = new DataTable("HluExport");
-            List<ExportField> exportFields = new List<ExportField>();
             targetList = new StringBuilder();
             List<string> fromList = new List<string>();
             List<string> leftJoined = new List<string>();
@@ -403,7 +408,10 @@ namespace HLU.UI.ViewModel
             // Loop through all the export fields, adding them as columns
             // in the export table and adding them to the field map template.
             int fieldTotal = 0;
-            _sourceOrdinal = -1;
+            _sourceIdOrdinal = -1;
+            _sourceDateStartOrdinals = new List<int>();
+            _sourceDateEndOrdinals = new List<int>();
+            _sourceDateTypeOrdinals = new List<int>();
             List<int> dupFields = new List<int>();
             foreach (ExportField f in exportFields.OrderBy(f => f.FieldOrder))
             {
@@ -447,7 +455,22 @@ namespace HLU.UI.ViewModel
                     // store the input field ordinal for use later as the
                     // unique incid_source field ordinal.
                     if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName)
-                        _sourceOrdinal = f.FieldOrdinal;
+                        _sourceIdOrdinal = f.FieldOrdinal;
+
+                    // If the field refers to the source_date_start column then
+                    // store the input field ordinal for use later.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName)
+                        _sourceDateStartOrdinals.Add(f.FieldOrdinal);
+
+                    // If the field refers to the source_date_end column then
+                    // store the input field ordinal for use later.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_endColumn.ColumnName)
+                        _sourceDateEndOrdinals.Add(f.FieldOrdinal);
+
+                    // If the field refers to the source_date_type column then
+                    // store the input field ordinal for use later.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_typeColumn.ColumnName)
+                        _sourceDateTypeOrdinals.Add(f.FieldOrdinal);
                 }
 
                 // Set the field mapping for the current field ordinal.
@@ -475,19 +498,60 @@ namespace HLU.UI.ViewModel
             // values (i.e. the incid_source fields).
             dupsAllowed = dupFields.ToArray();
 
-            // If any incid_source fields are in the export file but
-            // the source_id column is not then include that field
-            // so that different sources can be identified.
-            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0) &&
-                (_sourceOrdinal == -1))
+            // If any incid_source fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0))
             {
-                // Add the field to the input table.
-                targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
-                    _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName));
+                // Get the last input field ordinal.
+                int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
 
-                // Store the input field ordinal for use
-                // later as the unique incid_source field ordinal.
-                _sourceOrdinal = exportFields.Max(e => e.FieldOrdinal) + 1;
+                // If the source_id column is not included then add
+                // it so that different sources can be identified.
+                if (_sourceIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                        _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_source field ordinal.
+                    _sourceIdOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // If the source_date_start column is not included then add
+                // it for use later.
+                if ((_sourceDateStartOrdinals == null) || (_sourceDateStartOrdinals.Count() == 0))
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                        _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _sourceDateStartOrdinals.Add(lastFieldOrdinal += 1);
+                }
+
+                // If the source_date_end column is not included then add
+                // it for use later.
+                if ((_sourceDateEndOrdinals == null) || (_sourceDateEndOrdinals.Count() == 0))
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                        _viewModelMain.HluDataset.incid_sources.source_date_endColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_date_endColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _sourceDateEndOrdinals.Add(lastFieldOrdinal += 1);
+                }
+
+                // If the source_date_type column is not included then add
+                // it for use later.
+                if ((_sourceDateTypeOrdinals == null) || (_sourceDateTypeOrdinals.Count() == 0))
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                        _viewModelMain.HluDataset.incid_sources.source_date_typeColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.source_date_typeColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _sourceDateTypeOrdinals.Add(lastFieldOrdinal += 1);
+                }
             }
 
             // Set the incid field as the primary key to the table.
@@ -495,7 +559,7 @@ namespace HLU.UI.ViewModel
             if (targetList.Length > 1) targetList.Remove(0, 1);
         }
 
-        private string ExportMdb(string sql, DataTable exportTable, int incidOrdinal, int[]dupsAllowed, 
+        private string ExportMdb(string sql, List<ExportField> exportFields, DataTable exportTable, int incidOrdinal, int[]dupsAllowed, 
             ref int[][] fieldMap, out int exportRowCount)
         {
             exportRowCount = -1;
@@ -554,8 +618,8 @@ namespace HLU.UI.ViewModel
                         currIncid = reader.GetString(incidOrdinal);
 
                         // Get the current source id (if one exists).
-                        if (_sourceOrdinal != -1)
-                            currSourceId = reader.GetInt32(_sourceOrdinal);
+                        if (_sourceIdOrdinal != -1)
+                            currSourceId = reader.GetInt32(_sourceIdOrdinal);
 
                         // If this incid is different to the last record's incid
                         // then process all the fields.
@@ -563,6 +627,8 @@ namespace HLU.UI.ViewModel
                         {
                             // Store the last incid.
                             prevIncid = currIncid;
+
+                            // Reset the field map index to the start of the array.
                             fieldIndex = 1;
 
                             // Store the last source id.
@@ -585,31 +651,42 @@ namespace HLU.UI.ViewModel
                             // to the correct field in the export row.
                             for (int i = 0; i < fieldMap.GetLength(0); i++)
                             {
-                                // If this field is mapped from the input reader
-                                // then copy it to the export table.
+                                // If this field is not mapped from the input reader
+                                // set the export table value to null.
                                 if (fieldMap[i][0] == -1)
                                 {
                                     exportRow[fieldMap[i][fieldIndex]] = null;
+                                    continue;
                                 }
-                                else
+
+                                // Get the properties for the current export field.
+                                ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
+                                // Store the input value of the current column.
+                                object inValue = reader.GetValue(fieldMap[i][0]);
+
+                                // If the value is null then skip this field.
+                                if (inValue == DBNull.Value)
+                                    continue;
+
+                                // Convert the input value to the output value data type and format.
+                                object outValue;
+                                outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
+                                    exportTable2.Columns[fieldMap[i][fieldIndex]].DataType, (exportField != null) ? exportField.FieldFormat : null);
+
+                                // If the value is not null.
+                                if (outValue != null)
                                 {
-                                    // Store the input value of the current column.
-                                    object item = reader.GetValue(fieldMap[i][0]);
+                                    // Get the maximum length of the column.
+                                    int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
 
-                                    // If the value is not null.
-                                    if (item != DBNull.Value)
-                                    {
-                                        // Get the maximum length of the column.
-                                        int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
-
-                                        // If the maximum length of the column is shorter
-                                        // than the value then truncate the value as it
-                                        // is transferred  to the export row.
-                                        if ((fieldLength != -1) && (fieldLength < item.ToString().Length))
-                                            exportRow[fieldMap[i][fieldIndex]] = item.ToString().Substring(0, fieldLength);
-                                        else
-                                            exportRow[fieldMap[i][fieldIndex]] = item;
-                                    }
+                                    // If the maximum length of the column is shorter
+                                    // than the value then truncate the value as it
+                                    // is transferred  to the export row.
+                                    if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
+                                        exportRow[fieldMap[i][fieldIndex]] = outValue.ToString().Substring(0, fieldLength);
+                                    else
+                                        exportRow[fieldMap[i][fieldIndex]] = outValue;
                                 }
                             }
                         }
@@ -627,20 +704,33 @@ namespace HLU.UI.ViewModel
                                 // specified in the field map.
                                 if (fieldIndex < fieldMap[i].Length)
                                 {
-                                    // Store the input value of the current column.
-                                    object item = reader.GetValue(fieldMap[i][0]);
 
-                                    // Get the previous value of the current column.
-                                    object itemStr = reader.GetValue(fieldMap[i][0]).ToString();
+                                    // Get the properties for the current export field.
+                                    ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
+                                    // Store the input value of the current column.
+                                    object inValue = reader.GetValue(fieldMap[i][0]);
+
+                                    // If the value is null then skip this field.
+                                    if (inValue == DBNull.Value)
+                                        continue;
+
+                                    // Convert the input value to the output value data type and format.
+                                    object outValue;
+                                    outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
+                                        exportTable2.Columns[fieldMap[i][fieldIndex]].DataType, (exportField != null) ? exportField.FieldFormat : null);
+
+                                    // Get the current and previous string values of the
+                                    // current column so they can be compared later.
+                                    object itemStr = outValue.ToString();
                                     object lastItemStr = exportRow[fieldMap[i][fieldIndex - 1]].ToString();
 
                                     // If the value is not null and the string value is different
                                     // to the last string value for this incid, or, the column is
                                     // allowed to have duplicates and the source is different
                                     // to the last source, then output the value.
-                                    if ((item != DBNull.Value) &&
-                                        ((!itemStr.Equals(lastItemStr) ||
-                                        ((Array.IndexOf(dupsAllowed, fieldMap[i][fieldIndex]) != -1) && (currSourceId != prevSourceId)))))
+                                    if ((!itemStr.Equals(lastItemStr) ||
+                                        ((Array.IndexOf(dupsAllowed, fieldMap[i][fieldIndex]) != -1) && (currSourceId != prevSourceId))))
                                     {
                                         // Get the maximum length of the column.
                                         int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
@@ -648,10 +738,10 @@ namespace HLU.UI.ViewModel
                                         // If the maximum length of the column is shorter
                                         // than the value then truncate the value as it
                                         // is transferred  to the export row.
-                                        if ((fieldLength != -1) && (fieldLength < item.ToString().Length))
-                                            exportRow[fieldMap[i][fieldIndex]] = item.ToString().Substring(0, fieldLength);
+                                        if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
+                                            exportRow[fieldMap[i][fieldIndex]] = outValue.ToString().Substring(0, fieldLength);
                                         else
-                                            exportRow[fieldMap[i][fieldIndex]] = item;
+                                            exportRow[fieldMap[i][fieldIndex]] = outValue;
                                     }
                                 }
                             }
@@ -686,6 +776,149 @@ namespace HLU.UI.ViewModel
                     catch { }
                 }
             }
+        }
+
+        private object ConvertInput(int inOrdinal, object inValue, System.Type inType, System.Type outType, string outFormat)
+        {
+            // If the output field is a DateTime.
+            if (outType == System.Type.GetType("System.DateTime"))
+            {
+                // If the input field is also a DateTime
+                if (inType == System.Type.GetType("System.DateTime"))
+                {
+                    // Returns the value as a DateTime.
+                    if (inValue is DateTime)
+                        return inValue;
+                    else
+                        return null;
+                }
+                // If the input field is an integer and is part of
+                // the source date.
+                else if ((inType == System.Type.GetType("System.Int32")) &&
+                    (_sourceDateStartOrdinals.Contains(inOrdinal) || _sourceDateEndOrdinals.Contains(inOrdinal)))
+                {
+                    // Convert the value to an integer.
+                    int inInt = (int)inValue;
+
+                    // Convert the value to a vague date instance.
+                    string vt = "D";
+                    Date.VagueDateInstance vd = new Date.VagueDateInstance(inInt, inInt, vt);
+
+                    // If the vague date is invalid then return null.
+                    if ((vd == null) || (vd.IsBad) || (vd.IsUnknown))
+                        return null;
+                    else
+                    {
+                        // If the vague date is valid then parse it into
+                        // a date format.
+                        string itemStr = Date.VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        DateTime inDate;
+                        if (DateTime.TryParseExact(itemStr, "dd/MM/yyyy",
+                            null, DateTimeStyles.None, out inDate))
+                            return inDate;
+                        else
+                            return null;
+                    }
+                }
+                else
+                {
+                    // Otherwise, try and parse the input value as
+                    // if it was a date string and return the date value
+                    // if it is valid, or the raw value if not.
+                    string inStr = inValue.ToString();
+                    DateTime inDate;
+                    if (DateTime.TryParseExact(inStr, "dd/MM/yyyy",
+                        null, DateTimeStyles.None, out inDate))
+                        return inDate;
+                    else
+                        return null;
+                }
+            }
+            // If the output field is a string and there is
+            // a required output format.
+            else if ((outType == System.Type.GetType("System.String")) &&
+                (outFormat != null))
+            {
+                // If the input field is a DateTime field.
+                if (inType == System.Type.GetType("System.DateTime"))
+                {
+                    // If the input value is a valid DateTime then
+                    // convert it to a string of the required format.
+                    if (inValue is DateTime)
+                    {
+                        DateTime inDate = (DateTime)inValue;
+                        string inStr = inDate.ToString(outFormat);
+                        if (inStr != null)
+                            return inStr;
+                        else
+                            return null;
+
+                        //// If the date string formats exactly then return
+                        //// the formatted value.
+                        //if (DateTime.TryParseExact(inDate.ToString(), outFormat,
+                        //    null, DateTimeStyles.None, out inDate))
+                        //    return inDate.ToString();
+                        //else
+                        //    return null;
+                    }
+                    else
+                        return null;
+                }
+                // If the input field is an integer and is part of
+                // the source date.
+                else if ((inType == System.Type.GetType("System.Int32")) &&
+                    (_sourceDateStartOrdinals.Contains(inOrdinal) || _sourceDateEndOrdinals.Contains(inOrdinal)))
+                {
+                    // Convert the value to an integer.
+                    int inInt = (int)inValue;
+
+                    // Convert the value to a vague date instance.
+                    string vt = "D";
+                    Date.VagueDateInstance vd = new Date.VagueDateInstance(inInt, inInt, vt);
+
+                    // If the vague date is invalid then set the output
+                    // field to null.
+                    if ((vd == null) || (vd.IsBad))
+                        return null;
+                    else if (vd.IsUnknown)
+                        return VagueDate.VagueDateTypes.Unknown.ToString();
+                    else
+                    {
+                        // If the vague date is valid then parse it into
+                        // a date format using the required format.
+                        string inStr = Date.VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        DateTime inDate;
+                        if (!DateTime.TryParseExact(inStr, "dd/MM/yyyy",
+                            null, DateTimeStyles.None, out inDate))
+                            return null;
+
+                        // If the input value is a valid DateTime then
+                        // convert it to a string of the required format.
+                        string inStr2 = inDate.ToString(outFormat);
+                        if (inStr2 != null)
+                            return inStr2;
+                        else
+                            return null;
+                    }
+                }
+                else
+                {
+                    // Otherwise, try and parse the input value as
+                    // if it was a date string and return the value
+                    // as a string if it is valid.
+                    string inStr = inValue.ToString();
+
+                    DateTime inDate;
+                    if (DateTime.TryParse(inStr,
+                        null, DateTimeStyles.None, out inDate))
+                        return inDate.ToString();
+                    else
+                        return inValue;
+                }
+            }
+            else
+                return inValue;
+
         }
 
         /// <summary>
