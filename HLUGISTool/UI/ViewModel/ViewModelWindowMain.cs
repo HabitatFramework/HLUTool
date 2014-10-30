@@ -262,6 +262,10 @@ namespace HLU.UI.ViewModel
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
         internal static string LutDescriptionFieldName = Settings.Default.LutDescriptionFieldName;
         internal static int LutDescriptionFieldOrdinal = Settings.Default.LutDescriptionFieldOrdinal;
+        internal static string LutSourceFieldName = Settings.Default.LutSourceFieldName;
+        internal static int LutSourceFieldOrdinal = Settings.Default.LutSourceFieldOrdinal;
+        internal static string LutUserFieldName = Settings.Default.LutUserFieldName;
+        internal static int LutUserFieldOrdinal = Settings.Default.LutUserFieldOrdinal;
         internal static int IncidPageSize = Settings.Default.IncidTablePageSize;
 
         #endregion
