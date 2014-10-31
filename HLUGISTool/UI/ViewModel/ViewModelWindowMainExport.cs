@@ -49,6 +49,7 @@ namespace HLU.UI.ViewModel
         private List<int> _sourceDateStartOrdinals;
         private List<int> _sourceDateEndOrdinals;
         private List<int> _sourceDateTypeOrdinals;
+        private int _attributesLength;
 
         public ViewModelWindowMainExport(ViewModelWindowMain viewModelMain)
         {
@@ -126,6 +127,8 @@ namespace HLU.UI.ViewModel
 
             try
             {
+                _viewModelMain.ChangeCursor(Cursors.Wait, "Preparing ...");
+
                 // Create a new unique table name to export to.
                 string tableAlias = GetTableAlias();
                 if (tableAlias == null)
@@ -136,12 +139,10 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.HluTableAdapterManager.exportsFieldsTableAdapter.ClearBeforeFill = true;
                 _viewModelMain.HluTableAdapterManager.exportsFieldsTableAdapter.Fill(
                     _viewModelMain.HluDataset.exports_fields, String.Format("{0} = {1} ORDER BY {2}, {3}",
-                    _viewModelMain.DataBase.QuoteIdentifier(
-                    _viewModelMain.HluDataset.exports_fields.export_idColumn.ColumnName), userExportId, 
-                    _viewModelMain.DataBase.QuoteIdentifier(
-                    _viewModelMain.HluDataset.exports_fields.table_nameColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteIdentifier(
-                    _viewModelMain.HluDataset.exports_fields.field_ordinalColumn.ColumnName)));
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports_fields.export_idColumn.ColumnName),
+                    userExportId, 
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports_fields.table_nameColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports_fields.field_ordinalColumn.ColumnName)));
 
                 // Exit if there are no export fields for this format
                 // (this should not be possible).
@@ -162,6 +163,17 @@ namespace HLU.UI.ViewModel
                 List<ExportField> exportFields = new List<ExportField>();
                 ExportJoins(tableAlias, ref exportFields, out exportTable,
                     out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal, out dupsAllowed);
+
+                // Add the length of the GIS layer fields to the length of
+                // field attributes exported from the database (excluding
+                // the incid field which is already included).
+                _attributesLength += 93;
+
+                // Check the total attributes length doesn't exceed the MapInfo
+                // maximum record length.
+                if ((_viewModelMain.GISApplication.ApplicationType == GISApplications.MapInfo) &&
+                    (_attributesLength > Settings.Default.MapInfoMaxRecordLength))
+                    throw new Exception(String.Format("The export format record length ({0} bytes) exceeds the maximum allowed for MapInfo (4000 bytes)", _attributesLength));
 
                 // Set the export filter conditions, depending if all
                 // the records are to be exported or only the selected
@@ -190,8 +202,6 @@ namespace HLU.UI.ViewModel
                 string sql = ScratchDb.UnionQuery(targetList.ToString(), fromClause.ToString(),
                     incidOrdinal, exportFilter, _viewModelMain.DataBase);
 
-                _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting ...");
-
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
                 tempPath = ExportMdb(sql, exportFields, exportTable, incidOrdinal, dupsAllowed, ref fieldMapTemplate, out exportRowCount);
@@ -200,7 +210,11 @@ namespace HLU.UI.ViewModel
                 // temporary attribute data to the GIS feature layer
                 // and save them as a new GIS layer.
                 if (!String.IsNullOrEmpty(tempPath) && (exportRowCount > 0))
+                {
+                    _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting ...");
+
                     _viewModelMain.GISApplication.Export(tempPath, exportTable.TableName, exportRowCount);
+                }
                 else
                     throw new Exception("Export query did not retrieve any rows");
 
@@ -247,11 +261,15 @@ namespace HLU.UI.ViewModel
             incidOrdinal = -1;
             _lastTableName = null;
             _fieldCount = 0;
+            _attributesLength = 0;
 
             //
             foreach (HluDataSet.exports_fieldsRow r in
                 _viewModelMain.HluDataset.exports_fields.OrderBy(r => r.field_ordinal))
             {
+                // If the field is not sourced from the database then
+                // add it to the export table but don't add it to the
+                // sql target list or from clause.
                 if (r.table_name.ToLower() == "<none>")
                 {
                     AddExportColumn(0, r.table_name, r.column_name, r.field_name,
@@ -260,10 +278,15 @@ namespace HLU.UI.ViewModel
                     continue;
                 }
 
+                // Determine if this field is to be output multiple
+                // times, once for each row in the relevant table
+                // up to the maximum fields_count value.
                 bool multipleFields = false;
                 if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.fields_countColumn))
                     multipleFields = true;
 
+                // Add the required table to the list of sql tables in
+                // the from clause.
                 string currTable = _viewModelMain.DataBase.QualifyTableName(r.table_name);
                 if (!fromList.Contains(currTable))
                 {
@@ -299,21 +322,27 @@ namespace HLU.UI.ViewModel
 
                 switch (relations.Count())
                 {
-                    case 0:
+                    case 0:     // If this field does not have any related lookup tables.
+
+                        // Add the field to the sql target list.
                         targetList.Append(String.Format(",{0}.{1} AS {2}", currTable,
                             _viewModelMain.DataBase.QuoteIdentifier(r.column_name), r.field_name.Replace("<no>", "")));
+
+                        // Add the field to the sql list of export table columns.
                         AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
                             r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
                             ref exportFields);
                         break;
-                    case 1:
+                    case 1:     // If this field has a related lookup tables.
+
                         DataRelation lutRelation = relations.ElementAt(0);
                         string parentTable = _viewModelMain.DataBase.QualifyTableName(lutRelation.ParentTable.TableName);
 
                         string parentTableAlias = tableAlias + tableAliasNum++;
                         fromList.Add(parentTable);
 
-                        //
+                        // Determine the related lookup table field name and
+                        // field ordinal.
                         string lutFieldName;
                         int lutFieldOrdinal;
                         if ((r.table_name == _viewModelMain.HluDataset.incid_sources.TableName) && (Regex.IsMatch(r.column_name, @"(_id)", RegexOptions.IgnoreCase)))
@@ -332,10 +361,15 @@ namespace HLU.UI.ViewModel
                             lutFieldOrdinal = ViewModelWindowMain.LutDescriptionFieldOrdinal - 1;
                         }
 
-                        //
+                        // If the lookup table contains the required field name.
                         if (lutRelation.ParentTable.Columns.Contains(lutFieldName))
                         {
+                            // If both the original field and it's corresponding lookup
+                            // table field are required then add them both to the sql
+                            // target list.
                             if ((fieldFormat != null) && (fieldFormat == "Both"))
+                                // Add the corresponding lookup table field to the sql
+                                // target list.
                                 targetList.Append(String.Format(",{0}.{1} {5} {6} {5} {2}.{3} AS {4}",
                                     currTable,
                                     _viewModelMain.DataBase.QuoteIdentifier(r.column_name),
@@ -345,17 +379,28 @@ namespace HLU.UI.ViewModel
                                     _viewModelMain.DataBase.ConcatenateOperator,
                                     _viewModelMain.DataBase.QuoteValue(" : ")));
                             else
+                                // Add the corresponding lookup table field to the sql
+                                // target list.
                                 targetList.Append(String.Format(",{0}.{1} AS {2}",
                                     parentTableAlias,
                                     _viewModelMain.DataBase.QuoteIdentifier(lutFieldName),
                                     r.field_name.Replace("<no>", "")));
+
+                            // Add the field to the sql list of export table columns.
                             AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
                                 r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
                                 ref exportFields);
                         }
+                        // If the lookup table does not contains the required field
+                        // name, but does contain the required field ordinal.
                         else if (lutRelation.ParentTable.Columns.Count >= lutFieldOrdinal)
                         {
+                            // If both the original field and it's corresponding lookup
+                            // table field are required then add them both to the sql
+                            // target list.
                             if ((fieldFormat != null) && (fieldFormat == "Both"))
+                                // Add the corresponding lookup table field to the sql
+                                // target list.
                                 targetList.Append(String.Format(",{0}.{1} {5} {6} {5} {2}.{3} AS {4}",
                                     currTable,
                                     _viewModelMain.DataBase.QuoteIdentifier(r.column_name),
@@ -365,10 +410,14 @@ namespace HLU.UI.ViewModel
                                     _viewModelMain.DataBase.ConcatenateOperator,
                                     _viewModelMain.DataBase.QuoteValue(" : ")));
                             else
+                                // Add the corresponding lookup table field to the sql
+                                // target list.
                                 targetList.Append(String.Format(",{0}.{1} AS {2}",
                                     parentTableAlias,
                                     _viewModelMain.DataBase.QuoteIdentifier(lutRelation.ParentTable.Columns[lutFieldOrdinal].ColumnName),
                                     r.field_name.Replace("<no>", "")));
+
+                            // Add the field to the sql list of export table columns.
                             AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
                                 r.field_type, r.field_length, !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null,
                                 ref exportFields);
@@ -408,6 +457,7 @@ namespace HLU.UI.ViewModel
             // Loop through all the export fields, adding them as columns
             // in the export table and adding them to the field map template.
             int fieldTotal = 0;
+            int primaryKeyOrdinal = -1;
             _sourceIdOrdinal = -1;
             _sourceDateStartOrdinals = new List<int>();
             _sourceDateEndOrdinals = new List<int>();
@@ -415,16 +465,24 @@ namespace HLU.UI.ViewModel
             List<int> dupFields = new List<int>();
             foreach (ExportField f in exportFields.OrderBy(f => f.FieldOrder))
             {
-                // Add the field as a new column in the export table.
+                // Create a new data column for the field.
                 DataColumn c = new DataColumn(f.FieldName, f.FieldType);
+
+                // If the field is an autonumber set the relevant
+                // auto increment properties.
                 if (f.AutoNum == true)
                 {
                     c.AutoIncrement = true;
                     c.AutoIncrementSeed = 1;
                     c.AutoIncrementStep = 1;
                 }
+
+                // If the field has a maximum length (i.e. it is a text field)
+                // then set the maximum length property.
                 if (f.FieldLength > 0)
                     c.MaxLength = f.FieldLength;
+
+                // Add the field as a new column in the export table.
                 exportTable.Columns.Add(c);
 
                 // If the field will not be sourced from the database.
@@ -438,11 +496,18 @@ namespace HLU.UI.ViewModel
                 }
 
                 // If the field is not repeated and refers to the incid column
-                // in the incid table then store the output field position for use
-                // later as the primary index field ordinal.
+                // in the incid table.
                 if ((f.FieldsCount == 0) && ((f.TableName == _viewModelMain.HluDataset.incid.TableName) &&
                     (f.ColumnName == _viewModelMain.HluDataset.incid.incidColumn.ColumnName)))
-                    incidOrdinal = fieldTotal;
+                {
+                    // Store the input field position for use later 
+                    // when exporting the data.
+                    incidOrdinal = f.FieldOrdinal;
+
+                    // Store the output field position for use later 
+                    // as the primary index field ordinal.
+                    primaryKeyOrdinal = fieldTotal;
+                }
 
                 // If the table is the incid_sources table.
                 if (f.TableName == _viewModelMain.HluDataset.incid_sources.TableName)
@@ -555,7 +620,10 @@ namespace HLU.UI.ViewModel
             }
 
             // Set the incid field as the primary key to the table.
-            exportTable.PrimaryKey = new DataColumn[] { exportTable.Columns[incidOrdinal] };
+            if (primaryKeyOrdinal != -1)
+                exportTable.PrimaryKey = new DataColumn[] { exportTable.Columns[primaryKeyOrdinal] };
+
+            // Remove the leading comma from the target list of fields.
             if (targetList.Length > 1) targetList.Remove(0, 1);
         }
 
@@ -608,8 +676,8 @@ namespace HLU.UI.ViewModel
                 {
                     string currIncid = String.Empty;
                     string prevIncid = String.Empty;
-                    int currSourceId = -1;
-                    int prevSourceId = -1;
+                    object currSourceId = String.Empty;
+                    object prevSourceId = String.Empty;
                     int fieldIndex = 1;
 
                     while (reader.Read())
@@ -617,9 +685,9 @@ namespace HLU.UI.ViewModel
                         // Get the current incid.
                         currIncid = reader.GetString(incidOrdinal);
 
-                        // Get the current source id (if one exists).
+                        // Get the current source id (or equivalent lookup table field).
                         if (_sourceIdOrdinal != -1)
-                            currSourceId = reader.GetInt32(_sourceIdOrdinal);
+                            currSourceId = reader.GetValue(_sourceIdOrdinal);
 
                         // If this incid is different to the last record's incid
                         // then process all the fields.
@@ -936,32 +1004,40 @@ namespace HLU.UI.ViewModel
             Type dataType = null;
             int fieldLength = 0;
             bool autoNum = false;
+            int attributeLength = 0;
 
             switch (fieldType)
             {
                 case 3:     // Integer
                     dataType = System.Type.GetType("System.Int32");
+                    attributeLength = 2;
                     break;
                 case 6:     // Single
                     dataType = System.Type.GetType("System.Single");
+                    attributeLength = 4;
                     break;
                 case 7:     // Double
                     dataType = System.Type.GetType("System.Double");
+                    attributeLength = 8;
                     break;
                 case 8:     // Date/Time
                     dataType = System.Type.GetType("System.DateTime");
+                    attributeLength = 8;
                     break;
                 case 10:    // Text
                     dataType = System.Type.GetType("System.String");
                     fieldLength = maxLength;
+                    attributeLength = maxLength;
                     break;
                 case 99:    // Autonumber
                     dataType = System.Type.GetType("System.Int32");
                     autoNum = true;
+                    attributeLength = 4;
                     break;
                 default:
                     dataType = System.Type.GetType("System.String");
                     fieldLength = maxLength;
+                    attributeLength = maxLength;
                     break;
             }
 
@@ -993,8 +1069,6 @@ namespace HLU.UI.ViewModel
                     else
                         fld.FieldName = String.Format("{0}_{1}", fieldName, i);
  
-                    fld.FieldType = dataType;
-
                     // If the table is the same as the last table then
                     // interweave the repeated fields.
                     int fieldNum;
@@ -1004,6 +1078,7 @@ namespace HLU.UI.ViewModel
                     else
                         fieldNum = ((fieldCount - (numFields * (_tableCount - 1))) * 10) + (_tableCount - 1);
 
+                    fld.FieldType = dataType;
                     fld.FieldOrder = fieldNum;
                     fld.FieldLength = fieldLength;
                     fld.FieldsCount = numFields;
@@ -1011,6 +1086,9 @@ namespace HLU.UI.ViewModel
                     fld.AutoNum = autoNum;
 
                     exportFields.Add(fld);
+
+                    // Add the field attribute length to the running total.
+                    _attributesLength += attributeLength;
                 }
             }
             else
@@ -1031,6 +1109,9 @@ namespace HLU.UI.ViewModel
                 fld.AutoNum = autoNum;
 
                 exportFields.Add(fld);
+
+                // Add the field attribute length to the running total.
+                _attributesLength += attributeLength;
             }
 
             // Store the last table referenced.
