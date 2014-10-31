@@ -891,6 +891,12 @@ namespace HLU.GISApplication.ArcGIS
                     returnList[0]), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            else if ((returnList.Count != 0) && (returnList[0] == "cancelled"))
+            {
+                MessageBox.Show("Export cancelled. No output table selected.", "HLU: Export",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
             else if ((returnList.Count == 0) || (returnList[0] != "cancelled"))
             {
                 MessageBox.Show("The export operation succeeded.", "HLU: Export",
