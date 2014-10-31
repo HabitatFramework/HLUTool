@@ -1219,9 +1219,10 @@ namespace HLU.GISApplication.MapInfo
                 // FIX: 026 Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Select {0}, {1} From {2}, {3} Where {2}.{4} = {3}.{5}", 
-                    ColumnList(_hluLayer, null, false), ColumnList(attributeTable, 
-                    new string[] { _hluLayerStructure.incidColumn.ColumnName }, false),
-                    QuoteIdentifier(_hluLayer), QuoteIdentifier(attributeTable), 
+                    ColumnList(_hluLayer, null, false),
+                    ColumnList(attributeTable, new string[] { _hluLayerStructure.incidColumn.ColumnName }, false),
+                    QuoteIdentifier(_hluLayer),
+                    QuoteIdentifier(attributeTable), 
                     QuoteIdentifier(GetFieldName(_hluLayerStructure.incidColumn.Ordinal)),
                     QuoteIdentifier(_hluLayerStructure.incidColumn.ColumnName)));
                 _mapInfoApp.Do("Set ProgressBars On");
@@ -2500,8 +2501,15 @@ namespace HLU.GISApplication.MapInfo
             {
                 string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", tableName,
                     QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
-                if (Array.IndexOf(skipColumns, colName) == -1)
+
+                //---------------------------------------------------------------------
+                // FIX: 033 Ignore case in field names during export to avoid duplicate
+                // fields.
+                if (Array.FindIndex(skipColumns, c => c.Equals(colName, StringComparison.InvariantCultureIgnoreCase)) == -1)
                     columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
+                //if (Array.IndexOf(skipColumns, colName) == -1)
+                //    columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
+                //---------------------------------------------------------------------
             }
 
             if (includeGeom &&( _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
@@ -2519,8 +2527,8 @@ namespace HLU.GISApplication.MapInfo
             for (int i = 1; i <= numColumns; i++)
             {
                 //---------------------------------------------------------------------
-                // FIX: 033 Don't add length or area fields to export layers
-                // if they already exist in mixed/upper case.
+                // FIX: 033 Ignore case in field names during export to avoid duplicate
+                // fields.
                 if (_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
                     tableName, QuoteValue(String.Format("Col{0}", i)),
                     (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME)).ToLower() == columnName.ToLower())
