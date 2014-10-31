@@ -1196,7 +1196,12 @@ namespace HLU.GISApplication.MapInfo
                 saveFileFlg.Filter = "MapInfo Tables (*.tab)|*.tab";
 
                 // If no export dataset name was chosen by the user then cancel the export
-                if (saveFileFlg.ShowDialog() != true) return false;
+                if (saveFileFlg.ShowDialog() != true)
+                {
+                    MessageBox.Show("Export cancelled. No output table selected.",
+                        "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
 
                 string outTabPath = saveFileFlg.FileName;
 
