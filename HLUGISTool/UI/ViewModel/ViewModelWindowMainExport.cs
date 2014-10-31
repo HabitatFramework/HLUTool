@@ -470,17 +470,11 @@ namespace HLU.UI.ViewModel
 
                 // If the field is an autonumber set the relevant
                 // auto increment properties.
-                if (f.AutoNum == true)
-                {
-                    c.AutoIncrement = true;
-                    c.AutoIncrementSeed = 1;
-                    c.AutoIncrementStep = 1;
-                }
+                if (f.AutoNum == true) c.AutoIncrement = true;
 
                 // If the field has a maximum length (i.e. it is a text field)
                 // then set the maximum length property.
-                if (f.FieldLength > 0)
-                    c.MaxLength = f.FieldLength;
+                if (f.FieldLength > 0) c.MaxLength = f.FieldLength;
 
                 // Add the field as a new column in the export table.
                 exportTable.Columns.Add(c);
@@ -516,25 +510,22 @@ namespace HLU.UI.ViewModel
                     // that can have duplicate values.
                     dupFields.Add(fieldTotal);
 
-                    // If the field refers to the source_id column then
-                    // store the input field ordinal for use later as the
-                    // unique incid_source field ordinal.
+                    // If the field refers to the source_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_source field ordinal.
                     if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName)
                         _sourceIdOrdinal = f.FieldOrdinal;
-
                     // If the field refers to the source_date_start column then
                     // store the input field ordinal for use later.
-                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName)
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName)
                         _sourceDateStartOrdinals.Add(f.FieldOrdinal);
-
                     // If the field refers to the source_date_end column then
                     // store the input field ordinal for use later.
-                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_endColumn.ColumnName)
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_endColumn.ColumnName)
                         _sourceDateEndOrdinals.Add(f.FieldOrdinal);
-
                     // If the field refers to the source_date_type column then
                     // store the input field ordinal for use later.
-                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_typeColumn.ColumnName)
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_typeColumn.ColumnName)
                         _sourceDateTypeOrdinals.Add(f.FieldOrdinal);
                 }
 
@@ -651,6 +642,7 @@ namespace HLU.UI.ViewModel
                     Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
                     Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
                 dbOut.CreateTable(exportTable);
+                
 
                 DataSet datasetOut = new DataSet("Export");
 
