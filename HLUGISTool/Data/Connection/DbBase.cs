@@ -1207,6 +1207,13 @@ namespace HLU.Data.Connection
                     {
                         if ((c.DataType == typeof(string)) && (c.MaxLength != -1))
                             dbColTypeString = dbColTypeString.Replace("(" + TextLength + ")", "(" + c.MaxLength + ")");
+
+                        //---------------------------------------------------------------------
+                        // FIX: 034 Enable autoincrement fields to be included in exports
+                        if ((c.AutoIncrement == true) && (c.DataType == typeof(Int32)))
+                            dbColTypeString = "COUNTER";
+                        //---------------------------------------------------------------------
+
                         sql.Append(String.Format(", {0} {1} {2}", QuoteIdentifier(c.ColumnName),
                             dbColTypeString, c.AllowDBNull ? "NULL" : "NOT NULL"));
                     }
