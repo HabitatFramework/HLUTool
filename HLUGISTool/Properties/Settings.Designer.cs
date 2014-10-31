@@ -809,5 +809,14 @@ namespace HLU.Properties {
                 return ((int)(this["LutUserFieldOrdinal"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4000")]
+        public int MapInfoMaxRecordLength {
+            get {
+                return ((int)(this["MapInfoMaxRecordLength"]));
+            }
+        }
     }
 }
