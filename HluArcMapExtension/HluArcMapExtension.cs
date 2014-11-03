@@ -2316,6 +2316,86 @@ namespace HLU
                 // Open the export dataset workspace
                 object outWS = ((IName)exportDatasetName.WorkspaceName).Open();
 
+                // Get the geometry definition for the feature layer.
+                IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
+                    _hluFeatureClass.ShapeFieldName)).GeometryDef;
+
+
+
+
+
+
+                // Get the Input DataSet Name
+                IDataset inDataset;
+                inDataset = (IDataset)hluDisplayTable.DisplayTable;
+                IDatasetName inDatasetName;
+                inDatasetName = (IDatasetName)inDataset.FullName;
+
+                // Get the Output DataSet Name
+                IFeatureClassName outFCName = new FeatureClassNameClass();
+                IDatasetName outDatasetName = (IDatasetName)outFCName;
+                outDatasetName.Name = String.Format("{0}_temp", exportDatasetName.Name);
+                outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
+
+                // Get the selected features for export
+                ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
+
+                //// Set the export query filter
+                //IQueryFilter exportQueryFilter2 = new QueryFilterClass();
+                //exportQueryFilter2.SubFields = "*";
+                //exportQueryFilter2.WhereClause = String.Empty;
+
+                IStatusBar statusBar = _application.StatusBar;
+                IStepProgressor progressBar = statusBar.ProgressBar;
+                progressBar.Position = 0;
+                statusBar.ShowProgressBar("Exporting temporary layer...", 0, 0, 1, true);
+                statusBar.HideProgressBar();
+
+                exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
+                //exportOp.ExportFeatureClass(inDatasetName, exportQueryFilter2, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
+
+                statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
+                statusBar.HideProgressBar();
+
+
+                //IWorkspaceFactory test = outDatasetName.WorkspaceName.WorkspaceFactory;
+
+                //IWorkspaceFactory workspaceFactory;
+                //if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriFileSystemWorkspace)
+                //{
+                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesFile.ShapefileWorkspaceFactoryClass();
+                //}
+                //else if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriLocalDatabaseWorkspace)
+                //{
+                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesGDB.FileGDBWorkspaceFactoryClass();
+                //}
+                //else if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace)
+                //{
+                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesGDB.SdeWorkspaceFactoryClass();
+                //}
+
+
+                //ESRI.ArcGIS.Geodatabase.IFeatureWorkspace featureWorkspace = (ESRI.ArcGIS.Geodatabase.IFeatureWorkspace)workspace; // Explict Cast
+                //ESRI.ArcGIS.Geodatabase.IFeatureClass featureClass = featureWorkspace.OpenFeatureClass(string_ShapefileName);
+
+
+                // Cast the workspace to IFeatureWorkspace and open a feature class.
+                IFeatureWorkspace featureWorkspace = (IFeatureWorkspace)outWS;
+                IFeatureClass tempFC = featureWorkspace.OpenFeatureClass(outDatasetName.Name);
+
+                IFeatureLayer tempLayer = new FeatureLayerClass();
+                tempLayer.FeatureClass = tempFC;
+                tempLayer.Name = tempFC.AliasName;
+                IDisplayTable tempDisplayTable = (IDisplayTable)tempLayer;
+                IFeatureClass tempDisplayTableFC = (IFeatureClass)tempDisplayTable.DisplayTable;
+                ITable tempLayerTable = (ITable)tempDisplayTableFC;
+
+
+
+
+                // Determine if the export layer is a shapefile
+                bool isShp = IsShp(outWS as IWorkspace);
+
                 // Get the field names to be used when joining the attribute data and the feature layer
                 string originPKJoinField = _hluLayerStructure.incidColumn.ColumnName;
                 string originFKJoinField =
@@ -2326,33 +2406,30 @@ namespace HLU
                 // feature layer).
                 List<IField> attributeFields;
                 List<IField> featClassFields;
-                List<IField> exportFields = ExportFieldLists(originPKJoinField, originFKJoinField,
+                List<IField> exportFields = ExportFieldLists(isShp, originPKJoinField, originFKJoinField, tempFC,
                     exportAttributes, out attributeFields, out featClassFields);
 
                 // Add x/y, length, or area and length fields to the list of fields in the export layer
                 // if the export layer is a shapefile.
-                bool isShp = IsShp(outWS as IWorkspace);
                 ExportAddGeometryPropertyFields(isShp, exportFields);
 
                 // create virtual relate
                 IMemoryRelationshipClassFactory memoryRelFactory = new MemoryRelationshipClassFactoryClass();
                 relClass = memoryRelFactory.Open("ExportRelClass", (IObjectClass)exportAttributes,
-                    originPKJoinField, (IObjectClass)hluLayerTable, originFKJoinField, "forward", "backward",
+                    originPKJoinField, (IObjectClass)tempLayerTable, originFKJoinField, "forward", "backward",
                     esriRelCardinality.esriRelCardinalityOneToMany);
 
                 // use Relate to perform a join
-                IDisplayRelationshipClass displayRelClass = (IDisplayRelationshipClass)_hluLayer;
+                IDisplayRelationshipClass displayRelClass = (IDisplayRelationshipClass)tempLayer;
                 displayRelClass.DisplayRelationshipClass(relClass, esriJoinType.esriLeftInnerJoin);
 
                 // create query filter for export cursor
                 bool featClassFieldsQualified;
                 bool attributeFieldsQualified;
-                IQueryFilter exportQueryFilter = ExportQueryFilter(originPKJoinField, hluDisplayTable,
+                IQueryFilter exportQueryFilter = ExportQueryFilter(originPKJoinField, tempLayer, tempFC, tempDisplayTable,
                     attributeDataset, featClassFields, attributeFields, out featClassFieldsQualified,
                     out attributeFieldsQualified);
 
-                IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
-                    _hluFeatureClass.ShapeFieldName)).GeometryDef;
 
 
 
@@ -2362,50 +2439,6 @@ namespace HLU
 
 
 
-                // Get the Input DataSet Name
-                FeatureLayer featLayer = new FeatureLayer();
-                featLayer.FeatureClass = (IFeatureClass)hluDisplayTable.DisplayTable;
-                IGeoFeatureLayer hluGeoFeatureLayer = (IGeoFeatureLayer)featLayer;
-
-                IDataset inDataset;
-                //inDataset = (IDataset)hluGeoFeatureLayer;
-                inDataset = (IDataset)hluDisplayTable.DisplayTable;
-                IDatasetName inDatasetName;
-                inDatasetName = (IDatasetName)inDataset.FullName;
-
-
-                IFeatureClassName outFCName = new FeatureClassNameClass();
-                IDatasetName outDatasetName = (IDatasetName)outFCName;
-                outDatasetName.Name = exportDatasetName.Name;
-                outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
-
-
-
-                // Get the selected features for export
-                ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
-
-
-
-                // Set the export query filter
-                IQueryFilter exportQueryFilter2 = new QueryFilterClass();
-                string queryFilterWhereClause = String.Empty;
-
-                exportQueryFilter2.SubFields = "INCID";
-                exportQueryFilter2.WhereClause = queryFilterWhereClause;
-
-
-                //string temp = hluDisplayTable.DisplayTable.Fields.get_Field(0).Name;
-                //temp = hluDisplayTable.DisplayTable.Fields.get_Field(10).Name;
-
-                //string temp2 = hluGeoFeatureLayer.FeatureClass.Fields.get_Field(0).Name;
-                //temp2 = hluDisplayTable.DisplayTable.Fields.get_Field(10).Name;
-
-
-                exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
-                //exportOp.ExportFeatureClass(inDatasetName, exportQueryFilter2, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
-
-                IFeatureSelection tempSel = (IFeatureSelection)featLayer;
-                int temp = tempSel.SelectionSet.Count;
 
 
 
@@ -2507,27 +2540,27 @@ namespace HLU
                 // if we export shp we calculate geometry props into the last two fields, which are
                 // not in exportFields
                 IFields outFields = CreateFieldsCollection(true, geomDef.HasZ, geomDef.HasM, outWS,
-                    _hluFeatureClass.ShapeType, exportFields.Select(f => f.Length).ToArray(),
+                    tempFC.ShapeType, exportFields.Select(f => f.Length).ToArray(),
                     exportFields.Select(f => f.Name).ToArray(), exportFields.Select(f => f.Name).ToArray(),
                     exportFields.Select(f => f.Type).ToArray(), exportFields.Select(f => f.Type != 
                         esriFieldType.esriFieldTypeOID).ToArray(), geomDef.SpatialReference);
 
                 // create output feature class
                 outFeatureClass = CreateFeatureClass(exportDatasetName.Name, null, outWS,
-                    outFields, esriFeatureType.esriFTSimple, _hluFeatureClass.ShapeType, null, null);
+                    outFields, esriFeatureType.esriFTSimple, tempFC.ShapeType, null, null);
 
                 // field map between display and output feature class, as display 
                 // table always includes all fields, regardless of SubFields
                 // the first two fields are always OID and SHAPE 
                 // the last two Shape_Length and Shape_Area, either added automatically or here
                 int[] exportFieldMap = new int[] { 0, 1 }.Concat(featClassFields
-                    .Select(f => hluDisplayTable.DisplayTable.Fields.FindField(featClassFieldsQualified ?
-                        _hluLayer.Name + "." + f.Name : f.Name))).Concat(attributeFields
-                    .Select(f => hluDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
+                    .Select(f => tempDisplayTable.DisplayTable.Fields.FindField(featClassFieldsQualified ?
+                        tempLayer.Name + "." + f.Name : f.Name))).Concat(attributeFields
+                    .Select(f => tempDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
                         attributeDataset.Name + "." + f.Name : f.Name))).ToArray();
 
                 // insert features into new feature class
-                ExportInsertFeatures(hluDisplayTable, exportQueryFilter, exportRowCount,
+                ExportInsertFeatures(tempDisplayTable, exportQueryFilter, _hluFeatureSelection.SelectionSet.Count,
                     exportFieldMap, isShp, outWS, outFeatureClass);
 
             }
@@ -2571,7 +2604,7 @@ namespace HLU
             }
         }
 
-        private List<IField> ExportFieldLists(string originPKJoinField, string originFKJoinField, 
+        private List<IField> ExportFieldLists(bool isShp, string originPKJoinField, string originFKJoinField, IFeatureClass featureClass,
             ITable exportAttributes, out List<IField> attributeFields, out List<IField> featClassFields)
         {
             // Build a list of all the export fields that will come from the
@@ -2594,14 +2627,35 @@ namespace HLU
             // any other feature fields not already in the attribute table.
             featClassFields = new List<IField>();
             List<int> featClassFieldOrdinals = new List<int>();
+            for (int i = 0; i < featureClass.Fields.FieldCount; i++)
+            {
+                IField featClassField = featureClass.Fields.get_Field(i);
+                if (((featClassField.Name == originFKJoinField) ||
+                    (attributeFields.Count(f => f.Name == featClassField.Name) == 0)) &&
+                    ((featClassField.Name != "OBJECTID") &&
+                    (featClassField.Type != esriFieldType.esriFieldTypeOID) &&
+                    (featClassField.Type != esriFieldType.esriFieldTypeGeometry)) &&
+                    (!featClassField.Name.StartsWith(featureClass.ShapeFieldName + "_")))
+                {
+                    featClassFields.Add(featClassField);
+                    featClassFieldOrdinals.Add(i);
+                }
+            }
+
+            // Build a list consisting of the feature layer field that is to be
+            // used as the foreign key when joining to the attribute table plus
+            // any other feature fields not already in the attribute table.
+            List<IField> featClassFields2;
+            featClassFields2 = new List<IField>();
+            List<int> featClassFieldOrdinals2 = new List<int>();
             foreach (DataColumn c in _hluLayerStructure.Columns)
             {
                 if ((c.ColumnName == originFKJoinField) ||
                     (attributeFields.Count(f => f.Name == c.ColumnName) == 0))
                 {
-                    int fieldOrdinal = _hluFieldMap[c.Ordinal];
-                    featClassFields.Add(_hluFeatureClass.Fields.get_Field(fieldOrdinal));
-                    featClassFieldOrdinals.Add(fieldOrdinal);
+                    int fieldOrdinal2 = _hluFieldMap[c.Ordinal];
+                    featClassFields2.Add(_hluFeatureClass.Fields.get_Field(fieldOrdinal2));
+                    featClassFieldOrdinals2.Add(fieldOrdinal2);
                 }
             }
 
@@ -2654,22 +2708,23 @@ namespace HLU
             }
         }
 
-        private IQueryFilter ExportQueryFilter(string originPKJoinField, IDisplayTable hluDisplayTable, 
-            IDataset attributeDataset, List<IField> featClassFields, List<IField> attributeFields,
+        private IQueryFilter ExportQueryFilter(string originPKJoinField, IFeatureLayer featureLayer,
+            IFeatureClass featureClass, IDisplayTable hluDisplayTable, IDataset attributeDataset,
+            List<IField> featClassFields, List<IField> attributeFields,
             out bool featClassFieldsQualified, out bool attributeFieldsQualified)
         {
             StringBuilder queryFilterSubFields = new StringBuilder();
             string queryFilterWhereClause = String.Empty;
 
             featClassFieldsQualified = hluDisplayTable.DisplayTable.Fields.get_Field(0)
-                .Name.StartsWith(_hluLayer.Name + ".");
+                .Name.StartsWith(featureLayer.Name + ".");
             attributeFieldsQualified = hluDisplayTable.DisplayTable.Fields.get_Field(
-                _hluFeatureClass.Fields.FieldCount).Name.StartsWith(attributeDataset.Name + ".");
+                featureClass.Fields.FieldCount).Name.StartsWith(attributeDataset.Name + ".");
 
             if (featClassFieldsQualified)
             {
                 queryFilterSubFields.Append(String.Join(",", featClassFields
-                    .Select(f => _hluLayer.Name + "." + f.Name).ToArray()));
+                    .Select(f => featureLayer.Name + "." + f.Name).ToArray()));
             }
             else
             {
@@ -2754,7 +2809,10 @@ namespace HLU
                     for (int i = 2; i < exportFieldMap.Length; i++)
                     {
                         item = exportFeature.get_Value(exportFieldMap[i]);
-                        if (item != DBNull.Value) featureBuffer.set_Value(i, item);
+                        if (item != DBNull.Value)
+                            featureBuffer.set_Value(i, item);
+                        else
+                            featureBuffer.set_Value(i, null);
                     }
 
                     if (calcGeometry)
@@ -2884,7 +2942,9 @@ namespace HLU
             {
                 if (String.IsNullOrEmpty(fieldNames[i]))
                     throw new Exception(String.Format("Error creating field {0}", i));
-                if (fieldTypes[i] == esriFieldType.esriFieldTypeOID) continue;
+                if ((fieldTypes[i] == esriFieldType.esriFieldTypeOID) ||
+                    (fieldTypes[i] == esriFieldType.esriFieldTypeGeometry))
+                    continue;
                 fieldAtt = new FieldClass();
                 fieldEditAtt = (IFieldEdit)fieldAtt;
                 fieldEditAtt.Name_2 = fieldNames[i];
