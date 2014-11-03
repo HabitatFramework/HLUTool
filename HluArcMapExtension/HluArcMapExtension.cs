@@ -2354,6 +2354,154 @@ namespace HLU
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
                     _hluFeatureClass.ShapeFieldName)).GeometryDef;
 
+
+
+
+
+
+
+
+
+                // Get the Input DataSet Name
+                FeatureLayer featLayer = new FeatureLayer();
+                featLayer.FeatureClass = (IFeatureClass)hluDisplayTable.DisplayTable;
+                IGeoFeatureLayer hluGeoFeatureLayer = (IGeoFeatureLayer)featLayer;
+
+                IDataset inDataset;
+                //inDataset = (IDataset)hluGeoFeatureLayer;
+                inDataset = (IDataset)hluDisplayTable.DisplayTable;
+                IDatasetName inDatasetName;
+                inDatasetName = (IDatasetName)inDataset.FullName;
+
+
+                IFeatureClassName outFCName = new FeatureClassNameClass();
+                IDatasetName outDatasetName = (IDatasetName)outFCName;
+                outDatasetName.Name = exportDatasetName.Name;
+                outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
+
+
+
+                // Get the selected features for export
+                ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
+
+
+
+                // Set the export query filter
+                IQueryFilter exportQueryFilter2 = new QueryFilterClass();
+                string queryFilterWhereClause = String.Empty;
+
+                exportQueryFilter2.SubFields = "INCID";
+                exportQueryFilter2.WhereClause = queryFilterWhereClause;
+
+
+                //string temp = hluDisplayTable.DisplayTable.Fields.get_Field(0).Name;
+                //temp = hluDisplayTable.DisplayTable.Fields.get_Field(10).Name;
+
+                //string temp2 = hluGeoFeatureLayer.FeatureClass.Fields.get_Field(0).Name;
+                //temp2 = hluDisplayTable.DisplayTable.Fields.get_Field(10).Name;
+
+
+                exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
+                //exportOp.ExportFeatureClass(inDatasetName, exportQueryFilter2, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
+
+                IFeatureSelection tempSel = (IFeatureSelection)featLayer;
+                int temp = tempSel.SelectionSet.Count;
+
+
+
+
+
+
+
+
+                //// Create a name object for the source workspace and open it.
+                //IWorkspaceName sourceWorkspaceName = inDatasetName.WorkspaceName;
+                //IName sourceWorkspaceIName = (IName)sourceWorkspaceName;
+                //IWorkspace sourceWorkspace = (IWorkspace)sourceWorkspaceIName.Open();
+
+                //// Create a name object for the target (file GDB) workspace and open it.
+                //IWorkspaceName targetWorkspaceName = outDatasetName.WorkspaceName;
+                //IName targetWorkspaceIName = (IName)targetWorkspaceName;
+                //IWorkspace targetWorkspace = (IWorkspace)targetWorkspaceIName.Open();
+
+                //// Create a name object for the source dataset.
+                //IFeatureClassName sourceFeatureClassName = new FeatureClassNameClass();
+                //inDatasetName = (IDatasetName)sourceFeatureClassName;
+                //inDatasetName.Name = inDataset.Name;
+                //inDatasetName.WorkspaceName = sourceWorkspaceName;
+
+                //// Create a name object for the target dataset.
+                //IFeatureClassName targetFeatureClassName = new FeatureClassNameClass();
+                //outDatasetName = (IDatasetName)targetFeatureClassName;
+                //outDatasetName.Name = exportDatasetName.Name;
+                //outDatasetName.WorkspaceName = targetWorkspaceName;
+
+
+                //// Create the objects and references necessary for field validation.
+                //IFieldChecker fieldChecker = new FieldCheckerClass();
+                //IFields sourceFields = hluDisplayTable.DisplayTable.Fields;
+                //IFields targetFields = null;
+                //IEnumFieldError enumFieldError = null;
+
+                //// Set the required properties for the IFieldChecker interface.
+                //fieldChecker.InputWorkspace = sourceWorkspace;
+                //fieldChecker.ValidateWorkspace = targetWorkspace;
+
+                //// Validate the fields and check for errors.
+                //fieldChecker.Validate(sourceFields, out enumFieldError, out targetFields);
+                //if (enumFieldError != null)
+                //{
+                //    // Handle the errors in a way appropriate to your application.
+                //    Console.WriteLine("Errors were encountered during field validation.");
+                //}
+
+
+                //// Get the geometry definition from the shape field and clone it.
+                //IClone geometryDefClone = (IClone)geomDef;
+                //IClone targetGeometryDefClone = geometryDefClone.Clone();
+                //IGeometryDef targetGeometryDef = (IGeometryDef)targetGeometryDefClone;
+
+                //// Cast the IGeometryDef to the IGeometryDefEdit interface.
+                ////IGeometryDefEdit targetGeometryDefEdit = (IGeometryDefEdit)targetGeometryDef;
+
+                //// Set the IGeometryDefEdit properties.
+                ////targetGeometryDefEdit.GridCount_2 = 1;
+                ////targetGeometryDefEdit.set_GridSize(0, 0.75);
+
+                //// Create a query filter to only select cities with a province (PROV) value of 'NS.'
+                //IQueryFilter queryFilter = new QueryFilterClass();
+                //queryFilter.WhereClause = String.Empty;
+                //queryFilter.SubFields = "INCID";
+
+                //// Create the converter and run the conversion.
+                //IFeatureDataConverter featureDataConverter = new FeatureDataConverterClass();
+                //IEnumInvalidObject enumInvalidObject = featureDataConverter.ConvertFeatureClass
+                //    (sourceFeatureClassName, queryFilter, null, targetFeatureClassName,
+                //    targetGeometryDef, targetFields, "", 1000, _application.hWnd);
+
+                //// Check for errors.
+                //IInvalidObjectInfo invalidObjectInfo = null;
+                //enumInvalidObject.Reset();
+                //while ((invalidObjectInfo = enumInvalidObject.Next()) != null)
+                //{
+                //    // Handle the errors in a way appropriate to the application.
+                //    Console.WriteLine("Errors occurred for the following feature: {0}",
+                //        invalidObjectInfo.InvalidObjectID);
+                //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
                 // adds OID and SHAPE at beginning, possibly Shape_Length and Shape_Area at end
                 // when populating new rows we loop over exportFieldOrdinals
                 // if we export shp we calculate geometry props into the last two fields, which are
@@ -2567,12 +2715,15 @@ namespace HLU
             bool restoreEditSession = InEditingSession;
             if (restoreEditSession) CloseEditSession(true);
 
+            // If the workspace is remote then the data is being accessed
+            // via ArcSDE.
             if (wsOut.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace)
             {
                 Editor.StartEditing(wsOut);
                 Editor.StartOperation();
             }
-
+            // Otherwise, it must be a FileSystem (for shapefiles)
+            // or LocalDatabase (for geodatabases) workspace.
             else
             {
                 workspaceEdit = (IWorkspaceEdit)outWS;
