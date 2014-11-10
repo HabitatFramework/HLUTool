@@ -1228,6 +1228,10 @@ namespace HLU.GISApplication.MapInfo
                 }
                 //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // FIX: 039 Check export layer won't exceed MapInfo maximum record
+                // length or file sizes.
+                //
                 // Check the total attributes length doesn't exceed the MapInfo
                 // maximum record length.
                 if (attributesLength > Settings.Default.MapInfoMaxRecordLength)
@@ -1237,7 +1241,12 @@ namespace HLU.GISApplication.MapInfo
                 // maximum .tab file size.
                 if ((attributesLength * outFeatureCount)/1024 > Settings.Default.MapInfoMaxTableSize)
                     throw new Exception(String.Format("The export table size ({0} Kb) will exceed the maximum allowed for MapInfo .tab files (2 Gb)", (attributesLength * outFeatureCount)/1024));
+                //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // FIX: 040 Enable MapInfo users to set a default export
+                // folder path.
+                //
                 // Prompt the user for where to save the export layer
                 SaveFileDialog saveFileFlg = new SaveFileDialog();
                 saveFileFlg.Title = "HLU Export";
@@ -1246,8 +1255,9 @@ namespace HLU.GISApplication.MapInfo
                 saveFileFlg.RestoreDirectory = false;
                 saveFileFlg.InitialDirectory = Settings.Default.ExportPath;
                 saveFileFlg.Filter = "MapInfo Tables (*.tab)|*.tab";
+                //---------------------------------------------------------------------
 
-                // If no export dataset name was chosen by the user then cancel the export
+                // If no export dataset name was chosen by the user then cancel the export.
                 if (saveFileFlg.ShowDialog() != true)
                 {
                     MessageBox.Show("Export cancelled. No output table selected.",
@@ -1255,6 +1265,10 @@ namespace HLU.GISApplication.MapInfo
                     return false;
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 035 Only export selected features, not all features for
+                // selected incids.
+                //
                 // Get the name of the feature layer to join to.
                 if (selectedOnly)
                 {
@@ -1296,6 +1310,7 @@ namespace HLU.GISApplication.MapInfo
                     // Set the name of the join table to the whole feature layer.
                     joinLayer = _hluLayer;
                 }
+                //---------------------------------------------------------------------
 
                 // Set the name of the export file.
                 string outTabPath = saveFileFlg.FileName;
@@ -1311,12 +1326,18 @@ namespace HLU.GISApplication.MapInfo
                 attributeTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR13 (Export features performance)
+                // Drop any unnecessary indexes on the join table to improve
+                // performance.
+                //
                 // Get a list of the columns with indexes, excluding the
                 // incid column.
                 indexColumns = ColumnIndexList(joinLayer, new string[] { _hluLayerStructure.incidColumn.ColumnName });
 
-                // Drop any unneccessary indexes on the join table.
+                // Drop the unneccessary indexes from the join table.
                 DropIndexes(joinLayer, indexColumns);
+                //---------------------------------------------------------------------
 
                 // Check if the geometry fields are in the join layer.
                 string geomCol1Name = "Shape_length";
@@ -1329,6 +1350,7 @@ namespace HLU.GISApplication.MapInfo
                 // Perform a sql join between the feature layer and the attribute table
                 //---------------------------------------------------------------------
                 // FIX: 026 Hide progress bars during MapInfo processing
+                // FIX: 037 Move the geometry length and area fields to the end.
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Select {0}, {1}{2} From {3}, {4} Where {3}.{5} = {4}.{6}",
                     ColumnList(joinLayer, new string[] { geomCol1Name, geomCol2Name }, false),
@@ -1345,7 +1367,7 @@ namespace HLU.GISApplication.MapInfo
                 selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
 
-                // If the join failed (i.e. no joined features existed) then cancel the export
+                // If the join failed (i.e. no joined features existed) then abort the export
                 if (string.IsNullOrEmpty(selTable)) return false;
 
                 // Save the joined table as the new export table
@@ -2637,6 +2659,14 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
+        /// <summary>
+        /// List the columns in the table if they are not found in
+        /// the list of columns to skip.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="skipColumns">The list of columns to skip over if found.</param>
+        /// <param name="includeGeom">If set to <c>true</c> include the geometry field.</param>
+        /// <returns></returns>
         private string ColumnList(string tableName, string[] skipColumns, bool includeGeom)
         {
             if (skipColumns == null) skipColumns = new string[0];
@@ -2668,6 +2698,13 @@ namespace HLU.GISApplication.MapInfo
                 return String.Join(", ", columnList.ToArray());
         }
 
+        /// <summary>
+        /// List the columns in the table if they are found in the
+        /// list of required columns.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="onlyColumns">The list of columns to include if found.</param>
+        /// <returns></returns>
         private string ColumnList(string tableName, string[] onlyColumns)
         {
             if (onlyColumns == null) return string.Empty;
@@ -2716,6 +2753,13 @@ namespace HLU.GISApplication.MapInfo
             return false;
         }
 
+        /// <summary>
+        /// Create a list of all the index columns in the table if they
+        /// are not found in the list of columns to skip.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="skipColumns">The list of columns to skip over if found.</param>
+        /// <returns></returns>
         private string[] ColumnIndexList(string tableName, string[] skipColumns)
         {
             if (skipColumns == null) skipColumns = new string[0];
