@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -33,7 +34,6 @@ using HLU.Properties;
 using HLU.UI.View;
 using HLU.Data;
 using HLU.Date;
-using HLU.Converters;
 
 namespace HLU.UI.ViewModel
 {
@@ -97,7 +97,14 @@ namespace HLU.UI.ViewModel
             _windowExport.ShowDialog();
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR14 (Exporting IHS codes or descriptions)
+        // Enable users to specify if individual fields should be
+        // exported with descriptions, rather than the whole export,
+        // by moving this option to the exports_fields table.
+        //
         private void _viewModelExport_RequestClose(int exportID, bool selectedOnly)
+        //---------------------------------------------------------------------
         {
             _viewModelExport.RequestClose -= _viewModelExport_RequestClose;
             _windowExport.Close();
@@ -112,8 +119,8 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Exports the combined GIS and database data using
-        /// the specified export format.
+        /// Exports the combined GIS and database data using the
+        /// specified export format.
         /// </summary>
         /// <param name="userExportId">The export format selected by the user.</param>
         /// <param name="selectedOnly">If set to <c>true</c> export only selected incids/features.</param>
@@ -153,10 +160,14 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("No export fields are defined for format '{0}'",
                         _viewModelMain.HluDataset.exports.FindByexport_id(userExportId).export_name));
 
+                //---------------------------------------------------------------------
+                // FIX: 041 Check the selected export format contains the incid column.
+                //
                 // Exit if there is no incid field for this format.
                 if (_viewModelMain.HluDataset.exports_fields.Count(f => f.column_name == _viewModelMain.IncidTable.incidColumn.ColumnName) == 0)
                     throw new Exception(String.Format("The export format '{0}' does not contain the column 'incid'",
                         _viewModelMain.HluDataset.exports.FindByexport_id(userExportId).export_name));
+                //---------------------------------------------------------------------
 
                 // Build a new export data table and also determine the
                 // number of output fields, a string of the output field
@@ -212,7 +223,10 @@ namespace HLU.UI.ViewModel
                         new List<SqlFilterCondition>(new SqlFilterCondition[] { cond }) });
                 }
 
-                // Warn the user if the export is very large.
+                //---------------------------------------------------------------------
+                // FIX: 042 Warn the user when the export will be very large.
+                //
+                // Count the number of incids to be exported.
                 int rowCount = 0;
                 if (selectedOnly)
                     rowCount = _viewModelMain.IncidsSelectedMapCount;
@@ -230,6 +244,7 @@ namespace HLU.UI.ViewModel
                     if (userResponse != MessageBoxResult.Yes)
                         return;
                 }
+                //---------------------------------------------------------------------
 
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
@@ -303,9 +318,8 @@ namespace HLU.UI.ViewModel
                 // Get the field length of the source table/column.
                 fieldLength = GetFieldLength(r.table_name, r.column_ordinal);
 
-                // If the field is not sourced from the database then
-                // add it to the export table but don't add it to the
-                // sql target list or from clause.
+                //---------------------------------------------------------------------
+                // FIX: 043 Enable new 'empty' fields to be included in exports.
                 if (r.table_name.ToLower() == "<none>")
                 {
                     // Override the source field length(s) if an export
@@ -319,6 +333,7 @@ namespace HLU.UI.ViewModel
                         ref exportFields);
                     continue;
                 }
+                //---------------------------------------------------------------------
 
                 // Determine if this field is to be output multiple times,
                 // once for each row in the relevant table up to the
@@ -358,9 +373,15 @@ namespace HLU.UI.ViewModel
                 // Get the relationships for the table/column if a
                 // value from a lookup table is required.
                 string fieldFormat = !r.IsNull(_viewModelMain.HluDataset.exports_fields.field_formatColumn) ? r.field_format : null;
+                //---------------------------------------------------------------------
+                // CHANGED: CR14 (Exporting IHS codes or descriptions)
+                // Enable users to specify if individual fields should be
+                // exported with descriptions in the exports_fields table.
+                //
                 var relations = ((fieldFormat != null) && (fieldFormat == "Both" || fieldFormat == "Lookup")) ? _viewModelMain.HluDataRelations.Where(rel =>
                     rel.ChildTable.TableName == r.table_name && rel.ChildColumns
                     .Count(ch => ch.ColumnName == r.column_name) == 1) : new DataRelation[0];
+                //---------------------------------------------------------------------
 
                 switch (relations.Count())
                 {
@@ -370,11 +391,16 @@ namespace HLU.UI.ViewModel
                         targetList.Append(String.Format(",{0}.{1} AS {2}", currTable,
                             _viewModelMain.DataBase.QuoteIdentifier(r.column_name), r.field_name.Replace("<no>", "")));
 
+                        //---------------------------------------------------------------------
+                        // FIX: 044 Enable text field lengths to be specified in
+                        // the export format.
+                        //
                         // Override the source field length(s) if an export
                         // field length has been set.
                         if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                             r.field_length > 0)
                             fieldLength = r.field_length;
+                        //---------------------------------------------------------------------
 
                         // Add the field to the sql list of export table columns.
                         AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
@@ -410,13 +436,19 @@ namespace HLU.UI.ViewModel
                             lutFieldOrdinal = ViewModelWindowMain.LutDescriptionFieldOrdinal - 1;
                         }
 
+                        // Get the list of columns for the lookup table.
+                        DataColumn[] lutColumns = new DataColumn[lutRelation.ParentTable.Columns.Count];
+                        lutRelation.ParentTable.Columns.CopyTo(lutColumns, 0);
+
                         // If the lookup table contains the required field name.
                         if (lutRelation.ParentTable.Columns.Contains(lutFieldName))
                         {
-                            // Get the list of columns for the lookup table.
-                            DataColumn[] lutColumns = new DataColumn[lutRelation.ParentTable.Columns.Count];
-                            lutRelation.ParentTable.Columns.CopyTo(lutColumns, 0);
-
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR15 (Concatenate IHS codes and descriptions)
+                            // Enable users to specify if individual fields should be
+                            // exported with both codes and descriptions concatenated
+                            // together.
+                            //
                             // If both the original field and it's corresponding lookup
                             // table field are required then add them both to the sql
                             // target list.
@@ -438,6 +470,7 @@ namespace HLU.UI.ViewModel
                                 // for the concatenation string length.
                                 fieldLength += lutColumns.First(c => c.ColumnName == lutFieldName).MaxLength + 3;
                             }
+                            //---------------------------------------------------------------------
                             else
                             {
                                 // Add the corresponding lookup table field to the sql
@@ -451,11 +484,16 @@ namespace HLU.UI.ViewModel
                                 fieldLength = lutColumns.First(c => c.ColumnName == lutFieldName).MaxLength;
                             }
 
+                            //---------------------------------------------------------------------
+                            // FIX: 044 Enable text field lengths to be specified in
+                            // the export format.
+                            //
                             // Override the source field length(s) if an export
                             // field length has been set.
                             if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                                 r.field_length > 0)
                                 fieldLength = r.field_length;
+                            //---------------------------------------------------------------------
 
                             // Add the field to the sql list of export table columns.
                             AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
@@ -466,10 +504,17 @@ namespace HLU.UI.ViewModel
                         // name, but does contain the required field ordinal.
                         else if (lutRelation.ParentTable.Columns.Count >= lutFieldOrdinal)
                         {
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR15 (Concatenate IHS codes and descriptions)
+                            // Enable users to specify if individual fields should be
+                            // exported with both codes and descriptions concatenated
+                            // together.
+                            //
                             // If both the original field and it's corresponding lookup
                             // table field are required then add them both to the sql
                             // target list.
                             if ((fieldFormat != null) && (fieldFormat == "Both"))
+                            {
                                 // Add the corresponding lookup table field to the sql
                                 // target list.
                                 targetList.Append(String.Format(",{0}.{1} {5} {6} {5} {2}.{3} AS {4}",
@@ -480,7 +525,13 @@ namespace HLU.UI.ViewModel
                                     r.field_name.Replace("<no>", ""),
                                     _viewModelMain.DataBase.ConcatenateOperator,
                                     _viewModelMain.DataBase.QuoteValue(" : ")));
+
+                                // Set the field length of the lookup table field.
+                                fieldLength = lutColumns.First(c => c.ColumnName == lutFieldName).MaxLength;
+                            }
+                            //---------------------------------------------------------------------
                             else
+                            {
                                 // Add the corresponding lookup table field to the sql
                                 // target list.
                                 targetList.Append(String.Format(",{0}.{1} AS {2}",
@@ -488,11 +539,20 @@ namespace HLU.UI.ViewModel
                                     _viewModelMain.DataBase.QuoteIdentifier(lutRelation.ParentTable.Columns[lutFieldOrdinal].ColumnName),
                                     r.field_name.Replace("<no>", "")));
 
+                                // Set the field length of the lookup table field.
+                                fieldLength = lutColumns.First(c => c.ColumnName == lutFieldName).MaxLength;
+                            }
+
+                            //---------------------------------------------------------------------
+                            // FIX: 044 Enable text field lengths to be specified in
+                            // the export format.
+                            //
                             // Override the source field length(s) if an export
                             // field length has been set.
                             if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                                 r.field_length > 0)
                                 fieldLength = r.field_length;
+                            //---------------------------------------------------------------------
 
                             // Add the field to the sql list of export table columns.
                             AddExportColumn(multipleFields ? r.fields_count : 0, r.table_name, r.column_name, r.field_name,
@@ -527,6 +587,10 @@ namespace HLU.UI.ViewModel
                 }
             }
 
+            //---------------------------------------------------------------------
+            // FIX: 045 Interweave multiple record fields from the same
+            // table together.
+            //
             // Create a new field map template with as many items
             // as there are input fields.
             fieldMapTemplate = new int[exportFields.Max(e => e.FieldOrdinal) + 1][];
@@ -627,6 +691,7 @@ namespace HLU.UI.ViewModel
                 // Increment the total number of fields to be exported.
                 fieldTotal += 1;
             }
+            //---------------------------------------------------------------------
 
             // Store which export fields can be allowed to have duplicate
             // values (i.e. the incid_source fields).
@@ -638,6 +703,10 @@ namespace HLU.UI.ViewModel
                 // Get the last input field ordinal.
                 int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
 
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export multiple source details for the
+                // same source.
+                //
                 // If the source_id column is not included then add
                 // it so that different sources can be identified.
                 if (_sourceIdOrdinal == -1)
@@ -650,7 +719,13 @@ namespace HLU.UI.ViewModel
                     // later as the unique incid_source field ordinal.
                     _sourceIdOrdinal = lastFieldOrdinal += 1;
                 }
+                //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR17 (Exporting date fields)
+                // Store all of the source date fields for use later when
+                // formatting the attribute data.
+                //
                 // If the source_date_start column is not included then add
                 // it for use later.
                 if ((_sourceDateStartOrdinals == null) || (_sourceDateStartOrdinals.Count() == 0))
@@ -686,6 +761,7 @@ namespace HLU.UI.ViewModel
                     // Store the input field ordinal for use later.
                     _sourceDateTypeOrdinals.Add(lastFieldOrdinal += 1);
                 }
+                //---------------------------------------------------------------------
             }
 
             // Set the incid field as the primary key to the table.
@@ -743,9 +819,15 @@ namespace HLU.UI.ViewModel
 
                 exportTable = datasetOut.Tables[0];
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR13 (Export features performance)
+                // Improve the performance as much as possible when
+                // creating the attribute database.
+                //
                 // Turn off notifications and index maintenance whilst
                 // inserting the records.
                 exportTable.BeginLoadData();
+                //---------------------------------------------------------------------
 
                 // If there is only one long list then chunk
                 // it up into smaller lists.
@@ -760,6 +842,10 @@ namespace HLU.UI.ViewModel
                     catch { }
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 047 Break exporting attributes into chunks to avoid errors
+                // with excessive sql lengths.
+                //
                 outputRowCount = 0;
                 exportRowCount = 0;
                 for (int j = 0; j < exportFilter.Count; j++)
@@ -791,10 +877,20 @@ namespace HLU.UI.ViewModel
                             // Get the current incid.
                             currIncid = reader.GetString(incidOrdinal);
 
+                            //---------------------------------------------------------------------
+                            // FIX: 046 Don't export multiple source details for the
+                            // same source.
+                            //
                             // Get the current source id (or equivalent lookup table field).
                             if (_sourceIdOrdinal != -1)
                                 currSourceId = reader.GetValue(_sourceIdOrdinal);
+                            //---------------------------------------------------------------------
 
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR17 (Exporting date fields)
+                            // Store all of the source date fields for use later when
+                            // formatting the attribute data.
+                            //
                             // Get the current source date start.
                             if ((_sourceDateStartOrdinals.Count() > 0) &&
                                 !reader.IsDBNull(_sourceDateStartOrdinals[0]))
@@ -809,6 +905,7 @@ namespace HLU.UI.ViewModel
                             if ((_sourceDateTypeOrdinals.Count() > 0) &&
                                 !reader.IsDBNull(_sourceDateTypeOrdinals[0]))
                                 currSourceDateType = reader.GetString(_sourceDateTypeOrdinals[0]);
+                            //---------------------------------------------------------------------
 
                             // If this incid is different to the last record's incid
                             // then process all the fields.
@@ -833,8 +930,8 @@ namespace HLU.UI.ViewModel
                                     // Increment the output row count.
                                     outputRowCount += 1;
 
-                                    // If 10,000 rows have been output without commiting then
-                                    // commit the outputs and update the export row count.
+                                    // Commit the outputs and update the export row count
+                                    // every 10,000 records to avoid excessive memory use.
                                     if (outputRowCount >= 10000)
                                     {
                                         exportRowCount += adapterOut.Update(datasetOut);
@@ -869,12 +966,17 @@ namespace HLU.UI.ViewModel
                                     if (inValue == DBNull.Value)
                                         continue;
 
+                                    //---------------------------------------------------------------------
+                                    // FIX: 048 Enable fields to be exported using a different
+                                    // data type.
+                                    //
                                     // Convert the input value to the output value data type and format.
                                     object outValue;
                                     outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
                                         exportTable2.Columns[fieldMap[i][fieldIndex]].DataType,
                                         (exportField != null) ? exportField.FieldFormat : null,
                                         currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                    //---------------------------------------------------------------------
 
                                     // If the value is not null.
                                     if (outValue != null)
@@ -917,12 +1019,17 @@ namespace HLU.UI.ViewModel
                                         if (inValue == DBNull.Value)
                                             continue;
 
+                                        //---------------------------------------------------------------------
+                                        // FIX: 048 Enable fields to be exported using a different
+                                        // data type.
+                                        //
                                         // Convert the input value to the output value data type and format.
                                         object outValue;
                                         outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
                                             exportTable2.Columns[fieldMap[i][fieldIndex]].DataType,
                                             (exportField != null) ? exportField.FieldFormat : null,
                                             currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                        //---------------------------------------------------------------------
 
                                         // Get the current and previous string values of the
                                         // current column so they can be compared later.
@@ -933,12 +1040,17 @@ namespace HLU.UI.ViewModel
                                             itemStr = string.Empty;
                                         object lastItemStr = exportRow[fieldMap[i][fieldIndex - 1]].ToString();
 
+                                        //---------------------------------------------------------------------
+                                        // FIX: 046 Don't export multiple source details for the
+                                        // same source.
+                                        //
                                         // If the value is not null and the string value is different
                                         // to the last string value for this incid, or, the column is
                                         // allowed to have duplicates and the source is different
                                         // to the last source, then output the value.
                                         if ((!itemStr.Equals(lastItemStr) ||
                                             ((Array.IndexOf(dupsAllowed, fieldMap[i][fieldIndex]) != -1) && (currSourceId != prevSourceId))))
+                                        //---------------------------------------------------------------------
                                         {
                                             // Get the maximum length of the column.
                                             int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
@@ -970,6 +1082,7 @@ namespace HLU.UI.ViewModel
                         outputRowCount += 1;
                     }
                 }
+                //---------------------------------------------------------------------
 
                 // Commit any remaining outputs and update the export row count.
                 exportRowCount += adapterOut.Update(datasetOut);
@@ -980,7 +1093,7 @@ namespace HLU.UI.ViewModel
                 return exportRowCount != -1 ? tempPath : null;
 
             }
-            catch (Exception ex)
+            catch
             {
                 if (File.Exists(tempPath))
                 {
@@ -999,6 +1112,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets the length of the original source field.
+        /// </summary>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="columnOrdinal">The column ordinal.</param>
+        /// <returns></returns>
         private int GetFieldLength(string tableName, int columnOrdinal)
         {
             int fieldLength = 0;
@@ -1028,6 +1147,23 @@ namespace HLU.UI.ViewModel
             return fieldLength;
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 048 Enable fields to be exported using a different
+        // data type.
+        //
+        /// <summary>
+        /// Converts the input field into the output field, applying any
+        /// required formatting as appropriate.
+        /// </summary>
+        /// <param name="inOrdinal">The input field ordinal.</param>
+        /// <param name="inValue">The input field value.</param>
+        /// <param name="inType">Data type of the input field.</param>
+        /// <param name="outType">Date type of the output field.</param>
+        /// <param name="outFormat">The required output field format.</param>
+        /// <param name="sourceDateStart">The source date start.</param>
+        /// <param name="sourceDateEnd">The source date end.</param>
+        /// <param name="sourceDateType">The source date type.</param>
+        /// <returns></returns>
         private object ConvertInput(int inOrdinal, object inValue, System.Type inType,
             System.Type outType, string outFormat, int sourceDateStart, int sourceDateEnd, string sourceDateType)
         {
@@ -1115,6 +1251,10 @@ namespace HLU.UI.ViewModel
                     else
                         return null;
                 }
+                //---------------------------------------------------------------------
+                // CHANGED: CR17 (Exporting date fields)
+                // Convert source dates into a text field with the required
+                // date format.
                 // If the input field is an integer and is part of
                 // the source date.
                 else if ((inType == System.Type.GetType("System.Int32")) &&
@@ -1201,6 +1341,7 @@ namespace HLU.UI.ViewModel
                         }
                     }
                 }
+                //---------------------------------------------------------------------
                 else
                 {
                     // Otherwise, try and parse the input value as
@@ -1219,6 +1360,7 @@ namespace HLU.UI.ViewModel
                 return inValue;
 
         }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Adds the export column to the export table.
@@ -1241,6 +1383,9 @@ namespace HLU.UI.ViewModel
             if (tableName != _lastTableName)
                 _tableCount += 1;
 
+            //---------------------------------------------------------------------
+            // FIX: 048 Enable fields to be exported using a different
+            // data type.
             switch (fieldType)
             {
                 case 3:     // Integer
@@ -1283,6 +1428,7 @@ namespace HLU.UI.ViewModel
                     attributeLength = maxLength;
                     break;
             }
+            //---------------------------------------------------------------------
 
             // If this field has multiple occurrences.
             if (numFields > 0)
@@ -1293,23 +1439,32 @@ namespace HLU.UI.ViewModel
                 {
                     ExportField fld = new ExportField();
 
+                    //---------------------------------------------------------------------
+                    // FIX: 043 Enable new 'empty' fields to be included in exports.
                     if (tableName.ToLower() == "<none>")
                         fld.FieldOrdinal = -1;
                     else
                         fld.FieldOrdinal = _fieldCount;
+                    //---------------------------------------------------------------------
                     fld.TableName = tableName;
                     fld.ColumnName = columnName;
-
+                    //---------------------------------------------------------------------
+                    // FIX: 049 Enable the multi-record counter to be inserted
+                    // 'within' the export field name.
+                    //
                     // Include the occurrence counter in the field name, either
                     // where the user chooses or at the end.
                     if (Regex.IsMatch(fieldName, @"(<no>)", RegexOptions.IgnoreCase))
                         fld.FieldName = fieldName.Replace("<no>", i.ToString());
                     else
                         fld.FieldName = String.Format("{0}_{1}", fieldName, i);
- 
-                    // Interweave repeated fields from the same table.
+                    //---------------------------------------------------------------------
                     fld.FieldType = dataType;
+                    //---------------------------------------------------------------------
+                    // FIX: 045 Interweave multiple record fields from the same
+                    // table together.
                     fld.FieldOrder = (_tableCount * 1000) + (i * 100) + fieldCount;
+                    //---------------------------------------------------------------------
                     fld.FieldLength = fieldLength;
                     fld.FieldsCount = numFields;
                     fld.FieldFormat = fieldFormat;
@@ -1324,15 +1479,23 @@ namespace HLU.UI.ViewModel
             else
             {
                 ExportField fld = new ExportField();
+
+                //---------------------------------------------------------------------
+                // FIX: 043 Enable new 'empty' fields to be included in exports.
                 if (tableName.ToLower() == "<none>")
                     fld.FieldOrdinal = -1;
                 else
                     fld.FieldOrdinal = _fieldCount;
+                //---------------------------------------------------------------------
                 fld.TableName = tableName;
                 fld.ColumnName = columnName;
                 fld.FieldName = fieldName;
                 fld.FieldType = dataType;
+                //---------------------------------------------------------------------
+                // FIX: 045 Interweave multiple record fields from the same
+                // table together.
                 fld.FieldOrder = (_tableCount * 1000) + exportFields.Count + 1;
+                //---------------------------------------------------------------------
                 fld.FieldLength = fieldLength;
                 fld.FieldsCount = numFields;
                 fld.FieldFormat = fieldFormat;
