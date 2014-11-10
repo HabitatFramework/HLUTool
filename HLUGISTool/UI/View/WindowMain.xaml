@@ -1819,9 +1819,9 @@
 											  Grid.ColumnSpan="2">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="Auto" MinWidth="90" />
-												<ColumnDefinition Width="*" MinWidth="100" />
+												<ColumnDefinition Width="*" MinWidth="110" />
 												<ColumnDefinition Width="20" />
-												<ColumnDefinition Width="*" MinWidth="100" />
+												<ColumnDefinition Width="*" MinWidth="110" />
 												<ColumnDefinition />
 											</Grid.ColumnDefinitions>
 
