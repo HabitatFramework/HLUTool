@@ -529,7 +529,8 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX036 Enable the user to set the default path for exports.
+        // FIX: 040 Enable MapInfo users to set a default export
+        // folder path.
         // 
         /// <summary>
         /// Get the browse Export Path command.
