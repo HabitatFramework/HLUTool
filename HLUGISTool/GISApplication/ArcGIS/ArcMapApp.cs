@@ -880,6 +880,17 @@ namespace HLU.GISApplication.ArcGIS
             IpcArcMap(new string[] { "zs" });
         }
 
+        /// <summary>
+        /// Exports the HLU features and attribute data to a new GIS layer
+        /// file.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path to save the
+        /// attribute data to.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
+        /// <param name="attributesLength">Length of the attribute data row.</param>
+        /// <param name="selectedOnly">If set to <c>true</c> only selected features
+        /// will be exported.</param>
+        /// <returns></returns>
         public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
             List<string> returnList = IpcArcMap(
@@ -887,12 +898,14 @@ namespace HLU.GISApplication.ArcGIS
             
             if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
             {
+                // Display message if no output layer is entered by the user.
                 MessageBox.Show("Export cancelled. No output table selected.", "HLU: Export",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
             }
             else if ((returnList.Count > 0) && (returnList[0] == "noselection"))
             {
+                // Display message if no selected features are found.
                 MessageBox.Show("Export cancelled. No features selected.", "HLU: Export",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
@@ -919,6 +932,7 @@ namespace HLU.GISApplication.ArcGIS
                         new string[] { "ae" });
                 }
                 return true;
+                //---------------------------------------------------------------------
             }
             else
             {

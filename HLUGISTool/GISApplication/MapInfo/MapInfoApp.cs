@@ -1197,8 +1197,8 @@ namespace HLU.GISApplication.MapInfo
                 if (!File.Exists(tempMdbPathName)) throw new IOException("File not found");
 
                 //---------------------------------------------------------------------
-                // FIX: 035 If required only export selected features, not all features
-                // for selected incids.
+                // FIX: 035 Only export selected features, not all features for
+                // selected incids.
                 //
                 // Get the number of features to export.
                 if (selectedOnly)
