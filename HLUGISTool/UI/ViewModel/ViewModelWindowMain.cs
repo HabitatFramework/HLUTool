@@ -2529,7 +2529,8 @@ namespace HLU.UI.ViewModel
                         _incidSelection = null;
 
                         // Clear the previous where clause (set when performing the original
-                        // query builder or when reading the map selection) because th
+                        // query builder or when reading the map selection) because otherwise
+                        // it might be used in error later.
                         _incidSelectionWhereClause = null;
                     }
 
