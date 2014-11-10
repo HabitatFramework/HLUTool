@@ -518,6 +518,8 @@ namespace HLU.Date
                     case DateType.End:
                         if (dateType.Length > 1)
                             formatString = dateType.Substring(dateType.Length - 1, 1);
+                        else if (dateType.Length > 0)
+                            formatString = dateType.Substring(0, 1);
                         switch (VagueDate.FromCode(formatString))
                         {
                             case VagueDateTypes.StartDate: // "D"
