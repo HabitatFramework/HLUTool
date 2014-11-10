@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="510"
-        Height="672"
+        Width="480"
+        Height="Auto"
         Activated="Window_Activated"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        SizeToContent="WidthAndHeight"
+        SizeToContent="Height"
         WindowStyle="SingleBorderWindow">
 
     <Window.Resources>
@@ -144,13 +144,14 @@
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="9*" MinWidth="170" />
                             <ColumnDefinition Width="10*" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Name="GridHistoryColumns" Grid.Column="0">
+                        <Grid Name="GridHistoryColumns" Grid.Row="0" Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
@@ -178,8 +179,8 @@
                                      ItemsSource="{Binding HistoryColumns}"
                                      Padding="2"
                                      SelectionMode="Extended">
-									 <!--  ItemContainerStyle="{StaticResource ListBoxItemStyle}"  -->
-                             <ListBox.ItemContainerStyle>
+                                <!--  ItemContainerStyle="{StaticResource ListBoxItemStyle}"  -->
+                                <ListBox.ItemContainerStyle>
                                     <Style>
                                         <Setter Property="ListBoxItem.Background" Value="Transparent" />
                                         <Setter Property="ListBoxItem.Template">
@@ -214,6 +215,7 @@
                         </Grid>
 
                         <Grid Name="GridGisApp"
+							  Grid.Row="0"
                               Grid.Column="1"
                               Margin="8,0,0,0">
                             <Grid.RowDefinitions>
@@ -274,12 +276,47 @@
                                 <Button Name="ButtonBrowseMap"
                                         Grid.Column="1"
                                         Margin="1,4,4,4"
-                                        Command="{Binding Path=BrowseMapCommand}"
+                                        Command="{Binding Path=BrowseMapPathCommand}"
                                         Content="..."
-                                        IsEnabled="{Binding Path=CanBrowseMap}" />
+                                        IsEnabled="{Binding Path=CanBrowseMapPath}" />
                             </Grid>
 
                         </Grid>
+
+                        <Grid Name="GridExportPath"
+								Grid.Row="1"
+								Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="LabelExportPath"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Export Default Directory:
+                            </Label>
+                            <TextBox Name="TextBoxExportPath"
+                                     Grid.Column="1"
+                                     Margin="4,4,1,4"
+                                     BorderThickness="1"
+                                     IsEnabled="False"
+                                     Text="{Binding Path=ExportPath,
+                                                    ValidatesOnDataErrors=True}"
+                                     TextAlignment="Left"
+                                     ToolTip="{Binding Path=ExportPath}"
+                                     ToolTipService.ShowOnDisabled="True" />
+                            <Button Name="ButtonBrowseExportPath"
+                                    Grid.Column="2"
+                                    Margin="1,4,4,4"
+                                    Command="{Binding Path=BrowseExportPathCommand}"
+                                    Content="..."
+                                    IsEnabled="{Binding Path=CanBrowseExportPath}" />
+                        </Grid>
+
                     </Grid>
                 </GroupBox>
 
@@ -295,85 +332,80 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <Grid Name="GridSubsetUpdateAction"
-                                Grid.Row="0">
+                        <Grid Name="GridSubsetUpdateAction" Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
 
-							<Label Name="LabelSubsetUpdateAction"
-									Grid.Row="0"
-									Grid.Column="0"
-									Margin="4,4,4,4"
-									HorizontalAlignment="Right"
-									VerticalAlignment="Center">
-								Action To Take When Updating Subset
-							</Label>
-							<ComboBox Name="ComboBoxSubsetUpdateAction"
-										Grid.Row="0"
-										Grid.Column="1"
-										Margin="4,4,4,4"
-										BorderThickness="1"
-										ItemsSource="{Binding Path=SubsetUpdateActions}"
-										SelectedValue="{Binding Path=SubsetUpdateAction,
-																ValidatesOnDataErrors=True}" />
+                            <Label Name="LabelSubsetUpdateAction"
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Action To Take When Updating Subset
+                            </Label>
+                            <ComboBox Name="ComboBoxSubsetUpdateAction"
+                                      Grid.Row="0"
+                                      Grid.Column="1"
+                                      Margin="4,4,4,4"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding Path=SubsetUpdateActions}"
+                                      SelectedValue="{Binding Path=SubsetUpdateAction,
+                                                              ValidatesOnDataErrors=True}" />
 
                         </Grid>
 
-                        <Grid Name="GridPreferredHabitatClass"
-                                Grid.Row="1">
+                        <Grid Name="GridPreferredHabitatClass" Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" MinWidth="260" />
                             </Grid.ColumnDefinitions>
 
-							<Label Name="LabelPreferredHabitatClass"
-									Grid.Row="1"
-									Grid.Column="0"
-									Margin="4,4,4,4"
-									HorizontalAlignment="Right"
-									VerticalAlignment="Center">
-								Preferred Habitat Class
-							</Label>
-							<ComboBox Name="ComboBoxPreferredHabitatClass"
-										Grid.Row="1"
-										Grid.Column="1"
-										Margin="4,4,4,4"
-										BorderThickness="1"
-										DisplayMemberPath="description"
-										SelectedValuePath="code"
-										ItemsSource="{Binding Path=HabitatClassCodes}"
-										SelectedValue="{Binding Path=PreferredHabitatClass,
-																ValidatesOnDataErrors=True}" />
+                            <Label Name="LabelPreferredHabitatClass"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Preferred Habitat Class
+                            </Label>
+                            <ComboBox Name="ComboBoxPreferredHabitatClass"
+                                      Grid.Row="1"
+                                      Grid.Column="1"
+                                      Margin="4,4,4,4"
+                                      BorderThickness="1"
+                                      DisplayMemberPath="description"
+                                      ItemsSource="{Binding Path=HabitatClassCodes}"
+                                      SelectedValue="{Binding Path=PreferredHabitatClass,
+                                                              ValidatesOnDataErrors=True}"
+                                      SelectedValuePath="code" />
 
                         </Grid>
 
-                        <Grid Name="GridWarnAndNotify"
-                                Grid.Row="2">
+                        <Grid Name="GridWarnAndNotify" Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
                             <Label Name="LabelNotifyOnSplitMerge"
-                                    Grid.Row="0"
-                                    Grid.Column="3"
-                                    Margin="4,4,4,4"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center">
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
                                 Notify After Completing Split/Merge?
                             </Label>
                             <CheckBox Name="CheckBoxNotifyOnSplitMerge"
-                                        Grid.Row="0"
-                                        Grid.Column="4"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=NotifyOnSplitMerge}" />
+                                      Grid.Row="0"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=NotifyOnSplitMerge}" />
                         </Grid>
+
                     </Grid>
                 </GroupBox>
 
@@ -388,112 +420,104 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="9*" MinWidth="170" />
-                            <ColumnDefinition Width="10*" />
-                        </Grid.ColumnDefinitions>
 
-                        <Grid Name="GridSQLSelect"
-                                Grid.Row="1">
+                        <Grid Name="GridWarnBeforeGISSelect" Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="LabelWarnBeforeGISSelect"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Warn Before GIS Select?
+                            </Label>
+                            <ComboBox Name="ComboBoxWarnBeforeGISSelect"
+                                      Grid.Column="1"
+                                      Margin="4,4,4,4"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding Path=WarnBeforeGISSelectOptions}"
+                                      SelectedValue="{Binding Path=WarnBeforeGISSelect,
+                                                              ValidatesOnDataErrors=True}" />
+
+                        </Grid>
+
+                        <Grid Name="GridSQLSelect" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="90" />
                             </Grid.ColumnDefinitions>
 
                             <Label Name="LabelUseAdvancedSQL"
-                                    Grid.Column="0"
-                                    Margin="4,0,4,0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center">
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
                                 Use Advanced Query Builder?
                             </Label>
                             <CheckBox Name="CheckBoxUseAdvancedSQL"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=UseAdvancedSQL}" />
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=UseAdvancedSQL}" />
+
+                            <Label Name="LabelMaxGetValues"
+                                   Grid.Column="2"
+                                   Margin="0,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Get Values Count
+                            </Label>
+                            <TextBox Name="TextBoxMaxGetValues"
+                                     Grid.Column="3"
+                                     Margin="4,4,4,4"
+                                     VerticalAlignment="Center"
+                                     BorderThickness="1"
+                                     IsEnabled="{Binding Path=CanBrowseSqlPath}"
+                                     Text="{Binding Path=GetValueRows,
+                                                    Converter={StaticResource nullableValueConverter},
+                                                    ValidatesOnDataErrors=True}"
+                                     TextAlignment="Right" />
+
                         </Grid>
-                        <Label Name="LabelSqlPath"
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Grid.ColumnSpan="2"
-                                Margin="4,0,4,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom">
-                            Sql Query Default Directory:
-                        </Label>
-                        <Grid Name="GridSqlPath"
-                                Grid.Row="1"
-                                Grid.Column="1">
+
+                        <Grid Name="GridSqlPath" Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
+
+                            <Label Name="LabelSqlPath"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Sql Query Default Directory:
+                            </Label>
                             <TextBox Name="TextBoxSqlPath"
-                                        Grid.Column="0"
-                                        Margin="4,4,1,4"
-                                        BorderThickness="1"
-                                        IsEnabled="False"
-                                        Text="{Binding Path=SqlPath,
+                                     Grid.Column="1"
+                                     Margin="4,4,1,4"
+                                     BorderThickness="1"
+                                     IsEnabled="False"
+                                     Text="{Binding Path=SqlPath,
                                                     ValidatesOnDataErrors=True}"
-                                        TextAlignment="Left"
-                                        ToolTip="{Binding Path=SqlPath}"
-                                        ToolTipService.ShowOnDisabled="True" />
+                                     TextAlignment="Left"
+                                     ToolTip="{Binding Path=SqlPath}"
+                                     ToolTipService.ShowOnDisabled="True" />
                             <Button Name="ButtonBrowseSql"
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     Margin="1,4,4,4"
-                                    Command="{Binding Path=BrowseSqlCommand}"
+                                    Command="{Binding Path=BrowseSqlPathCommand}"
                                     Content="..."
-                                    IsEnabled="{Binding Path=CanBrowseSql}" />
+                                    IsEnabled="{Binding Path=CanBrowseSqlPath}" />
                         </Grid>
 
-                        <Grid Name="GridWarnBeforeGISSelect"
-                                Grid.Row="2"
-								Grid.ColumnSpan="2">
-                            <Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="100"/>
-								<ColumnDefinition Width="*"  />
-								<ColumnDefinition Width="120"/>
-                            </Grid.ColumnDefinitions>
-
-							<Label Name="LabelMaxGetValues"
-								   Grid.Row="2"
-								   Grid.Column="0"
-								   Margin="0,4,4,4"
-								   HorizontalAlignment="Right"
-								   VerticalAlignment="Center">
-								Get Values Rows
-							</Label>
-							<TextBox Name="TextBoxMaxGetValues"
-									 Grid.Row="2"
-									 Grid.Column="1"
-									 Margin="4,4,8,4"
-									 VerticalAlignment="Center"
-									 BorderThickness="1"
-									 Text="{Binding Path=GetValueRows,
-													Converter={StaticResource nullableValueConverter},
-													ValidatesOnDataErrors=True}"
-									 TextAlignment="Right"
-                                     IsEnabled="{Binding Path=CanBrowseSql}" />
-
-							<Label Name="LabelWarnBeforeGISSelect"
-									Grid.Column="2"
-									Margin="4,4,4,4"
-									HorizontalAlignment="Right"
-									VerticalAlignment="Center">
-								Warn Before GIS Select?
-							</Label>
-							<ComboBox Name="ComboBoxWarnBeforeGISSelect"
-										Grid.Column="3"
-										Margin="4,4,4,4"
-										BorderThickness="1"
-										ItemsSource="{Binding Path=WarnBeforeGISSelectOptions}"
-										SelectedValue="{Binding Path=WarnBeforeGISSelect,
-																ValidatesOnDataErrors=True}" />
-
-						</Grid>
                     </Grid>
                 </GroupBox>
 
