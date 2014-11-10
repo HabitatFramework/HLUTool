@@ -2504,36 +2504,49 @@ namespace HLU.UI.ViewModel
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
+                        ChangeCursor(Cursors.Wait, "Processing ...");
+
                         // Replace any connection type specific qualifiers and delimiters.
                         string newWhereClause = null;
                         if (sqlWhereClause != null)
                             newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
-                        // create a selection DataTable of PK values of IncidTable
+                        // Create a selection DataTable of PK values of IncidTable.
                         _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
+
+                        // Get a list of all the incids in the selection.
+                        _incidsSelectedMap = _incidSelection.AsEnumerable()
+                            .GroupBy(r => r.Field<string>(_incidSelection.Columns[0].ColumnName)).Select(g => g.Key).OrderBy(s => s);
+
+                        // Retrospectively set the where clause to match the list
+                        // of selected incids (for possible use later).
+                        _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
+                            IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
                     }
                     else
                     {
-                        _incidSelectionWhereClause = null;
+                        // Clear the selection of incids.
                         _incidSelection = null;
+
+                        // Clear the previous where clause (set when performing the original
+                        // query builter or when reading the map selection) because th
+                        _incidSelectionWhereClause = null;
                     }
-
-                    // Find the expected number of features to be selected in GIS.
-                    int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
-
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR12 (Select by attribute performance)
-                    // Find the expected number of incids to be selected in GIS.
-                    //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
-                    int expectedNumIncids = _incidSelection.Rows.Count;
-                    //---------------------------------------------------------------------
-
-                    ChangeCursor(Cursors.Wait, "Processing ...");
 
                     // If there are any records in the selection (and the tool is
                     // not currently in bulk update mode).
                     if (IsFiltered)
                     {
+                        // Find the expected number of features to be selected in GIS.
+                        int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
+
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR12 (Select by attribute performance)
+                        // Find the expected number of incids to be selected in GIS.
+                        //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
+                        int expectedNumIncids = _incidSelection.Rows.Count;
+                        //---------------------------------------------------------------------
+
                         // Select the required incid(s) in GIS.
                         if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
                         {
@@ -3075,7 +3088,7 @@ namespace HLU.UI.ViewModel
 
                     // Build a where clause list for the incids to be selected.
                     List<List<SqlFilterCondition>> whereClause = new List<List<SqlFilterCondition>>();
-                    whereClause.Add(ScratchDb.GisWhereClause(_incidSelection, null));
+                    whereClause.Add(ScratchDb.GisWhereClause(_incidSelection, null, false));
 
                     // Find the expected number of features to be selected in GIS.
                     int expectedNumFeatures = ExpectedSelectionFeatures(whereClause);
@@ -3413,7 +3426,7 @@ namespace HLU.UI.ViewModel
 
                 // Build a where clause list for the incids to be selected.
                 List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
-                whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp);
+                whereClause = ScratchDb.GisWhereClause(_incidSelection, _gisApp, false);
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR12 (Select by attribute performance)
@@ -8437,17 +8450,11 @@ namespace HLU.UI.ViewModel
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR2 (Apply button)
-                    // Don't pre-populate the habitat type value if there is only one
-                    // possible value (as it triggers the data changed flag.
-                    //
-                    //if ((retArray.Length == 1) && (IncidSource2Id != null))
-                    //{
-                    //    IncidSource2HabitatType = retArray[0].code;
-                    //    OnPropertyChanged("IncidSource2HabitatType");
-                    //}
-                    //---------------------------------------------------------------------
+                    if ((retArray.Length == 1) && (IncidSource2Id != null))
+                    {
+                        IncidSource2HabitatType = retArray[0].code;
+                        OnPropertyChanged("IncidSource2HabitatType");
+                    }
 
                     return retArray;
                 }
@@ -8732,17 +8739,11 @@ namespace HLU.UI.ViewModel
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
                     //---------------------------------------------------------------------
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR2 (Apply button)
-                    // Don't pre-populate the habitat type value if there is only one
-                    // possible value (as it triggers the data changed flag.
-                    //
-                    //if ((retArray.Length == 1) && (IncidSource3Id != null))
-                    //{
-                    //    IncidSource3HabitatType = retArray[0].code;
-                    //    OnPropertyChanged("IncidSource3HabitatType");
-                    //}
-                    //---------------------------------------------------------------------
+                    if ((retArray.Length == 1) && (IncidSource3Id != null))
+                    {
+                        IncidSource3HabitatType = retArray[0].code;
+                        OnPropertyChanged("IncidSource3HabitatType");
+                    }
 
                     return retArray;
                 }

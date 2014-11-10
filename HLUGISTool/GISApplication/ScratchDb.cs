@@ -174,7 +174,7 @@ namespace HLU.GISApplication
         /// <returns>
         /// A list of sql filter conditions.
         /// </returns>
-        public static List<SqlFilterCondition> GisWhereClause(DataTable incidSelection, GISApp gisApp)
+        public static List<SqlFilterCondition> GisWhereClause(DataTable incidSelection, GISApp gisApp, bool useIncidTable)
         {
             List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
             SqlFilterCondition cond = new SqlFilterCondition();
@@ -191,6 +191,13 @@ namespace HLU.GISApplication
 
             // Create a temporary list for storing some of the Incids.
             List<string> inList = new List<string>();
+
+            // Determine which table to base the conditions on.
+            DataTable condTable;
+            if (useIncidTable)
+                condTable = _incidTable;
+            else
+                condTable = _incidMMTable;
 
             // Loop through each chunk/series of Incids. If there are at least three
             // then it is worth processing them within ">=" and "<=" operators (as
@@ -212,7 +219,7 @@ namespace HLU.GISApplication
                     cond.BooleanOperator = "OR";
                     cond.OpenParentheses = "(";
                     cond.Column = _incidMMTable.incidColumn;
-                    cond.Table = _incidMMTable;
+                    cond.Table = condTable;
                     cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                     cond.Operator = ">=";
                     cond.Value = item.First().Incid;
@@ -223,7 +230,7 @@ namespace HLU.GISApplication
                     cond.BooleanOperator = "AND";
                     cond.OpenParentheses = String.Empty;
                     cond.Column = _incidMMTable.incidColumn;
-                    cond.Table = _incidMMTable;
+                    cond.Table = condTable;
                     cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                     cond.Operator = "<=";
                     cond.Value = item.Last().Incid;
@@ -248,7 +255,7 @@ namespace HLU.GISApplication
                 cond.BooleanOperator = "OR";
                 cond.OpenParentheses = "(";
                 cond.Column = _incidMMTable.incidColumn;
-                cond.Table = _incidMMTable;
+                cond.Table = condTable;
                 cond.ColumnSystemType = _incidMMTable.incidColumn.DataType;
                 //---------------------------------------------------------------------
                 // FIX: 001 Improve speed of 'Select current Incid on Map'
@@ -281,13 +288,19 @@ namespace HLU.GISApplication
         /// <param name="db">Database against which UNION query will be run.</param>
         /// <returns></returns>
         public static string UnionQuery(string targetList, string fromClause, int orderByOrdinal,
-            List<List<SqlFilterCondition>> IncidSelectionWhereClause, DbBase db)
+            List<SqlFilterCondition> IncidSelectionWhereClause, DbBase db)
         {
-            return IncidSelectionWhereClause.Select(w => db.WhereClause(true, true, true, w))
-                .Aggregate(new StringBuilder(), (sb, s) => sb.Append(String.Format(
-                    "\nUNION\nSELECT {0} FROM {1}{2}", targetList, fromClause, s))).Remove(0, 7)
-                    .Append(orderByOrdinal > 0 ? String.Format(" ORDER BY {0}", orderByOrdinal + 1) : String.Empty)
-                    .ToString();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
+                    .Append(orderByOrdinal > -1 ? String.Format(" ORDER BY {0}", orderByOrdinal + 1) : String.Empty);
+                    
+            return sql.ToString();
+
+            //return db.WhereClause(true, true, true, IncidSelectionWhereClause)
+            //    .Aggregate(new StringBuilder(), (sb, s) => sb.Append(String.Format(
+            //        "\nUNION\nSELECT {0} FROM {1}{2}", targetList, fromClause, s))).Remove(0, 7)
+            //        .Append(orderByOrdinal > 0 ? String.Format(" ORDER BY {0}", orderByOrdinal + 1) : String.Empty)
+            //        .ToString();
         }
         
         public static void CleanUp()
