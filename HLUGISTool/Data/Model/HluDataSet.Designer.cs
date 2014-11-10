@@ -2676,7 +2676,6 @@ namespace HLU.Data.Model {
                 this.columnfield_name.MaxLength = 128;
                 this.columnfield_ordinal.AllowDBNull = false;
                 this.columnfield_type.AllowDBNull = false;
-                this.columnfield_length.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -13645,7 +13644,12 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public int field_length {
                 get {
-                    return ((int)(this[this.tableexports_fields.field_lengthColumn]));
+                    try {
+                        return ((int)(this[this.tableexports_fields.field_lengthColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'field_length\' in table \'exports_fields\' is DBNull.", e);
+                    }
                 }
                 set {
                     this[this.tableexports_fields.field_lengthColumn] = value;
@@ -13701,6 +13705,18 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void Setfields_countNull() {
                 this[this.tableexports_fields.fields_countColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isfield_lengthNull() {
+                return this.IsNull(this.tableexports_fields.field_lengthColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setfield_lengthNull() {
+                this[this.tableexports_fields.field_lengthColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -19863,7 +19879,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, int Original_field_ordinal, int Original_field_type, int Original_field_length, string Original_field_name, global::System.Nullable<int> Original_fields_count, string Original_field_format) {
+        public virtual int Delete(int Original_export_field_id, int Original_export_id, string Original_table_name, string Original_column_name, int Original_column_ordinal, int Original_field_ordinal, int Original_field_type, global::System.Nullable<int> Original_field_length, string Original_field_name, global::System.Nullable<int> Original_fields_count, string Original_field_format) {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_export_field_id));
             this.Adapter.DeleteCommand.Parameters[1].Value = ((int)(Original_export_id));
             if ((Original_table_name == null)) {
@@ -19881,7 +19897,12 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this.Adapter.DeleteCommand.Parameters[4].Value = ((int)(Original_column_ordinal));
             this.Adapter.DeleteCommand.Parameters[6].Value = ((int)(Original_field_ordinal));
             this.Adapter.DeleteCommand.Parameters[8].Value = ((int)(Original_field_type));
-            this.Adapter.DeleteCommand.Parameters[9].Value = ((int)(Original_field_length));
+            if ((Original_field_length.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((int)(Original_field_length.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
             if ((Original_field_name == null)) {
                 this.Adapter.DeleteCommand.Parameters[5].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[11].Value = global::System.DBNull.Value;
@@ -19926,7 +19947,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int export_field_id, int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, global::System.Nullable<int> fields_count, int field_type, int field_length, string field_format) {
+        public virtual int Insert(int export_field_id, int export_id, string table_name, string column_name, int column_ordinal, string field_name, int field_ordinal, global::System.Nullable<int> fields_count, int field_type, global::System.Nullable<int> field_length, string field_format) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(export_field_id));
             this.Adapter.InsertCommand.Parameters[1].Value = ((int)(export_id));
             if ((table_name == null)) {
@@ -19956,7 +19977,12 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
             this.Adapter.InsertCommand.Parameters[8].Value = ((int)(field_type));
-            this.Adapter.InsertCommand.Parameters[9].Value = ((int)(field_length));
+            if ((field_length.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[9].Value = ((int)(field_length.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
             if ((field_format == null)) {
                 this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
@@ -19993,7 +20019,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                     int field_ordinal, 
                     global::System.Nullable<int> fields_count, 
                     int field_type, 
-                    int field_length, 
+                    global::System.Nullable<int> field_length, 
                     string field_format, 
                     int Original_export_field_id, 
                     int Original_export_id, 
@@ -20004,7 +20030,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                     int Original_field_ordinal, 
                     global::System.Nullable<int> Original_fields_count, 
                     int Original_field_type, 
-                    int Original_field_length, 
+                    global::System.Nullable<int> Original_field_length, 
                     string Original_field_format) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(export_field_id));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((int)(export_id));
@@ -20035,7 +20061,12 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
             this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(field_type));
-            this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(field_length));
+            if ((field_length.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(field_length.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
             if ((field_format == null)) {
                 this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
@@ -20075,7 +20106,12 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
             }
             this.Adapter.UpdateCommand.Parameters[21].Value = ((int)(Original_field_type));
-            this.Adapter.UpdateCommand.Parameters[22].Value = ((int)(Original_field_length));
+            if ((Original_field_length.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[22].Value = ((int)(Original_field_length.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[22].Value = global::System.DBNull.Value;
+            }
             if ((Original_field_format == null)) {
                 this.Adapter.UpdateCommand.Parameters[23].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[24].Value = global::System.DBNull.Value;
@@ -20113,7 +20149,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                     int field_ordinal, 
                     global::System.Nullable<int> fields_count, 
                     int field_type, 
-                    int field_length, 
+                    global::System.Nullable<int> field_length, 
                     string field_format, 
                     int Original_export_field_id, 
                     int Original_export_id, 
@@ -20124,7 +20160,7 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                     int Original_field_ordinal, 
                     global::System.Nullable<int> Original_fields_count, 
                     int Original_field_type, 
-                    int Original_field_length, 
+                    global::System.Nullable<int> Original_field_length, 
                     string Original_field_format) {
             return this.Update(Original_export_field_id, export_id, table_name, column_name, column_ordinal, field_name, field_ordinal, fields_count, field_type, field_length, field_format, Original_export_field_id, Original_export_id, Original_table_name, Original_column_name, Original_column_ordinal, Original_field_name, Original_field_ordinal, Original_fields_count, Original_field_type, Original_field_length, Original_field_format);
         }
