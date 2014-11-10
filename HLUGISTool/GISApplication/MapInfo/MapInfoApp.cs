@@ -523,7 +523,7 @@ namespace HLU.GISApplication.MapInfo
             {
                 if (String.IsNullOrEmpty(_selName)) _selName = _mapInfoApp.Eval(String.Format(
                     "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
-                if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
+                if (!TableExists(_selName)) return null;
 
                 string origSelName = _selName;
 
@@ -605,8 +605,8 @@ namespace HLU.GISApplication.MapInfo
                     _hluLayer, false, false, new List<SqlFilterCondition>(new SqlFilterCondition[] 
                     { new SqlFilterCondition( cleanupTable, cleanupTable.Columns[_hluLayerStructure.incidColumn.ColumnName], 
                         String.Empty) }), null);
-                if ((retTable != null) && !String.IsNullOrEmpty(_selName) && (_selName != origSelName) && 
-                    TableExists(_selName) && (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _selName,
+                if ((retTable != null) && TableExists(_selName) && (_selName != origSelName) && 
+                    (Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _selName,
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS))) > 0))
                 {
                     _mapInfoApp.Do(String.Format("Delete From {0}", _selName));
@@ -686,7 +686,7 @@ namespace HLU.GISApplication.MapInfo
         {
             try
             {
-                if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
+                if (!TableExists(_selName)) return null;
 
                 DataTable historyTable = CreateHistoryTable(_selName, true, historyColumns);
 
@@ -857,26 +857,32 @@ namespace HLU.GISApplication.MapInfo
             _mapInfoApp.RunMenuCommand((int)MapInfoConstants.MenuDef95Query.M_QUERY_FIND_SELECTION);
         }
 
-        private void CreateIndexes(string[] columnNames)
+        private void CreateIndexes(string layerName, string[] columnNames)
         {
-            string indexStatement = String.Format("Create Index On {0}({1})", _hluLayer, "{0}");
+            string indexStatement = String.Format("Create Index On {0}({1})", layerName, "{0}");
 
+            // Create indexes on the specified columns.
+            _mapInfoApp.Do("Set ProgressBars Off");
             foreach (string colName in columnNames)
             {
                 try { _mapInfoApp.Do(String.Format(indexStatement, colName)); }
                 catch { }
             }
+            _mapInfoApp.Do("Set ProgressBars On");
         }
 
-        private void DropIndexes(string[] columnNames)
+        private void DropIndexes(string layerName, string[] columnNames)
         {
-            string dropIndexStatement = String.Format("Drop Index {0}({1})", _hluLayer, "{0}");
+            string dropIndexStatement = String.Format("Drop Index {0}({1})", layerName, "{0}");
 
+            // Drop any indexes found on the specified columns.
+            _mapInfoApp.Do("Set ProgressBars Off");
             foreach (string colName in columnNames)
             {
                 try { _mapInfoApp.Do(String.Format(dropIndexStatement, colName)); }
                 catch { }
             }
+            _mapInfoApp.Do("Set ProgressBars On");
         }
 
         private void ToggleLayerEditability(bool on, string layerName)
@@ -949,7 +955,7 @@ namespace HLU.GISApplication.MapInfo
                 // Get the name of the table that the current selection is based on
                 if (String.IsNullOrEmpty(_selName)) _selName = _mapInfoApp.Eval(String.Format(
                     "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
-                if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
+                if (!TableExists(_selName)) return null;
 
                 DataTable selTable = CreateHistoryTable(_selName, false, historyColumns);
                 DataColumn[] selColumns = selTable.Columns.Cast<DataColumn>().ToArray();
@@ -1079,7 +1085,7 @@ namespace HLU.GISApplication.MapInfo
 
             try
             {
-                if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
+                if (!TableExists(_selName)) return null;
 
                 DataTable historyTable = CreateHistoryTable(_selName, true, historyColumns);
 
@@ -1145,9 +1151,11 @@ namespace HLU.GISApplication.MapInfo
                 if (numRows > 500)
                 //---------------------------------------------------------------------
                 {
-                    indexColumns = new string[] { GetFieldName(_hluLayerStructure.incidColumn.Ordinal),
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal)};
-                    DropIndexes(indexColumns);
+                    indexColumns = new string[] { 
+                        GetFieldName(_hluLayerStructure.incidColumn.Ordinal),
+                        GetFieldName(_hluLayerStructure.toidColumn.Ordinal),
+                        GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal) };
+                    DropIndexes(_hluLayer, indexColumns);
                 }
 
                 for (int i = 1; i <= numRows; i++)
@@ -1172,18 +1180,63 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do(String.Format("Rollback Table {0}", _hluLayer));
                 return null;
             }
-            finally { if (indexColumns != null) CreateIndexes(indexColumns); }
+            finally { if (indexColumns != null) CreateIndexes(_hluLayer, indexColumns); }
         }
 
-        public override bool Export(string tempMdbPathName, string attributeDatasetName, int exportRowCount)
+        public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
+            int outFeatureCount = 0;
             string attributeTable = String.Empty;
             string outTable = String.Empty;
             string selTable = String.Empty;
+            string joinLayer = String.Empty;
+            string[] indexColumns = null;
 
             try
             {
                 if (!File.Exists(tempMdbPathName)) throw new IOException("File not found");
+
+                //---------------------------------------------------------------------
+                // FIX: 035 If required only export selected features, not all features
+                // for selected incids.
+                //
+                // Get the number of features to export.
+                if (selectedOnly)
+                {
+                    // Get the number of features selected.
+                    outFeatureCount = Int32.Parse(_mapInfoApp.Eval(String.Format(
+                        "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_NROWS)));
+
+                    // Get the name of the table that the current selection is based on.
+                    if (!TableExists(_selName)) _selName = _mapInfoApp.Eval(String.Format(
+                        "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
+
+                    // If there is no selection cancel the export.
+                    if (string.IsNullOrEmpty(_selName) ||
+                        (outFeatureCount == 0))
+                    {
+                        MessageBox.Show("Export cancelled. No features selected.",
+                            "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Get the total number of features in the table.
+                    outFeatureCount = Int32.Parse(_mapInfoApp.Eval(String.Format(
+                        "TableInfo({0}, {1})", QuoteValue(_hluLayer), (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
+                }
+                //---------------------------------------------------------------------
+
+                // Check the total attributes length doesn't exceed the MapInfo
+                // maximum record length.
+                if (attributesLength > Settings.Default.MapInfoMaxRecordLength)
+                    throw new Exception(String.Format("The export format record length ({0} bytes) exceeds the maximum allowed for MapInfo (4000 bytes)", attributesLength));
+
+                // Check the total export layer won't exceed the MapInfo
+                // maximum .tab file size.
+                if ((attributesLength * outFeatureCount)/1024 > Settings.Default.MapInfoMaxTableSize)
+                    throw new Exception(String.Format("The export table size ({0} Kb) will exceed the maximum allowed for MapInfo .tab files (2 Gb)", (attributesLength * outFeatureCount)/1024));
 
                 // Prompt the user for where to save the export layer
                 SaveFileDialog saveFileFlg = new SaveFileDialog();
@@ -1191,8 +1244,7 @@ namespace HLU.GISApplication.MapInfo
                 saveFileFlg.ValidateNames = true;
                 saveFileFlg.OverwritePrompt = true;
                 saveFileFlg.RestoreDirectory = false;
-                saveFileFlg.InitialDirectory =
-                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                saveFileFlg.InitialDirectory = Settings.Default.ExportPath;
                 saveFileFlg.Filter = "MapInfo Tables (*.tab)|*.tab";
 
                 // If no export dataset name was chosen by the user then cancel the export
@@ -1203,6 +1255,49 @@ namespace HLU.GISApplication.MapInfo
                     return false;
                 }
 
+                // Get the name of the feature layer to join to.
+                if (selectedOnly)
+                {
+                    // Set the path and name of the temporary table.
+                    string tempTabPath = Regex.Replace(saveFileFlg.FileName, ".tab", "_tmp.tab", RegexOptions.IgnoreCase);
+
+                    // Set the name of the temporary table (without the path or extension).
+                    string tempTabName = Path.GetFileNameWithoutExtension(tempTabPath);
+
+                    // Close the new temporary table if it is already open.
+                    if (TableExists(tempTabName))
+                        _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(tempTabName)));
+
+                    // Save the selection as a new temporary table.
+                    _mapInfoApp.Do("Set ProgressBars Off");
+                    _mapInfoApp.Do(String.Format("Commit Table {0} As {1}",
+                        QuoteIdentifier(_selName), QuoteValue(tempTabPath)));
+                    _mapInfoApp.Do("Set ProgressBars On");
+                    //---------------------------------------------------------------------
+
+                    // Close the new temporary selection table.
+                    _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(_selName)));
+
+                    // Re-open the new temporary table (so that it can be used).
+                    _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(tempTabPath)));
+
+                    // Get the name of the new temporary table
+                    string tempTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
+                        (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
+
+                    // Set the name of the join table to the new temporary table.
+                    joinLayer = tempTable;
+                }
+                else
+                {
+                    // Close the previous temporary selection table.
+                    CloseTable(ref _selName);
+
+                    // Set the name of the join table to the whole feature layer.
+                    joinLayer = _hluLayer;
+                }
+
+                // Set the name of the export file.
                 string outTabPath = saveFileFlg.FileName;
 
                 //Register (build) a MapInfo table from the Access attribute table
@@ -1215,18 +1310,31 @@ namespace HLU.GISApplication.MapInfo
                 // Get the name of the opened attribute table
                 attributeTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
-                
-                // Close the previous temporary selection table
-                ClosePreviousSelection();
+
+                // Get a list of the columns with indexes, excluding the
+                // incid column.
+                indexColumns = ColumnIndexList(joinLayer, new string[] { _hluLayerStructure.incidColumn.ColumnName });
+
+                // Drop any unneccessary indexes on the join table.
+                DropIndexes(joinLayer, indexColumns);
+
+                // Check if the geometry fields are in the join layer.
+                string geomCol1Name = "Shape_length";
+                string geomCol2Name = "Shape_area";
+                string geomColNames = ColumnList(joinLayer, new string[] { geomCol1Name, geomCol2Name });
+
+                bool geomColsFound = false;
+                if (!String.IsNullOrEmpty(geomColNames)) geomColsFound = true;
 
                 // Perform a sql join between the feature layer and the attribute table
                 //---------------------------------------------------------------------
                 // FIX: 026 Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
-                _mapInfoApp.Do(String.Format("Select {0}, {1} From {2}, {3} Where {2}.{4} = {3}.{5}", 
-                    ColumnList(_hluLayer, null, false),
+                _mapInfoApp.Do(String.Format("Select {0}, {1}{2} From {3}, {4} Where {3}.{5} = {4}.{6}",
+                    ColumnList(joinLayer, new string[] { geomCol1Name, geomCol2Name }, false),
                     ColumnList(attributeTable, new string[] { _hluLayerStructure.incidColumn.ColumnName }, false),
-                    QuoteIdentifier(_hluLayer),
+                    geomColsFound ? string.Format(", {0}", geomColNames) : string.Empty,
+                    QuoteIdentifier(joinLayer),
                     QuoteIdentifier(attributeTable), 
                     QuoteIdentifier(GetFieldName(_hluLayerStructure.incidColumn.Ordinal)),
                     QuoteIdentifier(_hluLayerStructure.incidColumn.ColumnName)));
@@ -1249,7 +1357,7 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do("Set ProgressBars On");
                 //---------------------------------------------------------------------
 
-                // Close the exported table
+                // Close the exported table.
                 _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(selTable)));
 
                 // Re-open the exported table (so that it can be updated)
@@ -1259,17 +1367,31 @@ namespace HLU.GISApplication.MapInfo
                 outTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",
                     (int)MapInfoConstants.TableInfo.TAB_INFO_NAME));
 
-                string geomCol1Name = "shape_length";
-                string geomCol2Name = "shape_area";
-
                 //---------------------------------------------------------------------
                 // CHANGED: CR13 (Export features performance)
                 // Only update the geometry columns for all exported rows if new
-                // geometry columns have been added to the table.
-                if (!HasColumn(outTable, geomCol1Name) || !HasColumn(outTable, geomCol2Name))
+                // geometry columns need to be added to the table because they were
+                // not found earlier.
+                if (!geomColsFound)
                 {
-                    geomCol1Name = "ShapeInfo1";
-                    geomCol2Name = "ShapeInfo2";
+                    //---------------------------------------------------------------------
+                    // FIX: 026 Hide progress bars during MapInfo processing
+                    _mapInfoApp.Do("Set ProgressBars Off");
+                    //---------------------------------------------------------------------
+
+                    // Set the geometry column names to the correct case (as
+                    // best as can be determined).
+                    if (HasColumn(joinLayer, GetFieldName(_hluLayerStructure.incidColumn.Ordinal).ToUpper(), false))
+                    {
+                        geomCol1Name = "SHAPE_LENGTH";
+                        geomCol2Name = "SHAPE_AREA";
+                    }
+                    else if (HasColumn(joinLayer, GetFieldName(_hluLayerStructure.incidColumn.Ordinal).ToLower(), false))
+                    {
+                        geomCol1Name = "shape_length";
+                        geomCol2Name = "shape_area";
+                    }
+
                     int doubleTypeInt;
                     _typeMapSystemToSQL.TryGetValue(typeof(double), out doubleTypeInt);
                     string doubleMIType = ((MapInfoConstants.ColumnType)doubleTypeInt).ToString().Replace("COL_TYPE_", "");
@@ -1279,6 +1401,10 @@ namespace HLU.GISApplication.MapInfo
                     // Count the number of rows in the export table
                     int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                         outTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
+
+                    // Speed up edits ('Undo Off' and 'FastEdit On').
+                    _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", QuoteIdentifier(outTable)));
+                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", QuoteIdentifier(outTable)));
 
                     // Fetch the first row from the export table
                     double geom1;
@@ -1298,10 +1424,14 @@ namespace HLU.GISApplication.MapInfo
                     }
 
                     // Save the export table updates
+                    _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
+
+                    // Set undo back on and fastedit off again.
+                    _mapInfoApp.Do(String.Format("Set Table {0} Undo On", QuoteIdentifier(outTable)));
+                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", QuoteIdentifier(outTable)));
+
                     //---------------------------------------------------------------------
                     // FIX: 026 Hide progress bars during MapInfo processing
-                    _mapInfoApp.Do("Set ProgressBars Off");
-                    _mapInfoApp.Do(String.Format("Commit Table {0}", QuoteIdentifier(outTable)));
                     _mapInfoApp.Do("Set ProgressBars On");
                     //---------------------------------------------------------------------
                 }
@@ -1349,6 +1479,18 @@ namespace HLU.GISApplication.MapInfo
                 if (TableExists(selTable))
                     _mapInfoApp.Do(String.Format("Close Table {0}", QuoteIdentifier(selTable)));
 
+                if (selectedOnly)
+                {
+                    // Close the temporary selection table.
+                    if (TableExists(joinLayer))
+                        _mapInfoApp.Do(String.Format("Drop Table {0}", QuoteValue(joinLayer)));
+                }
+                else
+                {
+                    // Reinstate any indexes removed from the hlu layer.
+                    if (indexColumns != null) CreateIndexes(_hluLayer, indexColumns);
+                }
+
             }
         }
 
@@ -1357,7 +1499,7 @@ namespace HLU.GISApplication.MapInfo
         {
             try
             {
-                if (String.IsNullOrEmpty(_selName) || !TableExists(_selName)) return null;
+                if (!TableExists(_selName)) return null;
 
                 DataTable historyTable = CreateHistoryTable(_selName, true, historyColumns);
                 ReadSelectedRows(false, false, false, true, _selName, ref historyTable);
@@ -1422,10 +1564,8 @@ namespace HLU.GISApplication.MapInfo
         private DataTable UpdateFeaturesAction(DataColumn[] updateColumns, 
             object[] updateValues, DataTable historyTable)
         {
-            if (String.IsNullOrEmpty(_selName) || !TableExists(_selName))
+            if (!TableExists(_selName))
                 throw new Exception("Error selecting update features from MapInfo layer.");
-
-            if (String.IsNullOrEmpty(_selName)) return null;
 
             //---------------------------------------------------------------------
             // QUERY: KI106 (Shape area and length values)
@@ -1770,7 +1910,8 @@ namespace HLU.GISApplication.MapInfo
             {
                 joinTable = AddJoinTable(scratchMdbPath, selectionTableName);
 
-                ClosePreviousSelection();
+                // Close the previous temporary selection table.
+                CloseTable(ref _selName);
 
                 int numJoinColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     joinTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
@@ -2021,6 +2162,8 @@ namespace HLU.GISApplication.MapInfo
 
         private bool TableExists(string tableName)
         {
+            if (String.IsNullOrEmpty(tableName)) return false;
+
             int numTables = Int32.Parse(_mapInfoApp.Eval("NumTables()"));
             string currTableName;
             for (int i = 1; i <= numTables; i++)
@@ -2033,13 +2176,13 @@ namespace HLU.GISApplication.MapInfo
             return false;
         }
 
-        private void ClosePreviousSelection()
+        private void CloseTable(ref string tableName)
         {
-            if (!String.IsNullOrEmpty(_selName) && TableExists(_selName))
+            if (TableExists(tableName))
             {
-                try { _mapInfoApp.Do(String.Format("Close Table {0}", _selName)); }
+                try { _mapInfoApp.Do(String.Format("Close Table {0}", tableName)); }
                 catch { }
-                _selName = null;
+                tableName = null;
             }
         }
 
@@ -2055,7 +2198,7 @@ namespace HLU.GISApplication.MapInfo
             // Get the name of the table that the current selection is based on.
             string tableName = _mapInfoApp.Eval(String.Format(
                 "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
-            if (String.IsNullOrEmpty(tableName) || !TableExists(tableName)) return;
+            if (!TableExists(tableName)) return;
 
             // Check that the table is the same as the expected table
             // and if not return an empty result table.
@@ -2066,7 +2209,10 @@ namespace HLU.GISApplication.MapInfo
             string readSelName = null;
             if (replaceSelection)
             {
-                if (closePreviousSelection) ClosePreviousSelection();
+                // Close the previous temporary selection table.
+                if (closePreviousSelection)
+                    CloseTable(ref _selName);
+
                 if ((numSelected = Int32.Parse(_mapInfoApp.Eval(String.Format(
                     "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_NROWS)))) == 0) return;
                 readSelName = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
@@ -2512,8 +2658,6 @@ namespace HLU.GISApplication.MapInfo
                 // fields.
                 if (Array.FindIndex(skipColumns, c => c.Equals(colName, StringComparison.InvariantCultureIgnoreCase)) == -1)
                     columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
-                //if (Array.IndexOf(skipColumns, colName) == -1)
-                //    columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
                 //---------------------------------------------------------------------
             }
 
@@ -2524,7 +2668,32 @@ namespace HLU.GISApplication.MapInfo
                 return String.Join(", ", columnList.ToArray());
         }
 
-        private bool HasColumn(string tableName, string columnName)
+        private string ColumnList(string tableName, string[] onlyColumns)
+        {
+            if (onlyColumns == null) return string.Empty;
+
+            int numColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
+                tableName, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
+
+            List<string> columnList = new List<string>();
+
+            string tableNameQuoted = QuoteIdentifier(tableName);
+
+            for (int i = 1; i <= numColumns; i++)
+            {
+                string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", tableName,
+                    QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+
+                // Ignore case in field names during export to ensure
+                // fields are found.
+                if (Array.FindIndex(onlyColumns, c => c.Equals(colName, StringComparison.InvariantCultureIgnoreCase)) != -1)
+                    columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
+            }
+
+            return String.Join(", ", columnList.ToArray());
+        }
+
+        private bool HasColumn(string tableName, string columnName, bool ignoreCase)
         {
             int numColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                 tableName, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
@@ -2534,14 +2703,43 @@ namespace HLU.GISApplication.MapInfo
                 //---------------------------------------------------------------------
                 // FIX: 033 Ignore case in field names during export to avoid duplicate
                 // fields.
-                if (_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
+                string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
                     tableName, QuoteValue(String.Format("Col{0}", i)),
-                    (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME)).ToLower() == columnName.ToLower())
+                    (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+                if (ignoreCase && colName.ToLower() == columnName.ToLower())
+                    return true;
+                else if (!ignoreCase && colName == columnName)
                     return true;
                 //---------------------------------------------------------------------
             }
 
             return false;
+        }
+
+        private string[] ColumnIndexList(string tableName, string[] skipColumns)
+        {
+            if (skipColumns == null) skipColumns = new string[0];
+
+            int numColumns = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
+                tableName, (int)MapInfoConstants.TableInfo.TAB_INFO_NCOLS)));
+
+            List<string> columnList = new List<string>();
+
+            for (int i = 1; i <= numColumns; i++)
+            {
+                string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", tableName,
+                    QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
+
+                string colIndexed = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", tableName,
+                    QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_INDEXED));
+
+                // Add the name of the column to the list if it is indexed
+                // and not in the list of columns to skip.
+                if ((colIndexed == "T") && (Array.FindIndex(skipColumns, c => c.Equals(colName, StringComparison.InvariantCultureIgnoreCase)) == -1))
+                    columnList.Add(QuoteIdentifier(colName));
+            }
+
+            return columnList.ToArray();
         }
 
         /// <summary>
@@ -2885,7 +3083,7 @@ namespace HLU.GISApplication.MapInfo
                         // Turn off speed edits ('Undo Off' and 'FastEdit Off') on the old HLU layer
                         // and allow the user to remove if from the map or close it.
                         _mapInfoApp.Do(String.Format("Set Table {0} Undo On", _hluLayerOld));
-                        _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", _hluLayerOld));
+                        _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap On", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserClose On", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserMap On", _hluLayerOld));
@@ -2894,7 +3092,7 @@ namespace HLU.GISApplication.MapInfo
                     // The layer is a valid HLU layer so speed up edits ('Undo Off' and 'FastEdit Off')
                     // and stop the user from being able to remove the layer from the map or close it.
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", _hluLayer));
-                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayer));
+                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap Off", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserClose Off", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserMap Off", _hluLayer));
