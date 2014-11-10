@@ -43,8 +43,9 @@ namespace HLU.UI.ViewModel
 
         private ICommand _okCommand;
         private ICommand _cancelCommand;
-        private ICommand _browseMapCommand;
-        private ICommand _browseSqlCommand;
+        private ICommand _browseMapPathCommand;
+        private ICommand _browseExportPathCommand;
+        private ICommand _browseSqlPathCommand;
         private string _displayName = "HLU Options";
         private SelectionList<string> _historyColumns;
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
@@ -58,6 +59,7 @@ namespace HLU.UI.ViewModel
 
         private int _preferredGis = Settings.Default.PreferredGis;
         private string _mapPath = Settings.Default.MapPath;
+        private string _exportPath = Settings.Default.ExportPath;
         private string _sqlPath = Settings.Default.SqlPath;
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
@@ -73,6 +75,7 @@ namespace HLU.UI.ViewModel
         private string _vagueDateDelimiter = Settings.Default.VagueDateDelimiter;
 
         private string _bakMapPath;
+        private string _bakExportPath;
         private string _bakSqlPath;
 
         #endregion
@@ -184,10 +187,10 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
+            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+            Settings.Default.ExportPath = _exportPath;
 
             Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
-            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
-
             Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
             Settings.Default.SqlPath = _sqlPath;
             Settings.Default.GetValueRows = (int)_getValueRows;
@@ -280,26 +283,26 @@ namespace HLU.UI.ViewModel
 
         #region GIS
 
-        public ICommand BrowseMapCommand
+        public ICommand BrowseMapPathCommand
         {
             get
             {
-                if (_browseMapCommand == null)
+                if (_browseMapPathCommand == null)
                 {
-                    Action<object> browseMapAction = new Action<object>(this.BrowseMapClicked);
-                    _browseMapCommand = new RelayCommand(browseMapAction, param => this.CanBrowseMap);
+                    Action<object> browseMapPathAction = new Action<object>(this.BrowseMapPathClicked);
+                    _browseMapPathCommand = new RelayCommand(browseMapPathAction, param => this.CanBrowseMapPath);
                 }
 
-                return _browseMapCommand;
+                return _browseMapPathCommand;
             }
         }
 
-        public bool CanBrowseMap
+        public bool CanBrowseMapPath
         {
             get { return _preferredGis != (int)GISApplications.None; }
         }
 
-        private void BrowseMapClicked(object param)
+        private void BrowseMapPathClicked(object param)
         {
             _bakMapPath = _mapPath;
             Settings.Default.MapPath = String.Empty;
@@ -346,8 +349,9 @@ namespace HLU.UI.ViewModel
             set
             {
                 _preferredGis = (int)value;
-                OnPropertyChanged("CanBrowseMap");
+                OnPropertyChanged("CanBrowseMapPath");
                 OnPropertyChanged("MapDocument");
+                OnPropertyChanged("CanBrowseExportPath");
             }
         }
 
@@ -524,6 +528,99 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // FIX036 Enable the user to set the default path for exports.
+        // 
+        /// <summary>
+        /// Get the browse Export Path command.
+        /// </summary>
+        /// <value>
+        /// The browse Export path command.
+        /// </value>
+        public ICommand BrowseExportPathCommand
+        {
+            get
+            {
+                if (_browseExportPathCommand == null)
+                {
+                    Action<object> browseExportPathAction = new Action<object>(this.BrowseExportPathClicked);
+                    _browseExportPathCommand = new RelayCommand(browseExportPathAction, param => this.CanBrowseExportPath);
+                }
+
+                return _browseExportPathCommand;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the user can browse for
+        /// the default Export path.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the user can browse for the default Export path; otherwise, <c>false</c>.
+        /// </value>
+        public bool CanBrowseExportPath
+        {
+            get { return (PreferredGis == GISApplications.MapInfo); }
+        }
+
+        /// <summary>
+        /// Action when the browse SQL button is clicked.
+        /// </summary>
+        /// <param name="param"></param>
+        private void BrowseExportPathClicked(object param)
+        {
+            _bakExportPath = _exportPath;
+            ExportPath = String.Empty;
+            ExportPath = GetExportPath();
+
+            if (String.IsNullOrEmpty(ExportPath))
+            {
+                ExportPath = _bakExportPath;
+            }
+            OnPropertyChanged("ExportPath");
+        }
+
+        /// <summary>
+        /// Gets or sets the default Export path.
+        /// </summary>
+        /// <value>
+        /// The Export path.
+        /// </value>
+        public string ExportPath
+        {
+            get { return _exportPath; }
+            set { _exportPath = value; }
+        }
+
+        /// <summary>
+        /// Prompt the user to set the default Export path.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetExportPath()
+        {
+            try
+            {
+                string exportPath = Settings.Default.ExportPath;
+
+                FolderBrowserDialog openFolderDlg = new FolderBrowserDialog();
+                openFolderDlg.Description = "Select Export Default Directory";
+                openFolderDlg.SelectedPath = exportPath;
+                //openFolderDlg.RootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                openFolderDlg.ShowNewFolderButton = true;
+                if (openFolderDlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (Directory.Exists(openFolderDlg.SelectedPath))
+                        return openFolderDlg.SelectedPath;
+                }
+            }
+            catch { }
+
+            return null;
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
         #region Sql Query
 
         //---------------------------------------------------------------------
@@ -546,7 +643,7 @@ namespace HLU.UI.ViewModel
             set
             {
                 _useAdvancedSQL = value;
-                OnPropertyChanged("CanBrowseSql");
+                OnPropertyChanged("CanBrowseSqlPath");
             }
         }
         //---------------------------------------------------------------------
@@ -557,42 +654,42 @@ namespace HLU.UI.ViewModel
         // folder for saving and loading SQL queries.
         // 
         /// <summary>
-        /// Get the browse SQL command.
+        /// Get the browse SQL path command.
         /// </summary>
         /// <value>
-        /// The browse SQL command.
+        /// The browse SQL path command.
         /// </value>
-        public ICommand BrowseSqlCommand
+        public ICommand BrowseSqlPathCommand
         {
             get
             {
-                if (_browseSqlCommand == null)
+                if (_browseSqlPathCommand == null)
                 {
-                    Action<object> browseSqlAction = new Action<object>(this.BrowseSqlClicked);
-                    _browseSqlCommand = new RelayCommand(browseSqlAction, param => this.CanBrowseSql);
+                    Action<object> browseSqlPathAction = new Action<object>(this.BrowseSqlPathClicked);
+                    _browseSqlPathCommand = new RelayCommand(browseSqlPathAction, param => this.CanBrowseSqlPath);
                 }
 
-                return _browseSqlCommand;
+                return _browseSqlPathCommand;
             }
         }
 
         /// <summary>
         /// Gets a value indicating whether the user can browse for
-        /// the default SQL folder.
+        /// the default SQL path.
         /// </summary>
         /// <value>
-        /// <c>true</c> if the user can browse for the default SQL folder; otherwise, <c>false</c>.
+        /// <c>true</c> if the user can browse for the default SQL path; otherwise, <c>false</c>.
         /// </value>
-        public bool CanBrowseSql
+        public bool CanBrowseSqlPath
         {
             get { return _useAdvancedSQL == true; }
         }
 
         /// <summary>
-        /// Action when the browse SQL button is clicked.
+        /// Action when the browse SQL path button is clicked.
         /// </summary>
         /// <param name="param"></param>
-        private void BrowseSqlClicked(object param)
+        private void BrowseSqlPathClicked(object param)
         {
             _bakSqlPath = _sqlPath;
             SqlPath = String.Empty;
@@ -606,7 +703,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the default SQL folder path.
+        /// Gets or sets the default SQL path.
         /// </summary>
         /// <value>
         /// The SQL path.
@@ -618,7 +715,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Prompt the user to set the default SQL folder path.
+        /// Prompt the user to set the default SQL path.
         /// </summary>
         /// <returns></returns>
         public static string GetSqlPath()
@@ -643,8 +740,6 @@ namespace HLU.UI.ViewModel
             return null;
         }
         //---------------------------------------------------------------------
-
-        #endregion
 
         #endregion
 
