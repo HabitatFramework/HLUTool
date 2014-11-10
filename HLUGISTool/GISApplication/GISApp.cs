@@ -145,7 +145,7 @@ namespace HLU.GISApplication
 
         public abstract DataTable MergeFeaturesLogically(string keepIncid, DataColumn[] historyColumns);
 
-        public abstract bool Export(string tempMdbPathName, string attributeDatasetName, int exportRowCount);
+        public abstract bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly);
 
         public abstract DataTable SqlSelect(string scratchMdbPath, string selectionTableName, DataColumn[] targetColumns);
 
