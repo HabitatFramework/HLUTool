@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -116,7 +117,15 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
+            //---------------------------------------------------------------------
+            // CHANGED: CR14 (Exporting IHS codes or descriptions)
+            // Enable users to specify if individual fields should be
+            // exported with descriptions, rather than the whole export,
+            // by moving this option to the exports_fields table.
+            //
             this.RequestClose(_exportID, _selectedOnly);
+            //this.RequestClose(_exportID, _exportDescriptions, _selectedOnly);
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -180,9 +189,7 @@ namespace HLU.UI.ViewModel
             set { _exportID = value; }
         }
 
-        // Enable the SelectedOnly checkbox to be checked even if
-        // the number of selected features is zero.
-        public bool HaveSelection { get { return _selectedNumber > -1; } }
+        public bool HaveSelection { get { return _selectedNumber > 0; } }
 
         public bool SelectedOnly
         {
