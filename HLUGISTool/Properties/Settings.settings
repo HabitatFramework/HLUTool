@@ -234,5 +234,11 @@
     <Setting Name="MapInfoMaxRecordLength" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">4000</Value>
     </Setting>
+    <Setting Name="ExportPath" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MapInfoMaxTableSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2097152</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
