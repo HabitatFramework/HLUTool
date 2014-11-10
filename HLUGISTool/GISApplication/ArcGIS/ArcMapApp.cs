@@ -880,27 +880,44 @@ namespace HLU.GISApplication.ArcGIS
             IpcArcMap(new string[] { "zs" });
         }
 
-        public override bool Export(string tempMdbPathName, string attributeDatasetName, int exportRowCount)
+        public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
             List<string> returnList = IpcArcMap(
-                new string[] { "ex", tempMdbPathName, attributeDatasetName, exportRowCount.ToString() });
+                new string[] { "ex", tempMdbPathName, attributeDatasetName, (selectedOnly ? "true" : "false") });
             
-            if ((returnList.Count > 0) && (returnList[0] != "cancelled"))
-            {
-                MessageBox.Show(String.Format("The export operation failed. The Message returned was:\n\n{0}",
-                    returnList[0]), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else if ((returnList.Count != 0) && (returnList[0] == "cancelled"))
+            if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
             {
                 MessageBox.Show("Export cancelled. No output table selected.", "HLU: Export",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
             }
-            else if ((returnList.Count == 0) || (returnList[0] != "cancelled"))
+            else if ((returnList.Count > 0) && (returnList[0] == "noselection"))
             {
-                MessageBox.Show("The export operation succeeded.", "HLU: Export",
+                MessageBox.Show("Export cancelled. No features selected.", "HLU: Export",
                     MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+            else if (returnList.Count > 0)
+            {
+                MessageBox.Show(String.Format("The export operation failed. The Message returned was:\n\n{0}",
+                    returnList[0]), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            else if (returnList.Count == 0)
+            {
+                //---------------------------------------------------------------------
+                // CHANGED: CR16 (Adding exported features)
+                // Ask the user if they want to add the new export layer to the
+                // active map.
+                MessageBoxResult userResponse = MessageBoxResult.No;
+                userResponse = MessageBox.Show("The export operation succeeded.\n\nAdd the exported layer to the current map?", "HLU: Export",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                // Add the already open layer to the map window.
+                if (userResponse == MessageBoxResult.Yes)
+                {
+                    returnList = IpcArcMap(
+                        new string[] { "ae" });
+                }
                 return true;
             }
             else

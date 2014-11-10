@@ -83,7 +83,8 @@ namespace HLU
         public delegate void SelectByJoinDelegate(string scratchMdbPath, string selectionDatasetName);
         public delegate void ZoomSelectedDelegate();
         public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter);
-        public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, int exportRowCount);
+        public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, bool selectedOnly);
+        public delegate void AddExportLayerDelegate();
         public delegate void IsHluWorkspaceDelegate();
         public delegate void ListHluLayersDelegate();
         public delegate void IsHluLayerDelegate(int ixMap, int ixLayer);
@@ -120,6 +121,7 @@ namespace HLU
         private IWorkspaceEdit _hluWorkspaceEdit;
         private bool _hluWSisSDE = false;
         private IFeatureLayer _hluLayer;
+        private IFeatureLayer _hluExportLayer;
         private List<string> _hluLayerList;
         private string _hluTableName;
         private IFeatureClass _hluFeatureClass;
@@ -162,6 +164,7 @@ namespace HLU
         private static ZoomSelectedDelegate _zoomSelDel;
         private static ZoomSelectedCursorDelegate _zoomSelCursorDel;
         private static ExportDelegate _exportDel;
+        private static AddExportLayerDelegate _addExportLayerDel;
         private static IsHluWorkspaceDelegate _isHluWorkspaceDel;
         private static ListHluLayersDelegate _ListHluLayersDel;
         private static IsHluLayerDelegate _isHluLayerDel;
@@ -342,6 +345,7 @@ namespace HLU
                 _zoomSelDel = new ZoomSelectedDelegate(ZoomSelected);
                 _zoomSelCursorDel = new ZoomSelectedCursorDelegate(ZoomSelectedCursor);
                 _exportDel = new ExportDelegate(Export);
+                _addExportLayerDel = new AddExportLayerDelegate(AddExportLayer);
                 _isHluWorkspaceDel = new IsHluWorkspaceDelegate(IsHluWorkspace);
                 _ListHluLayersDel = new ListHluLayersDelegate(ListHluLayers);
                 _isHluLayerDel = new IsHluLayerDelegate(IsHluLayer);
@@ -848,19 +852,26 @@ namespace HLU
                         }
                         catch { _pipeData.Clear(); }
                         break;
-                    case "ex": // export: cmd, mdbPathName, attributeDatasetName, exportRowCount
+                    case "ex": // export: cmd, mdbPathName, attributeDatasetName, selectedOnly
                         if (_pipeData.Count == 4)
                         {
                             try
                             {
                                 string mdbPathName = _pipeData[1];
                                 string attributeDatasetName = _pipeData[2];
-                                int exportRowCount = Int32.Parse(_pipeData[3]);
+                                bool selectedOnly = _pipeData[3] == "true";
                                 _pipeData.Clear();
 
                                 _dummyControl.Invoke(_exportDel,
-                                    new object[] { mdbPathName, attributeDatasetName, exportRowCount });
+                                    new object[] { mdbPathName, attributeDatasetName, selectedOnly });
                             }
+                            catch { _pipeData.Clear(); }
+                        }
+                        break;
+                    case "ae": // addExportLayer: cmd
+                        if (_pipeData.Count == 1)
+                        {
+                            try { _dummyControl.Invoke(_addExportLayerDel, null); }
                             catch { _pipeData.Clear(); }
                         }
                         break;
@@ -969,13 +980,17 @@ namespace HLU
             bool restoreEditSession = InEditingSession && HluLayerBeingEdited;
             if (restoreEditSession) CloseEditSession(true);
 
+            IRelationshipClass relClass = null;
+
+            IDataset joinDataset;
+            ITable joinTable;
+            IWorkspaceFactory joinWorkspaceFactory = new OLEDBWorkspaceFactoryClass();
+
             try
             {
                 SetCursor(true);
 
-                IDataset joinDataset;
-                ITable joinTable;
-                OpenOleDbWorkspace(scratchMdbPath, selectionDatasetName, out joinDataset, out joinTable);
+                OpenOleDbWorkspace(scratchMdbPath, selectionDatasetName, ref joinWorkspaceFactory, out joinDataset, out joinTable);
 
                 if ((joinTable.Fields.FieldCount == 1) && (joinTable.Fields.get_Field(0).Name ==
                     _hluLayerStructure.incidColumn.ColumnName)) // single column incid: use a join
@@ -990,7 +1005,7 @@ namespace HLU
 
                     // create virtual relate
                     IMemoryRelationshipClassFactory memoryRelFactory = new MemoryRelationshipClassFactoryClass();
-                    IRelationshipClass relClass = memoryRelFactory.Open("SelRelClass", (IObjectClass)joinTable,
+                    relClass = memoryRelFactory.Open("SelRelClass", (IObjectClass)joinTable,
                         originPKJoinField, (IObjectClass)hluLayerTable, originFKJoinField, "forward", "backward",
                         esriRelCardinality.esriRelCardinalityOneToMany);
 
@@ -1036,7 +1051,23 @@ namespace HLU
             catch { }
             finally
             {
+                // Remove the virtual relationship.
+                if (relClass != null)
+                {
+                    //IRelationshipClassCollectionEdit relClassEdit = (IRelationshipClassCollectionEdit)joinLayer;
+                    //relClassEdit.RemoveAllRelationshipClasses();
+                    ((IDisplayRelationshipClass)_hluLayer).DisplayRelationshipClass(
+                        null, esriJoinType.esriLeftInnerJoin);
+                }
+
+                // Destroy workspace factory so the attribute dataset can
+                // be deleted later.
+                joinDataset = null;
+                joinTable = null;
+                joinWorkspaceFactory = null;
+
                 if (restoreEditSession) OpenEditSession();
+                
                 SetCursor(false);
             }
         }
@@ -2280,25 +2311,34 @@ namespace HLU
 
         #region Export
 
-        private void Export(string tempMdbPathName, string attributeDatasetName, int exportRowCount)
+        private void Export(string tempMdbPathName, string attributeDatasetName, bool selectedOnly)
         {
             IRelationshipClass relClass = null;
             IFeatureClass outFeatureClass = null;
+            IFeatureClass joinFeatureClass = null;
+            IFeatureLayer joinLayer = null;
+
+            IDataset attributeDataset;
+            ITable exportAttributes;
+            IWorkspaceFactory joinWorkspaceFactory = new OLEDBWorkspaceFactoryClass();
+            object outWS = null;
 
             try
             {
                 SetCursor(true);
 
-                IDataset attributeDataset;
-                ITable exportAttributes;
-                OpenOleDbWorkspace(tempMdbPathName, attributeDatasetName, 
+                OpenOleDbWorkspace(tempMdbPathName, attributeDatasetName, ref joinWorkspaceFactory,
                     out attributeDataset, out exportAttributes);
 
                 IDisplayTable hluDisplayTable = (IDisplayTable)_hluLayer;
                 IFeatureClass hluDisplayTableFeatureClass = (IFeatureClass)hluDisplayTable.DisplayTable;
-                ITable hluLayerTable = (ITable)hluDisplayTableFeatureClass;
 
-                // Prompt the user for where to save the export layer
+                // Set the selected and total feature counts.
+                int selectedFeatureCount = _hluFeatureSelection.SelectionSet.Count;
+                int totalFeatureCount = _hluLayer.FeatureClass.FeatureCount(null);
+                int exportFeatureCount = 0;
+
+                // Prompt the user for where to save the export layer.
                 IExportOperation exportOp = new ExportOperation();
                 bool saveProjection;
                 esriExportTableOptions exportOptions;
@@ -2306,94 +2346,112 @@ namespace HLU
                     _hluLayer.Name, _hluFeatureSelection != null && _hluFeatureSelection.SelectionSet.Count > 0, 
                     true, _application.hWnd, out saveProjection, out exportOptions);
 
-                // If no export dataset name was chosen by the user then cancel the export
+                // If no export dataset name was chosen by the user then cancel the export.
                 if (exportDatasetName == null)
                 {
                     _pipeData.Add("cancelled");
                     return;
                 }
 
-                // Open the export dataset workspace
-                object outWS = ((IName)exportDatasetName.WorkspaceName).Open();
+                // Open the export dataset workspace.
+                outWS = ((IName)exportDatasetName.WorkspaceName).Open();
+
+                // Set the export options depending upon which records to export.
+                if (selectedOnly)
+                    exportOptions = esriExportTableOptions.esriExportSelectedRecords;
+                else
+                {
+                    exportOptions = esriExportTableOptions.esriExportAllRecords;
+                    // Clear any current selection.
+                    _hluFeatureSelection.SelectionSet = null;
+                }
 
                 // Get the geometry definition for the feature layer.
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
                     _hluFeatureClass.ShapeFieldName)).GeometryDef;
 
+                ITable joinLayerTable;
+                IDisplayTable joinDisplayTable;
 
+                // If only a sub-set of features are being exported then
+                // export the sub-set to a temporary feature class before
+                // joining the temporary layer to the attribute dataset.
+                if (selectedOnly)
+                {
+                    // Set the input DataSet name
+                    IDataset inDataset;
+                    inDataset = (IDataset)hluDisplayTable.DisplayTable;
+                    IDatasetName inDatasetName;
+                    inDatasetName = (IDatasetName)inDataset.FullName;
 
+                    // set the output temporary DataSet name
+                    IFeatureClassName outFCName = new FeatureClassNameClass();
+                    IDatasetName outDatasetName = (IDatasetName)outFCName;
+                    outDatasetName.Name = String.Format("{0}_temp", exportDatasetName.Name);
+                    outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
 
+                    // Get the selected features for export
+                    ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
 
+                    // If there is no selection cancel the export.
+                    if (_hluFeatureSelection.SelectionSet.Count == 0)
+                    {
+                        _pipeData.Add("noselection");
+                        return;
+                    }
 
-                // Get the Input DataSet Name
-                IDataset inDataset;
-                inDataset = (IDataset)hluDisplayTable.DisplayTable;
-                IDatasetName inDatasetName;
-                inDatasetName = (IDatasetName)inDataset.FullName;
+                    IStatusBar statusBar = _application.StatusBar;
+                    IStepProgressor progressBar = statusBar.ProgressBar;
+                    progressBar.Position = 0;
+                    statusBar.ShowProgressBar("Exporting temporary layer...", 0, 10, 1, true);
+                    progressBar.Step();
 
-                // Get the Output DataSet Name
-                IFeatureClassName outFCName = new FeatureClassNameClass();
-                IDatasetName outDatasetName = (IDatasetName)outFCName;
-                outDatasetName.Name = String.Format("{0}_temp", exportDatasetName.Name);
-                outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
+                    // Export the selected features to the temporary dataset.
+                    exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
 
-                // Get the selected features for export
-                ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
+                    statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
+                    statusBar.HideProgressBar();
 
-                //// Set the export query filter
-                //IQueryFilter exportQueryFilter2 = new QueryFilterClass();
-                //exportQueryFilter2.SubFields = "*";
-                //exportQueryFilter2.WhereClause = String.Empty;
+                    // Cast the workspace to IFeatureWorkspace and open the feature class.
+                    IFeatureWorkspace featureWorkspace = (IFeatureWorkspace)outWS;
+                    joinFeatureClass = featureWorkspace.OpenFeatureClass(outDatasetName.Name);
 
-                IStatusBar statusBar = _application.StatusBar;
-                IStepProgressor progressBar = statusBar.ProgressBar;
-                progressBar.Position = 0;
-                statusBar.ShowProgressBar("Exporting temporary layer...", 0, 0, 1, true);
-                statusBar.HideProgressBar();
+                    // Add an attribute index to the incid field.
+                    AddFieldIndex(joinFeatureClass, String.Format("IX_{0}",
+                        _hluLayerStructure.incidColumn.ColumnName),
+                        _hluLayerStructure.incidColumn.ColumnName);
 
-                exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
-                //exportOp.ExportFeatureClass(inDatasetName, exportQueryFilter2, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
+                    // Set the join layer to the temporary feature class.
+                    joinLayer = new FeatureLayerClass();
+                    joinLayer.FeatureClass = joinFeatureClass;
+                    joinLayer.Name = joinFeatureClass.AliasName;
 
-                statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
-                statusBar.HideProgressBar();
+                    // Set the join layer table to the temporary feature class.
+                    joinDisplayTable = (IDisplayTable)joinLayer;
+                    //IFeatureClass joinDisplayTableFC = (IFeatureClass)joinDisplayTable.DisplayTable;
+                    IFeatureClass joinDisplayTableFC = joinFeatureClass;
+                    joinLayerTable = (ITable)joinDisplayTableFC;
 
+                    // Set the count for the number of features to be exported.
+                    exportFeatureCount = selectedFeatureCount;
+                }
+                // Otherwise, join the whole feature layer to the
+                // attribute dataset.
+                else
+                {
+                    // Set the join feature class to the current HLU feature class.
+                    joinFeatureClass = _hluFeatureClass;
 
-                //IWorkspaceFactory test = outDatasetName.WorkspaceName.WorkspaceFactory;
+                    // Set the join layer to the current HLU feature layer.
+                    joinLayer = _hluLayer;
+                    joinLayerTable = (ITable)hluDisplayTableFeatureClass;
+                    joinDisplayTable = hluDisplayTable;
 
-                //IWorkspaceFactory workspaceFactory;
-                //if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriFileSystemWorkspace)
-                //{
-                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesFile.ShapefileWorkspaceFactoryClass();
-                //}
-                //else if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriLocalDatabaseWorkspace)
-                //{
-                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesGDB.FileGDBWorkspaceFactoryClass();
-                //}
-                //else if (outDatasetName.WorkspaceName.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace)
-                //{
-                //    workspaceFactory = new ESRI.ArcGIS.DataSourcesGDB.SdeWorkspaceFactoryClass();
-                //}
+                    // Set the count for the number of features to be exported.
+                    exportFeatureCount = totalFeatureCount;
+                }
 
-
-                //ESRI.ArcGIS.Geodatabase.IFeatureWorkspace featureWorkspace = (ESRI.ArcGIS.Geodatabase.IFeatureWorkspace)workspace; // Explict Cast
-                //ESRI.ArcGIS.Geodatabase.IFeatureClass featureClass = featureWorkspace.OpenFeatureClass(string_ShapefileName);
-
-
-                // Cast the workspace to IFeatureWorkspace and open a feature class.
-                IFeatureWorkspace featureWorkspace = (IFeatureWorkspace)outWS;
-                IFeatureClass tempFC = featureWorkspace.OpenFeatureClass(outDatasetName.Name);
-
-                IFeatureLayer tempLayer = new FeatureLayerClass();
-                tempLayer.FeatureClass = tempFC;
-                tempLayer.Name = tempFC.AliasName;
-                IDisplayTable tempDisplayTable = (IDisplayTable)tempLayer;
-                IFeatureClass tempDisplayTableFC = (IFeatureClass)tempDisplayTable.DisplayTable;
-                ITable tempLayerTable = (ITable)tempDisplayTableFC;
-
-
-
-
-                // Determine if the export layer is a shapefile
+                // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
 
                 // Get the field names to be used when joining the attribute data and the feature layer
@@ -2406,178 +2464,97 @@ namespace HLU
                 // feature layer).
                 List<IField> attributeFields;
                 List<IField> featClassFields;
-                List<IField> exportFields = ExportFieldLists(isShp, originPKJoinField, originFKJoinField, tempFC,
+                List<IField> exportFields = ExportFieldLists(isShp, originPKJoinField, originFKJoinField, joinFeatureClass,
                     exportAttributes, out attributeFields, out featClassFields);
 
                 // Add x/y, length, or area and length fields to the list of fields in the export layer
                 // if the export layer is a shapefile.
                 ExportAddGeometryPropertyFields(isShp, exportFields);
 
-                // create virtual relate
+                // Create a virtual relationship between the feature class
+                // and the attribute dataset.
                 IMemoryRelationshipClassFactory memoryRelFactory = new MemoryRelationshipClassFactoryClass();
                 relClass = memoryRelFactory.Open("ExportRelClass", (IObjectClass)exportAttributes,
-                    originPKJoinField, (IObjectClass)tempLayerTable, originFKJoinField, "forward", "backward",
+                    originPKJoinField, (IObjectClass)joinLayerTable, originFKJoinField, "forward", "backward",
                     esriRelCardinality.esriRelCardinalityOneToMany);
 
-                // use Relate to perform a join
-                IDisplayRelationshipClass displayRelClass = (IDisplayRelationshipClass)tempLayer;
+                // Use the relationship to perform a join.
+                IDisplayRelationshipClass displayRelClass = (IDisplayRelationshipClass)joinLayer;
                 displayRelClass.DisplayRelationshipClass(relClass, esriJoinType.esriLeftInnerJoin);
 
-                // create query filter for export cursor
+                // Create query filter for the export cursor so that
+                // only the required fields are retrieved.
                 bool featClassFieldsQualified;
                 bool attributeFieldsQualified;
-                IQueryFilter exportQueryFilter = ExportQueryFilter(originPKJoinField, tempLayer, tempFC, tempDisplayTable,
+                IQueryFilter exportQueryFilter = ExportQueryFilter(originPKJoinField, joinLayer, joinFeatureClass, joinDisplayTable,
                     attributeDataset, featClassFields, attributeFields, out featClassFieldsQualified,
                     out attributeFieldsQualified);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                //// Create a name object for the source workspace and open it.
-                //IWorkspaceName sourceWorkspaceName = inDatasetName.WorkspaceName;
-                //IName sourceWorkspaceIName = (IName)sourceWorkspaceName;
-                //IWorkspace sourceWorkspace = (IWorkspace)sourceWorkspaceIName.Open();
-
-                //// Create a name object for the target (file GDB) workspace and open it.
-                //IWorkspaceName targetWorkspaceName = outDatasetName.WorkspaceName;
-                //IName targetWorkspaceIName = (IName)targetWorkspaceName;
-                //IWorkspace targetWorkspace = (IWorkspace)targetWorkspaceIName.Open();
-
-                //// Create a name object for the source dataset.
-                //IFeatureClassName sourceFeatureClassName = new FeatureClassNameClass();
-                //inDatasetName = (IDatasetName)sourceFeatureClassName;
-                //inDatasetName.Name = inDataset.Name;
-                //inDatasetName.WorkspaceName = sourceWorkspaceName;
-
-                //// Create a name object for the target dataset.
-                //IFeatureClassName targetFeatureClassName = new FeatureClassNameClass();
-                //outDatasetName = (IDatasetName)targetFeatureClassName;
-                //outDatasetName.Name = exportDatasetName.Name;
-                //outDatasetName.WorkspaceName = targetWorkspaceName;
-
-
-                //// Create the objects and references necessary for field validation.
-                //IFieldChecker fieldChecker = new FieldCheckerClass();
-                //IFields sourceFields = hluDisplayTable.DisplayTable.Fields;
-                //IFields targetFields = null;
-                //IEnumFieldError enumFieldError = null;
-
-                //// Set the required properties for the IFieldChecker interface.
-                //fieldChecker.InputWorkspace = sourceWorkspace;
-                //fieldChecker.ValidateWorkspace = targetWorkspace;
-
-                //// Validate the fields and check for errors.
-                //fieldChecker.Validate(sourceFields, out enumFieldError, out targetFields);
-                //if (enumFieldError != null)
-                //{
-                //    // Handle the errors in a way appropriate to your application.
-                //    Console.WriteLine("Errors were encountered during field validation.");
-                //}
-
-
-                //// Get the geometry definition from the shape field and clone it.
-                //IClone geometryDefClone = (IClone)geomDef;
-                //IClone targetGeometryDefClone = geometryDefClone.Clone();
-                //IGeometryDef targetGeometryDef = (IGeometryDef)targetGeometryDefClone;
-
-                //// Cast the IGeometryDef to the IGeometryDefEdit interface.
-                ////IGeometryDefEdit targetGeometryDefEdit = (IGeometryDefEdit)targetGeometryDef;
-
-                //// Set the IGeometryDefEdit properties.
-                ////targetGeometryDefEdit.GridCount_2 = 1;
-                ////targetGeometryDefEdit.set_GridSize(0, 0.75);
-
-                //// Create a query filter to only select cities with a province (PROV) value of 'NS.'
-                //IQueryFilter queryFilter = new QueryFilterClass();
-                //queryFilter.WhereClause = String.Empty;
-                //queryFilter.SubFields = "INCID";
-
-                //// Create the converter and run the conversion.
-                //IFeatureDataConverter featureDataConverter = new FeatureDataConverterClass();
-                //IEnumInvalidObject enumInvalidObject = featureDataConverter.ConvertFeatureClass
-                //    (sourceFeatureClassName, queryFilter, null, targetFeatureClassName,
-                //    targetGeometryDef, targetFields, "", 1000, _application.hWnd);
-
-                //// Check for errors.
-                //IInvalidObjectInfo invalidObjectInfo = null;
-                //enumInvalidObject.Reset();
-                //while ((invalidObjectInfo = enumInvalidObject.Next()) != null)
-                //{
-                //    // Handle the errors in a way appropriate to the application.
-                //    Console.WriteLine("Errors occurred for the following feature: {0}",
-                //        invalidObjectInfo.InvalidObjectID);
-                //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-                // adds OID and SHAPE at beginning, possibly Shape_Length and Shape_Area at end
-                // when populating new rows we loop over exportFieldOrdinals
-                // if we export shp we calculate geometry props into the last two fields, which are
-                // not in exportFields
+                // Create a collection of fields for the output feature class.
+                // Adds OID and SHAPE at beginning.
                 IFields outFields = CreateFieldsCollection(true, geomDef.HasZ, geomDef.HasM, outWS,
-                    tempFC.ShapeType, exportFields.Select(f => f.Length).ToArray(),
+                    joinFeatureClass.ShapeType, exportFields.Select(f => f.Length).ToArray(),
                     exportFields.Select(f => f.Name).ToArray(), exportFields.Select(f => f.Name).ToArray(),
                     exportFields.Select(f => f.Type).ToArray(), exportFields.Select(f => f.Type != 
                         esriFieldType.esriFieldTypeOID).ToArray(), geomDef.SpatialReference);
 
-                // create output feature class
+                // Create the output feature class.
                 outFeatureClass = CreateFeatureClass(exportDatasetName.Name, null, outWS,
-                    outFields, esriFeatureType.esriFTSimple, tempFC.ShapeType, null, null);
+                    outFields, esriFeatureType.esriFTSimple, joinFeatureClass.ShapeType, null, null);
 
-                // field map between display and output feature class, as display 
-                // table always includes all fields, regardless of SubFields
-                // the first two fields are always OID and SHAPE 
-                // the last two Shape_Length and Shape_Area, either added automatically or here
+                // Map the fields between the display and table and the output feature
+                // class as the display table always includes all fields.
+                // The first two fields are always OID and SHAPE.
                 int[] exportFieldMap = new int[] { 0, 1 }.Concat(featClassFields
-                    .Select(f => tempDisplayTable.DisplayTable.Fields.FindField(featClassFieldsQualified ?
-                        tempLayer.Name + "." + f.Name : f.Name))).Concat(attributeFields
-                    .Select(f => tempDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
+                    .Select(f => joinDisplayTable.DisplayTable.Fields.FindField(featClassFieldsQualified ?
+                        joinLayer.Name + "." + f.Name : f.Name))).Concat(attributeFields
+                    .Select(f => joinDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
                         attributeDataset.Name + "." + f.Name : f.Name))).ToArray();
 
-                // insert features into new feature class
-                ExportInsertFeatures(tempDisplayTable, exportQueryFilter, _hluFeatureSelection.SelectionSet.Count,
+                // Insert the features and attributes into the new feature class.
+                ExportInsertFeatures(joinDisplayTable, exportQueryFilter, exportFeatureCount,
                     exportFieldMap, isShp, outWS, outFeatureClass);
+
+                // Store the feature layer ready for adding it later.
+                _hluExportLayer = new FeatureLayer();
+                _hluExportLayer.FeatureClass = outFeatureClass;
+                _hluExportLayer.Name = outFeatureClass.AliasName;
 
             }
             catch (Exception ex) { _pipeData.Add(ex.Message); }
             finally
             {
+                // Remove the virtual relationship.
                 if (relClass != null)
-                    ((IDisplayRelationshipClass)_hluLayer).DisplayRelationshipClass(
+                {
+                    //IRelationshipClassCollectionEdit relClassEdit = (IRelationshipClassCollectionEdit)joinLayer;
+                    //relClassEdit.RemoveAllRelationshipClasses();
+                    ((IDisplayRelationshipClass)joinLayer).DisplayRelationshipClass(
                         null, esriJoinType.esriLeftInnerJoin);
-                outFeatureClass = null;
-                try { if (File.Exists(tempMdbPathName)) File.Delete(tempMdbPathName); }
+                }
+
+                // Destroy workspace factory so the attribute dataset can
+                // be deleted later.
+                attributeDataset = null;
+                exportAttributes = null;
+                joinWorkspaceFactory = null;
+
+                // Delete the temporary feature class.
+                try
+                {
+                    if (joinFeatureClass != _hluFeatureClass)
+                    {
+                        IDataset tempDataset = (IDataset)joinFeatureClass;
+                        if (tempDataset != null) tempDataset.Delete();
+                    }
+                }
                 catch { }
+
                 SetCursor(false);
             }
         }
 
-        private void OpenOleDbWorkspace(string tempMdbPathName, string datasetName,
+        private void OpenOleDbWorkspace(string tempMdbPathName, string datasetName, ref IWorkspaceFactory workspaceFactory,
             out IDataset attributeDataset, out ITable exportAttributes)
         {
             if (!File.Exists(tempMdbPathName)) throw new IOException("File not found");
@@ -2586,7 +2563,7 @@ namespace HLU
             propertySet.SetProperty("CONNECTSTRING",
                 String.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};", tempMdbPathName));
 
-            IWorkspaceFactory workspaceFactory = new OLEDBWorkspaceFactoryClass();
+            workspaceFactory = new OLEDBWorkspaceFactoryClass();
             IWorkspace exportWorkspace = workspaceFactory.Open(propertySet, 0);
 
             exportAttributes = null;
@@ -2615,7 +2592,7 @@ namespace HLU
             for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
             {
                 IField attributeField = exportAttributes.Fields.get_Field(i);
-                if (attributeField.Name != originPKJoinField)
+                if (attributeField.Name.ToLower() != originPKJoinField.ToLower())
                 {
                     attributeFields.Add(attributeField);
                     attributeFieldOrdinals.Add(i);
@@ -2630,35 +2607,17 @@ namespace HLU
             for (int i = 0; i < featureClass.Fields.FieldCount; i++)
             {
                 IField featClassField = featureClass.Fields.get_Field(i);
-                if (((featClassField.Name == originFKJoinField) ||
-                    (attributeFields.Count(f => f.Name == featClassField.Name) == 0)) &&
-                    ((featClassField.Name != "OBJECTID") &&
+                if (((featClassField.Name.ToLower() == originFKJoinField.ToLower()) ||
+                    (attributeFields.Count(f => f.Name.ToLower() == featClassField.Name.ToLower()) == 0)) &&
+                    ((featClassField.Name.ToUpper() != "OBJECTID") &&
                     (featClassField.Type != esriFieldType.esriFieldTypeOID) &&
                     (featClassField.Type != esriFieldType.esriFieldTypeGeometry)) &&
-                    (!featClassField.Name.StartsWith(featureClass.ShapeFieldName + "_")))
+                    (!featClassField.Name.StartsWith(featureClass.ShapeFieldName + "_", StringComparison.CurrentCultureIgnoreCase)))
                 {
                     featClassFields.Add(featClassField);
                     featClassFieldOrdinals.Add(i);
                 }
             }
-
-            // Build a list consisting of the feature layer field that is to be
-            // used as the foreign key when joining to the attribute table plus
-            // any other feature fields not already in the attribute table.
-            List<IField> featClassFields2;
-            featClassFields2 = new List<IField>();
-            List<int> featClassFieldOrdinals2 = new List<int>();
-            foreach (DataColumn c in _hluLayerStructure.Columns)
-            {
-                if ((c.ColumnName == originFKJoinField) ||
-                    (attributeFields.Count(f => f.Name == c.ColumnName) == 0))
-                {
-                    int fieldOrdinal2 = _hluFieldMap[c.Ordinal];
-                    featClassFields2.Add(_hluFeatureClass.Fields.get_Field(fieldOrdinal2));
-                    featClassFieldOrdinals2.Add(fieldOrdinal2);
-                }
-            }
-
             // Append the attribute table fields to the feature layer fields
             // as a new list of fields to go into the export layer.
             List<IField> exportFields = new List<IField>(featClassFields);
@@ -2796,6 +2755,7 @@ namespace HLU
             bool calcGeometry = _hluFeatureClass.ShapeType == esriGeometryType.esriGeometryPoint || isShp;
             double geom1;
             double geom2;
+            // The last two fields are always the geometry fields.
             int ixGeom1 = featureBuffer.Fields.FieldCount - 2;
             int ixGeom2 = featureBuffer.Fields.FieldCount - 1;
 
@@ -2860,6 +2820,7 @@ namespace HLU
             finally
             {
                 FlushCursor(true, ref exportFeatureCursor);
+
                 if (restoreEditSession) OpenEditSession();
                 statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
                 statusBar.HideProgressBar();
@@ -2972,6 +2933,51 @@ namespace HLU
             return outFields;
         }
 
+        public void AddFieldIndex(IFeatureClass featureClass, String indexName, String fieldName)
+        {
+            // Ensure the feature class contains the specified field.
+            int fieldIndex = featureClass.FindField(fieldName);
+            if (fieldIndex == -1)
+                return;
+
+            // Get the specified field from the feature class.
+            IFields featureClassFields = featureClass.Fields;
+            IField field = featureClassFields.get_Field(fieldIndex);
+
+            // Create a fields collection and add the specified field to it.
+            IFields fields = new FieldsClass();
+            IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
+            fieldsEdit.FieldCount_2 = 1;
+            fieldsEdit.set_Field(0, field);
+
+            //Create an index and cast to the IIndexEdit interface.
+            IIndex index = new IndexClass();
+            IIndexEdit indexEdit = (IIndexEdit)index;
+
+            // Set the index's properties, including the associated fields.
+            indexEdit.Fields_2 = fields;
+            indexEdit.IsAscending_2 = false;
+            indexEdit.IsUnique_2 = false;
+            indexEdit.Name_2 = indexName;
+
+            // Attempt to acquire an exclusive schema lock on the feature class.
+            ISchemaLock schemaLock = (ISchemaLock)featureClass;
+            try
+            {
+                schemaLock.ChangeSchemaLock(esriSchemaLock.esriExclusiveSchemaLock);
+                featureClass.AddIndex(index);
+            }
+            catch (COMException comExc)
+            {
+                // Handle this in a way appropriate to your application.
+                Console.WriteLine("A COM Exception was thrown: {0}", comExc.Message);
+            }
+            finally
+            {
+                schemaLock.ChangeSchemaLock(esriSchemaLock.esriSharedSchemaLock);
+            }
+        }
+
         /// <summary>
         /// Creates a new feature class. Returns the feature class or null if not successful. Throws but does not handle errors. 
         /// </summary>
@@ -3071,6 +3077,12 @@ namespace HLU
                     featureType, shapeFieldName, configWord);
             }
             return featureClass;
+        }
+
+        private void AddExportLayer()
+        {
+            // Add the exported feature layer to the active map.
+            _focusMap.AddLayer(_hluExportLayer);
         }
 
         #endregion
