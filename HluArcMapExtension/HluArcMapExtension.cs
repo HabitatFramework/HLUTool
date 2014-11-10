@@ -2356,16 +2356,6 @@ namespace HLU
                 // Open the export dataset workspace.
                 outWS = ((IName)exportDatasetName.WorkspaceName).Open();
 
-                // Set the export options depending upon which records to export.
-                if (selectedOnly)
-                    exportOptions = esriExportTableOptions.esriExportSelectedRecords;
-                else
-                {
-                    exportOptions = esriExportTableOptions.esriExportAllRecords;
-                    // Clear any current selection.
-                    _hluFeatureSelection.SelectionSet = null;
-                }
-
                 // Get the geometry definition for the feature layer.
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
                     _hluFeatureClass.ShapeFieldName)).GeometryDef;
@@ -2373,11 +2363,17 @@ namespace HLU
                 ITable joinLayerTable;
                 IDisplayTable joinDisplayTable;
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR13 (Export features performance)
+                //
                 // If only a sub-set of features are being exported then
                 // export the sub-set to a temporary feature class before
                 // joining the temporary layer to the attribute dataset.
                 if (selectedOnly)
                 {
+                    // Set the export options for which records to export.
+                    exportOptions = esriExportTableOptions.esriExportSelectedRecords;
+
                     // Set the input DataSet name
                     IDataset inDataset;
                     inDataset = (IDataset)hluDisplayTable.DisplayTable;
@@ -2439,6 +2435,12 @@ namespace HLU
                 // attribute dataset.
                 else
                 {
+                    // Clear any current selection.
+                    _hluFeatureSelection.SelectionSet = null;
+
+                    // Set the export options for which records to export.
+                    exportOptions = esriExportTableOptions.esriExportAllRecords;
+
                     // Set the join feature class to the current HLU feature class.
                     joinFeatureClass = _hluFeatureClass;
 
@@ -2450,6 +2452,7 @@ namespace HLU
                     // Set the count for the number of features to be exported.
                     exportFeatureCount = totalFeatureCount;
                 }
+                //---------------------------------------------------------------------
 
                 // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
@@ -2511,14 +2514,25 @@ namespace HLU
                     .Select(f => joinDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
                         attributeDataset.Name + "." + f.Name : f.Name))).ToArray();
 
+                //---------------------------------------------------------------------
+                // FIX: 038 Display the export progress bar correctly when exporting
+                // from ArcGIS.
+                //
+                // Pass the number of features to be exported, not the number of incids,
+                // so that the export progress is displayed corectly
+                //
                 // Insert the features and attributes into the new feature class.
                 ExportInsertFeatures(joinDisplayTable, exportQueryFilter, exportFeatureCount,
                     exportFieldMap, isShp, outWS, outFeatureClass);
+                //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR16 (Adding exported features)
                 // Store the feature layer ready for adding it later.
                 _hluExportLayer = new FeatureLayer();
                 _hluExportLayer.FeatureClass = outFeatureClass;
                 _hluExportLayer.Name = outFeatureClass.AliasName;
+                //---------------------------------------------------------------------
 
             }
             catch (Exception ex) { _pipeData.Add(ex.Message); }
@@ -2592,13 +2606,22 @@ namespace HLU
             for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
             {
                 IField attributeField = exportAttributes.Fields.get_Field(i);
+                //---------------------------------------------------------------------
+                // FIX: 033 Ignore case in field names during export to avoid duplicate
+                // fields.
                 if (attributeField.Name.ToLower() != originPKJoinField.ToLower())
+                //---------------------------------------------------------------------
                 {
                     attributeFields.Add(attributeField);
                     attributeFieldOrdinals.Add(i);
                 }
             }
 
+            //---------------------------------------------------------------------
+            // FIX: 037 Move the geometry length and area fields to the end.
+            // Exclude the length and area fields here so they can be moved/added
+            // later at the end.
+            //
             // Build a list consisting of the feature layer field that is to be
             // used as the foreign key when joining to the attribute table plus
             // any other feature fields not already in the attribute table.
@@ -2618,6 +2641,8 @@ namespace HLU
                     featClassFieldOrdinals.Add(i);
                 }
             }
+            //---------------------------------------------------------------------
+
             // Append the attribute table fields to the feature layer fields
             // as a new list of fields to go into the export layer.
             List<IField> exportFields = new List<IField>(featClassFields);
@@ -2667,6 +2692,11 @@ namespace HLU
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR13 (Export features performance)
+        // Enable query filter to be built for specific layer so that
+        // subset layers can be exported rather than always the whole
+        // feature layer.
         private IQueryFilter ExportQueryFilter(string originPKJoinField, IFeatureLayer featureLayer,
             IFeatureClass featureClass, IDisplayTable hluDisplayTable, IDataset attributeDataset,
             List<IField> featClassFields, List<IField> attributeFields,
@@ -2694,6 +2724,8 @@ namespace HLU
             {
                 queryFilterSubFields.Append(",").Append(String.Join(",",
                     attributeFields.Select(f => attributeDataset.Name + "." + f.Name).ToArray()));
+                // Don't set the where clause because all features will always
+                // be exported from the specified layer.
                 //queryFilterWhereClause = String.Format("{0} IS NOT NULL",
                   //  _hluLayer.Name + "." + originPKJoinField);
             }
@@ -2701,6 +2733,8 @@ namespace HLU
             {
                 queryFilterSubFields.Append(",").Append(
                     String.Join(",", attributeFields.Select(f => f.Name).ToArray()));
+                // Don't set the where clause because all features will always
+                // be exported from the specified layer.
                 //queryFilterWhereClause = String.Format("{0} IS NOT NULL", originPKJoinField);
             }
             IQueryFilter exportQueryFilter = new QueryFilterClass();
@@ -2709,6 +2743,7 @@ namespace HLU
 
             return exportQueryFilter;
         }
+        //---------------------------------------------------------------------
 
         private bool IsShp(IWorkspace workspace)
         {
@@ -2771,8 +2806,11 @@ namespace HLU
                         item = exportFeature.get_Value(exportFieldMap[i]);
                         if (item != DBNull.Value)
                             featureBuffer.set_Value(i, item);
+                        //---------------------------------------------------------------------
+                        // FIX: 036 Clear all missing fields when exporting features from ArcGIS.
                         else
                             featureBuffer.set_Value(i, null);
+                        //---------------------------------------------------------------------
                     }
 
                     if (calcGeometry)
@@ -2933,6 +2971,15 @@ namespace HLU
             return outFields;
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR13 (Export features performance)
+        // Add a new attribute index to a feature class.
+        /// <summary>
+        /// Adds an attribute index to a field in a feature class.
+        /// </summary>
+        /// <param name="featureClass">The feature class.</param>
+        /// <param name="indexName">Name of the index.</param>
+        /// <param name="fieldName">Name of the field.</param>
         public void AddFieldIndex(IFeatureClass featureClass, String indexName, String fieldName)
         {
             // Ensure the feature class contains the specified field.
@@ -2977,6 +3024,7 @@ namespace HLU
                 schemaLock.ChangeSchemaLock(esriSchemaLock.esriSharedSchemaLock);
             }
         }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Creates a new feature class. Returns the feature class or null if not successful. Throws but does not handle errors. 
@@ -3079,11 +3127,15 @@ namespace HLU
             return featureClass;
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR16 (Adding exported features)
+        // Add the new export table to the current map window.
         private void AddExportLayer()
         {
             // Add the exported feature layer to the active map.
             _focusMap.AddLayer(_hluExportLayer);
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
