@@ -180,7 +180,9 @@ namespace HLU.UI.ViewModel
             set { _exportID = value; }
         }
 
-        public bool HaveSelection { get { return _selectedNumber > 0; } }
+        // Enable the SelectedOnly checkbox to be checked even if
+        // the number of selected features is zero.
+        public bool HaveSelection { get { return _selectedNumber > -1; } }
 
         public bool SelectedOnly
         {
