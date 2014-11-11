@@ -2348,6 +2348,10 @@ namespace HLU
                 // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
 
+                //---------------------------------------------------------------------
+                // FIX: 050 Warn ArcGIS users if field names may be truncated or
+                // renamed exporting to shaefiles.
+                //
                 // If the export layer is a shapefile check if any of
                 // the attribute field names will be truncated.
                 if (isShp)
@@ -2376,6 +2380,7 @@ namespace HLU
                         }
                     }
                 }
+                //---------------------------------------------------------------------
 
                 // Get the geometry definition for the feature layer.
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
