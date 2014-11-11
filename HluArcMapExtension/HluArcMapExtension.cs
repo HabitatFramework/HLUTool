@@ -32,7 +32,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
+using System.Windows;
 using AppModule.InterProcessComm;
 using ESRI.ArcGIS.ADF.CATIDs;
 using ESRI.ArcGIS.ArcMapUI;
@@ -84,7 +84,6 @@ namespace HLU
         public delegate void ZoomSelectedDelegate();
         public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter);
         public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, bool selectedOnly);
-        public delegate void AddExportLayerDelegate();
         public delegate void IsHluWorkspaceDelegate();
         public delegate void ListHluLayersDelegate();
         public delegate void IsHluLayerDelegate(int ixMap, int ixLayer);
@@ -121,7 +120,6 @@ namespace HLU
         private IWorkspaceEdit _hluWorkspaceEdit;
         private bool _hluWSisSDE = false;
         private IFeatureLayer _hluLayer;
-        private IFeatureLayer _hluExportLayer;
         private List<string> _hluLayerList;
         private string _hluTableName;
         private IFeatureClass _hluFeatureClass;
@@ -164,7 +162,6 @@ namespace HLU
         private static ZoomSelectedDelegate _zoomSelDel;
         private static ZoomSelectedCursorDelegate _zoomSelCursorDel;
         private static ExportDelegate _exportDel;
-        private static AddExportLayerDelegate _addExportLayerDel;
         private static IsHluWorkspaceDelegate _isHluWorkspaceDel;
         private static ListHluLayersDelegate _ListHluLayersDel;
         private static IsHluLayerDelegate _isHluLayerDel;
@@ -249,7 +246,7 @@ namespace HLU
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU GIS Tool Installer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU GIS Tool Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -345,7 +342,6 @@ namespace HLU
                 _zoomSelDel = new ZoomSelectedDelegate(ZoomSelected);
                 _zoomSelCursorDel = new ZoomSelectedCursorDelegate(ZoomSelectedCursor);
                 _exportDel = new ExportDelegate(Export);
-                _addExportLayerDel = new AddExportLayerDelegate(AddExportLayer);
                 _isHluWorkspaceDel = new IsHluWorkspaceDelegate(IsHluWorkspace);
                 _ListHluLayersDel = new ListHluLayersDelegate(ListHluLayers);
                 _isHluLayerDel = new IsHluLayerDelegate(IsHluLayer);
@@ -865,13 +861,6 @@ namespace HLU
                                 _dummyControl.Invoke(_exportDel,
                                     new object[] { mdbPathName, attributeDatasetName, selectedOnly });
                             }
-                            catch { _pipeData.Clear(); }
-                        }
-                        break;
-                    case "ae": // addExportLayer: cmd
-                        if (_pipeData.Count == 1)
-                        {
-                            try { _dummyControl.Invoke(_addExportLayerDel, null); }
                             catch { _pipeData.Clear(); }
                         }
                         break;
@@ -2356,6 +2345,38 @@ namespace HLU
                 // Open the export dataset workspace.
                 outWS = ((IName)exportDatasetName.WorkspaceName).Open();
 
+                // Determine if the export layer is a shapefile.
+                bool isShp = IsShp(outWS as IWorkspace);
+
+                // If the export layer is a shapefile check if any of
+                // the attribute field names will be truncated.
+                if (isShp)
+                {
+                    bool fieldNamesTruncated = false;
+                    for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
+                    {
+                        IField attributeField = exportAttributes.Fields.get_Field(i);
+                        if (attributeField.Name.Length > 10)
+                        {
+                            fieldNamesTruncated = true;
+                            break;
+                        }
+                    }
+
+                    // Warn the user that some field names may get truncated.
+                    if (fieldNamesTruncated)
+                    {
+                        MessageBoxResult userResponse = MessageBoxResult.No;
+                        userResponse = MessageBox.Show("Some field names may get truncated or renamed exporting to a shapefile.\n\nDo you wish to proceed?", "HLU: Export",
+                            MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (userResponse != MessageBoxResult.Yes)
+                        {
+                            _pipeData.Add("cancelled");
+                            return;
+                        }
+                    }
+                }
+
                 // Get the geometry definition for the feature layer.
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
                     _hluFeatureClass.ShapeFieldName)).GeometryDef;
@@ -2454,9 +2475,6 @@ namespace HLU
                 }
                 //---------------------------------------------------------------------
 
-                // Determine if the export layer is a shapefile.
-                bool isShp = IsShp(outWS as IWorkspace);
-
                 // Get the field names to be used when joining the attribute data and the feature layer
                 string originPKJoinField = _hluLayerStructure.incidColumn.ColumnName;
                 string originFKJoinField =
@@ -2517,7 +2535,6 @@ namespace HLU
                 //---------------------------------------------------------------------
                 // FIX: 038 Display the export progress bar correctly when exporting
                 // from ArcGIS.
-                //
                 // Pass the number of features to be exported, not the number of incids,
                 // so that the export progress is displayed corectly
                 //
@@ -2528,10 +2545,20 @@ namespace HLU
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR16 (Adding exported features)
-                // Store the feature layer ready for adding it later.
-                _hluExportLayer = new FeatureLayer();
-                _hluExportLayer.FeatureClass = outFeatureClass;
-                _hluExportLayer.Name = outFeatureClass.AliasName;
+                // Ask the user if they want to add the new export layer
+                // to the active map.
+                MessageBoxResult addResponse = MessageBoxResult.No;
+                addResponse = MessageBox.Show("The export operation succeeded.\n\nAdd the exported layer to the current map?", "HLU: Export",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (addResponse == MessageBoxResult.Yes)
+                {
+                    // Add the exported feature layer to the active map.
+                    IFeatureLayer hluExportLayer;
+                    hluExportLayer = new FeatureLayer();
+                    hluExportLayer.FeatureClass = outFeatureClass;
+                    hluExportLayer.Name = outFeatureClass.AliasName;
+                    _focusMap.AddLayer(hluExportLayer);
+                }
                 //---------------------------------------------------------------------
 
             }
@@ -3126,16 +3153,6 @@ namespace HLU
             }
             return featureClass;
         }
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR16 (Adding exported features)
-        // Add the new export table to the current map window.
-        private void AddExportLayer()
-        {
-            // Add the exported feature layer to the active map.
-            _focusMap.AddLayer(_hluExportLayer);
-        }
-        //---------------------------------------------------------------------
 
         #endregion
 

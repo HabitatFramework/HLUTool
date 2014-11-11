@@ -899,7 +899,7 @@ namespace HLU.GISApplication.ArcGIS
             if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
             {
                 // Display message if no output layer is entered by the user.
-                MessageBox.Show("Export cancelled. No output table selected.", "HLU: Export",
+                MessageBox.Show("Export cancelled.", "HLU: Export",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
             }
@@ -907,7 +907,7 @@ namespace HLU.GISApplication.ArcGIS
             {
                 // Display message if no selected features are found.
                 MessageBox.Show("Export cancelled. No features selected.", "HLU: Export",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return true;
             }
             else if (returnList.Count > 0)
@@ -915,24 +915,6 @@ namespace HLU.GISApplication.ArcGIS
                 MessageBox.Show(String.Format("The export operation failed. The Message returned was:\n\n{0}",
                     returnList[0]), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
-            }
-            else if (returnList.Count == 0)
-            {
-                //---------------------------------------------------------------------
-                // CHANGED: CR16 (Adding exported features)
-                // Ask the user if they want to add the new export layer to the
-                // active map.
-                MessageBoxResult userResponse = MessageBoxResult.No;
-                userResponse = MessageBox.Show("The export operation succeeded.\n\nAdd the exported layer to the current map?", "HLU: Export",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
-                // Add the already open layer to the map window.
-                if (userResponse == MessageBoxResult.Yes)
-                {
-                    returnList = IpcArcMap(
-                        new string[] { "ae" });
-                }
-                return true;
-                //---------------------------------------------------------------------
             }
             else
             {
