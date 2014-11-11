@@ -2350,7 +2350,7 @@ namespace HLU
 
                 //---------------------------------------------------------------------
                 // FIX: 050 Warn ArcGIS users if field names may be truncated or
-                // renamed exporting to shaefiles.
+                // renamed exporting to shapefiles.
                 //
                 // If the export layer is a shapefile check if any of
                 // the attribute field names will be truncated.
