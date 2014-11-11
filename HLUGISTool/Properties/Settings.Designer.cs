@@ -662,7 +662,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -736,7 +736,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public int GetValueRows {
             get {
@@ -749,7 +749,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100000")]
         public int MaxGetValueRows {
             get {
                 return ((int)(this["MaxGetValueRows"]));
