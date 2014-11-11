@@ -616,7 +616,7 @@ namespace HLU.UI.ViewModel
                 // If the field is a text field and has a maximum length
                 // then set the maximum length property.
                 if ((f.FieldType == System.Type.GetType("System.String")) &&
-                    (f.FieldLength != null) && (f.FieldLength > 0)) c.MaxLength = f.FieldLength;
+                    (f.FieldLength > 0)) c.MaxLength = f.FieldLength;
 
                 // Add the field as a new column in the export table.
                 exportTable.Columns.Add(c);
