@@ -2422,17 +2422,8 @@ namespace HLU
                         return;
                     }
 
-                    IStatusBar statusBar = _application.StatusBar;
-                    IStepProgressor progressBar = statusBar.ProgressBar;
-                    progressBar.Position = 0;
-                    statusBar.ShowProgressBar("Exporting temporary layer...", 0, 10, 1, true);
-                    progressBar.Step();
-
                     // Export the selected features to the temporary dataset.
                     exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
-
-                    statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
-                    statusBar.HideProgressBar();
 
                     // Cast the workspace to IFeatureWorkspace and open the feature class.
                     IFeatureWorkspace featureWorkspace = (IFeatureWorkspace)outWS;
@@ -2786,10 +2777,28 @@ namespace HLU
         private void ExportInsertFeatures(IDisplayTable hluDisplayTable, IQueryFilter exportQueryFilter, 
             int exportRowCount, int[] exportFieldMap, bool isShp, object outWS, IFeatureClass outFeatureClass)
         {
-            IStatusBar statusBar = _application.StatusBar;
-            IStepProgressor progressBar = statusBar.ProgressBar;
-            progressBar.Position = 0;
-            statusBar.ShowProgressBar("Exporting...", 0, exportRowCount, 1, true);
+            // Create a Cancel Tracker.
+            ITrackCancel trackCancel = new CancelTrackerClass();
+
+            // Create the Progress Dialog. This automatically displays the dialog.
+            IProgressDialogFactory progressDlgFactory = new ProgressDialogFactoryClass();
+            IProgressDialog2 progressDlg = progressDlgFactory.Create(trackCancel, _application.hWnd) as IProgressDialog2;
+
+            // Set the properties of the Progress Dialog.
+            progressDlg.CancelEnabled = true;
+            progressDlg.Title = "Export Progress";
+            progressDlg.Description = string.Format("Exporting HLU Features and Attributes\n({0} features)", exportRowCount.ToString());
+            progressDlg.Animation = esriProgressAnimationTypes.esriNoAnimation;
+
+            // Set the properties of the Step Progressor.
+            IStepProgressor stepProgressor = progressDlg as IStepProgressor;
+            stepProgressor.MinRange = 0;
+            stepProgressor.MaxRange = exportRowCount;
+            stepProgressor.StepValue = 1;
+            stepProgressor.Message = "";
+
+            // Set the continue progress to true.
+            bool contProgress = true;
 
             IWorkspaceEdit workspaceEdit = null;
             IWorkspace wsOut = outWS as IWorkspace;
@@ -2857,7 +2866,10 @@ namespace HLU
                     try { insertCursor.InsertFeature(featureBuffer); }
                     catch { }
 
-                    progressBar.Step();
+                    // Check if the cancel button was pressed. If so, stop the process.
+                    contProgress = trackCancel.Continue();
+                    if (!contProgress)
+                        throw new Exception("Export cancelled by user.");
                 }
                 FlushCursor(false, ref insertCursor);
 
@@ -2892,8 +2904,13 @@ namespace HLU
                 FlushCursor(true, ref exportFeatureCursor);
 
                 if (restoreEditSession) OpenEditSession();
-                statusBar.set_Message((int)esriStatusBarPanes.esriStatusMain, "");
-                statusBar.HideProgressBar();
+
+                // Hide the progress dialog.
+                trackCancel = null;
+                stepProgressor = null;
+                progressDlg.HideDialog();
+                progressDlg = null;
+                progressDlgFactory = null;
             }
         }
 
