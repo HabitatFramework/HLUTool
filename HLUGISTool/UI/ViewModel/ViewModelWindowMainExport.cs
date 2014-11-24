@@ -48,6 +48,7 @@ namespace HLU.UI.ViewModel
         private string _lastTableName;
         private int _tableCount;
         private int _fieldCount;
+        private int _bapIdOrdinal;
         private int _sourceIdOrdinal;
         private List<int> _sourceDateStartOrdinals;
         private List<int> _sourceDateEndOrdinals;
@@ -178,10 +179,11 @@ namespace HLU.UI.ViewModel
                 StringBuilder targetList;
                 StringBuilder fromClause;
                 int incidOrdinal;
-                int[] dupsAllowed;
+                int[] bapOrdinals;
+                int[] sourceOrdinals;
                 List<ExportField> exportFields = new List<ExportField>();
                 ExportJoins(tableAlias, ref exportFields, out exportTable,
-                    out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal, out dupsAllowed);
+                    out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal, out bapOrdinals, out sourceOrdinals);
 
                 // Add the length of the GIS layer fields to the length of
                 // field attributes exported from the database (excluding
@@ -249,7 +251,7 @@ namespace HLU.UI.ViewModel
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
                 tempPath = ExportMdb(targetList.ToString(), fromClause.ToString(), exportFilter,
-                    _viewModelMain.DataBase, exportFields, exportTable, incidOrdinal, dupsAllowed, ref fieldMapTemplate, out exportRowCount);
+                    _viewModelMain.DataBase, exportFields, exportTable, incidOrdinal, bapOrdinals, sourceOrdinals, ref fieldMapTemplate, out exportRowCount);
 
                 if (String.IsNullOrEmpty(tempPath))
                     throw new Exception("Error creating the export table");
@@ -293,14 +295,15 @@ namespace HLU.UI.ViewModel
 
         private void ExportJoins(string tableAlias, ref List<ExportField> exportFields, out DataTable exportTable,
             out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause,
-            out int incidOrdinal, out int[] dupsAllowed)
+            out int incidOrdinal, out int[] bapOrdinals, out int[] sourceOrdinals)
         {
             exportTable = new DataTable("HluExport");
             targetList = new StringBuilder();
             List<string> fromList = new List<string>();
             List<string> leftJoined = new List<string>();
             fromClause = new StringBuilder();
-            dupsAllowed = null;
+            bapOrdinals = null;
+            sourceOrdinals = null;
 
             int tableAliasNum = 1;
             bool firstJoin = true;
@@ -599,11 +602,13 @@ namespace HLU.UI.ViewModel
             // in the export table and adding them to the field map template.
             int fieldTotal = 0;
             int primaryKeyOrdinal = -1;
+            _bapIdOrdinal = -1;
             _sourceIdOrdinal = -1;
             _sourceDateStartOrdinals = new List<int>();
             _sourceDateEndOrdinals = new List<int>();
             _sourceDateTypeOrdinals = new List<int>();
-            List<int> dupFields = new List<int>();
+            List<int> bapFields = new List<int>();
+            List<int> sourceFields = new List<int>();
             foreach (ExportField f in exportFields.OrderBy(f => f.FieldOrder))
             {
                 // Create a new data column for the field.
@@ -646,11 +651,24 @@ namespace HLU.UI.ViewModel
                 }
 
                 // If the table is the incid_sources table.
-                if (f.TableName == _viewModelMain.HluDataset.incid_sources.TableName)
+                if (f.TableName == _viewModelMain.HluDataset.incid_bap.TableName)
                 {
                     // Add the output field position to the list of fields
                     // that can have duplicate values.
-                    dupFields.Add(fieldTotal);
+                    bapFields.Add(fieldTotal);
+
+                    // If the field refers to the bap_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_source field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_bap.bap_idColumn.ColumnName)
+                        _bapIdOrdinal = f.FieldOrdinal;
+                }
+                // If the table is the incid_sources table.
+                else if (f.TableName == _viewModelMain.HluDataset.incid_sources.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that can have duplicate values.
+                    sourceFields.Add(fieldTotal);
 
                     // If the field refers to the source_id column then store
                     // the input field ordinal for use later as the unique
@@ -694,8 +712,9 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             // Store which export fields can be allowed to have duplicate
-            // values (i.e. the incid_source fields).
-            dupsAllowed = dupFields.ToArray();
+            // values (i.e. the incid_bap and incid_source fields).
+            bapOrdinals = bapFields.ToArray();
+            sourceOrdinals = sourceFields.ToArray();
 
             // If any incid_source fields are in the export file.
             if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0))
@@ -704,9 +723,22 @@ namespace HLU.UI.ViewModel
                 int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
 
                 //---------------------------------------------------------------------
-                // FIX: 046 Don't export multiple source details for the
-                // same source.
+                // FIX: 046 Don't export duplicate bap or source details
+                // same incid.
                 //
+                // If the bap_id column is not included then add
+                // it so that different baps can be identified.
+                if (_bapIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_bap.TableName,
+                        _viewModelMain.HluDataset.incid_bap.bap_idColumn.ColumnName, _viewModelMain.HluDataset.incid_bap.bap_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_bap field ordinal.
+                    _bapIdOrdinal = lastFieldOrdinal += 1;
+                }
+
                 // If the source_id column is not included then add
                 // it so that different sources can be identified.
                 if (_sourceIdOrdinal == -1)
@@ -773,7 +805,7 @@ namespace HLU.UI.ViewModel
         }
 
         private string ExportMdb(string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
-            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int incidOrdinal, int[]dupsAllowed, 
+            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int incidOrdinal, int[] bapOrdinals, int[] sourceOrdinals, 
             ref int[][] fieldMap, out int exportRowCount)
         {
             exportRowCount = -1;
@@ -864,8 +896,10 @@ namespace HLU.UI.ViewModel
                     {
                         string currIncid = String.Empty;
                         string prevIncid = String.Empty;
-                        object currSourceId = String.Empty;
-                        object prevSourceId = String.Empty;
+                        string currBapId = String.Empty;
+                        string prevBapId = String.Empty;
+                        string currSourceId = String.Empty;
+                        string prevSourceId = String.Empty;
                         int currSourceDateStart = 0;
                         int currSourceDateEnd = 0;
                         string currSourceDateType = String.Empty;
@@ -878,12 +912,28 @@ namespace HLU.UI.ViewModel
                             currIncid = reader.GetString(incidOrdinal);
 
                             //---------------------------------------------------------------------
-                            // FIX: 046 Don't export multiple source details for the
-                            // same source.
+                            // FIX: 046 Don't export duplicate bap or source details
+                            // same incid.
                             //
+                            // Get the current bap id (or equivalent lookup table field).
+                            if (_sourceIdOrdinal != -1)
+                            {
+                                object bapIdValue = reader.GetValue(_bapIdOrdinal);
+                                if (bapIdValue != null)
+                                    currBapId = bapIdValue.ToString();
+                                else
+                                    currBapId = String.Empty;
+                            }
+
                             // Get the current source id (or equivalent lookup table field).
                             if (_sourceIdOrdinal != -1)
-                                currSourceId = reader.GetValue(_sourceIdOrdinal);
+                            {
+                                object sourceIdValue = reader.GetValue(_sourceIdOrdinal);
+                                if (sourceIdValue != null)
+                                    currSourceId = sourceIdValue.ToString();
+                                else
+                                    currSourceId = String.Empty;
+                            }
                             //---------------------------------------------------------------------
 
                             //---------------------------------------------------------------------
@@ -914,11 +964,12 @@ namespace HLU.UI.ViewModel
                                 // Store the last incid.
                                 prevIncid = currIncid;
 
+                                // Store the last bap and source ids.
+                                prevBapId = currBapId;
+                                prevSourceId = currSourceId;
+
                                 // Reset the field map index to the start of the array.
                                 fieldIndex = 1;
-
-                                // Store the last source id.
-                                prevSourceId = currSourceId;
 
                                 // If the last export row has not been added then
                                 // add it now.
@@ -1041,32 +1092,50 @@ namespace HLU.UI.ViewModel
                                         object lastItemStr = exportRow[fieldMap[i][fieldIndex - 1]].ToString();
 
                                         //---------------------------------------------------------------------
-                                        // FIX: 046 Don't export multiple source details for the
-                                        // same source.
+                                        // FIX: 046 Don't export duplicate bap or source details
+                                        // same incid.
                                         //
                                         // If the value is not null and the string value is different
                                         // to the last string value for this incid, or, the column is
-                                        // allowed to have duplicates and the source is different
-                                        // to the last source, then output the value.
-                                        if ((!itemStr.Equals(lastItemStr) ||
-                                            ((Array.IndexOf(dupsAllowed, fieldMap[i][fieldIndex]) != -1) && (currSourceId != prevSourceId))))
-                                        //---------------------------------------------------------------------
+                                        // allowed to have duplicates and the bap or source is different
+                                        // to the last bap or source, then output the value.
+                                        //if ((!itemStr.Equals(lastItemStr)) ||
+                                        //    ((Array.IndexOf(bapOrdinals, fieldMap[i][fieldIndex]) != -1) &&
+                                        //    (currBapId != prevBapId)) ||
+                                        //    ((Array.IndexOf(sourceOrdinals, fieldMap[i][fieldIndex]) != -1) &&
+                                        //    (currSourceId != prevSourceId)))
+                                        bool exp = false;
+                                        if (Array.IndexOf(bapOrdinals, fieldMap[i][fieldIndex]) != -1)
                                         {
-                                            // Get the maximum length of the column.
-                                            int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
-
-                                            // If the maximum length of the column is shorter
-                                            // than the value then truncate the value as it
-                                            // is transferred  to the export row.
-                                            if ((fieldLength != -1) && (fieldLength < itemStr.Length))
-                                                exportRow[fieldMap[i][fieldIndex]] = itemStr.Substring(0, fieldLength);
-                                            else
-                                                exportRow[fieldMap[i][fieldIndex]] = outValue;
+                                            if (currBapId != prevBapId)
+                                                exp = true;
                                         }
+                                        else if (Array.IndexOf(sourceOrdinals, fieldMap[i][fieldIndex]) != -1)
+                                        {
+                                            if (currSourceId != prevSourceId)
+                                                exp = true;
+                                        }
+                                        else if (!itemStr.Equals(lastItemStr))
+                                            exp = true;
+                                        //---------------------------------------------------------------------
+                                        if (exp)
+                                            {
+                                                // Get the maximum length of the column.
+                                                int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
+
+                                                // If the maximum length of the column is shorter
+                                                // than the value then truncate the value as it
+                                                // is transferred  to the export row.
+                                                if ((fieldLength != -1) && (fieldLength < itemStr.Length))
+                                                    exportRow[fieldMap[i][fieldIndex]] = itemStr.Substring(0, fieldLength);
+                                                else
+                                                    exportRow[fieldMap[i][fieldIndex]] = outValue;
+                                            }
                                     }
                                 }
                             }
-                            // Store the last source id.
+                            // Store the last bap and source ids.
+                            prevBapId = currBapId;
                             prevSourceId = currSourceId;
                         }
                     }
