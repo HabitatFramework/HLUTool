@@ -199,7 +199,7 @@ namespace HLU.UI.ViewModel
 
         public string SelectedNumber
         {
-            get { return HaveSelection ? String.Format("({0} selected)", _selectedNumber) : String.Empty; }
+            get { return HaveSelection ? String.Format("({0} selected feature{1})", _selectedNumber, _selectedNumber > 1 ? "s" : String.Empty) : String.Empty; }
         }
 
         #region IDataErrorInfo Members
