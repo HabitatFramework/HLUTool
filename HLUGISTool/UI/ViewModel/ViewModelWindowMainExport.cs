@@ -837,7 +837,7 @@ namespace HLU.UI.ViewModel
                     {
                         List<SqlFilterCondition> whereCond = new List<SqlFilterCondition>();
                         whereCond = exportFilter[0];
-                        exportFilter = whereCond.ChunkClause(250).ToList();
+                        exportFilter = whereCond.ChunkClause(240).ToList();
                     }
                     catch { }
                 }
@@ -1189,7 +1189,7 @@ namespace HLU.UI.ViewModel
 
                     // Convert the value to a vague date instance.
                     string vt = "D";
-                    Date.VagueDateInstance vd = new Date.VagueDateInstance(inInt, inInt, vt);
+                    VagueDateInstance vd = new VagueDateInstance(inInt, inInt, vt);
 
                     // If the vague date is invalid then return null.
                     if ((vd == null) || (vd.IsBad) || (vd.IsUnknown))
@@ -1198,7 +1198,7 @@ namespace HLU.UI.ViewModel
                     {
                         // If the vague date is valid then parse it into
                         // a date format.
-                        string itemStr = Date.VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        string itemStr = VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
                         DateTime inDate;
                         if (DateTime.TryParseExact(itemStr, "dd/MM/yyyy",
                             null, DateTimeStyles.None, out inDate))
@@ -1255,6 +1255,7 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR17 (Exporting date fields)
                 // Convert source dates into a text field with the required
                 // date format.
+                //
                 // If the input field is an integer and is part of
                 // the source date.
                 else if ((inType == System.Type.GetType("System.Int32")) &&
@@ -1264,7 +1265,7 @@ namespace HLU.UI.ViewModel
                     int inInt = (int)inValue;
 
                     // Convert the value to a vague date instance.
-                    Date.VagueDateInstance vd = new Date.VagueDateInstance(sourceDateStart, sourceDateEnd, sourceDateType);
+                    VagueDateInstance vd = new VagueDateInstance(sourceDateStart, sourceDateEnd, sourceDateType);
 
                     // If the vague date is invalid then set the output
                     // field to null.
@@ -1274,17 +1275,23 @@ namespace HLU.UI.ViewModel
                         return VagueDate.VagueDateTypes.Unknown.ToString();
                     else
                     {
-                        // If the output format is blank then format the date according
+                        // If the output format is 'v' or 'V' then format the dates according
                         // to the source date type.
-                        if (String.IsNullOrEmpty(outFormat))
+                        if (outFormat.ToLower() == "v")
+                        {
+                            return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        }
+                        // If the output format is blank then format the start or end date
+                        // according to the source date type.
+                        else if (String.IsNullOrEmpty(outFormat))
                         {
                             if (_sourceDateStartOrdinals.Contains(inOrdinal))
                             {
-                                return Date.VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Start);
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Start);
                             }
                             else if (_sourceDateEndOrdinals.Contains(inOrdinal))
                             {
-                                return Date.VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.End);
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.End);
                             }
                             else
                                 return null;
@@ -1300,7 +1307,7 @@ namespace HLU.UI.ViewModel
                                 // Set the date type applicable to the source date.
                                 string dateType = outFormat.Substring(0, 1);
 
-                                return Date.VagueDate.FromVagueDateInstance(new Date.VagueDateInstance(sourceDateStart, sourceDateEnd, dateType),
+                                return VagueDate.FromVagueDateInstance(new VagueDateInstance(sourceDateStart, sourceDateEnd, dateType),
                                     VagueDate.DateType.Start);
                             }
                             // If the field is an end date then use the last character of
@@ -1308,20 +1315,25 @@ namespace HLU.UI.ViewModel
                             else if (_sourceDateEndOrdinals.Contains(inOrdinal))
                             {
                                 // Set the date type applicable to the source date.
-                                string dateType = outFormat.Length == 1 ? outFormat + outFormat : outFormat;
+                                vd.DateType = outFormat.Length == 1 ? outFormat + outFormat : outFormat;
 
-                                return Date.VagueDate.FromVagueDateInstance(new Date.VagueDateInstance(sourceDateStart, sourceDateEnd, dateType),
-                                    VagueDate.DateType.End);
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.End);
                             }
                             else
                                 return null;
                         }
                         // If the output format is not a vague date type then format it
-                        // as if it is a standard date format.
+                        // as if it is a standard date format (e.g. dd/MM/yyyy).
                         else
                         {
                             // Parse the date into a date format using the output format.
-                            string inStr = Date.VagueDate.FromVagueDateInstance(new Date.VagueDateInstance(inInt, inInt, "D"), VagueDate.DateType.Vague);
+                            VagueDate.DateType dateType = VagueDate.DateType.Vague;
+                            if (_sourceDateStartOrdinals.Contains(inOrdinal))
+                                dateType = VagueDate.DateType.Start;
+                            else if (_sourceDateStartOrdinals.Contains(inOrdinal))
+                                dateType = VagueDate.DateType.Start;
+
+                            string inStr = VagueDate.FromVagueDateInstance(new VagueDateInstance(sourceDateStart, sourceDateEnd, "D"), dateType);
                             DateTime inDate;
                             if (!DateTime.TryParseExact(inStr, "dd/MM/yyyy", null, DateTimeStyles.None, out inDate))
                                 return null;
@@ -1353,7 +1365,14 @@ namespace HLU.UI.ViewModel
                     if (DateTime.TryParse(inStr, null, DateTimeStyles.None, out inDate))
                         return inDate.ToString();
                     else
-                        return inValue;
+                    {
+                        // If the input is an IHS code that is blank (i.e. only the
+                        // separator character is retrieved) then return null.
+                        if (inValue.ToString() == " : ")
+                            return null;
+                        else
+                            return inValue;
+                    }
                 }
             }
             else
