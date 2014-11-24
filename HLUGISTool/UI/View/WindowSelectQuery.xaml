@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="540"
+        Width="500"
         Height="480"
 		MaxHeight="800"
         Icon="..\..\Icons\HLUIcon.png"
@@ -172,8 +172,8 @@
 									SelectedValue="{Binding Path=QueryValue,
 															ValidatesOnDataErrors=True}"
 									SelectedValuePath="Value"
-									ItemContainerStyle="{DynamicResource ComboBoxItemStyle}"
 									DisplayMemberPath="Key">
+									<!--  ItemContainerStyle="{DynamicResource ComboBoxItemStyle}"  -->
 						</ComboBox>
 						<Button Name="ButtonAddValue"
 								Grid.Row="7"
