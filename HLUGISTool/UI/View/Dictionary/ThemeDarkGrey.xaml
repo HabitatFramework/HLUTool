@@ -3661,7 +3661,7 @@
                                Placement="Bottom"
                                PopupAnimation="Slide">
                             <Grid x:Name="DropDown"
-                                  MinWidth="{TemplateBinding ActualWidth}"
+                                  Width="{TemplateBinding ActualWidth}"
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                   SnapsToDevicePixels="True">
                                 <Border x:Name="DropDownBorder"
@@ -3721,6 +3721,7 @@
         </Setter>
     </Style>
 
+    <!--
 	<Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
 		<Setter Property="MaxWidth" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ComboBox}}, Path=ActualWidth}"/>
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
@@ -3823,6 +3824,7 @@
             </Setter.Value>
         </Setter>
 	</Style>
+    -->
 
     <Style TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
