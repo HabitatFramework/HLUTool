@@ -3127,7 +3127,7 @@ namespace HLU.GISApplication.MapInfo
                         // Turn off speed edits ('Undo Off' and 'FastEdit Off') on the old HLU layer
                         // and allow the user to remove if from the map or close it.
                         _mapInfoApp.Do(String.Format("Set Table {0} Undo On", _hluLayerOld));
-                        _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayerOld));
+                        //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap On", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserClose On", _hluLayerOld));
                         _mapInfoApp.Do(String.Format("Set Table {0} UserMap On", _hluLayerOld));
@@ -3136,7 +3136,7 @@ namespace HLU.GISApplication.MapInfo
                     // The layer is a valid HLU layer so speed up edits ('Undo Off' and 'FastEdit Off')
                     // and stop the user from being able to remove the layer from the map or close it.
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", _hluLayer));
-                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", _hluLayer));
+                    //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserRemoveMap Off", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserClose Off", _hluLayer));
                     _mapInfoApp.Do(String.Format("Set Table {0} UserMap Off", _hluLayer));
