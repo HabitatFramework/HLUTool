@@ -650,7 +650,7 @@ namespace HLU.UI.ViewModel
                     primaryKeyOrdinal = fieldTotal;
                 }
 
-                // If the table is the incid_sources table.
+                // If the table is the incid_bap table.
                 if (f.TableName == _viewModelMain.HluDataset.incid_bap.TableName)
                 {
                     // Add the output field position to the list of fields
@@ -659,7 +659,7 @@ namespace HLU.UI.ViewModel
 
                     // If the field refers to the bap_id column then store
                     // the input field ordinal for use later as the unique
-                    // incid_source field ordinal.
+                    // incid_bap field ordinal.
                     if (f.ColumnName == _viewModelMain.HluDataset.incid_bap.bap_idColumn.ColumnName)
                         _bapIdOrdinal = f.FieldOrdinal;
                 }
@@ -716,12 +716,12 @@ namespace HLU.UI.ViewModel
             bapOrdinals = bapFields.ToArray();
             sourceOrdinals = sourceFields.ToArray();
 
-            // If any incid_source fields are in the export file.
-            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0))
-            {
-                // Get the last input field ordinal.
-                int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
+            // Get the last input field ordinal.
+            int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
 
+            // If any incid_bap fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_bap.TableName) != 0))
+            {
                 //---------------------------------------------------------------------
                 // FIX: 046 Don't export duplicate bap or source details
                 // same incid.
@@ -738,7 +738,16 @@ namespace HLU.UI.ViewModel
                     // later as the unique incid_bap field ordinal.
                     _bapIdOrdinal = lastFieldOrdinal += 1;
                 }
+                //---------------------------------------------------------------------
+            }
 
+            // If any incid_source fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate bap or source details
+                // same incid.
+                //
                 // If the source_id column is not included then add
                 // it so that different sources can be identified.
                 if (_sourceIdOrdinal == -1)
@@ -916,7 +925,7 @@ namespace HLU.UI.ViewModel
                             // same incid.
                             //
                             // Get the current bap id (or equivalent lookup table field).
-                            if (_sourceIdOrdinal != -1)
+                            if (_bapIdOrdinal != -1)
                             {
                                 object bapIdValue = reader.GetValue(_bapIdOrdinal);
                                 if (bapIdValue != null)
