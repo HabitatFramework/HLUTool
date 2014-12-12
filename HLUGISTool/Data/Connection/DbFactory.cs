@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -29,6 +30,17 @@ namespace HLU.Data.Connection
         private static ViewSelectConnection _selConnWindow;
         private static ViewModelSelectConnection _selConnViewModel;
         private static ConnectionTypes _connType;
+        private static Backends _backend;
+
+        public static ConnectionTypes ConnectionType
+        {
+            get { return _connType; }
+        }
+
+        public static Backends Backend
+        {
+            get { return _backend; }
+        }
 
         public static DbBase CreateConnection()
         {
@@ -90,6 +102,8 @@ namespace HLU.Data.Connection
                         Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
                     break;
             }
+
+            _backend = DbBase.GetBackend(connString, _connType);
 
             if (db != null)
             {

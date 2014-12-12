@@ -48,6 +48,11 @@ namespace HLU.UI.ViewModel
         private string _lastTableName;
         private int _tableCount;
         private int _fieldCount;
+        private int _incidOrdinal;
+        private int _matrixIdOrdinal;
+        private int _formationIdOrdinal;
+        private int _managementIdOrdinal;
+        private int _complexIdOrdinal;
         private int _bapIdOrdinal;
         private int _sourceIdOrdinal;
         private List<int> _sourceDateStartOrdinals;
@@ -178,12 +183,18 @@ namespace HLU.UI.ViewModel
                 int[][] fieldMapTemplate;
                 StringBuilder targetList;
                 StringBuilder fromClause;
-                int incidOrdinal;
+                int[] sortOrdinals;
+                int[] matrixOrdinals;
+                int[] formationOrdinals;
+                int[] managementOrdinals;
+                int[] complexOrdinals;
                 int[] bapOrdinals;
                 int[] sourceOrdinals;
                 List<ExportField> exportFields = new List<ExportField>();
                 ExportJoins(tableAlias, ref exportFields, out exportTable,
-                    out fieldMapTemplate, out targetList, out fromClause, out incidOrdinal, out bapOrdinals, out sourceOrdinals);
+                    out fieldMapTemplate, out targetList, out fromClause, out sortOrdinals,
+                    out matrixOrdinals, out formationOrdinals, out managementOrdinals, out complexOrdinals,
+                    out bapOrdinals, out sourceOrdinals);
 
                 // Add the length of the GIS layer fields to the length of
                 // field attributes exported from the database (excluding
@@ -251,7 +262,9 @@ namespace HLU.UI.ViewModel
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
                 tempPath = ExportMdb(targetList.ToString(), fromClause.ToString(), exportFilter,
-                    _viewModelMain.DataBase, exportFields, exportTable, incidOrdinal, bapOrdinals, sourceOrdinals, ref fieldMapTemplate, out exportRowCount);
+                    _viewModelMain.DataBase, exportFields, exportTable, sortOrdinals,
+                    matrixOrdinals, formationOrdinals, managementOrdinals, complexOrdinals, bapOrdinals, sourceOrdinals,
+                    fieldMapTemplate, out exportRowCount);
 
                 if (String.IsNullOrEmpty(tempPath))
                     throw new Exception("Error creating the export table");
@@ -294,20 +307,25 @@ namespace HLU.UI.ViewModel
         }
 
         private void ExportJoins(string tableAlias, ref List<ExportField> exportFields, out DataTable exportTable,
-            out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause,
-            out int incidOrdinal, out int[] bapOrdinals, out int[] sourceOrdinals)
+            out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause, out int[] sortOrdinals,
+            out int[] matrixOrdinals, out int[] formationOrdinals, out int[] managementOrdinals, out int[] complexOrdinals,
+            out int[] bapOrdinals, out int[] sourceOrdinals)
         {
             exportTable = new DataTable("HluExport");
             targetList = new StringBuilder();
             List<string> fromList = new List<string>();
             List<string> leftJoined = new List<string>();
             fromClause = new StringBuilder();
+            sortOrdinals = null;
+            matrixOrdinals = null;
+            formationOrdinals = null;
+            managementOrdinals = null;
+            complexOrdinals = null;
             bapOrdinals = null;
             sourceOrdinals = null;
 
             int tableAliasNum = 1;
             bool firstJoin = true;
-            incidOrdinal = -1;
             _lastTableName = null;
             _fieldCount = 0;
             int fieldLength = 0;
@@ -381,7 +399,7 @@ namespace HLU.UI.ViewModel
                 // Enable users to specify if individual fields should be
                 // exported with descriptions in the exports_fields table.
                 //
-                var relations = ((fieldFormat != null) && (fieldFormat == "Both" || fieldFormat == "Lookup")) ? _viewModelMain.HluDataRelations.Where(rel =>
+                var relations = ((fieldFormat != null) && (fieldFormat.ToLower() == "both" || fieldFormat.ToLower() == "lookup")) ? _viewModelMain.HluDataRelations.Where(rel =>
                     rel.ChildTable.TableName == r.table_name && rel.ChildColumns
                     .Count(ch => ch.ColumnName == r.column_name) == 1) : new DataRelation[0];
                 //---------------------------------------------------------------------
@@ -455,7 +473,7 @@ namespace HLU.UI.ViewModel
                             // If both the original field and it's corresponding lookup
                             // table field are required then add them both to the sql
                             // target list.
-                            if ((fieldFormat != null) && (fieldFormat == "Both"))
+                            if ((fieldFormat != null) && (fieldFormat.ToLower() == "both"))
                             {
                                 // Add the corresponding lookup table field to the sql
                                 // target list.
@@ -516,7 +534,7 @@ namespace HLU.UI.ViewModel
                             // If both the original field and it's corresponding lookup
                             // table field are required then add them both to the sql
                             // target list.
-                            if ((fieldFormat != null) && (fieldFormat == "Both"))
+                            if ((fieldFormat != null) && (fieldFormat.ToLower() == "both"))
                             {
                                 // Add the corresponding lookup table field to the sql
                                 // target list.
@@ -602,11 +620,23 @@ namespace HLU.UI.ViewModel
             // in the export table and adding them to the field map template.
             int fieldTotal = 0;
             int primaryKeyOrdinal = -1;
+            _incidOrdinal = -1;
+            _matrixIdOrdinal = -1;
+            _formationIdOrdinal = -1;
+            _managementIdOrdinal = -1;
+            _complexIdOrdinal = -1;
             _bapIdOrdinal = -1;
             _sourceIdOrdinal = -1;
+            int bapHabitatOrdinal = -1;
+            int sourceSortOrderOrdinal = -1;
             _sourceDateStartOrdinals = new List<int>();
             _sourceDateEndOrdinals = new List<int>();
             _sourceDateTypeOrdinals = new List<int>();
+            List<int> sortFields = new List<int>();
+            List<int> matrixFields = new List<int>();
+            List<int> formationFields = new List<int>();
+            List<int> managementFields = new List<int>();
+            List<int> complexFields = new List<int>();
             List<int> bapFields = new List<int>();
             List<int> sourceFields = new List<int>();
             foreach (ExportField f in exportFields.OrderBy(f => f.FieldOrder))
@@ -643,18 +673,74 @@ namespace HLU.UI.ViewModel
                 {
                     // Store the input field position for use later 
                     // when exporting the data.
-                    incidOrdinal = f.FieldOrdinal;
+                    _incidOrdinal = f.FieldOrdinal;
+
+                    // Add the input field position to the list of fields
+                    // that will be used to sort the input records.
+                    sortFields.Add(f.FieldOrdinal + 1);
 
                     // Store the output field position for use later 
                     // as the primary index field ordinal.
                     primaryKeyOrdinal = fieldTotal;
                 }
 
-                // If the table is the incid_bap table.
-                if (f.TableName == _viewModelMain.HluDataset.incid_bap.TableName)
+                // If the table is the incid_ihs_matrix table.
+                if (f.TableName == _viewModelMain.HluDataset.incid_ihs_matrix.TableName)
                 {
                     // Add the output field position to the list of fields
-                    // that can have duplicate values.
+                    // that are from the matrix table.
+                    matrixFields.Add(fieldTotal);
+
+                    // If the field refers to the matrix_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_ihs_matrix field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_ihs_matrix.matrix_idColumn.ColumnName)
+                        _matrixIdOrdinal = f.FieldOrdinal;
+                }
+                // If the table is the incid_ihs_formation table.
+                else if (f.TableName == _viewModelMain.HluDataset.incid_ihs_formation.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that are from the formation table.
+                    formationFields.Add(fieldTotal);
+
+                    // If the field refers to the formation_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_ihs_formation field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_ihs_formation.formation_idColumn.ColumnName)
+                        _formationIdOrdinal = f.FieldOrdinal;
+                }
+                // If the table is the incid_ihs_management table.
+                else if (f.TableName == _viewModelMain.HluDataset.incid_ihs_management.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that are from the management table.
+                    managementFields.Add(fieldTotal);
+
+                    // If the field refers to the management_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_ihs_management field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_ihs_management.management_idColumn.ColumnName)
+                        _managementIdOrdinal = f.FieldOrdinal;
+                }
+                // If the table is the incid_ihs_complex table.
+                else if (f.TableName == _viewModelMain.HluDataset.incid_ihs_complex.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that are from the complex table.
+                    complexFields.Add(fieldTotal);
+
+                    // If the field refers to the complex_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_ihs_complex field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_ihs_complex.complex_idColumn.ColumnName)
+                        _complexIdOrdinal = f.FieldOrdinal;
+                }
+                // If the table is the incid_bap table.
+                else if (f.TableName == _viewModelMain.HluDataset.incid_bap.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that are from the bap table.
                     bapFields.Add(fieldTotal);
 
                     // If the field refers to the bap_id column then store
@@ -667,7 +753,7 @@ namespace HLU.UI.ViewModel
                 else if (f.TableName == _viewModelMain.HluDataset.incid_sources.TableName)
                 {
                     // Add the output field position to the list of fields
-                    // that can have duplicate values.
+                    // that are from the sources table.
                     sourceFields.Add(fieldTotal);
 
                     // If the field refers to the source_id column then store
@@ -675,6 +761,10 @@ namespace HLU.UI.ViewModel
                     // incid_source field ordinal.
                     if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName)
                         _sourceIdOrdinal = f.FieldOrdinal;
+                    // If the field refers to the source_sort_order column then
+                    // store the input field ordinal for use later.
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.sort_orderColumn.ColumnName)
+                        sourceSortOrderOrdinal = f.FieldOrdinal;
                     // If the field refers to the source_date_start column then
                     // store the input field ordinal for use later.
                     else if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_date_startColumn.ColumnName)
@@ -711,19 +801,134 @@ namespace HLU.UI.ViewModel
             }
             //---------------------------------------------------------------------
 
-            // Store which export fields can be allowed to have duplicate
-            // values (i.e. the incid_bap and incid_source fields).
-            bapOrdinals = bapFields.ToArray();
-            sourceOrdinals = sourceFields.ToArray();
-
             // Get the last input field ordinal.
             int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
+
+            // If any incid_ihs_matrix fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_ihs_matrix.TableName) != 0))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // If the matrix_id column is not included then add
+                // it so that different matrixs can be identified.
+                if (_matrixIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_ihs_matrix.TableName,
+                        _viewModelMain.HluDataset.incid_ihs_matrix.matrix_idColumn.ColumnName, _viewModelMain.HluDataset.incid_ihs_matrix.matrix_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_ihs_matrix field ordinal.
+                    _matrixIdOrdinal = lastFieldOrdinal += 1;
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(_matrixIdOrdinal + 1);
+                //---------------------------------------------------------------------
+            }
+
+            // If any incid_ihs_formation fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_ihs_formation.TableName) != 0))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // If the formation_id column is not included then add
+                // it so that different formations can be identified.
+                if (_formationIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_ihs_formation.TableName,
+                        _viewModelMain.HluDataset.incid_ihs_formation.formation_idColumn.ColumnName, _viewModelMain.HluDataset.incid_ihs_formation.formation_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_ihs_formation field ordinal.
+                    _formationIdOrdinal = lastFieldOrdinal += 1;
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(_formationIdOrdinal + 1);
+                //---------------------------------------------------------------------
+            }
+
+            // If any incid_ihs_management fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_ihs_management.TableName) != 0))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // If the management_id column is not included then add
+                // it so that different managements can be identified.
+                if (_managementIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_ihs_management.TableName,
+                        _viewModelMain.HluDataset.incid_ihs_management.management_idColumn.ColumnName, _viewModelMain.HluDataset.incid_ihs_management.management_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_ihs_management field ordinal.
+                    _managementIdOrdinal = lastFieldOrdinal += 1;
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(_managementIdOrdinal + 1);
+                //---------------------------------------------------------------------
+            }
+
+            // If any incid_ihs_complex fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_ihs_complex.TableName) != 0))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // If the complex_id column is not included then add
+                // it so that different complexs can be identified.
+                if (_complexIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_ihs_complex.TableName,
+                        _viewModelMain.HluDataset.incid_ihs_complex.complex_idColumn.ColumnName, _viewModelMain.HluDataset.incid_ihs_complex.complex_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_ihs_complex field ordinal.
+                    _complexIdOrdinal = lastFieldOrdinal += 1;
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(_complexIdOrdinal + 1);
+                //---------------------------------------------------------------------
+            }
 
             // If any incid_bap fields are in the export file.
             if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_bap.TableName) != 0))
             {
                 //---------------------------------------------------------------------
-                // FIX: 046 Don't export duplicate bap or source details
+                // FIX: 046 Don't export duplicate record details for the
                 // same incid.
                 //
                 // If the bap_id column is not included then add
@@ -739,13 +944,43 @@ namespace HLU.UI.ViewModel
                     _bapIdOrdinal = lastFieldOrdinal += 1;
                 }
                 //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add a field to the input table to determine the type of
+                // bap habitat so that 'None' habitats are listed after
+                // 'real' habitats.
+                if ((DbFactory.ConnectionType.ToString().ToLower() == "access") ||
+                    (DbFactory.Backend.ToString().ToLower() == "access"))
+                    targetList.Append(String.Format(", IIF({0}.{1} = {2}, 1, 0) AS {3}", _viewModelMain.HluDataset.incid_bap.TableName,
+                        _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName, _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPHabitatIgnore), "bap_habitat_order"));
+                else
+                    targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 1 ELSE 0 END AS {3}", _viewModelMain.HluDataset.incid_bap.TableName,
+                        _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName, _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPHabitatIgnore), "bap_habitat_order"));
+
+                // Store the input field ordinal for use later.
+                bapHabitatOrdinal = lastFieldOrdinal += 1;
+
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(bapHabitatOrdinal + 1);
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(_bapIdOrdinal + 1);
+                //---------------------------------------------------------------------
             }
 
             // If any incid_source fields are in the export file.
             if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_sources.TableName) != 0))
             {
                 //---------------------------------------------------------------------
-                // FIX: 046 Don't export duplicate bap or source details
+                // FIX: 046 Don't export duplicate record details for the
                 // same incid.
                 //
                 // If the source_id column is not included then add
@@ -760,6 +995,27 @@ namespace HLU.UI.ViewModel
                     // later as the unique incid_source field ordinal.
                     _sourceIdOrdinal = lastFieldOrdinal += 1;
                 }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Sort incid child tables when creating export file.
+                //
+                // If the sort_order column is not included then add
+                // it so that the sources can be sorted.
+                if (sourceSortOrderOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_sources.TableName,
+                        _viewModelMain.HluDataset.incid_sources.sort_orderColumn.ColumnName, _viewModelMain.HluDataset.incid_sources.sort_orderColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_source field ordinal.
+                    sourceSortOrderOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records.
+                sortFields.Add(sourceSortOrderOrdinal + 1);
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -805,6 +1061,28 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
             }
 
+            //---------------------------------------------------------------------
+            // FIX: 050 Sort incid child tables when creating export file.
+            //
+            // Store which export fields will be used to sort the
+            // input records.
+            sortOrdinals = sortFields.ToArray();
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: 046 Don't export duplicate record details for the
+            // same incid.
+            //
+            // Store the field ordinals for all the fields for
+            // every child table.
+            matrixOrdinals = matrixFields.ToArray();
+            formationOrdinals = formationFields.ToArray();
+            managementOrdinals = managementFields.ToArray();
+            complexOrdinals = complexFields.ToArray();
+            bapOrdinals = bapFields.ToArray();
+            sourceOrdinals = sourceFields.ToArray();
+            //---------------------------------------------------------------------
+
             // Set the incid field as the primary key to the table.
             if (primaryKeyOrdinal != -1)
                 exportTable.PrimaryKey = new DataColumn[] { exportTable.Columns[primaryKeyOrdinal] };
@@ -814,8 +1092,9 @@ namespace HLU.UI.ViewModel
         }
 
         private string ExportMdb(string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
-            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int incidOrdinal, int[] bapOrdinals, int[] sourceOrdinals, 
-            ref int[][] fieldMap, out int exportRowCount)
+            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
+            int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals, 
+            int[][] fieldMap, out int exportRowCount)
         {
             exportRowCount = -1;
             int outputRowCount = 0;
@@ -889,6 +1168,19 @@ namespace HLU.UI.ViewModel
                 //
                 outputRowCount = 0;
                 exportRowCount = 0;
+
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // Set the field map indexes to the start of the array.
+                int[] fieldMapIndex = new int[fieldMap.Length];
+                for (int k = 0; k < fieldMap.Length; k++)
+                {
+                    fieldMapIndex[k] = 1;
+                }
+                //---------------------------------------------------------------------
+
                 for (int j = 0; j < exportFilter.Count; j++)
                 {
                     DataRow exportRow = exportTable.NewRow();
@@ -897,7 +1189,7 @@ namespace HLU.UI.ViewModel
                     // Union the constituent parts of the export query
                     // together into a single SQL string.
                     string sql = ScratchDb.UnionQuery(targetListStr, fromClauseStr,
-                        incidOrdinal, exportFilter[j], dataBase);
+                        sortOrdinals, exportFilter[j], dataBase);
 
                     // Execute the sql to retrieve the records.
                     using (IDataReader reader = _viewModelMain.DataBase.ExecuteReader(sql,
@@ -905,43 +1197,91 @@ namespace HLU.UI.ViewModel
                     {
                         string currIncid = String.Empty;
                         string prevIncid = String.Empty;
-                        string currBapId = String.Empty;
-                        string prevBapId = String.Empty;
-                        string currSourceId = String.Empty;
-                        string prevSourceId = String.Empty;
+                        int currMatrixId = -1;
+                        int currFormationId = -1;
+                        int currManagementId = -1;
+                        int currComplexId = -1;
+                        int currBapId = -1;
+                        int currSourceId = -1;
                         int currSourceDateStart = 0;
                         int currSourceDateEnd = 0;
+                        List<int> matrixIds = null;
+                        List<int> formationIds = null;
+                        List<int> managementIds = null;
+                        List<int> complexIds = null;
+                        List<int> bapIds = null;
+                        List<int> sourceIds = null;
                         string currSourceDateType = String.Empty;
-                        int fieldIndex = 1;
+                        int exportColumn;
 
                         // Read each record and process the contents.
                         while (reader.Read())
                         {
                             // Get the current incid.
-                            currIncid = reader.GetString(incidOrdinal);
+                            currIncid = reader.GetString(_incidOrdinal);
 
                             //---------------------------------------------------------------------
-                            // FIX: 046 Don't export duplicate bap or source details
+                            // FIX: 046 Don't export duplicate record details for the
                             // same incid.
                             //
+                            // Get the current matrix id.
+                            if (_matrixIdOrdinal != -1)
+                            {
+                                object matrixIdValue = reader.GetValue(_matrixIdOrdinal);
+                                if (matrixIdValue != DBNull.Value)
+                                    currMatrixId = (int)matrixIdValue;
+                                else
+                                    currMatrixId = -1;
+                            }
+
+                            // Get the current formation id.
+                            if (_formationIdOrdinal != -1)
+                            {
+                                object FormationIdValue = reader.GetValue(_formationIdOrdinal);
+                                if (FormationIdValue != DBNull.Value)
+                                    currFormationId = (int)FormationIdValue;
+                                else
+                                    currFormationId = -1;
+                            }
+
+                            // Get the current Management id.
+                            if (_managementIdOrdinal != -1)
+                            {
+                                object ManagementIdValue = reader.GetValue(_managementIdOrdinal);
+                                if (ManagementIdValue != DBNull.Value)
+                                    currManagementId = (int)ManagementIdValue;
+                                else
+                                    currManagementId = -1;
+                            }
+
+                            // Get the current Complex id.
+                            if (_complexIdOrdinal != -1)
+                            {
+                                object ComplexIdValue = reader.GetValue(_complexIdOrdinal);
+                                if (ComplexIdValue != DBNull.Value)
+                                    currComplexId = (int)ComplexIdValue;
+                                else
+                                    currComplexId = -1;
+                            }
+
                             // Get the current bap id (or equivalent lookup table field).
                             if (_bapIdOrdinal != -1)
                             {
                                 object bapIdValue = reader.GetValue(_bapIdOrdinal);
-                                if (bapIdValue != null)
-                                    currBapId = bapIdValue.ToString();
+                                if (bapIdValue != DBNull.Value)
+                                    currBapId = (int)bapIdValue;
                                 else
-                                    currBapId = String.Empty;
+                                    currBapId = -1;
                             }
 
                             // Get the current source id (or equivalent lookup table field).
                             if (_sourceIdOrdinal != -1)
                             {
                                 object sourceIdValue = reader.GetValue(_sourceIdOrdinal);
-                                if (sourceIdValue != null)
-                                    currSourceId = sourceIdValue.ToString();
+                                if (sourceIdValue != DBNull.Value)
+                                    currSourceId = (int)sourceIdValue;
                                 else
-                                    currSourceId = String.Empty;
+                                    currSourceId = -1;
                             }
                             //---------------------------------------------------------------------
 
@@ -970,16 +1310,6 @@ namespace HLU.UI.ViewModel
                             // then process all the fields.
                             if (currIncid != prevIncid)
                             {
-                                // Store the last incid.
-                                prevIncid = currIncid;
-
-                                // Store the last bap and source ids.
-                                prevBapId = currBapId;
-                                prevSourceId = currSourceId;
-
-                                // Reset the field map index to the start of the array.
-                                fieldIndex = 1;
-
                                 // If the last export row has not been added then
                                 // add it now.
                                 if (!exportRow.IsNull(fieldMap[0][1]))
@@ -999,6 +1329,27 @@ namespace HLU.UI.ViewModel
                                     }
                                 }
 
+                                // Store the last incid.
+                                prevIncid = currIncid;
+
+                                //---------------------------------------------------------------------
+                                // FIX: 046 Don't export duplicate record details for the
+                                // same incid.
+                                //
+                                matrixIds = new List<int>();
+                                formationIds = new List<int>();
+                                managementIds = new List<int>();
+                                complexIds = new List<int>();
+                                bapIds = new List<int>();
+                                sourceIds = new List<int>();
+
+                                // Reset the field map indexes to the start of the array.
+                                for (int k = 0; k < fieldMap.Length; k++)
+                                {
+                                    fieldMapIndex[k] = 1;
+                                }
+                                //---------------------------------------------------------------------
+
                                 // Create a new export row ready for the next values.
                                 exportRow = exportTable.NewRow();
                                 rowAdded = false;
@@ -1008,16 +1359,22 @@ namespace HLU.UI.ViewModel
                                 // to the correct field in the export row.
                                 for (int i = 0; i < fieldMap.GetLength(0); i++)
                                 {
+                                    //---------------------------------------------------------------------
+                                    // FIX: 046 Don't export duplicate record details for the
+                                    // same incid.
+                                    //
+                                    // Set the export column ordinal from the current
+                                    // field map index for this field.
+                                    exportColumn = fieldMap[i][fieldMapIndex[i]];
+
+                                    // Increment the field map index for this field.
+                                    fieldMapIndex[i] += 1;
+                                    //---------------------------------------------------------------------
+
                                     // If this field is not mapped from the input reader
                                     // set the export table value to null.
                                     if (fieldMap[i][0] == -1)
-                                    {
-                                        exportRow[fieldMap[i][fieldIndex]] = null;
                                         continue;
-                                    }
-
-                                    // Get the properties for the current export field.
-                                    ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
 
                                     // Store the input value of the current column.
                                     object inValue = reader.GetValue(fieldMap[i][0]);
@@ -1026,6 +1383,9 @@ namespace HLU.UI.ViewModel
                                     if (inValue == DBNull.Value)
                                         continue;
 
+                                    // Get the properties for the current export field.
+                                    ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
                                     //---------------------------------------------------------------------
                                     // FIX: 048 Enable fields to be exported using a different
                                     // data type.
@@ -1033,7 +1393,7 @@ namespace HLU.UI.ViewModel
                                     // Convert the input value to the output value data type and format.
                                     object outValue;
                                     outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
-                                        exportTable2.Columns[fieldMap[i][fieldIndex]].DataType,
+                                        exportTable2.Columns[exportColumn].DataType,
                                         (exportField != null) ? exportField.FieldFormat : null,
                                         currSourceDateStart, currSourceDateEnd, currSourceDateType);
                                     //---------------------------------------------------------------------
@@ -1042,23 +1402,20 @@ namespace HLU.UI.ViewModel
                                     if (outValue != null)
                                     {
                                         // Get the maximum length of the column.
-                                        int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
+                                        int fieldLength = exportTable2.Columns[exportColumn].MaxLength;
 
                                         // If the maximum length of the column is shorter
                                         // than the value then truncate the value as it
                                         // is transferred  to the export row.
                                         if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
-                                            exportRow[fieldMap[i][fieldIndex]] = outValue.ToString().Substring(0, fieldLength);
+                                            exportRow[exportColumn] = outValue.ToString().Substring(0, fieldLength);
                                         else
-                                            exportRow[fieldMap[i][fieldIndex]] = outValue;
+                                            exportRow[exportColumn] = outValue;
                                     }
                                 }
                             }
                             else
                             {
-                                // Increment the index position for the field map.
-                                fieldIndex += 1;
-
                                 // Loop through all the fields in the field map
                                 // to transfer the values from the input reader
                                 // to the correct field in the export row.
@@ -1066,11 +1423,59 @@ namespace HLU.UI.ViewModel
                                 {
                                     // Only process fields that have multiple outputs
                                     // specified in the field map.
-                                    if (fieldIndex < fieldMap[i].Length)
+                                    if (fieldMapIndex[i] < fieldMap[i].Length)
                                     {
+                                        //---------------------------------------------------------------------
+                                        // FIX: 046 Don't export duplicate record details for the
+                                        // same incid.
+                                        //
+                                        // Set the export column ordinal from the current
+                                        // field map index for this field.
+                                        exportColumn = fieldMap[i][fieldMapIndex[i]];
 
-                                        // Get the properties for the current export field.
-                                        ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+                                        // If the value is not null and the string value is different
+                                        // to the last string value for this incid, or, the column is
+                                        // allowed to have duplicates and the bap or source is different
+                                        // to the last bap or source, then output the value.
+                                        if (Array.IndexOf(matrixOrdinals, exportColumn) != -1)
+                                        {
+                                            if (matrixIds.Contains(currMatrixId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(formationOrdinals, exportColumn) != -1)
+                                        {
+                                            if (formationIds.Contains(currFormationId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(managementOrdinals, exportColumn) != -1)
+                                        {
+                                            if (managementIds.Contains(currManagementId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(complexOrdinals, exportColumn) != -1)
+                                        {
+                                            if (complexIds.Contains(currComplexId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(bapOrdinals, exportColumn) != -1)
+                                        {
+                                            if (bapIds.Contains(currBapId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(sourceOrdinals, exportColumn) != -1)
+                                        {
+                                            if (sourceIds.Contains(currSourceId))
+                                                continue;
+                                        }
+
+                                        // Increment the field map index for this field.
+                                        fieldMapIndex[i] += 1;
+                                        //---------------------------------------------------------------------
+
+                                        // If this field is not mapped from the input reader
+                                        // set the export table value to null.
+                                        if (fieldMap[i][0] == -1)
+                                            continue;
 
                                         // Store the input value of the current column.
                                         object inValue = reader.GetValue(fieldMap[i][0]);
@@ -1079,6 +1484,9 @@ namespace HLU.UI.ViewModel
                                         if (inValue == DBNull.Value)
                                             continue;
 
+                                        // Get the properties for the current export field.
+                                        ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
                                         //---------------------------------------------------------------------
                                         // FIX: 048 Enable fields to be exported using a different
                                         // data type.
@@ -1086,66 +1494,41 @@ namespace HLU.UI.ViewModel
                                         // Convert the input value to the output value data type and format.
                                         object outValue;
                                         outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
-                                            exportTable2.Columns[fieldMap[i][fieldIndex]].DataType,
+                                            exportTable2.Columns[exportColumn].DataType,
                                             (exportField != null) ? exportField.FieldFormat : null,
                                             currSourceDateStart, currSourceDateEnd, currSourceDateType);
                                         //---------------------------------------------------------------------
 
-                                        // Get the current and previous string values of the
-                                        // current column so they can be compared later.
-                                        string itemStr;
+                                        // If the value is not null.
                                         if (outValue != null)
-                                            itemStr = outValue.ToString();
-                                        else
-                                            itemStr = string.Empty;
-                                        object lastItemStr = exportRow[fieldMap[i][fieldIndex - 1]].ToString();
-
-                                        //---------------------------------------------------------------------
-                                        // FIX: 046 Don't export duplicate bap or source details
-                                        // same incid.
-                                        //
-                                        // If the value is not null and the string value is different
-                                        // to the last string value for this incid, or, the column is
-                                        // allowed to have duplicates and the bap or source is different
-                                        // to the last bap or source, then output the value.
-                                        //if ((!itemStr.Equals(lastItemStr)) ||
-                                        //    ((Array.IndexOf(bapOrdinals, fieldMap[i][fieldIndex]) != -1) &&
-                                        //    (currBapId != prevBapId)) ||
-                                        //    ((Array.IndexOf(sourceOrdinals, fieldMap[i][fieldIndex]) != -1) &&
-                                        //    (currSourceId != prevSourceId)))
-                                        bool exp = false;
-                                        if (Array.IndexOf(bapOrdinals, fieldMap[i][fieldIndex]) != -1)
                                         {
-                                            if (currBapId != prevBapId)
-                                                exp = true;
-                                        }
-                                        else if (Array.IndexOf(sourceOrdinals, fieldMap[i][fieldIndex]) != -1)
-                                        {
-                                            if (currSourceId != prevSourceId)
-                                                exp = true;
-                                        }
-                                        else if (!itemStr.Equals(lastItemStr))
-                                            exp = true;
-                                        //---------------------------------------------------------------------
-                                        if (exp)
-                                            {
-                                                // Get the maximum length of the column.
-                                                int fieldLength = exportTable2.Columns[fieldMap[i][fieldIndex]].MaxLength;
+                                            // Get the maximum length of the output column.
+                                            int fieldLength = exportTable2.Columns[exportColumn].MaxLength;
 
-                                                // If the maximum length of the column is shorter
-                                                // than the value then truncate the value as it
-                                                // is transferred  to the export row.
-                                                if ((fieldLength != -1) && (fieldLength < itemStr.Length))
-                                                    exportRow[fieldMap[i][fieldIndex]] = itemStr.Substring(0, fieldLength);
-                                                else
-                                                    exportRow[fieldMap[i][fieldIndex]] = outValue;
-                                            }
+                                            // If the maximum length of the column is shorter
+                                            // than the value then truncate the value as it
+                                            // is transferred  to the export row.
+                                            if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
+                                                exportRow[exportColumn] = outValue.ToString().Substring(0, fieldLength);
+                                            else
+                                                exportRow[exportColumn] = outValue;
+                                        }
                                     }
                                 }
                             }
-                            // Store the last bap and source ids.
-                            prevBapId = currBapId;
-                            prevSourceId = currSourceId;
+
+                            //---------------------------------------------------------------------
+                            // FIX: 046 Don't export duplicate record details for the
+                            // same incid.
+                            //
+                            // Store the current ids so that they are not output again.
+                            matrixIds.Add(currMatrixId);
+                            formationIds.Add(currFormationId);
+                            managementIds.Add(currManagementId);
+                            complexIds.Add(currComplexId);
+                            bapIds.Add(currBapId);
+                            sourceIds.Add(currSourceId);
+                            //---------------------------------------------------------------------
                         }
                     }
 
