@@ -287,13 +287,16 @@ namespace HLU.GISApplication
         /// Input is assumed to be 0 based.</param>
         /// <param name="db">Database against which UNION query will be run.</param>
         /// <returns></returns>
-        public static string UnionQuery(string targetList, string fromClause, int orderByOrdinal,
+        public static string UnionQuery(string targetList, string fromClause, int[] sortOrdinals,
             List<SqlFilterCondition> IncidSelectionWhereClause, DbBase db)
         {
+            //---------------------------------------------------------------------
+            // FIX: 050 Sort incid child tables when creating export file.
             StringBuilder sql = new StringBuilder();
             sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
-                    .Append(orderByOrdinal > -1 ? String.Format(" ORDER BY {0}", orderByOrdinal + 1) : String.Empty);
-                    
+                    .Append(sortOrdinals != null ? String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x.ToString()).ToArray())) : String.Empty);
+            //---------------------------------------------------------------------
+            
             return sql.ToString();
 
             //return db.WhereClause(true, true, true, IncidSelectionWhereClause)
