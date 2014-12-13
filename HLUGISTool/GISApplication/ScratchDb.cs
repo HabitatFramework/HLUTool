@@ -291,7 +291,7 @@ namespace HLU.GISApplication
             List<SqlFilterCondition> IncidSelectionWhereClause, DbBase db)
         {
             //---------------------------------------------------------------------
-            // FIX: 050 Sort incid child tables when creating export file.
+            // FIX: 051 Sort incid child tables when creating export file.
             StringBuilder sql = new StringBuilder();
             sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
                     .Append(sortOrdinals != null ? String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x.ToString()).ToArray())) : String.Empty);
