@@ -419,27 +419,27 @@ namespace HLU.UI.ViewModel
                         if (validity == "1")
                         {
                             // Warn the user that the SQL is invalid.
-                            MessageBox.Show(App.Current.MainWindow, "SQL is valid.", "HLU Query",
+                            MessageBox.Show(App.GetActiveWindow(), "SQL is valid.", "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         // The SQL is valid but did not return any rows.
                         else if (validity == "0")
                         {
                             // Warn the user that no rows were returned.
-                            MessageBox.Show(App.Current.MainWindow, "SQL is valid but no records were returned.", "HLU Query",
+                            MessageBox.Show(App.GetActiveWindow(), "SQL is valid but no records were returned.", "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                         // The SQL is not valid.
                         else if (validity != null)
                         {
                             // Warn the user that the SQL is invalid.
-                            MessageBox.Show(App.Current.MainWindow, String.Format("Sql is invalid.\n\n{0}", validity), "HLU Query",
+                            MessageBox.Show(App.GetActiveWindow(), String.Format("Sql is invalid.\n\n{0}", validity), "HLU Query",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                     else
                         // Warn the user that the no valid tables were found.
-                        MessageBox.Show(App.Current.MainWindow, "No valid tables were found.", "HLU Query",
+                        MessageBox.Show(App.GetActiveWindow(), "No valid tables were found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch (Exception ex)
@@ -447,7 +447,7 @@ namespace HLU.UI.ViewModel
                     // Reset the cursor back to normal.
                     ChangeCursor(Cursors.Arrow);
 
-                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                    MessageBox.Show(App.GetActiveWindow(), ex.Message, "HLU Query",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally { }
@@ -1197,7 +1197,7 @@ namespace HLU.UI.ViewModel
 
             catch (Exception ex)
             {
-                MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                MessageBox.Show(App.GetActiveWindow(), ex.Message, "HLU Query",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally 
@@ -1287,7 +1287,7 @@ namespace HLU.UI.ViewModel
 
             catch (Exception ex)
             {
-                MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                MessageBox.Show(App.GetActiveWindow(), ex.Message, "HLU Query",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
