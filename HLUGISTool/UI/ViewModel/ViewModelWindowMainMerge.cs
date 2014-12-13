@@ -157,137 +157,137 @@ namespace HLU.UI.ViewModel
 
                 _mergeFeaturesWindow.ShowDialog();
 
-                if (_mergeResultFeatureIndex != -1)
+                if (_mergeResultFeatureIndex == -1)
+                    return false;
+
+                _viewModelMain.ChangeCursor(Cursors.Wait, "Processing ...");
+
+                _viewModelMain.DataBase.BeginTransaction(true, IsolationLevel.ReadCommitted);
+
+                try
                 {
-                    _viewModelMain.ChangeCursor(Cursors.Wait, "Processing ...");
+                    string keepIncid = selectTable[_mergeResultFeatureIndex].incid;
 
-                    _viewModelMain.DataBase.BeginTransaction(true, IsolationLevel.ReadCommitted);
+                    // assign selected incid to selected features except keepIncid
+                    DataTable historyTable = _viewModelMain.GISApplication.MergeFeaturesLogically(
+                        keepIncid, _viewModelMain.HistoryColumns);
 
-                    try
+                    if ((historyTable == null) || (historyTable.Rows.Count == 0))
+                        throw new Exception("Failed to update GIS layer.");
+
+                    // assign selected incid and new toid_fragment_id to selected features except keepIncid in DB shadow copy
+                    string toidFragmentFormat = String.Format("D{0}",
+                        _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.MaxLength);
+
+                    List<KeyValuePair<int, object>> updateFields = new List<KeyValuePair<int,object>>();
+                    var keepPolygon = polygons.FirstOrDefault(r => r.incid == keepIncid);
+                    if (keepPolygon != null)
                     {
-                        string keepIncid = selectTable[_mergeResultFeatureIndex].incid;
+                        updateFields = (from c in polygons.Columns.Cast<DataColumn>()
+                                        where (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal) &&
+                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toidColumn.Ordinal) &&
+                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.Ordinal) &&
+                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.Ordinal) &&
+                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_areaColumn.Ordinal)
+                                        select new KeyValuePair<int, object>(c.Ordinal, keepPolygon[c.Ordinal])).ToList();
+                    }
 
-                        // assign selected incid to selected features except keepIncid
-                        DataTable historyTable = _viewModelMain.GISApplication.MergeFeaturesLogically(
-                            keepIncid, _viewModelMain.HistoryColumns);
+                    var updatePolygons = from r in polygons
+                                            where r.incid != keepIncid
+                                            orderby r.toid, r.toid_fragment_id
+                                            select r;
 
-                        if ((historyTable == null) || (historyTable.Rows.Count == 0))
-                            throw new Exception("Failed to update GIS layer.");
+                    // update shadow DB copy of GIS layer
+                    foreach (HluDataSet.incid_mm_polygonsRow r in updatePolygons)
+                    {
+                        r.incid = keepIncid;
+                        for (int i = 0; i < updateFields.Count; i++)
+                            r[updateFields[i].Key] = updateFields[i].Value;
+                    }
 
-                        // assign selected incid and new toid_fragment_id to selected features except keepIncid in DB shadow copy
-                        string toidFragmentFormat = String.Format("D{0}",
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.MaxLength);
+                    if (_viewModelMain.HluTableAdapterManager.incid_mm_polygonsTableAdapter.Update(polygons) == -1)
+                        throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
-                        List<KeyValuePair<int, object>> updateFields = new List<KeyValuePair<int,object>>();
-                        var keepPolygon = polygons.FirstOrDefault(r => r.incid == keepIncid);
-                        if (keepPolygon != null)
-                        {
-                            updateFields = (from c in polygons.Columns.Cast<DataColumn>()
-                                           where (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal) &&
-                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toidColumn.Ordinal) &&
-                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.Ordinal) &&
-                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.Ordinal) &&
-                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_areaColumn.Ordinal)
-                                           select new KeyValuePair<int, object>(c.Ordinal, keepPolygon[c.Ordinal])).ToList();
-                        }
+                    // insert history rows (fixed value keepIncid)
+                    Dictionary<int, string> fixedValues = new Dictionary<int, string>();
+                    fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, keepIncid);
+                    ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
+                    vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge);
 
-                        var updatePolygons = from r in polygons
-                                             where r.incid != keepIncid
-                                             orderby r.toid, r.toid_fragment_id
-                                             select r;
+                    // count incid records no longer in use
+                    List<string> deleteIncids = new List<string>();
 
-                        // update shadow DB copy of GIS layer
-                        foreach (HluDataSet.incid_mm_polygonsRow r in updatePolygons)
-                        {
-                            r.incid = keepIncid;
-                            for (int i = 0; i < updateFields.Count; i++)
-                                r[updateFields[i].Key] = updateFields[i].Value;
-                        }
+                    IDataReader delReader = _viewModelMain.DataBase.ExecuteReader(String.Format(
+                        "SELECT {0} FROM {1} WHERE {0} IN ({2}) GROUP BY {0} HAVING COUNT(*) = 0",
+                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.IncidTable.incidColumn.ColumnName),
+                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.IncidTable.TableName), 
+                        selectTable.Aggregate(new StringBuilder(), (sb, r) => sb.Append("," + 
+                            _viewModelMain.DataBase.QuoteValue(r.incid))).Remove(0, 1)),
+                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
 
-                        if (_viewModelMain.HluTableAdapterManager.incid_mm_polygonsTableAdapter.Update(polygons) == -1)
-                            throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
+                    if (delReader == null) throw new Exception("Error reading incid database table.");
 
-                        // insert history rows (fixed value keepIncid)
-                        Dictionary<int, string> fixedValues = new Dictionary<int, string>();
-                        fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, keepIncid);
-                        ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
-                        vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge);
+                    while (delReader.Read())
+                        deleteIncids.Add(delReader.GetString(0));
+                    delReader.Close();
 
-                        // count incid records no longer in use
-                        List<string> deleteIncids = new List<string>();
-
-                        IDataReader delReader = _viewModelMain.DataBase.ExecuteReader(String.Format(
-                            "SELECT {0} FROM {1} WHERE {0} IN ({2}) GROUP BY {0} HAVING COUNT(*) = 0",
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.IncidTable.incidColumn.ColumnName),
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.IncidTable.TableName), 
-                            selectTable.Aggregate(new StringBuilder(), (sb, r) => sb.Append("," + 
-                                _viewModelMain.DataBase.QuoteValue(r.incid))).Remove(0, 1)),
+                    // delete any incid records no longer in use
+                    if (deleteIncids.Count > 0)
+                    {
+                        int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(String.Format(
+                            "DELETE FROM {0} WHERE {1} IN ({2})",
+                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
+                            _viewModelMain.DataBase.QuoteValue(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
+                            String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray())),
                             _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
 
-                        if (delReader == null) throw new Exception("Error reading incid database table.");
-
-                        while (delReader.Read())
-                            deleteIncids.Add(delReader.GetString(0));
-                        delReader.Close();
-
-                        // delete any incid records no longer in use
-                        if (deleteIncids.Count > 0)
-                        {
-                            int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(String.Format(
-                                "DELETE FROM {0} WHERE {1} IN ({2})",
-                                _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
-                                _viewModelMain.DataBase.QuoteValue(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
-                                String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray())),
-                                _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
-
-                            if (numAffected > 0) _viewModelMain.IncidRowCount(true);
-                        }
-
-                        _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid);
-
-                        if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Physical Merge",
-                            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
-                        {
-                            // restore the selection
-                            _viewModelMain.GisSelection.Clear();
-                            foreach (HluDataSet.incid_mm_polygonsRow r in polygons)
-                            {
-                                DataRow newRow = _viewModelMain.GisSelection.NewRow();
-                                for (int i = 0; i < _viewModelMain.GisIDColumnOrdinals.Length; i++)
-                                    newRow[i] = r[_viewModelMain.GisIDColumnOrdinals[i]];
-                                _viewModelMain.GisSelection.Rows.Add(newRow);
-                            }
-
-                            PerformPhysicalMerge();
-                        }
-                        else
-                        {
-                            _viewModelMain.DataBase.CommitTransaction();
-                            _viewModelMain.HluDataset.AcceptChanges();
-
-                            // Re-count the incid records in the database.
-                            _viewModelMain.IncidRowCount(true);
-
-                            // Reset the incid and map selections but don't move
-                            // to the first incid in the database.
-                            _viewModelMain.ClearFilter(false);
-
-                            // Synch with the GIS selection.
-                            //---------------------------------------------------------------------
-                            // FIX: 027 Force refill of Incid table after split/merge
-                            // Force the Incid table to be refilled because it has been
-                            // updated directly in the database rather than via the
-                            // local copy.
-                            _viewModelMain.RefillIncidTable = true;
-                            //---------------------------------------------------------------------
-                            _viewModelMain.ReadMapSelection(true);
-                        }
+                        if (numAffected > 0) _viewModelMain.IncidRowCount(true);
                     }
-                    catch
+
+                    _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid);
+
+                    if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Physical Merge",
+                        MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
                     {
-                        _viewModelMain.DataBase.RollbackTransaction();
-                        throw;
+                        // restore the selection
+                        _viewModelMain.GisSelection.Clear();
+                        foreach (HluDataSet.incid_mm_polygonsRow r in polygons)
+                        {
+                            DataRow newRow = _viewModelMain.GisSelection.NewRow();
+                            for (int i = 0; i < _viewModelMain.GisIDColumnOrdinals.Length; i++)
+                                newRow[i] = r[_viewModelMain.GisIDColumnOrdinals[i]];
+                            _viewModelMain.GisSelection.Rows.Add(newRow);
+                        }
+
+                        PerformPhysicalMerge();
                     }
+                    else
+                    {
+                        _viewModelMain.DataBase.CommitTransaction();
+                        _viewModelMain.HluDataset.AcceptChanges();
+
+                        // Re-count the incid records in the database.
+                        _viewModelMain.IncidRowCount(true);
+
+                        // Reset the incid and map selections but don't move
+                        // to the first incid in the database.
+                        _viewModelMain.ClearFilter(false);
+
+                        // Synch with the GIS selection.
+                        //---------------------------------------------------------------------
+                        // FIX: 027 Force refill of Incid table after split/merge
+                        // Force the Incid table to be refilled because it has been
+                        // updated directly in the database rather than via the
+                        // local copy.
+                        _viewModelMain.RefillIncidTable = true;
+                        //---------------------------------------------------------------------
+                        _viewModelMain.ReadMapSelection(true);
+                    }
+                }
+                catch
+                {
+                    _viewModelMain.DataBase.RollbackTransaction();
+                    throw;
                 }
             }
             catch (Exception ex)
