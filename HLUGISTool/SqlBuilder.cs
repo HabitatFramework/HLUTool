@@ -355,6 +355,22 @@ namespace HLU
         {
             if ((whereConds != null) && (whereConds.Count > 0))
             {
+                //---------------------------------------------------------------------
+                // FIX: 052 Improve performance when filtering large number of incids.
+                //
+                // Avoid repeated calls to 'GetUnderlyingType' for the same table
+                // and column type by checking to see if it is a string (which most
+                // fields are).
+                int tableCount = whereConds.Select(c => c.Table.TableName).Distinct().Count();
+                int columnCount = whereConds.Select(c => c.Column.ColumnName).Distinct().Count();
+                bool condString = false;
+                if (tableCount == 1 && columnCount == 1)
+                {
+                    SqlFilterCondition sqlTestCond = whereConds[0];
+                    condString = GetUnderlyingType(sqlTestCond) is string ? true : false;
+                }
+                //---------------------------------------------------------------------
+
                 StringBuilder sbWhereClause = new StringBuilder(includeWhere ? " WHERE " : " ");
                 for (int i = 0; i < whereConds.Count; i++)
                 {
@@ -443,8 +459,17 @@ namespace HLU
                                         sqlCond.Value, WildcardManyMatch)));
                                     break;
                                 default:
-                                    sbWhereClause.Append(String.Format(" {0} {1}", sqlCond.Operator,
-                                        QuoteValue(GetUnderlyingType(sqlCond))));
+                                    //---------------------------------------------------------------------
+                                    // FIX: 052 Improve performance when filtering large number of incids.
+                                    //
+                                    // Avoid repeated calls to 'GetUnderlyingType' for string fields.
+                                    if (condString)
+                                        sbWhereClause.Append(String.Format(" {0} {1}", sqlCond.Operator,
+                                            QuoteValue(sqlCond.Value)));
+                                    else
+                                        sbWhereClause.Append(String.Format(" {0} {1}", sqlCond.Operator,
+                                            QuoteValue(GetUnderlyingType(sqlCond))));
+                                    //---------------------------------------------------------------------
                                     break;
                             }
                         }
@@ -460,7 +485,15 @@ namespace HLU
                                     break;
                                 default:
                                     sbWhereClause.Append(" ").Append(sqlCond.Operator).Append(" ");
-                                    sbWhereClause.Append(QuoteValue(GetUnderlyingType(sqlCond)));
+                                    //---------------------------------------------------------------------
+                                    // FIX: 052 Improve performance when filtering large number of incids.
+                                    //
+                                    // Avoid repeated calls to 'GetUnderlyingType' for string fields.
+                                    if (condString)
+                                        sbWhereClause.Append(QuoteValue(sqlCond.Value));
+                                    else
+                                        sbWhereClause.Append(QuoteValue(GetUnderlyingType(sqlCond)));
+                                    //---------------------------------------------------------------------
                                     break;
                             }
                         }
