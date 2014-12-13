@@ -826,7 +826,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -856,7 +856,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -886,7 +886,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -916,7 +916,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -946,7 +946,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add a field to the input table to determine the type of
                 // bap habitat so that 'None' habitats are listed after
@@ -968,7 +968,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -998,7 +998,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Sort incid child tables when creating export file.
+                // FIX: 051 Sort incid child tables when creating export file.
                 //
                 // If the sort_order column is not included then add
                 // it so that the sources can be sorted.
@@ -1062,7 +1062,7 @@ namespace HLU.UI.ViewModel
             }
 
             //---------------------------------------------------------------------
-            // FIX: 050 Sort incid child tables when creating export file.
+            // FIX: 051 Sort incid child tables when creating export file.
             //
             // Store which export fields will be used to sort the
             // input records.
