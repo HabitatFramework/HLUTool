@@ -825,7 +825,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -855,7 +855,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -885,7 +885,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -915,7 +915,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -945,7 +945,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add a field to the input table to get the type of
                 // bap habitat so that 'None' habitats are listed after
@@ -970,7 +970,7 @@ namespace HLU.UI.ViewModel
                 sortFields.Add(bapTypeOrdinal + 1);
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add a field to the input table to get the determination
                 // quality of the bap habitat so that 'not present' habitats
@@ -996,7 +996,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // Add the input field position to the list of fields
                 // that will be used to sort the input records.
@@ -1026,7 +1026,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 051 Sort incid child tables when creating export file.
+                // CHANGED: CR43 (Sort multiple fields in exports)
                 //
                 // If the sort_order column is not included then add
                 // it so that the sources can be sorted.
@@ -1090,7 +1090,7 @@ namespace HLU.UI.ViewModel
             }
 
             //---------------------------------------------------------------------
-            // FIX: 051 Sort incid child tables when creating export file.
+            // CHANGED: CR43 (Sort multiple fields in exports)
             //
             // Store which export fields will be used to sort the
             // input records.

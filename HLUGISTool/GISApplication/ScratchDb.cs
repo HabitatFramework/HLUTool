@@ -291,7 +291,9 @@ namespace HLU.GISApplication
             List<SqlFilterCondition> IncidSelectionWhereClause, DbBase db)
         {
             //---------------------------------------------------------------------
-            // FIX: 051 Sort incid child tables when creating export file.
+            // CHANGED: CR43 (Sort multiple fields in exports)
+            //
+            // Add order by from list of sort ordinals.
             StringBuilder sql = new StringBuilder();
             sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
                     .Append(sortOrdinals != null ? String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x.ToString()).ToArray())) : String.Empty);

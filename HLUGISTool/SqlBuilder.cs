@@ -356,7 +356,7 @@ namespace HLU
             if ((whereConds != null) && (whereConds.Count > 0))
             {
                 //---------------------------------------------------------------------
-                // FIX: 052 Improve performance when filtering large number of incids.
+                // FIX: 051 Improve performance when filtering large number of incids.
                 //
                 // Avoid repeated calls to 'GetUnderlyingType' for the same table
                 // and column type by checking to see if it is a string (which most
@@ -460,7 +460,7 @@ namespace HLU
                                     break;
                                 default:
                                     //---------------------------------------------------------------------
-                                    // FIX: 052 Improve performance when filtering large number of incids.
+                                    // FIX: 051 Improve performance when filtering large number of incids.
                                     //
                                     // Avoid repeated calls to 'GetUnderlyingType' for string fields.
                                     if (condString)
@@ -486,7 +486,7 @@ namespace HLU
                                 default:
                                     sbWhereClause.Append(" ").Append(sqlCond.Operator).Append(" ");
                                     //---------------------------------------------------------------------
-                                    // FIX: 052 Improve performance when filtering large number of incids.
+                                    // FIX: 051 Improve performance when filtering large number of incids.
                                     //
                                     // Avoid repeated calls to 'GetUnderlyingType' for string fields.
                                     if (condString)
