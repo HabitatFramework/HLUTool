@@ -1209,7 +1209,7 @@ namespace HLU.GISApplication.MapInfo
 
                     // Get the name of the table that the current selection is based on.
                     if (!TableExists(_selName)) _selName = _mapInfoApp.Eval(String.Format(
-                        "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
+                        "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
 
                     // If there is no selection cancel the export.
                     if (string.IsNullOrEmpty(_selName) ||
@@ -1258,7 +1258,7 @@ namespace HLU.GISApplication.MapInfo
                 //---------------------------------------------------------------------
 
                 // If no export dataset name was chosen by the user then cancel the export.
-                if (saveFileFlg.ShowDialog() != true)
+                if (saveFileFlg.ShowDialog(App.GetActiveWindow()) != true)
                 {
                     MessageBox.Show("Export cancelled. No output table selected.",
                         "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1426,7 +1426,7 @@ namespace HLU.GISApplication.MapInfo
 
                     // Speed up edits ('Undo Off' and 'FastEdit On').
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", QuoteIdentifier(outTable)));
-                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", QuoteIdentifier(outTable)));
+                    //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", QuoteIdentifier(outTable)));
 
                     // Fetch the first row from the export table
                     double geom1;
@@ -1450,7 +1450,7 @@ namespace HLU.GISApplication.MapInfo
 
                     // Set undo back on and fastedit off again.
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo On", QuoteIdentifier(outTable)));
-                    _mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", QuoteIdentifier(outTable)));
+                    //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", QuoteIdentifier(outTable)));
 
                     //---------------------------------------------------------------------
                     // FIX: 026 Hide progress bars during MapInfo processing
@@ -2496,8 +2496,8 @@ namespace HLU.GISApplication.MapInfo
                     openFileDlg.Multiselect = false;
                     openFileDlg.RestoreDirectory = false;
                     openFileDlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    
-                    if (openFileDlg.ShowDialog() == true)
+
+                    if (openFileDlg.ShowDialog(App.GetActiveWindow()) == true)
                         path = openFileDlg.FileName;
                     else
                         return false;
@@ -2521,7 +2521,7 @@ namespace HLU.GISApplication.MapInfo
                 saveFileDlg.CheckPathExists = true;
                 saveFileDlg.RestoreDirectory = false;
                 saveFileDlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                if (saveFileDlg.ShowDialog() == true)
+                if (saveFileDlg.ShowDialog(App.GetActiveWindow()) == true)
                 {
                     path = saveFileDlg.FileName;
                     FileInfo fInfo = new FileInfo(path);
@@ -2638,7 +2638,7 @@ namespace HLU.GISApplication.MapInfo
             openFileDlg.RestoreDirectory = false;
             openFileDlg.InitialDirectory =
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if (openFileDlg.ShowDialog() != true)
+            if (openFileDlg.ShowDialog(App.GetActiveWindow()) != true)
             {
                 _hluMapWindowID = -1;
                 _hluLayerStructure = null;
