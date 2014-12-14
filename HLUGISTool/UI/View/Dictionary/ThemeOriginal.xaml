@@ -3397,7 +3397,7 @@
                                Placement="Bottom"
                                PopupAnimation="Slide">
                             <Grid x:Name="DropDown"
-                                  MinWidth="{TemplateBinding ActualWidth}"
+                                  Width="{TemplateBinding ActualWidth}"
                                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                   SnapsToDevicePixels="True">
                                 <Border x:Name="DropDownBorder"
