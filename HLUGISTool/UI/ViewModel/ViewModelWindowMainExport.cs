@@ -755,10 +755,12 @@ namespace HLU.UI.ViewModel
                     // that are from the sources table.
                     sourceFields.Add(fieldTotal);
 
-                    // If the field refers to the source_id column then store
+                    // If the field refers to the source_id column and is
+                    // retrieved in it's 'raw' integer state then store
                     // the input field ordinal for use later as the unique
                     // incid_source field ordinal.
-                    if (f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName)
+                    if ((f.ColumnName == _viewModelMain.HluDataset.incid_sources.source_idColumn.ColumnName) &&
+                        ((string.IsNullOrEmpty(f.FieldFormat)) || (f.FieldFormat.ToLower() == "code")))
                         _sourceIdOrdinal = f.FieldOrdinal;
                     // If the field refers to the source_sort_order column then
                     // store the input field ordinal for use later.
