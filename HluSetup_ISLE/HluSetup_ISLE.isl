@@ -4604,7 +4604,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{FC3392F1-6E92-4AF3-83E7-A43424D30258}</td><td/></row>
+		<row><td>ProductCode</td><td>{CFA7321C-D2F2-4288-912E-99D08C2DD203}</td><td/></row>
 		<row><td>ProductName</td><td>HLU GIS Tool 2.3.2</td><td/></row>
 		<row><td>ProductVersion</td><td>2.3.2.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
