@@ -266,11 +266,10 @@ namespace HLU.UI.ViewModel
                     matrixOrdinals, formationOrdinals, managementOrdinals, complexOrdinals, bapOrdinals, sourceOrdinals,
                     fieldMapTemplate, out exportRowCount);
 
+                // Exit if there was an error creating the database or the
+                // database is empty.
                 if (String.IsNullOrEmpty(tempPath))
-                    throw new Exception("Error creating the export table");
-
-                if (exportRowCount < 1)
-                    throw new Exception("Export query did not retrieve any rows");
+                    return;
 
                 _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting from GIS ...");
 
@@ -1149,10 +1148,10 @@ namespace HLU.UI.ViewModel
                     Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
                     Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
 
-                // Return a null database path if the table cannot be created.
+                // Throw an error if the table cannot be created.
                 if (!dbOut.CreateTable(exportTable))
-                    return null;
-                
+                    throw new Exception("Error creating the export table");
+
                 DataSet datasetOut = new DataSet("Export");
 
                 IDbDataAdapter adapterOut = dbOut.CreateAdapter(exportTable);
@@ -1581,16 +1580,25 @@ namespace HLU.UI.ViewModel
                 // Turn notifications and index maintenance back on again.
                 exportTable.EndLoadData();
 
-                return exportRowCount != -1 ? tempPath : null;
+                if (exportRowCount < 1)
+                    throw new Exception("Export query did not retrieve any rows");
+
+                return tempPath;
 
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show(String.Format("Export failed. The error message was:\n\n{0}.",
+                    ex.Message), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Delete the temporary database if it was created.
                 if (File.Exists(tempPath))
                 {
                     try { File.Delete(tempPath); }
                     catch { _viewModelMain.ExportMdbs.Add(tempPath); }
                 }
+
+                // Return a null database path as the export didn't finish.
                 return null;
             }
             finally
