@@ -2211,7 +2211,6 @@ namespace HLU.GISApplication.MapInfo
         private void ReadSelectedRows(bool replaceSelection, bool closePreviousSelection, bool qualifyColumns, 
             bool addGeometryInfo, string selName, ref DataTable resultTable)
         {
-
             //---------------------------------------------------------------------
             // CHANGED: CR31 (Switching between GIS layers)
             // Enable the user to switch between different HLU layers, where
@@ -2224,7 +2223,25 @@ namespace HLU.GISApplication.MapInfo
 
             // Check that the table is the same as the expected table
             // and if not return an empty result table.
-            if ((tableName != selName) && (tableName != _hluLayer)) return;
+            if ((tableName != selName) && (tableName != _hluLayer))
+            {
+                //---------------------------------------------------------------------
+                // FIX: 052 Ensure get map selection works when selection is based
+                // on joining two or more tables in MapInfo.
+                //
+                // Get the name of the temporary table that the current selection
+                // is based on (in case the selection was done by joining two or
+                // more tables).
+                string mapName = _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", tableName,
+                (int)MapInfoConstants.TableInfo.TAB_INFO_MAPPABLE_TABLE));
+                if (!TableExists(mapName)) return;
+
+                // Check that the mappable table is the same as the expected table
+                // and if not return an empty result table.
+                if (mapName != selName)
+                    return;
+                //---------------------------------------------------------------------
+            }
             //---------------------------------------------------------------------
             
             int numSelected = -1;
