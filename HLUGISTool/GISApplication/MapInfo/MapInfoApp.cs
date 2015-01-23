@@ -2301,6 +2301,80 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 053 Check if all selected rows have unique keys to avoid
+        // any potential data integrity problems.
+        //
+        public override bool SelectedRowsUnique()
+        {
+            try
+            {
+                if (!TableExists(_selName)) return false;
+
+                // Setup the various fetch, query and count commands.
+                string fetchCommand = String.Format("Fetch Rec {0} From {1}", "{0}", _selName);
+
+                string toidCommand = String.Format("{0}.{1}", _selName,
+                    GetFieldName(_hluLayerStructure.toidColumn.Ordinal));
+                string toidFragmentCommand = String.Format("{0}.{1}", _selName,
+                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal));
+
+                string countCommandTemplate = String.Format("Select Count(*) From {0} Where {1} = {2} And {3} = {4} Group By {1}, {3} into QueryZZZ",
+                    _hluLayer,
+                    GetFieldName(_hluLayerStructure.toidColumn.Ordinal), "{0}",
+                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal), "{1}");
+
+                string fetchCountCommand = String.Format("Fetch Rec 1 From QueryZZZ");
+
+                // Count the number of select rows.
+                int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
+                    _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
+
+                // Check if each row is unique based on the toid and
+                // toid fragment id.
+                for (int i = 1; i <= numRows; i++)
+                {
+                    // Fetch the current row.
+                    _mapInfoApp.RunCommand(String.Format(fetchCommand, i));
+
+                    // Get the toid and toid fragment id values for the
+                    // current row.
+                    string toid = _mapInfoApp.Eval(toidCommand);
+                    string toidFrag = _mapInfoApp.Eval(toidFragmentCommand);
+
+                    // Count all the rows for this toid and toid_fragment_id
+                    // in the active layer.
+                    _mapInfoApp.Do(String.Format(countCommandTemplate, QuoteValue(toid), QuoteValue(toidFrag)));
+
+                    // Fetch the first (and only) row in the count results.
+                    _mapInfoApp.RunCommand(String.Format(fetchCountCommand));
+
+                    // Get the count value from the first (and only) column.
+                    int fragCount = Int32.Parse(_mapInfoApp.Eval(String.Format("QueryZZZ.Col1")));
+
+                    // Check if more than 1 fragment is found.
+                    if (fragCount > 1)
+                        return false;
+                }
+
+                return true;
+            }
+
+            catch
+            {
+                // Err on the side of caution and return true (as no
+                // non-unique fragments have been found yet).
+                return false;
+            }
+            finally
+            {
+                // Re-select all the features in the original selection
+                string selectCommand = String.Format("select * from {0} into Selection", _selName);
+                _mapInfoApp.RunCommand(String.Format(selectCommand));
+            }
+        }
+        //---------------------------------------------------------------------
+
         public override string QuoteIdentifier(string identifier)
         {
             return identifier;

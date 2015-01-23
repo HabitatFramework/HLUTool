@@ -1338,6 +1338,21 @@ namespace HLU.UI.ViewModel
             ReadMapSelection(false);
             _autoSplit = true;
 
+            //---------------------------------------------------------------------
+            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // any potential data integrity problems.
+            //
+            // Check the selected rows are unique before attempting to split them.
+            if (!_gisApp.SelectedRowsUnique())
+            {
+                MessageBox.Show("The map selection contains one or more features where a physical split has not been completed.\n\n" +
+                    "Please select the features and invoke the Split command to prevent the map and database going out of sync.",
+                    "HLU: Data Integrity", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                return;
+            }
+            //---------------------------------------------------------------------
+
             ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
             //---------------------------------------------------------------------
             // CHANGED: CR39 (Split and merge complete messages)
@@ -1443,6 +1458,21 @@ namespace HLU.UI.ViewModel
         {
             ReadMapSelection(false);
 
+            //---------------------------------------------------------------------
+            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // any potential data integrity problems.
+            //
+            // Check the selected rows are unique before attempting to merge them.
+            if (!_gisApp.SelectedRowsUnique())
+            {
+                MessageBox.Show("The map selection contains one or more features where a physical split has not been completed.\n\n" +
+                    "Please select the features and invoke the Split command to prevent the map and database going out of sync.",
+                    "HLU: Data Integrity", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                return;
+            }
+            //---------------------------------------------------------------------
+
             ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
             //---------------------------------------------------------------------
             // CHANGED: CR39 (Split and merge complete messages)
@@ -1458,6 +1488,21 @@ namespace HLU.UI.ViewModel
         private void PhysicalMergeClicked(object param)
         {
             ReadMapSelection(false);
+
+            //---------------------------------------------------------------------
+            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // any potential data integrity problems.
+            //
+            // Check the selected rows are unique before attempting to merge them.
+            if (!_gisApp.SelectedRowsUnique())
+            {
+                MessageBox.Show("The map selection contains one or more features where a physical split has not been completed.\n\n" +
+                    "Please select the features and invoke the Split command to prevent the map and database going out of sync.",
+                    "HLU: Data Integrity", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                return;
+            }
+            //---------------------------------------------------------------------
 
             ViewModelWindowMainMerge vmMerge = new ViewModelWindowMainMerge(this);
             //---------------------------------------------------------------------
@@ -2903,7 +2948,7 @@ namespace HLU.UI.ViewModel
                         }
                         else
                         {
-                            MessageBox.Show("Could not complete physical split because you are not an authorized user.\n" + 
+                            MessageBox.Show("Could not complete physical split because you are not an authorized user.\n" +
                                 "Please undo your map changes to prevent map and database going out of sync.",
                                 "Physical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         }

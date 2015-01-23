@@ -98,6 +98,8 @@ namespace HLU.GISApplication
 
         public abstract void ReadMapSelection(ref DataTable resultTable);
 
+        public abstract bool SelectedRowsUnique();
+
         public abstract void FlashSelectedFeature(List<SqlFilterCondition> whereClause);
 
         public abstract void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses);
