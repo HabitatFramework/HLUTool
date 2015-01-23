@@ -1148,9 +1148,13 @@ namespace HLU.UI.ViewModel
                     Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
                     Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
 
+                //---------------------------------------------------------------------
+                // FIX: 054 Improve error reporting during exports.
+                //
                 // Throw an error if the table cannot be created.
                 if (!dbOut.CreateTable(exportTable))
                     throw new Exception("Error creating the export table");
+                //---------------------------------------------------------------------
 
                 DataSet datasetOut = new DataSet("Export");
 
@@ -1580,12 +1584,20 @@ namespace HLU.UI.ViewModel
                 // Turn notifications and index maintenance back on again.
                 exportTable.EndLoadData();
 
+                //---------------------------------------------------------------------
+                // FIX: 054 Improve error reporting during exports.
+                //
+                // Exit if no records were exported.
                 if (exportRowCount < 1)
                     throw new Exception("Export query did not retrieve any rows");
 
                 return tempPath;
+                //---------------------------------------------------------------------
 
             }
+            //---------------------------------------------------------------------
+            // FIX: 054 Improve error reporting during exports.
+            //
             catch (Exception ex)
             {
                 MessageBox.Show(String.Format("Export failed. The error message was:\n\n{0}.",
@@ -1601,6 +1613,7 @@ namespace HLU.UI.ViewModel
                 // Return a null database path as the export didn't finish.
                 return null;
             }
+            //---------------------------------------------------------------------
             finally
             {
                 if ((dbOut != null) && (dbOut.Connection.State != ConnectionState.Closed))
