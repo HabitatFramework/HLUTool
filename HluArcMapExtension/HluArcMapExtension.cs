@@ -65,6 +65,7 @@ namespace HLU
         #region Delegates
 
         public delegate void PipeSelectionDelegate(IFeatureSelection featureSelection);
+        public delegate void SelectedRowsUniqueDelegate();
         public delegate void FlashSelectedFeatureDelegate(IQueryFilter queryFilter);
         public delegate void SplitFeatureDelegate(IQueryFilter selectionQueryFilter,
             string lastToidFragmentID, string[] historyColumns);
@@ -148,6 +149,7 @@ namespace HLU
         private System.Windows.Forms.Control _dummyControl;
         private static int _whereClauseLengthMax = Properties.Settings.Default.WhereClauseMaxLength;
         private static PipeSelectionDelegate _pipeSelDel;
+        private static SelectedRowsUniqueDelegate _selectedRowsUniqueDel;
         private static FlashSelectedFeatureDelegate _flashSelFeatDel;
         private static SplitFeatureDelegate _splitFeatDel;
         private static SplitFeaturesLogicallyDelegate _splitFeatLogDel;
@@ -279,6 +281,7 @@ namespace HLU
             _selectFieldOrdinals = null;
 
             _pipeSelDel = null;
+            _selectedRowsUniqueDel = null;
             _flashSelFeatDel = null;
             _splitFeatDel = null;
             _splitFeatLogDel = null;
@@ -328,6 +331,7 @@ namespace HLU
                 _dummyControl.CreateControl();
 
                 _pipeSelDel = new PipeSelectionDelegate(PipeSelection);
+                _selectedRowsUniqueDel = new SelectedRowsUniqueDelegate(SelectedRowsUnique);
                 _flashSelFeatDel = new FlashSelectedFeatureDelegate(FlashFeature);
                 _splitFeatDel = new SplitFeatureDelegate(SplitFeature);
                 _splitFeatLogDel = new SplitFeaturesLogicallyDelegate(SplitFeaturesLogically);
@@ -717,6 +721,17 @@ namespace HLU
                             catch { _pipeData.Clear(); }
                         }
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 053 Check if all selected rows have unique keys to avoid
+                    // any potential data integrity problems.
+                    case "su": // selected rows unique: cmd
+                        try
+                        {
+                            _dummyControl.Invoke(_selectedRowsUniqueDel, null);
+                        }
+                        catch { _pipeData.Clear(); }
+                        break;
+                    //---------------------------------------------------------------------
                     case "us": // update selection: cmd, columns, values, historyColumns [last 3 lists]
                         try
                         {
@@ -1646,6 +1661,89 @@ namespace HLU
                 }
             }
             catch { _pipeData.Clear(); }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 053 Check if all selected rows have unique keys to avoid
+        // any potential data integrity problems.
+        //
+        /// <summary>
+        /// Checks if all the selected rows are unique in the active HLU
+        /// layer based on their toid and toid_fragment_id values.
+        /// </summary>
+        private void SelectedRowsUnique()
+        {
+            try
+            {
+                lock (_pipeData)
+                {
+                    // clear the pipe
+                    _pipeData.Clear();
+
+                    // make sure at least one feature is selected
+                    if (_hluFeatureSelection == null)
+                        _hluFeatureSelection = (IFeatureSelection)_hluLayer;
+                    if (_hluFeatureSelection.SelectionSet.Count < 1)
+                    {
+                        _pipeData.Add(true.ToString());
+                        return;
+                    }
+
+                    // Create a cursor on the current set of selected features.
+                    ICursor cursor;
+                    _hluFeatureSelection.SelectionSet.Search(null, false, out cursor);
+                    IRow selectRow = cursor.NextRow();
+
+                    // Get the column ordinals for the toid and toid_fragment_id columns.
+                    int toidOrdinal = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
+                    int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+
+                    // Create 2 fields for the toid and toid_fragment_id fields.
+                    IField toidField = _hluFeatureClass.Fields.get_Field(
+                        _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal]);
+                    IField fragField = _hluFeatureClass.Fields.get_Field(
+                        _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal]);
+
+                    // Check if each row is unique based on the toid and
+                    // toid fragment id.
+                    while (selectRow != null)
+                    {
+                        // Get the current toid and toid_fragment_id values.
+                        string toid = selectRow.get_Value(toidOrdinal).ToString();
+                        string frag = selectRow.get_Value(fragOrdinal).ToString();
+
+                        // Build a query filter for the current toid and toid_fragment_id.
+                        IQueryFilter countQueryFilter = new QueryFilterClass();
+                        countQueryFilter.WhereClause = String.Format("{0} = {1} AND {2} = {3}",
+                            _hluLayerStructure.toidColumn.ColumnName, QuoteValue(toidField, toid),
+                            _hluLayerStructure.toid_fragment_idColumn.ColumnName, QuoteValue(toidField, frag));
+
+                        // Get the count value for the query filter.
+                        int fragCount = _hluLayer.FeatureClass.FeatureCount(countQueryFilter);
+
+                        // Check if more than 1 fragment is found.
+                        if (fragCount > 1)
+                        {
+                            _pipeData.Add(false.ToString());
+                            return;
+                        }
+
+                        // Get the next row from the selected features.
+                        selectRow = cursor.NextRow();
+                    }
+
+                    Marshal.FinalReleaseComObject(cursor);
+
+                    _pipeData.Add(true.ToString());
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _pipeData.Add(_pipeErrorSymbol.ToString());
+                _pipeData.Add(ex.Message);
+            }
         }
         //---------------------------------------------------------------------
 

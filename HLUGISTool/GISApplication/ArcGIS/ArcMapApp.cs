@@ -730,6 +730,24 @@ namespace HLU.GISApplication.ArcGIS
             catch { throw; }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 053 Check if all selected rows have unique keys to avoid
+        // any potential data integrity problems.
+        //
+        public override bool SelectedRowsUnique()
+        {
+            try
+            {
+                List<string> retList = IpcArcMap(new string[] { "su" });
+                if (retList.Count > 0)
+                    return Convert.ToBoolean(retList[0]);
+                else
+                    return true;
+            }
+            catch { return true; }
+        }
+        //---------------------------------------------------------------------
+
         public override void FlashSelectedFeature(List<SqlFilterCondition> whereClause)
         {
             List<string> resultList = IpcArcMap(new string[] { "fl", 
