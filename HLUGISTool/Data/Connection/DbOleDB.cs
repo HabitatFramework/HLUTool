@@ -103,9 +103,13 @@ namespace HLU.Data.Connection
             if ((cn.State == ConnectionState.Open) &&
                 (previousConnectionState != ConnectionState.Open)) cn.Close();
 
+            //---------------------------------------------------------------------
+            // FIX: 055 Enable connection using Microsoft ACE driver.
+            //
             if (provider.StartsWith("microsoft.jet.oledb") ||
                 provider.StartsWith("microsoft.ace.oledb.12.0"))
                 return Backends.Access;
+            //---------------------------------------------------------------------
             else if (provider.StartsWith("sqloledb"))
                 return Backends.SqlServer;
             else if (provider.StartsWith("oraoledb"))

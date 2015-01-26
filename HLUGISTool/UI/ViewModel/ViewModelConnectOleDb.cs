@@ -168,8 +168,12 @@ namespace HLU.UI.ViewModel
             if (connection == null)
                 return false;
             else
+                //---------------------------------------------------------------------
+                // FIX: 055 Enable connection using Microsoft ACE driver.
+                //
                 return (connection.Provider.ToLower().StartsWith("microsoft.jet.oledb") ||
                     (connection.Provider.ToLower().StartsWith("microsoft.ace.oledb.12.0")));
+                //---------------------------------------------------------------------
         }
 
         private bool IsSqlServer(ADODB.Connection connection)
@@ -499,8 +503,12 @@ namespace HLU.UI.ViewModel
 
                 if (String.IsNullOrEmpty(_connStrBuilder.ConnectionString))
                     error.Append(", connection");
+                //---------------------------------------------------------------------
+                // FIX: 055 Enable connection using Microsoft ACE driver.
+                //
                 if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                     String.IsNullOrEmpty(_defaultSchema)) error.Append(", default schema");
+                //---------------------------------------------------------------------
 
                 if (error.Length > 0)
                     return error.Remove(0, 1).Insert(0, "Please provide").ToString();
@@ -522,8 +530,12 @@ namespace HLU.UI.ViewModel
                             error = "Please create a connection";
                         break;
                     case "DefaultSchema":
+                        //---------------------------------------------------------------------
+                        // FIX: 055 Enable connection using Microsoft ACE driver.
+                        //
                         if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                             String.IsNullOrEmpty(_defaultSchema)) error = "Please provide a default schema";
+                        //---------------------------------------------------------------------
                         break;
                 }
 
