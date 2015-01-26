@@ -168,7 +168,8 @@ namespace HLU.UI.ViewModel
             if (connection == null)
                 return false;
             else
-                return connection.Provider.ToLower().StartsWith("microsoft.jet.oledb");
+                return (connection.Provider.ToLower().StartsWith("microsoft.jet.oledb") ||
+                    (connection.Provider.ToLower().StartsWith("microsoft.ace.oledb.12.0")));
         }
 
         private bool IsSqlServer(ADODB.Connection connection)
@@ -498,7 +499,7 @@ namespace HLU.UI.ViewModel
 
                 if (String.IsNullOrEmpty(_connStrBuilder.ConnectionString))
                     error.Append(", connection");
-                if ((_connAdo != null) && !_connAdo.Provider.StartsWith("Microsoft.Jet.OLEDB") && 
+                if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                     String.IsNullOrEmpty(_defaultSchema)) error.Append(", default schema");
 
                 if (error.Length > 0)
@@ -521,7 +522,7 @@ namespace HLU.UI.ViewModel
                             error = "Please create a connection";
                         break;
                     case "DefaultSchema":
-                        if ((_connAdo != null) && !_connAdo.Provider.StartsWith("Microsoft.Jet.OLEDB") && 
+                        if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                             String.IsNullOrEmpty(_defaultSchema)) error = "Please provide a default schema";
                         break;
                 }

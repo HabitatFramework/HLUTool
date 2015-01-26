@@ -103,7 +103,8 @@ namespace HLU.Data.Connection
             if ((cn.State == ConnectionState.Open) &&
                 (previousConnectionState != ConnectionState.Open)) cn.Close();
 
-            if (provider.StartsWith("microsoft.jet.oledb"))
+            if (provider.StartsWith("microsoft.jet.oledb") ||
+                provider.StartsWith("microsoft.ace.oledb.12.0"))
                 return Backends.Access;
             else if (provider.StartsWith("sqloledb"))
                 return Backends.SqlServer;
