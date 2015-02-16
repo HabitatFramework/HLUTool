@@ -1185,7 +1185,7 @@ namespace HLU.GISApplication.MapInfo
 
         public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
-            int outFeatureCount = 0;
+            long outFeatureCount = 0;
             string attributeTable = String.Empty;
             string outTable = String.Empty;
             string selTable = String.Empty;
@@ -1239,7 +1239,7 @@ namespace HLU.GISApplication.MapInfo
 
                 // Check the total export layer won't exceed the MapInfo
                 // maximum .tab file size.
-                if ((attributesLength * outFeatureCount)/1024 > Settings.Default.MapInfoMaxTableSize)
+                if (((attributesLength * outFeatureCount) / 1024) > Settings.Default.MapInfoMaxTableSize)
                     throw new Exception(String.Format("The export table size ({0} Kb) will exceed the maximum allowed for MapInfo .tab files (2 Gb)", (attributesLength * outFeatureCount)/1024));
                 //---------------------------------------------------------------------
 
