@@ -256,6 +256,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\Dictionary\ThemeShinyBlue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\WindowNotifyOnSplitMerge.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
