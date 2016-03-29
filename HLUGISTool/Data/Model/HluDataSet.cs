@@ -20,12 +20,12 @@ namespace HLU.Data.Model {
 
     public partial class HluDataSet
     {
+        partial class incidDataTable
+        {
+        }
     }
 }
 
 namespace HLU.Data.Model.HluDataSetTableAdapters {
-    
-    
-    public partial class exports_fieldsTableAdapter {
-    }
+
 }

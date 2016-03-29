@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013 Thames Valley Environmental Records Centre
+// Copyright © 2013, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -111,6 +111,8 @@ namespace HLU.GISApplication
         public abstract List<GISLayer> ValidHluLayers { get; }
 
         public abstract GISLayer CurrentHluLayer { get; }
+
+        public abstract int MapWindowsCount { get; }
 
         public abstract DataTable UpdateFeatures(DataColumn[] updateColumns, 
             object[] updateValues, DataColumn[] historyColumns);

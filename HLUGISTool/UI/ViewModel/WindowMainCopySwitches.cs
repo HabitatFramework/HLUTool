@@ -1,6 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2016 Thames Valley Environmental Records Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -50,6 +51,7 @@ namespace HLU.UI.ViewModel
         private bool _copyIncidGeneralComments;
         private bool _copyIncidBoundaryBaseMap;
         private bool _copyIncidDigitisationBaseMap;
+        private bool _copyIncidLegacyHabitat;
         private bool _copyIncidSiteRef;
         private bool _copyIncidSiteName;
         private bool _copyIncidSource1Id;
@@ -91,6 +93,7 @@ namespace HLU.UI.ViewModel
         private string _incidGeneralComments;
         private string _incidBoundaryBaseMap;
         private string _incidDigitisationBaseMap;
+        private string _incidLegacyHabitat;
         private string _incidSiteRef;
         private string _incidSiteName;
         private Nullable<int> _incidSource1Id;
@@ -279,6 +282,20 @@ namespace HLU.UI.ViewModel
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidDigitisationBaseMaps"));
             }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        // Make the legacy habitat field editable in the interface.
+        public bool CopyIncidLegacyHabitat
+        {
+            get { return _copyIncidLegacyHabitat; }
+            set
+            {
+                _copyIncidLegacyHabitat = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidLegacyHabitat"));
+            }
+        }
+        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)
@@ -647,6 +664,20 @@ namespace HLU.UI.ViewModel
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidDigitisationBaseMap"));
             }
         }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        // Make the legacy habitat field editable in the interface.
+        public string IncidLegacyHabitat
+        {
+            get { return _copyIncidLegacyHabitat ? _incidLegacyHabitat : null; }
+            set
+            {
+                _incidLegacyHabitat = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidLegacyHabitat"));
+            }
+        }
+        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)

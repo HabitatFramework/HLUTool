@@ -435,6 +435,8 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
 
         private HluTableAdapter<HluDataSet.lut_last_incidDataTable, HluDataSet.lut_last_incidRow> _lut_last_incidTableAdapter;
 
+        private HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow> _lut_legacy_habitatTableAdapter;
+
         private HluTableAdapter<HluDataSet.lut_operationDataTable, HluDataSet.lut_operationRow> _lut_operationTableAdapter;
 
         private HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow> _lut_processTableAdapter;
@@ -817,6 +819,17 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 if (!this.MatchTableAdapterConnection(value.Connection))
                     throw new ArgumentException(_sameConnErrorMsg);
                 this._lut_last_incidTableAdapter = value;
+            }
+        }
+
+        public HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow> lut_legacy_habitatTableAdapter
+        {
+            get { return this._lut_legacy_habitatTableAdapter; }
+            set
+            {
+                if (!this.MatchTableAdapterConnection(value.Connection))
+                    throw new ArgumentException(_sameConnErrorMsg);
+                this._lut_legacy_habitatTableAdapter = value;
             }
         }
 

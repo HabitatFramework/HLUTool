@@ -203,7 +203,7 @@ namespace HLU
 
                 //---------------------------------------------------------------------
                 // FIX: 031 Check combobox text is not null before finding list item
-                if (cb.Text != null)
+                if (!String.IsNullOrEmpty(cb.Text))
                 //---------------------------------------------------------------------
                 {
                     string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx);

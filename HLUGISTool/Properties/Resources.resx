@@ -121,7 +121,7 @@
     <value>_</value>
   </data>
   <data name="DefaultConnectionType" xml:space="preserve">
-    <value>OleDb</value>
+    <value>SQLServer</value>
   </data>
   <data name="PasswordMaskString" xml:space="preserve">
     <value>***</value>

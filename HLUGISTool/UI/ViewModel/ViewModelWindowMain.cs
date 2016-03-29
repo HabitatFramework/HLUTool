@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013-2014 Thames Valley Environmental Records Centre
+// Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -100,7 +100,7 @@ namespace HLU.UI.ViewModel
         private ICommand _clearFilterCommand;
         private ICommand _readMapSelectionCommand;
         private ICommand _selectByIncidCommand;
-        private ICommand _switchGisLayerCommand;
+        private ICommand _switchGISLayerCommand;
         private ICommand _logicalSplitCommand;
         private ICommand _physicalSplitCommand;
         private ICommand _logicalMergeCommand;
@@ -141,6 +141,10 @@ namespace HLU.UI.ViewModel
         private ViewModelCompletePhysicalSplit _vmCompSplit;
 
         private string _displayName = "HLU GIS Tool";
+        private int _windowHeight;
+        private int _mapWindowsCount;
+        private bool? _showingReasonProcessGroup = null;
+        private bool? _showingNVCCodesText = null;
         private string _logoPath = String.Empty;
         private DbBase _db;
         private GISApp _gisApp;
@@ -231,6 +235,7 @@ namespace HLU.UI.ViewModel
         private string _incidIhsHabitat;
         private string _incidLastModifiedUser;
         private DateTime _incidLastModifiedDate;
+        private string _incidLegacyHabitat;
         private Dictionary<Type, List<SqlFilterCondition>> _childRowFilterDict;
         private Dictionary<Type, string> _childRowOrderByDict;
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
@@ -599,12 +604,54 @@ namespace HLU.UI.ViewModel
                     return String.Format("{0}{1}", DisplayName, _editMode ? String.Empty : " [READONLY]");
                 else
                 {
-                    // Include the layer name and active layer/map window number in the window title.
-                    return String.Format("{0} - {1} [{2}]{3}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _gisApp.CurrentHluLayer.MapNum, _editMode ? String.Empty : " [READONLY]");
+                    //---------------------------------------------------------------------
+                    // FIX: 059 Do not display map window number with layer name
+                    // if there is only one map window.
+                    // 
+                    if (_mapWindowsCount > 1)
+                        // Include the layer name and active layer/map window number in the window title.
+                        return String.Format("{0} - {1} [{2}]{3}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _gisApp.CurrentHluLayer.MapNum, _editMode ? String.Empty : " [READONLY]");
+                    else
+                        // Include only the layer name in the window title.
+                        return String.Format("{0} - {1} {2}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _editMode ? String.Empty : " [READONLY]");
+                    //---------------------------------------------------------------------
                 }
                 //---------------------------------------------------------------------
             }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 057 Adjust window height correctly for optional areas.
+        // 
+        /// <summary>
+        /// Get and set the window height, adjusting it for any optional
+        /// areas.
+        /// </summary>
+        public int WindowHeight
+        {
+            get
+            {
+                // Set the initial window height if not already set
+                if (_windowHeight == 0)
+                {
+                    _windowHeight = 887;
+
+                    // Adjust the standard height if the NVC codes text is not showing
+                    if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
+                    if (!(bool)_showingNVCCodesText)
+                        _windowHeight = _windowHeight - 26;
+
+                    // Adjust the standard height if the Reason and Process group is not showing
+                    if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
+                    if (!(bool)_showingReasonProcessGroup)
+                        _windowHeight = _windowHeight - 46;
+                }
+
+                return _windowHeight;
+            }
+            set { _windowHeight = value; }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -2162,6 +2209,8 @@ namespace HLU.UI.ViewModel
                 _historyColumns = InitializeHistoryColumns(_historyColumns);
                 VagueDate.Delimiter = Settings.Default.VagueDateDelimiter;
                 VagueDate.SeasonNames = Settings.Default.SeasonNames.Cast<string>().ToArray();
+
+                OnPropertyChanged("ShowNVCCodesText");
             }
         }
 
@@ -2202,7 +2251,7 @@ namespace HLU.UI.ViewModel
                     return null;
                 // Split the copyright statement at each full stop and
                 // wrap it to a new line.
-                String copyright = String.Join(Environment.NewLine + "   ", ((AssemblyCopyrightAttribute)attributes[0]).Copyright.Split('.'));
+                String copyright = String.Join(Environment.NewLine, ((AssemblyCopyrightAttribute)attributes[0]).Copyright.Split('.'));
                 // If there is a Copyright attribute, return its value
                 return copyright;
             }
@@ -2219,9 +2268,26 @@ namespace HLU.UI.ViewModel
             // Show the current userid and username together with the version
             // and copyright notice in the 'About' box.
             //
+            // FIX: 058 Display database connection in 'About' dialog.
+            // 
+            string dbBackend;
+            dbBackend = String.Format("{0}{1}{2}{3}",
+                _db.Backend.ToString(),
+                String.IsNullOrEmpty(_db.DefaultSchema) ? null : " (",
+                _db.DefaultSchema,
+                String.IsNullOrEmpty(_db.DefaultSchema) ? null : ")");
+            string dbSettings;
+            dbSettings = _db.ConnectionString.Replace(";", "\n");
+
             MessageBox.Show(App.Current.MainWindow,
-                String.Format("   App Version :  {0}\n   Db Version :    {1}\n\n   Userid :        {2}\n   Username : {3}\n\n   {4}",
-                Assembly.GetExecutingAssembly().GetName().Version.ToString(), _dbVersion, UserID, UserName, AssemblyCopyright), 
+                String.Format("App Version : {0}\nDb Version   : {1}\n\nDb Type      : {2}\nDb Settings :\n{3}\n\nUserid        : {4}\nUsername : {5}\n\n{6}",
+                Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                _dbVersion,
+                dbBackend,
+                dbSettings,
+                UserID,
+                UserName,
+                AssemblyCopyright), 
                 String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
             //---------------------------------------------------------------------
         }
@@ -3537,16 +3603,16 @@ namespace HLU.UI.ViewModel
         // CHANGED: CR31 (Switching between GIS layers)
         // Enable the user to switch between different HLU layers, where
         // there is more than one valid layer in the current document.
-        public ICommand SwitchGisLayerCommand
+        public ICommand SwitchGISLayerCommand
         {
             get
             {
-                if (_switchGisLayerCommand == null)
+                if (_switchGISLayerCommand == null)
                 {
                     Action<object> SwitchGISLayerAction = new Action<object>(this.SwitchGISLayerClicked);
-                    _switchGisLayerCommand = new RelayCommand(SwitchGISLayerAction);
+                    _switchGISLayerCommand = new RelayCommand(SwitchGISLayerAction, param => this.CanSwitchGISLayer);
                 }
-                return _switchGisLayerCommand;
+                return _switchGISLayerCommand;
             }
         }
 
@@ -3558,7 +3624,13 @@ namespace HLU.UI.ViewModel
                 _windowSwitchGISLayer.Owner = App.Current.MainWindow;
                 _windowSwitchGISLayer.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-                _viewModelSwitchGISLayer = new ViewModelWindowSwitchGISLayer(_gisApp.ValidHluLayers, _gisApp.CurrentHluLayer);
+                //---------------------------------------------------------------------
+                // FIX: 059 Do not display map window number with layer name
+                // if there is only one map window.
+                // 
+                // Pass the total number of map windows to the view model
+                _viewModelSwitchGISLayer = new ViewModelWindowSwitchGISLayer(_gisApp.ValidHluLayers, _gisApp.CurrentHluLayer, _mapWindowsCount);
+                //---------------------------------------------------------------------
                 _viewModelSwitchGISLayer.RequestClose +=
                     new ViewModelWindowSwitchGISLayer.RequestCloseEventHandler(_viewModelSwitchGISLayer_RequestClose);
 
@@ -3568,10 +3640,34 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private bool CanSwitchGISLayer
+        //---------------------------------------------------------------------
+        // FIX: 060 Disable the switch GIS layer button and menu item
+        // if there is only one valid layer.
+        // 
+        public bool CanSwitchGISLayer
         {
-            get { return _gisApp.ValidHluLayers.Count() > 0; }
+            get
+            {
+                // Get the total number of map layers
+                int mapLayersCount = _gisApp.ListHluLayers();
+
+                // Get the total number of map windows
+                int mapWindowsCount = _gisApp.MapWindowsCount;
+
+                // If the number of map windows has changed
+                if (mapWindowsCount != _mapWindowsCount)
+                {
+                    _mapWindowsCount = mapWindowsCount;
+
+                    // Refresh the window title
+                    OnPropertyChanged("WindowTitle");
+                }
+
+                // Return true if there is more than one map layer
+                return mapLayersCount > 1;
+            }
         }
+        //---------------------------------------------------------------------
 
         void _viewModelSwitchGISLayer_RequestClose(bool switchGISLayer, GISLayer selectedHLULayer)
         {
@@ -3594,21 +3690,19 @@ namespace HLU.UI.ViewModel
                     // Switch the GIS layer
                     if (_gisApp.IsHluLayer(selectedHLULayer))
                     {
-                        // Inform the user that the switch worked
-                        if (selectedHLULayer.MapName == null)
-                            MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
-                                "HLU: Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        else
-                        {
-                            MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
-                                "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        //// Inform the user that the switch worked
+                        //if (selectedHLULayer.MapName == null)
+                        //    MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
+                        //        "HLU: Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        //else
+                        //    MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
+                        //        "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
-                            // Refresh the window title
-                            OnPropertyChanged("WindowTitle");
+                        // Refresh the window title
+                        OnPropertyChanged("WindowTitle");
 
-                            // Get the new GIS layer selection
-                            ReadMapSelection(false);
-                        }
+                        // Get the new GIS layer selection
+                        ReadMapSelection(false);
                     }
                 }
             }
@@ -4762,11 +4856,12 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             OnPropertyChanged("NvcCodes");
-            RefreshIhsMulitplexValues();
-            RefreshIhsMulitplexCodes();
+            RefreshIhsMultiplexValues();
+            RefreshIhsMultiplexCodes();
+            OnPropertyChanged("IncidLegacyHabitat");
         }
 
-        private void RefreshIhsMulitplexValues()
+        private void RefreshIhsMultiplexValues()
         {
             OnPropertyChanged("IncidIhsMatrix1");
             OnPropertyChanged("IncidIhsMatrix2");
@@ -4778,10 +4873,9 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidIhsComplex1");
             OnPropertyChanged("IncidIhsComplex2");
             OnPropertyChanged("IncidIhsSummary");
-            OnPropertyChanged("IncidLegacyHabitat");
         }
 
-        private void RefreshIhsMulitplexCodes()
+        private void RefreshIhsMultiplexCodes()
         {
             OnPropertyChanged("IhsMatrix1Codes");
             OnPropertyChanged("IhsMatrix2Codes");
@@ -4801,7 +4895,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IhsComplex2Codes");
             OnPropertyChanged("IhsComplex1Enabled");
             OnPropertyChanged("IhsComplex2Enabled");
-            RefreshIhsMulitplexValues();
+            RefreshIhsMultiplexValues();
         }
 
         private void RefreshDetailsTab()
@@ -4816,6 +4910,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("BapHabitatsUserEnabled");
             OnPropertyChanged("IncidSiteRef");
             OnPropertyChanged("IncidSiteName");
+            OnPropertyChanged("LegacyHabitatCodes");
         }
 
         private void RefreshSources()
@@ -5108,6 +5203,9 @@ namespace HLU.UI.ViewModel
 
         #region Reason and Process
 
+        //---------------------------------------------------------------------
+        // FIX: 057 Adjust window height correctly for optional areas.
+        // 
         /// <summary>
         /// Only show the Reason and Process group if the data is editable, otherwise collapse it.
         /// </summary>
@@ -5115,13 +5213,34 @@ namespace HLU.UI.ViewModel
         {
             get
             {
+                if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
+
                 if (_editMode == true)
+                {
+                    if (!(bool)_showingReasonProcessGroup)
+                    {
+                        WindowHeight = _windowHeight + 46;
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingReasonProcessGroup = true;
                     return Visibility.Visible;
+                }
                 else
+                {
+                    if ((bool)_showingReasonProcessGroup)
+                    {
+                        WindowHeight = _windowHeight - 46;
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingReasonProcessGroup = false;
                     return Visibility.Collapsed;
+                }
             }
             set { }
         }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_reasonRow[] ReasonCodes
         {
@@ -5195,7 +5314,7 @@ namespace HLU.UI.ViewModel
         // label as in error.
         public string IhsTabLabel
         {
-            get { return "IHS"; }
+            get { return "Habitats"; }
         }
         //---------------------------------------------------------------------
 
@@ -5360,6 +5479,46 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // FIX: 056 A new options to enable NVC Codes to be shown or hidden.
+        // FIX: 057 Adjust window height correctly for optional areas.
+        // 
+        /// <summary>
+        /// Only show the NVC Codes if the option is set, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowNVCCodesText
+        {
+            get
+            {
+                if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
+
+                if (Settings.Default.ShowNVCCodes)
+                {
+                    if (!(bool)_showingNVCCodesText)
+                    {
+                        WindowHeight = _windowHeight + 26;
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingNVCCodesText = true;
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    if ((bool)_showingNVCCodesText)
+                    {
+                        WindowHeight = _windowHeight - 26;
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingNVCCodesText = false;
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// Gets the string of NVC codes that are related to the selected
         /// ihs habitat. It is used as an aid to the user to help double-
@@ -5488,7 +5647,7 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("BapHabitatsUserEnabled");
                     }
                     IhsMultiplexCodes(_incidIhsHabitat);
-                    RefreshIhsMulitplexCodes();
+                    RefreshIhsMultiplexCodes();
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
@@ -7006,26 +7165,99 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        //
+        /// <summary>
+        /// Looks up the legacy habitat codes and descriptions from
+        /// the database table 'lut_legacy_habitat'.
+        /// </summary>
+        /// <value>
+        /// The sorted rows of all Legacy Habitats from the database.
+        /// </value>
+        public HluDataSet.lut_legacy_habitatRow[] LegacyHabitatCodes
+        {
+            get
+            {
+                if (HluDataset.lut_legacy_habitat.IsInitialized && HluDataset.lut_legacy_habitat.Count == 0)
+                {
+                    if (_hluTableAdapterMgr.lut_legacy_habitatTableAdapter == null)
+                        _hluTableAdapterMgr.lut_legacy_habitatTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_legacy_habitatDataTable) }, false);
+                }
+
+                if (!String.IsNullOrEmpty(_incidLegacyHabitat))
+                {
+                    HluDataSet.lut_legacy_habitatRow clearRow = HluDataset.lut_legacy_habitat.Newlut_legacy_habitatRow();
+                    clearRow.code = _codeDeleteRow;
+                    clearRow.description = _codeDeleteRow;
+                    clearRow.sort_order = -1;
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    return HluDataset.lut_legacy_habitat.AsEnumerable().Concat(
+                        new HluDataSet.lut_legacy_habitatRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    //string sortCols = String.Concat(HluDataset.lut_legacy_habitat.sort_orderColumn.ColumnName, ", ", HluDataset.lut_legacy_habitat.descriptionColumn.ColumnName);
+                    //HluDataset.lut_legacy_habitat.DefaultView.Sort = sortCols;
+                    //---------------------------------------------------------------------
+                }
+                else
+                {
+                    return HluDataset.lut_legacy_habitat.AsEnumerable().ToArray();
+                }
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        //
+        /// <summary>
+        /// Gets the Legacy Habitat code for the current incid.
+        /// </summary>
+        /// <value>
+        /// The Legacy Habitat code for the current incid.
+        /// </value>
         public string IncidLegacyHabitat
         {
             get
             {
                 if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.legacy_habitatColumn))
-                    return IncidCurrentRow.legacy_habitat;
+                    _incidLegacyHabitat = IncidCurrentRow.legacy_habitat;
                 else
-                    return null;
+                    _incidLegacyHabitat = null;
+
+                return _incidLegacyHabitat;
             }
             set
-            { 
-                if ((IncidCurrentRow != null) && (value != null)) IncidCurrentRow.legacy_habitat = value;
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
-                //---------------------------------------------------------------------
+            {
+                if (IncidCurrentRow != null)
+                {
+                    bool clearCode = value == _codeDeleteRow;
+                    bool newCode = false;
+                    if (clearCode)
+                        value = null;
+                    else
+                        newCode = ((String.IsNullOrEmpty(_incidLegacyHabitat)) && (!String.IsNullOrEmpty(value)));
+
+                    _incidLegacyHabitat = value;
+                    IncidCurrentRow.legacy_habitat = _incidLegacyHabitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+
+                    // Refresh legacy habitat list
+                    if (clearCode || newCode)
+                        OnPropertyChanged("LegacyHabitatCodes");
+                }
             }
         }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -9726,7 +9958,7 @@ namespace HLU.UI.ViewModel
                 // FIX: 020 Show field errors on tab labels.
                 // If there are any IHS field errors then show an error on the tab label.
                 if (_ihsErrors != null && _ihsErrors.Count > 0)
-                    error.Append(Environment.NewLine).Append("One or more IHS codes are in error");
+                    error.Append(Environment.NewLine).Append("One or more Habitats are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -9784,7 +10016,7 @@ namespace HLU.UI.ViewModel
                 // FIX: 020 Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
                 if (_detailsErrors != null && _detailsErrors.Count > 0)
-                    error.Append(Environment.NewLine).Append("One or more Detail codes are in error");
+                    error.Append(Environment.NewLine).Append("One or more Details are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -9889,7 +10121,7 @@ namespace HLU.UI.ViewModel
                         break;
                     case "IhsTabLabel":
                         if (_ihsErrors != null && _ihsErrors.Count > 0)
-                            error = "One or more IHS codes are in error";
+                            error = "One or more Habitat codes are in error";
                         break;
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors

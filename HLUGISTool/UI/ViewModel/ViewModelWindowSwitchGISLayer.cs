@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2014 Thames Valley Environmental Records Centre
+// Copyright © 2014, 2016 Thames Valley Environmental Records Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -44,19 +44,30 @@ namespace HLU.UI.ViewModel
         private string _displayName = "Select HLU Feature Layer";
         private List<GISLayer> _availableHLULayers;
         private GISLayer _selectedHLULayer;
+        private int _mapWindowsCount;
         private ICommand _okCommand;
         private ICommand _cancelCommand;
 
         #endregion
 
-        public ViewModelWindowSwitchGISLayer(List<GISLayer> ValidHluLayers, GISLayer SelectedHLULayer)
+        //---------------------------------------------------------------------
+        // FIX: 059 Do not display map window number with layer name
+        // if there is only one map window.
+        // 
+        public ViewModelWindowSwitchGISLayer(List<GISLayer> ValidHluLayers, GISLayer SelectedHLULayer, int MapWindowsCount)
         {
             if (ValidHluLayers != null)
             {
                 _availableHLULayers = ValidHluLayers;
                 _selectedHLULayer = SelectedHLULayer;
+                _mapWindowsCount = MapWindowsCount;
+
+                // Set the static variable for the total number of
+                // map windows.
+                GISLayer.MapWindowsCount = _mapWindowsCount;
             }
         }
+        //---------------------------------------------------------------------
 
         #region ViewModelBase members
 
@@ -160,13 +171,20 @@ namespace HLU.UI.ViewModel
 
         public List<GISLayer> AvailableHLULayers
         {
-            get { return _availableHLULayers; }
+            get
+            {
+                return _availableHLULayers;
+            }
             set { }
         }
 
         public GISLayer SelectedHLULayer
         {
-            get { return _selectedHLULayer; }
+            get
+            {
+                return _selectedHLULayer;
+            }
+
             set { _selectedHLULayer = value; }
         }
 

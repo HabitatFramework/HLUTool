@@ -1,7 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013-2014 Thames Valley Environmental Records Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
+// Copyright © 2014-15 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -72,6 +72,11 @@ namespace HLU.GISApplication.MapInfo
         /// The current valid HLU map layer in the workspace.
         /// </summary>
         private GISLayer _hluCurrentLayer;
+
+        /// <summary>
+        /// The total number of map windows in the workspace.
+        /// </summary>
+        private int _mapWindowsCount;
 
         HluGISLayer.incid_mm_polygonsDataTable _hluLayerStructure;
 
@@ -335,6 +340,19 @@ namespace HLU.GISApplication.MapInfo
         {
             get { return _hluCurrentLayer; }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 059 Do not display map window number with layer name
+        // if there is only one map window.
+        // 
+        /// <summary>
+        /// The total number of map windows in the current workspace.
+        /// </summary>
+        public override int MapWindowsCount
+        {
+            get { return _mapWindowsCount; }
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Gets the currently selected map features and writes their UIDs into a DataTable.
@@ -2988,7 +3006,7 @@ namespace HLU.GISApplication.MapInfo
                 int numWindows = Int32.Parse(_mapInfoApp.Eval("NumWindows()"));
 
                 int windowID;
-                int windowNum = 0;
+                _mapWindowsCount = 0;
 
                 // Initialise the list of valid layers
                 if (_hluLayerList == null) _hluLayerList = new List<GISLayer>();
@@ -3006,8 +3024,13 @@ namespace HLU.GISApplication.MapInfo
                         (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
                         (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
                     {
-                        // Increment the window number counter
-                        windowNum += 1;
+                        //---------------------------------------------------------------------
+                        // FIX: 059 Do not display map window number with layer name
+                        // if there is only one map window.
+                        // 
+                        // Increment the map window counter
+                        _mapWindowsCount += 1;
+                        //---------------------------------------------------------------------
 
                         // Store the number of layers in the window
                         int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",
@@ -3028,7 +3051,7 @@ namespace HLU.GISApplication.MapInfo
                                 if (IsHluLayer(layer))
                                 {
                                     // Add the name of layer to the valid list
-                                    _hluLayerList.Add(new GISLayer(windowNum, 0, layer));
+                                    _hluLayerList.Add(new GISLayer(_mapWindowsCount, 0, layer));
                                 }
                             }
                         }
@@ -3052,6 +3075,7 @@ namespace HLU.GISApplication.MapInfo
 
             if (_hluCurrentLayer == null)
                 _hluCurrentLayer = _hluLayerList[0];
+
             return _hluLayerList.Count();
         }
         //---------------------------------------------------------------------

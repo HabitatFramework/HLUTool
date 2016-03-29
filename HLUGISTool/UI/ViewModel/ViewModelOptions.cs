@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013 Thames Valley Environmental Records Centre
+// Copyright © 2013, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -63,6 +63,7 @@ namespace HLU.UI.ViewModel
         private string _sqlPath = Settings.Default.SqlPath;
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
@@ -187,6 +188,7 @@ namespace HLU.UI.ViewModel
 
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
+            Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.ExportPath = _exportPath;
 
@@ -467,6 +469,22 @@ namespace HLU.UI.ViewModel
         {
             get { return _getValueRows; }
             set { _getValueRows = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 056 A new options to enable NVC Codes to be shown or hidden.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide NVC Codes.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding NVC Codes.
+        /// </value>
+        public bool ShowNVCCodes
+        {
+            get { return _showNVCCodes; }
+            set { _showNVCCodes = value; }
         }
         //---------------------------------------------------------------------
 
