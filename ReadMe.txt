@@ -1,7 +1,7 @@
-HLU GIS Tool 2.3.3
+HLU GIS Tool 2.4.0
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
-Copyright © 2013-2014 Thames Valley Environmental Records Centre
+Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 Copyright © 2014 Sussex Biodiversity Record Centre
 
 Overview
@@ -46,8 +46,8 @@ The HLU GIS Tool requires the following:
  - Microsoft SQL Server 2008 Express Edition or later, OR
  - Microsoft SQL Server 2008 or later
 
- - ArcGIS 10.1 (ArcGIS 9.3 is supported by v1.0.1), OR
- - MapInfo 8.0 or MapInfo 10.0
+ - ArcGIS 10.1 or later (ArcGIS 9.3 is supported by v1.0.1), OR
+ - MapInfo 8.0 or later
 
 Installation
 ------------
