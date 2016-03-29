@@ -30,7 +30,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HLUTool")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14 TVERC.Copyright © 2014 SxBRC")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14, 2016 TVERC.Copyright © 2014 SxBRC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -68,6 +68,6 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.3.3.0")]
+[assembly: AssemblyVersion("2.4.0.0")]
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
