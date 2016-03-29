@@ -1,6 +1,6 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013-2014 Thames Valley Environmental Records Centre
+// Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -143,6 +143,11 @@ namespace HLU.GISApplication.ArcGIS
         /// The current valid HLU map layer in the document.
         /// </summary>
         private GISLayer _hluCurrentLayer;
+
+        /// <summary>
+        /// The total number of map windows in the workspace.
+        /// </summary>
+        private int _mapWindowsCount;
 
         /// <summary>
         /// Persisted HLU layer that is cloned every time the application starts.
@@ -1342,6 +1347,19 @@ namespace HLU.GISApplication.ArcGIS
             get { return _hluCurrentLayer; }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 059 Do not display map window number with layer name
+        // if there is only one map window.
+        // 
+        /// <summary>
+        /// The total number of map windows in the current workspace.
+        /// </summary>
+        public override int MapWindowsCount
+        {
+            get { return _mapWindowsCount; }
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// True if ArcMap is running, otherwise false.
         /// </summary>
@@ -1721,10 +1739,17 @@ namespace HLU.GISApplication.ArcGIS
             try
             {
                 List<string> retList = IpcArcMap(new string[] { "ll" });
-                if ((retList != null) && (retList.Count > 2))
+                if ((retList != null) && (retList.Count > 3))
                 {
                     if (Int32.Parse(retList[0]) > 0)
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 059 Do not display map window number with layer name
+                        // if there is only one map window.
+                        // 
+                        // Store the total number of map windows.
+                        _mapWindowsCount = Int32.Parse(retList[1]);
+
                         // Split each layer into constituent parts and add them to the list
                         // of valid layers.
                         if (_hluLayerList == null)
@@ -1732,13 +1757,14 @@ namespace HLU.GISApplication.ArcGIS
                         else
                             _hluLayerList.Clear();
 
-                        for (int i = 2; i < retList.Count; i++)
+                        for (int i = 3; i < retList.Count; i++)
                         {
                             // Increment the map number by 1 so that it starts with 1 instead
                             // of 0 to be more user-friendly when displayed.
                             string[] layerParts = retList[i].ToString().Split(new string[] { "::" }, StringSplitOptions.None);
                             _hluLayerList.Add(new GISLayer(Int32.Parse(layerParts[0]) + 1, layerParts[1], Int32.Parse(layerParts[2]), layerParts[3]));
                         }
+                        //---------------------------------------------------------------------
                     }
                 }
                 else

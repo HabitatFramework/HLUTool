@@ -1,6 +1,6 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2013-2014 Thames Valley Environmental Records Centre
+// Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
@@ -3507,9 +3507,14 @@ namespace HLU
                         }
                     }
 
-                    // Return the list of layers once all the layers have been checked
-                    // as valid (or not).
-                    _pipeData.AddRange(new string[] { _hluLayerList.Count.ToString() });
+                    //---------------------------------------------------------------------
+                    // FIX: 059 Do not display map window number with layer name
+                    // if there is only one map window.
+                    // 
+                    // Return the number of valid layers and the total number of
+                    // map windows.
+                    _pipeData.AddRange(new string[] { _hluLayerList.Count.ToString(), maps.Count.ToString() });
+                    //---------------------------------------------------------------------
                     _pipeData.Add(_pipeTransmissionInterrupt);
                     _pipeData.AddRange(_hluLayerList);
                     return;
