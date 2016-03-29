@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2014 Thames Valley Environmental Records Centre
+// Copyright © 2014, 2016 Thames Valley Environmental Records Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -40,6 +40,7 @@ namespace HLU.Data
         private string _mapName;
         private int _layerNum;
         private string _layerName;
+        private static int _mapWindowsCount;
 
         #endregion
 
@@ -93,18 +94,37 @@ namespace HLU.Data
             set { _layerName = value; }
         }
 
+        public static int MapWindowsCount
+        {
+            get { return _mapWindowsCount; }
+            set { _mapWindowsCount = value; }
+        }
+
         public string DisplayName
         {
             get
             {
+                //---------------------------------------------------------------------
+                // FIX: 059 Do not display map window number with layer name
+                // if there is only one map window.
+                // 
+                string mapName = null;
+
+                // If there is no map window name (MapInfo) then set
+                // the map name to the window number, otherwise (ArcGIS)
+                // set the map name to the window name and number.
                 if (_mapName == null)
-                {
-                    return String.Format("{0} [{1}]", _layerName, _mapNum);
-                }
+                    mapName = string.Format(" [{0}]", _mapNum);
                 else
-                {
-                    return String.Format("{0} in {1} [{2}]", _layerName, _mapName, _mapNum);
-                }
+                    mapName = string.Format(" in {0} [{1}]", _mapName, _mapNum);
+
+                // If there is more than one map window in total then
+                // include the map name/number
+                if (_mapWindowsCount > 1)
+                    return String.Format("{0}{1}", _layerName, mapName);
+                else
+                    return String.Format("{0}", _layerName);
+                //---------------------------------------------------------------------
             }
         }
 

@@ -384,23 +384,39 @@
 
                         </Grid>
 
-                        <Grid Name="GridWarnAndNotify" Grid.Row="2">
+                        <Grid Name="GridShowandNotify" Grid.Row="3">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="3*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelNotifyOnSplitMerge"
+                            <Label Name="LabelShowNVCCodes"
                                    Grid.Row="0"
                                    Grid.Column="0"
                                    Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center">
+                                Show NVC Codes?
+                            </Label>
+                            <CheckBox Name="CheckBoxShowNVCCodes"
+                                      Grid.Row="0"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=ShowNVCCodes}" />
+                            <Label Name="LabelNotifyOnSplitMerge"
+                                   Grid.Row="0"
+                                   Grid.Column="2"
+                                   Margin="14,4,4,4"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center">
                                 Notify After Completing Split/Merge?
                             </Label>
                             <CheckBox Name="CheckBoxNotifyOnSplitMerge"
                                       Grid.Row="0"
-                                      Grid.Column="1"
+                                      Grid.Column="3"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
                                       IsChecked="{Binding Path=NotifyOnSplitMerge}" />

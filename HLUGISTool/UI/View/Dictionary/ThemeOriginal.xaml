@@ -1,4 +1,5 @@
-﻿<!--
+﻿
+<!--
     // HLUTool is used to view and maintain habitat and land use GIS data.
     //
     // (c) Copyright Microsoft Corporation.
@@ -7,19 +8,20 @@
     // All other rights reserved.
     //
     // Copyright (c) 2014 Sussex Biodiversity Record Centre
-    // 
+    // Copyright (c) 2016 Thames Valley Environmental Records Centre
+    //
     // This file is part of HLUTool.
-    // 
+    //
     // HLUTool is free software: you can redistribute it and/or modify
     // it under the terms of the GNU General Public License as published by
     // the Free Software Foundation, either version 3 of the License, or
     // (at your option) any later version.
-    // 
+    //
     // HLUTool is distributed in the hope that it will be useful,
     // but WITHOUT ANY WARRANTY; without even the implied warranty of
     // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     // GNU General Public License for more details.
-    // 
+    //
     // You should have received a copy of the GNU General Public License
     // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 -->
@@ -37,7 +39,7 @@
                     xmlns:vsm="clr-namespace:System.Windows;assembly=WPFToolkit"
                     mc:Ignorable="d">
 
-    <!-- <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" /> -->
+    <!--  <hlu:Bool2VisibilityConverter x:Key="bool2VisibilityConverter" />  -->
 
     <!--  Main Colors  -->
 
@@ -115,12 +117,12 @@
 
 
     <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
-		<Setter Property="Background">
-			<Setter.Value>
-				<SolidColorBrush Color="{StaticResource MainColor}"/>         
-			</Setter.Value>
-		</Setter>
-	</Style>
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="{StaticResource MainColor}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <!--  DatePickerTextBox  -->
     <Style TargetType="{x:Type tkit:DatePickerTextBox}">
@@ -161,6 +163,32 @@
         </DockPanel>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="LabelErrorTemplate">
+        <DockPanel>
+            <Grid DockPanel.Dock="Right">
+                <Ellipse Width="12"
+                         Height="12"
+                         VerticalAlignment="Center"
+                         Fill="Red"
+                         Stroke="Black"
+                         StrokeThickness="0.5" />
+                <TextBlock Margin="0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Padding="4,0,0,0"
+                           Text="!"
+                           ToolTip="{Binding RelativeSource={RelativeSource Self},
+                                             Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Grid>
+            <Border BorderBrush="Red"
+                    BorderThickness="1"
+                    Padding="4,0,4,2">
+                <AdornedElementPlaceholder />
+            </Border>
+        </DockPanel>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="DataGridValidationErrorTemplate">
         <Grid>
             <Ellipse Width="12"
@@ -180,7 +208,7 @@
                                          Path=(Validation.Errors).CurrentItem.ErrorContent}"
                        Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type tkit:DataGridRow}},
                                             Path=(Validation.HasError)}" />
-                                            <!-- Converter={StaticResource bool2VisibilityConverter}}" /> -->
+            <!--  Converter={StaticResource bool2VisibilityConverter}}" />  -->
         </Grid>
     </ControlTemplate>
 
@@ -1419,13 +1447,13 @@
         </Setter>
     </Style>
 
-	<Style TargetType="{x:Type Image}">
-		<Style.Triggers>
-			<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
-				<Setter Property="Opacity" Value="0.3"></Setter>
-			</DataTrigger>
-		</Style.Triggers>
-	</Style>
+    <Style TargetType="{x:Type Image}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                <Setter Property="Opacity" Value="0.3" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
     <Style BasedOn="{x:Null}" TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
@@ -2370,7 +2398,9 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ListBoxItem}" d:IsControlPart="True" x:Key="ListBoxItemStyle">
+    <Style x:Key="ListBoxItemStyle"
+           TargetType="{x:Type ListBoxItem}"
+           d:IsControlPart="True">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Template">
@@ -3337,9 +3367,8 @@
 
     <!--  ComboBoxTextBox  -->
     <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
-        <Border x:Name="PART_ContentHost"
-                Background="{TemplateBinding Background}"
-                Focusable="False" />
+        <Border x:Name="PART_ContentHost" Focusable="False" />
+        <!--  Background="{TemplateBinding Background}"  -->
         <ControlTemplate.Triggers />
     </ControlTemplate>
 
@@ -3379,7 +3408,7 @@
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                           IsHitTestVisible="False" />
                         <TextBox x:Name="PART_EditableTextBox"
-                                 Margin="1,3,23,3"
+                                 Margin="3,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
                                  Background="{DynamicResource LightBrush}"
@@ -3549,7 +3578,7 @@
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
+                            <Setter TargetName="Border" Property="Opacity" Value="0.8" />
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
@@ -3613,7 +3642,7 @@
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                           IsHitTestVisible="False" />
                         <TextBox x:Name="PART_EditableTextBox"
-                                 Margin="1,3,23,3"
+                                 Margin="3,3,23,3"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Center"
                                  Background="{DynamicResource LightBrush}"
@@ -3688,107 +3717,107 @@
     </Style>
 
     <!--
-	<Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
-		<Setter Property="MaxWidth" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ComboBox}}, Path=ActualWidth}"/>
+        <Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
+        <Setter Property="MaxWidth" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ComboBox}}, Path=ActualWidth}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                    <ControlTemplate.Resources>
-                        <Storyboard x:Key="HoverOn">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
-                                                           Storyboard.TargetName="HoverRectangle"
-                                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="HoverOff">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
-                                                           Storyboard.TargetName="HoverRectangle"
-                                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="SelectedOn">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
-                                                           Storyboard.TargetName="SelectedRectangle"
-                                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-                        <Storyboard x:Key="SelectedOff">
-
-                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
-                                                           Storyboard.TargetName="SelectedRectangle"
-                                                           Storyboard.TargetProperty="(UIElement.Opacity)">
-                                <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
-                            </DoubleAnimationUsingKeyFrames>
-
-                        </Storyboard>
-
-                    </ControlTemplate.Resources>
-                    <Grid Margin="1,1,1,1" SnapsToDevicePixels="true">
-                        <Rectangle x:Name="Background"
-                                   Fill="{StaticResource NormalBrush}"
-                                   IsHitTestVisible="False"
-                                   Opacity="0.25"
-                                   RadiusX="1"
-                                   RadiusY="1" />
-                        <Rectangle x:Name="HoverRectangle"
-                                   Fill="{StaticResource NormalBrush}"
-                                   IsHitTestVisible="False"
-                                   Opacity="0"
-                                   RadiusX="1"
-                                   RadiusY="1" />
-                        <Rectangle x:Name="SelectedRectangle"
-                                   Fill="{StaticResource SelectedBackgroundBrush}"
-                                   IsHitTestVisible="False"
-                                   Opacity="0"
-                                   RadiusX="1"
-                                   RadiusY="1" />
-                        <ContentPresenter x:Name="contentPresenter"
-                                          Margin="5,2,0,2"
-                                          VerticalAlignment="Center" />
-                        <Rectangle x:Name="FocusVisualElement"
-                                   RadiusX="1"
-                                   RadiusY="1"
-                                   Stroke="{StaticResource HoverShineBrush}"
-                                   StrokeThickness="1"
-                                   Visibility="Collapsed" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsHighlighted" Value="true">
-                            <Trigger.ExitActions>
-                                <BeginStoryboard x:Name="SelectedOff_BeginStoryboard" Storyboard="{StaticResource SelectedOff}" />
-                            </Trigger.ExitActions>
-                            <Trigger.EnterActions>
-                                <BeginStoryboard x:Name="SelectedOn_BeginStoryboard" Storyboard="{StaticResource SelectedOn}" />
-                            </Trigger.EnterActions>
-
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.ExitActions>
-                                <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
-                            </Trigger.ExitActions>
-                            <Trigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
-                            </Trigger.EnterActions>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
+        <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+        <ControlTemplate.Resources>
+        <Storyboard x:Key="HoverOn">
+        
+        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+        Storyboard.TargetName="HoverRectangle"
+        Storyboard.TargetProperty="(UIElement.Opacity)">
+        <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+        </DoubleAnimationUsingKeyFrames>
+        
+        </Storyboard>
+        <Storyboard x:Key="HoverOff">
+        
+        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+        Storyboard.TargetName="HoverRectangle"
+        Storyboard.TargetProperty="(UIElement.Opacity)">
+        <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
+        </DoubleAnimationUsingKeyFrames>
+        
+        </Storyboard>
+        <Storyboard x:Key="SelectedOn">
+        
+        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+        Storyboard.TargetName="SelectedRectangle"
+        Storyboard.TargetProperty="(UIElement.Opacity)">
+        <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1" />
+        </DoubleAnimationUsingKeyFrames>
+        
+        </Storyboard>
+        <Storyboard x:Key="SelectedOff">
+        
+        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+        Storyboard.TargetName="SelectedRectangle"
+        Storyboard.TargetProperty="(UIElement.Opacity)">
+        <SplineDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0" />
+        </DoubleAnimationUsingKeyFrames>
+        
+        </Storyboard>
+        
+        </ControlTemplate.Resources>
+        <Grid Margin="1,1,1,1" SnapsToDevicePixels="true">
+        <Rectangle x:Name="Background"
+        Fill="{StaticResource NormalBrush}"
+        IsHitTestVisible="False"
+        Opacity="0.25"
+        RadiusX="1"
+        RadiusY="1" />
+        <Rectangle x:Name="HoverRectangle"
+        Fill="{StaticResource NormalBrush}"
+        IsHitTestVisible="False"
+        Opacity="0"
+        RadiusX="1"
+        RadiusY="1" />
+        <Rectangle x:Name="SelectedRectangle"
+        Fill="{StaticResource SelectedBackgroundBrush}"
+        IsHitTestVisible="False"
+        Opacity="0"
+        RadiusX="1"
+        RadiusY="1" />
+        <ContentPresenter x:Name="contentPresenter"
+        Margin="5,2,0,2"
+        VerticalAlignment="Center" />
+        <Rectangle x:Name="FocusVisualElement"
+        RadiusX="1"
+        RadiusY="1"
+        Stroke="{StaticResource HoverShineBrush}"
+        StrokeThickness="1"
+        Visibility="Collapsed" />
+        </Grid>
+        <ControlTemplate.Triggers>
+        <Trigger Property="IsHighlighted" Value="true">
+        <Trigger.ExitActions>
+        <BeginStoryboard x:Name="SelectedOff_BeginStoryboard" Storyboard="{StaticResource SelectedOff}" />
+        </Trigger.ExitActions>
+        <Trigger.EnterActions>
+        <BeginStoryboard x:Name="SelectedOn_BeginStoryboard" Storyboard="{StaticResource SelectedOn}" />
+        </Trigger.EnterActions>
+        
+        </Trigger>
+        <Trigger Property="IsMouseOver" Value="True">
+        <Trigger.ExitActions>
+        <BeginStoryboard x:Name="HoverOff_BeginStoryboard" Storyboard="{StaticResource HoverOff}" />
+        </Trigger.ExitActions>
+        <Trigger.EnterActions>
+        <BeginStoryboard Storyboard="{StaticResource HoverOn}" />
+        </Trigger.EnterActions>
+        </Trigger>
+        <Trigger Property="IsEnabled" Value="false">
+        <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+        </Trigger>
+        </ControlTemplate.Triggers>
+        </ControlTemplate>
+        </Setter.Value>
         </Setter>
-	</Style>
+        </Style>
     -->
 
     <Style TargetType="{x:Type ComboBoxItem}" d:IsControlPart="True">
@@ -4091,7 +4120,7 @@
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
-			                <Setter TargetName="Border" Property="Opacity" Value="0.8" />
+                            <Setter TargetName="Border" Property="Opacity" Value="0.8" />
                         </Trigger>
                         <Trigger Property="IsReadOnly" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
@@ -4327,9 +4356,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Label}">
                     <Grid>
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        <ContentPresenter Margin="4,2,4,2"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-										  Margin="4,2,4,2"
                                           RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -4364,7 +4393,7 @@
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
+                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource LabelErrorTemplate}" />
                         </Trigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
@@ -4391,11 +4420,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-            <Setter Property="Foreground">
-                <Setter.Value>
-                    <SolidColorBrush Color="{DynamicResource BlackColor}" />
-                </Setter.Value>
-            </Setter>
+        <Setter Property="Foreground">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource BlackColor}" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type Menu}">
@@ -4600,9 +4629,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Separator}">
-                    <Border
-						BorderBrush="{DynamicResource SolidBorderBrush}"
-						BorderThickness="1" />
+                    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
