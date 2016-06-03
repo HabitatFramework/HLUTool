@@ -63,6 +63,8 @@ namespace HLU.GISApplication.MapInfo
 
         private string _selName;
 
+        private bool _x64bit;
+
         /// <summary>
         /// The list of valid HLU map layers in the workspace.
         /// </summary>
@@ -1676,6 +1678,12 @@ namespace HLU.GISApplication.MapInfo
         {
             try
             {
+                //---------------------------------------------------------------------
+                // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                // 
+                String miver = GetDefaultOLE_MIVer();
+                //---------------------------------------------------------------------
+
                 // get any running MapInfo processes
                 _mapInfoProcsPreStart = GetMapInfoProcesses();
 
@@ -1693,9 +1701,6 @@ namespace HLU.GISApplication.MapInfo
                 // FIXED: KI98 (MapInfo user interface)
                 // Start MapInfo as a process rather than as a COM object so that it
                 // starts correctly (e.g. all the menu bars, etc. where the user wants).
-
-                // Determine the default version of MapInfo
-                String miver = GetDefaultOLE_MIVer();
 
                 // Start the default version of MapInfo
                 LaunchMI(miver);
@@ -1730,6 +1735,17 @@ namespace HLU.GISApplication.MapInfo
             using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application\\CurVer"))
             {
                 ver = prokey.GetValue("").ToString();
+            }
+
+            if (String.IsNullOrEmpty(ver))
+            {
+            }
+            
+            {
+                using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application.x64\\CurVer"))
+                {
+                    ver = prokey.GetValue("").ToString();
+                }
             }
 
             var verSplit = ver.Split('.');

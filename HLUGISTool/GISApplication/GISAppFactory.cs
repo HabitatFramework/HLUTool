@@ -30,12 +30,15 @@ namespace HLU.GISApplication
     {
         None,
         ArcGIS,
-        MapInfo
+        MapInfo,
+        MapInfo64
     };
 
     class GISAppFactory
     {
         private static Nullable<bool> _mapInfoInstalled;
+
+        private static Nullable<bool> _mapInfo64Installed;
 
         public static GISApp CreateGisApp()
         {
@@ -56,6 +59,20 @@ namespace HLU.GISApplication
                     Settings.Default.PreferredGis = (int)gisApp;
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                // 
+                if (gisApp == GISApplications.None)
+                {
+                    if (MapInfo64Installed)
+                    {
+                        gisApp = GISApplications.MapInfo64;
+                    }
+
+                    Settings.Default.PreferredGis = (int)gisApp;
+                }
+                //---------------------------------------------------------------------
+
                 if (gisApp == GISApplications.None)
                     throw new ArgumentException("Could not find GIS application.");
                 else
@@ -63,8 +80,13 @@ namespace HLU.GISApplication
 
                 switch (gisApp)
                 {
+                    //---------------------------------------------------------------------
+                    // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                    // 
                     case GISApplications.MapInfo:
+                    case GISApplications.MapInfo64:
                         return new MapInfoApp(Settings.Default.MapPath);
+                    //---------------------------------------------------------------------
                     default:
                         return null;
                 }
@@ -91,6 +113,16 @@ namespace HLU.GISApplication
             }
         }
 
+        public static bool MapInfo64Installed
+        {
+            get
+            {
+                if (_mapInfo64Installed == null)
+                    _mapInfo64Installed = Type.GetTypeFromProgID("MapInfo.Application.x64", false) != null;
+                return (bool)_mapInfo64Installed;
+            }
+        }
+
         public static string GetMapPath(GISApplications gisApp)
         {
             try
@@ -105,9 +137,14 @@ namespace HLU.GISApplication
                         case GISApplications.ArcGIS:
                             if (mapFile.Extension.ToLower() == ".mxd") return mapPath;
                             break;
+                        //---------------------------------------------------------------------
+                        // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                        // 
                         case GISApplications.MapInfo:
+                        case GISApplications.MapInfo64:
                             if (mapFile.Extension.ToLower() == ".wor") return mapPath;
                             break;
+                        //---------------------------------------------------------------------
                     }
                 }
 
@@ -118,10 +155,15 @@ namespace HLU.GISApplication
                         openFileDlg.Filter = "ESRI ArcMap Documents (*.mxd)|*.mxd";
                         openFileDlg.Title = "Open HLU Map Document";
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                    // 
                     case GISApplications.MapInfo:
+                    case GISApplications.MapInfo64:
                         openFileDlg.Filter = "MapInfo Workspaces (*.wor)|*.wor";
                         openFileDlg.Title = "Open HLU Workspace";
                         break;
+                    //---------------------------------------------------------------------
                     default:
                         return null;
                 }

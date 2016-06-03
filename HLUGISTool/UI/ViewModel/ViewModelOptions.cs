@@ -342,7 +342,16 @@ namespace HLU.UI.ViewModel
 
         public bool GisAppsEnabled
         {
-            get { return GISAppFactory.ArcGisInstalled && GISAppFactory.MapInfoInstalled; }
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
+                // 
+                return ((GISAppFactory.ArcGisInstalled ? 1 : 0) +
+                       (GISAppFactory.MapInfoInstalled ? 1 : 0) +
+                       (GISAppFactory.MapInfo64Installed ? 1 : 0) > 1);
+                //---------------------------------------------------------------------
+            }
         }
 
         public GISApplications PreferredGis
@@ -579,7 +588,10 @@ namespace HLU.UI.ViewModel
         /// </value>
         public bool CanBrowseExportPath
         {
-            get { return (PreferredGis == GISApplications.MapInfo); }
+            get
+            {
+                return ((PreferredGis == GISApplications.MapInfo) || (PreferredGis == GISApplications.MapInfo64));
+            }
         }
 
         /// <summary>
@@ -815,6 +827,7 @@ namespace HLU.UI.ViewModel
                     }
                     break;
                 case GISApplications.MapInfo:
+                case GISApplications.MapInfo64:
                     if (!Path.GetExtension(_mapPath).Equals(".wor", StringComparison.CurrentCultureIgnoreCase))
                     {
                         message = String.Format("'{0}' does not appear to be a MapInfo workspace.", MapPath);
