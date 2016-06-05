@@ -113,10 +113,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Interop.MSDASC.dll</HintPath>
     </Reference>
-    <Reference Include="MapinfoDotNetWrapper, Version=1.0.2.0, Culture=neutral, PublicKeyToken=4d14eb36cacd27c6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\MapinfoDotNetWrapper.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Mono.Security.dll</HintPath>
@@ -330,12 +326,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\View\WindowSelectGIS.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\View\WindowSplash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -434,7 +424,6 @@
     <Compile Include="GISApplication\GISAppFactory.cs" />
     <Compile Include="GISApplication\MapInfo\MapInfoApp.cs" />
     <Compile Include="GISApplication\MapInfo\MapInfoConstants.cs" />
-    <Compile Include="GISApplication\MapInfo\MapInfoCustomCallback.cs" />
     <Compile Include="GISApplication\ScratchDb.cs" />
     <Compile Include="GISApplication\WinAPI.cs" />
     <Compile Include="PipeList.cs" />
@@ -478,7 +467,6 @@
     <Compile Include="UI\ViewModel\ViewModelWindowMainMerge.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowMainSplit.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowMainUpdate.cs" />
-    <Compile Include="UI\ViewModel\ViewModelWindowSelectGIS.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSplash.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowWarnOnGISSelect.cs" />
     <Compile Include="UI\ViewModel\WindowMainCopySwitches.cs" />
@@ -517,9 +505,6 @@
     </Compile>
     <Compile Include="UI\View\WindowQueryBuilder.xaml.cs">
       <DependentUpon>WindowQueryBuilder.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\View\WindowSelectGIS.xaml.cs">
-      <DependentUpon>WindowSelectGIS.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View\WindowSplash.xaml.cs">
       <DependentUpon>WindowSplash.xaml</DependentUpon>

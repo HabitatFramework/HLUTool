@@ -34,9 +34,7 @@ using HLU.Data;
 using HLU.Data.Model;
 using HLU.Properties;
 using HLU.UI.ViewModel;
-using HLU.GISApplication;
-using MapinfoWrapper.Mapinfo;
-using MapinfoWrapper.Mapinfo.Internals;
+using MapInfo;
 using Microsoft.Win32;
 using System.Globalization;
 
@@ -48,7 +46,7 @@ namespace HLU.GISApplication.MapInfo
 
         //private COMMapinfo _mapInfoComObj;
         
-        private DMapInfo _mapInfoApp;
+        private MapInfoApplication _mapInfoApp;
 
         private Process _mapInfoProcess;
 
@@ -252,11 +250,7 @@ namespace HLU.GISApplication.MapInfo
 
         public override GISApplications ApplicationType
         {
-            //---------------------------------------------------------------------
-            // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-            // 
-            get { return GISAppFactory.ApplicationType; }
-            //---------------------------------------------------------------------
+            get { return GISApplications.MapInfo; }
         }
 
         public override bool IsRunning
@@ -1716,7 +1710,7 @@ namespace HLU.GISApplication.MapInfo
                 LaunchMI();
 
                 // Connect to the running version of MapInfo
-                _mapInfoApp = (DMapInfo)ConnectToRunningMI(curVer, miVer);
+                _mapInfoApp = (MapInfoApplication)ConnectToRunningMI(curVer, miVer);
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
 
@@ -1743,29 +1737,12 @@ namespace HLU.GISApplication.MapInfo
         {
             string ver = "";
 
-            //---------------------------------------------------------------------
-		    // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-            // 
-            // Check the relevant registry key for the 32bit version of MapInfo
-            if (GISAppFactory.ApplicationType == GISApplications.MapInfo)
+            using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application\\CurVer"))
             {
-                using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application\\CurVer"))
-                {
-                    ver = prokey.GetValue("").ToString();
-                }
+                ver = prokey.GetValue("").ToString();
             }
-            // Check the relevant registry key for the 64bit version of MapInfo
-            else if (GISAppFactory.ApplicationType == GISApplications.MapInfo64)
-            {
-                using (Microsoft.Win32.RegistryKey prokey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("MapInfo.Application.x64\\CurVer"))
-                {
-                    ver = prokey.GetValue("").ToString();
-                }
-            }
-            //---------------------------------------------------------------------
 
             return ver;
-
         }
 
         /// <summary>
@@ -1777,19 +1754,7 @@ namespace HLU.GISApplication.MapInfo
             System.Diagnostics.ProcessStartInfo procInfo = new System.Diagnostics.ProcessStartInfo();
             procInfo.UseShellExecute = true;
             procInfo.WindowStyle = ProcessWindowStyle.Normal;
-
-            //---------------------------------------------------------------------
-		    // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-            // 
-            // Set the process name of the 32bit version of MapInfo
-            if (GISAppFactory.ApplicationType == GISApplications.MapInfo)
-                procInfo.FileName = "MapInfoW.exe";
-            // Set the process name of the 64bit version of MapInfo
-            else if (GISAppFactory.ApplicationType == GISApplications.MapInfo64)
-                procInfo.FileName = "MapInfoPro.exe";
-            else
-                return;
-            //---------------------------------------------------------------------
+            procInfo.FileName = "MapInfoW.exe";
 
             // Pass the name of an empty workspace in the same directory as the executing assembly
             // so that MapInfo opens it automatically (and hence doesn't display the quickstart
@@ -1848,17 +1813,8 @@ namespace HLU.GISApplication.MapInfo
 
             if (MIObj1 == null)
             {
-                // Set the process name of the 32bit version of MapInfo
-                if (GISAppFactory.ApplicationType == GISApplications.MapInfo)
-                    MessageBox.Show("No Running instances of MapInfo 32bit version " + miVer, "Connect to MapInfo",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                // Set the process name of the 32bit version of MapInfo
-                else if (GISAppFactory.ApplicationType == GISApplications.MapInfo64)
-                    MessageBox.Show("No Running instances of MapInfo 64bit version " + miVer, "Connect to MapInfo",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                else
-                    MessageBox.Show("No Running instances of MapInfo", "Connect to MapInfo",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("No Running instances of MapInfo version " + miVer, "Connect to MapInfo",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //---------------------------------------------------------------------
@@ -1910,9 +1866,6 @@ namespace HLU.GISApplication.MapInfo
                    winID, 20, 15, QuoteValue("cm")));
         }
 
-		//---------------------------------------------------------------------
-		// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-		// 
         /// <summary>
         /// Returns the MapInfo process that wasn't running already when the tool started
         /// </summary>
@@ -1922,52 +1875,23 @@ namespace HLU.GISApplication.MapInfo
         {
             if (miProcs == null) return null;
 
-            // Get the process of the 32bit version of MapInfo just started
-            if (GISAppFactory.ApplicationType == GISApplications.MapInfo)
-            {
-                var q = Process.GetProcesses().Where(p => (Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)) &&
-                    (p.MainWindowHandle != IntPtr.Zero)).Where(p => (miProcs.Count(mip => mip.Id == p.Id) == 0));
+            var q = Process.GetProcesses().Where(p => (Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)) &&
+                (p.MainWindowHandle != IntPtr.Zero)).Where(p => (miProcs.Count(mip => mip.Id == p.Id) == 0));
 
-                if (q.Count() == 1)
-                {
-                    Process miProcess = q.ElementAt(0);
-                    if (miProcess.MainModule.FileName == _mapInfoApp.FullName)
-                        return miProcess;
-                }
-            }
-            // Get the process of the 32bit version of MapInfo just started
-            else if (GISAppFactory.ApplicationType == GISApplications.MapInfo64)
+            if (q.Count() == 1)
             {
-                var q = Process.GetProcesses().Where(p => (Regex.IsMatch(p.ProcessName, "MapInfoPro", RegexOptions.IgnoreCase)) &&
-                    (p.MainWindowHandle != IntPtr.Zero)).Where(p => (miProcs.Count(mip => mip.Id == p.Id) == 0));
-
-                if (q.Count() == 1)
-                {
-                    Process miProcess = q.ElementAt(0);
-                    if (miProcess.MainModule.FileName == _mapInfoApp.FullName)
-                        return miProcess;
-                }
+                Process miProcess = q.ElementAt(0);
+                if (miProcess.MainModule.FileName == _mapInfoApp.FullName)
+                    return miProcess;
             }
 
             return null;
         }
-		//---------------------------------------------------------------------
 
-		//---------------------------------------------------------------------
-		// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-		// 
         private Process[] GetMapInfoProcesses()
         {
-            // Check if any 32bit versions of MapInfo are running
-            if (GISAppFactory.ApplicationType == GISApplications.MapInfo)
-                return Process.GetProcesses().Where(p =>
-                Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)).ToArray();
-            // Check if any 64bit versions of MapInfo are running
-            else if (GISAppFactory.ApplicationType == GISApplications.MapInfo64)
-                return Process.GetProcesses().Where(p =>
-                Regex.IsMatch(p.ProcessName, "MapInfoPro", RegexOptions.IgnoreCase)).ToArray();
-
-            return new Process[0];
+            return Process.GetProcesses().Where(p =>
+            Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)).ToArray();
         }
 		//---------------------------------------------------------------------
 
