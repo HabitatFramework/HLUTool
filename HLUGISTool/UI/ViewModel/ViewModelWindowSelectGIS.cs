@@ -1,0 +1,208 @@
+﻿// HLUTool is used to view and maintain habitat and land use GIS data.
+// Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2016 Thames Valley Environmental Records Centre
+// 
+// This file is part of HLUTool.
+// 
+// HLUTool is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// HLUTool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
+using HLU.GISApplication;
+
+namespace HLU.UI.ViewModel
+{
+    class ViewModelWindowSelectGIS : ViewModelBase, IDataErrorInfo
+    {
+        #region Fields
+        
+        private string _displayName = "Select GIS Application";
+        private GISApplications[] _availableGISApps;
+        private GISApplications _selectedGISApp;
+        private ICommand _okCommand;
+        private ICommand _cancelCommand;
+
+        #endregion
+
+        public ViewModelWindowSelectGIS()
+        {
+			//---------------------------------------------------------------------
+			// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+			// 
+            // Only display GIS applications that are installed
+            List<GISApplications> installedGISApps = new List<GISApplications>();
+            if (GISAppFactory.ArcGisInstalled)
+                installedGISApps.Add(GISApplications.ArcGIS);
+            if (GISAppFactory.MapInfoInstalled)
+                installedGISApps.Add(GISApplications.MapInfo);
+            if (GISAppFactory.MapInfo64Installed)
+                installedGISApps.Add(GISApplications.MapInfo64);
+
+			_availableGISApps = installedGISApps.ToArray();
+            //---------------------------------------------------------------------
+
+            if (_availableGISApps.Length > 0)
+                _selectedGISApp = _availableGISApps[0];
+        }
+
+        #region ViewModelBase members
+
+        public override string DisplayName
+        {
+            get { return _displayName; }
+            set { _displayName = value; }
+        }
+
+        public override string WindowTitle
+        {
+            get { return DisplayName; }
+        }
+
+        #endregion
+
+        #region RequestClose
+
+        public delegate void RequestCloseEventHandler(bool cancelled, GISApplications selectedGISApp);
+
+        public event RequestCloseEventHandler RequestClose;
+
+        #endregion
+
+        #region Ok Command
+
+        /// <summary>
+        /// Create Ok button command
+        /// </summary>
+        /// <value></value>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public ICommand OkCommand
+        {
+            get
+            {
+                if (_okCommand == null)
+                {
+                    Action<object> okAction = new Action<object>(this.OkCommandClick);
+                    _okCommand = new RelayCommand(okAction, param => this.CanOk);
+                }
+
+                return _okCommand;
+            }
+        }
+
+        /// <summary>
+        /// Handles event when Ok button is clicked
+        /// </summary>
+        /// <param name="param"></param>
+        /// <remarks></remarks>
+        private void OkCommandClick(object param)
+        {
+            this.RequestClose(false, _selectedGISApp);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        private bool CanOk { get { return String.IsNullOrEmpty(Error); } }
+
+        #endregion
+
+        #region Cancel Command
+
+        /// <summary>
+        /// Create Cancel button command
+        /// </summary>
+        /// <value></value>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public ICommand CancelCommand
+        {
+            get
+            {
+                if (_cancelCommand == null)
+                {
+                    Action<object> cancelAction = new Action<object>(this.CancelCommandClick);
+                    _cancelCommand = new RelayCommand(cancelAction);
+                }
+                return _cancelCommand;
+            }
+        }
+
+        /// <summary>
+        /// Handles event when Cancel button is clicked
+        /// </summary>
+        /// <param name="param"></param>
+        /// <remarks></remarks>
+        private void CancelCommandClick(object param)
+        {
+            this.RequestClose(true, GISApplications.None);
+        }
+
+        #endregion
+
+        #region Properties
+
+        public GISApplications[] GISApps
+        {
+            get { return _availableGISApps; }
+            set { }
+        }
+
+        public GISApplications SelectedGISApp
+        {
+            get { return _selectedGISApp; }
+            set { _selectedGISApp = value; }
+        }
+
+        #endregion
+
+        #region Implementation of IDataErrorInfo
+
+        public string Error
+        {
+            get
+            {
+                if (_selectedGISApp == GISApplications.None)
+                    return "This tool requires a GIS application.";
+                else
+                    return null;
+            }
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case "SelectedGISApp":
+                        if (_selectedGISApp == GISApplications.None)
+                            error = "This tool requires a GIS application.";
+                        break;
+                }
+                CommandManager.InvalidateRequerySuggested();
+                return error;
+            }
+        }
+        
+        #endregion
+    }
+}

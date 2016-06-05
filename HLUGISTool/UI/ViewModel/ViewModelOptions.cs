@@ -334,8 +334,20 @@ namespace HLU.UI.ViewModel
         {
             get 
             {
-                return Enum.GetValues(typeof(GISApplications)).Cast<GISApplications>()
-                    .Where(t => t != GISApplications.None).ToArray();
+                //---------------------------------------------------------------------
+                // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+                // 
+                // Only display GIS applications that are installed
+                List<GISApplications> installedGISApps = new List<GISApplications>();
+                if (GISAppFactory.ArcGisInstalled)
+                    installedGISApps.Add(GISApplications.ArcGIS);
+                if (GISAppFactory.MapInfoInstalled)
+                    installedGISApps.Add(GISApplications.MapInfo);
+                if (GISAppFactory.MapInfo64Installed)
+                    installedGISApps.Add(GISApplications.MapInfo64);
+
+                return installedGISApps.ToArray();
+                //---------------------------------------------------------------------
             }
             set { }
         }
@@ -344,9 +356,11 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //---------------------------------------------------------------------
-                // FIX: 061 Enable tool to work with 64bit version of MapInfo 15.
-                // 
+				//---------------------------------------------------------------------
+				// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+				// 
+				// If there is more than one version of GIS applications
+				// installed
                 return ((GISAppFactory.ArcGisInstalled ? 1 : 0) +
                        (GISAppFactory.MapInfoInstalled ? 1 : 0) +
                        (GISAppFactory.MapInfo64Installed ? 1 : 0) > 1);
@@ -588,11 +602,16 @@ namespace HLU.UI.ViewModel
         /// </value>
         public bool CanBrowseExportPath
         {
+			//---------------------------------------------------------------------
+			// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+			// 
+			// If the preferred GIS application is either version of MapInfo
             get
             {
                 return ((PreferredGis == GISApplications.MapInfo) || (PreferredGis == GISApplications.MapInfo64));
             }
-        }
+            //---------------------------------------------------------------------
+    }
 
         /// <summary>
         /// Action when the browse SQL button is clicked.
@@ -826,6 +845,9 @@ namespace HLU.UI.ViewModel
                         return false;
                     }
                     break;
+                //---------------------------------------------------------------------
+                // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+                // 
                 case GISApplications.MapInfo:
                 case GISApplications.MapInfo64:
                     if (!Path.GetExtension(_mapPath).Equals(".wor", StringComparison.CurrentCultureIgnoreCase))
@@ -834,6 +856,7 @@ namespace HLU.UI.ViewModel
                         return false;
                     }
                     break;
+		        //---------------------------------------------------------------------
             }
             return true;
         }

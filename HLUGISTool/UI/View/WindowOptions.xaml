@@ -234,7 +234,7 @@
                                    Margin="4,4,4,4"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center">
-                                Preferred GIS Application
+                                Preferred GIS App
                             </Label>
                             <ComboBox Name="ComboBoxPreferredGis"
                                       Grid.Row="0"

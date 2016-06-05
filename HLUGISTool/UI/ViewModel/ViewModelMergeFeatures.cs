@@ -197,6 +197,8 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // CHANGED: CR23 (Merged features)
 
+                // Flash all the features relating to the selected incid at once.
+                //
                 //foreach (HluDataSet.incid_mm_polygonsRow r in _currChildRows)
                 //{
                 //    List<List<SqlFilterCondition>> whereClause =

@@ -515,7 +515,13 @@ namespace HLU.UI.ViewModel
                             Settings.Default.MapPath = String.Empty;
                         break;
                     case "/mapinfo": // start with MapInfo
-                        Settings.Default.PreferredGis = (int)GISApplications.MapInfo;
+                        //---------------------------------------------------------------------
+                        // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+                        // 
+                        // Set the preferred GIS to none as we don't know which
+                        // versions of MapInfo are installed at this stage
+                        Settings.Default.PreferredGis = (int)GISApplications.None;
+                        //---------------------------------------------------------------------
                         if (Settings.Default.MapPath.ToLower().EndsWith(".mxd"))
                             Settings.Default.MapPath = String.Empty;
                         break;
@@ -3043,8 +3049,16 @@ namespace HLU.UI.ViewModel
         {
             _vmCompSplit.RequestClose -= vmCompSplit_RequestClose;
             _windowCompSplit.Close();
-            if (!String.IsNullOrEmpty(reason)) _reason = reason;
-            if (!String.IsNullOrEmpty(process))_process = process;
+            if (!String.IsNullOrEmpty(reason))
+            {
+                _reason = reason;
+                OnPropertyChanged("Reason");
+            }
+            if (!String.IsNullOrEmpty(process))
+            {
+                _process = process;
+                OnPropertyChanged("Process");
+            }
         }
 
         #endregion
