@@ -1,7 +1,7 @@
 HLU GIS Tool
 ============
 
-HLU GIS Tool 2.4.0
+HLU GIS Tool 2.4.1
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
@@ -36,13 +36,13 @@ The HLU GIS Tool requires the following:
   (For increased performance a multiple core processor with as much RAM as possible is recommended)
 
  - Microsoft .NET Framework 3.5 SP1, 4.0 or 4.5 installed.
-   (You can download .NET Framework 3.5 and its Service Pack here)
+   (You can download .NET Framework 3.5 and its Service Pack from <http://www.microsoft.com/en-gb/download/details.aspx?id=25150>)
 
  - Microsoft Access 2000 or later, OR
  - Microsoft SQL Server 2008 Express Edition or later, OR
  - Microsoft SQL Server 2008 or later
 
- - MapInfo 8.0 or later
+ - MapInfo 8.0 or later (32bit versions only)
 
 Installation
 ------------
