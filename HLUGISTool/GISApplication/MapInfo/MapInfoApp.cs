@@ -19,6 +19,7 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -26,6 +27,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -34,8 +36,7 @@ using HLU.Data;
 using HLU.Data.Model;
 using HLU.Properties;
 using HLU.UI.ViewModel;
-using MapinfoWrapper.Mapinfo;
-using MapinfoWrapper.Mapinfo.Internals;
+using MapInfo;
 using Microsoft.Win32;
 using System.Globalization;
 
@@ -43,11 +44,20 @@ namespace HLU.GISApplication.MapInfo
 {
     class MapInfoApp : GISApp
     {
+
+        [DllImport("ole32.dll")]
+        public static extern int GetRunningObjectTable(int reserved,
+                                  out IRunningObjectTable prot);
+
+        [DllImport("ole32.dll")]
+        public static extern int CreateBindCtx(int reserved,
+                                      out IBindCtx ppbc);
+
         #region Private Fields
 
         //private COMMapinfo _mapInfoComObj;
         
-        private DMapInfo _mapInfoApp;
+        private MapInfoApplication _mapInfoApp;
 
         private Process _mapInfoProcess;
 
@@ -410,7 +420,7 @@ namespace HLU.GISApplication.MapInfo
                     _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Global", _hluMapWindowID, flashLayer));
                 }
 
-                _mapInfoApp.Do(String.Format("Set Map Redraw Off"));
+                _mapInfoApp.Do(String.Format("Set Map Redraw Off")); 
                 _mapInfoApp.Do(String.Format("Remove Map Window {0} Layer {1}", _hluMapWindowID, flashLayer));
                 _mapInfoApp.Do(String.Format("Close Table {0}", flashLayer));
                 _mapInfoApp.Do(String.Format("Set Map Redraw On"));
@@ -1676,33 +1686,58 @@ namespace HLU.GISApplication.MapInfo
         {
             try
             {
+                //---------------------------------------------------------------------
+	            // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+                // 
+                // Get the default version of MapInfo from the registry.
+                String curVer = GetDefaultOLE_MIVer();
+                var verSplit = curVer.Split('.');
+                String miVer = verSplit[verSplit.GetUpperBound(0)];
+
+                //---------------------------------------------------------------------
+
                 // get any running MapInfo processes
                 _mapInfoProcsPreStart = GetMapInfoProcesses();
 
+                //---------------------------------------------------------------------
+                // FIX: 062 Enable tool to run in multi-user environment.
+                // 
                 // if there are already any MapInfo processes running then tell the
                 // user that they must close all instanced before starting the tool
-                if (_mapInfoProcsPreStart.Count() != 0)
-                {
-                    MessageBox.Show("MapInfo is already running.\n\nAll existing instances of MapInfo must be stopped before the tool can be launched.",
-                        "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return false;
-                }
+                //if (_mapInfoProcsPreStart.Count() != 0)
+                //{
+                //    MessageBox.Show("MapInfo is already running.\n\nAll existing instances of MapInfo must be stopped before the tool can be launched.",
+                //        "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //    return false;
+                //}
+                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIXED: KI94 (MapInfo Layer Control)
                 // FIXED: KI98 (MapInfo user interface)
                 // Start MapInfo as a process rather than as a COM object so that it
                 // starts correctly (e.g. all the menu bars, etc. where the user wants).
-
-                // Determine the default version of MapInfo
-                String miver = GetDefaultOLE_MIVer();
-
-                // Start the default version of MapInfo
-                LaunchMI(miver);
-
-                // Connect to the running version of MapInfo
-                _mapInfoApp = (DMapInfo)ConnectToRunningMI(miver);
                 //---------------------------------------------------------------------
+	            // FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+                // 
+                // Start the default version of MapInfo
+                LaunchMI();
+
+                // Get the process that has just been started
+                _mapInfoProcess = GetMapInfoProcess(_mapInfoProcsPreStart);
+
+                //---------------------------------------------------------------------
+                // FIX: 062 Enable tool to run in multi-user environment.
+                // 
+                // Connect to the newly running version of MapInfo
+                //_mapInfoApp = (MapInfoApplication)ConnectToRunningMI(curVer, miVer);
+                _mapInfoApp = ConnectToNewMI(_mapInfoProcess);
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+
+                // Wait 2 seconds before continuing to allow MapInfo to finish opening
+                System.Threading.Thread.Sleep(5000);
 
                 // open the HLU workspace (returns false if it is not found or not valid)
                 if (!OpenWorkspace(_mapPath)) return false;
@@ -1732,17 +1767,13 @@ namespace HLU.GISApplication.MapInfo
                 ver = prokey.GetValue("").ToString();
             }
 
-            var verSplit = ver.Split('.');
-            ver = verSplit[verSplit.GetUpperBound(0)];
-
             return ver;
-
         }
 
         /// <summary>
         /// Start a new process of MapInfo
         /// </summary>
-        public void LaunchMI(string ver)
+        public void LaunchMI()
         {
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo procInfo = new System.Diagnostics.ProcessStartInfo();
@@ -1765,13 +1796,16 @@ namespace HLU.GISApplication.MapInfo
             //int miProcID = Shell(GetMIPath(ver) + "\\mapinfow.exe", Microsoft.VisualBasic.AppWinStyle.NormalFocus, false, -1);
         }
 
+		//---------------------------------------------------------------------
+		// FIX: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
+		// 
         /// <summary>
         /// Connects to an existing instance of MapInfo
         /// </summary>
         /// <remarks>Doesn't find instances started with /Automation parameter...
         /// Also only recognises the CLSID associated with ProgID MapInfo.Application, this is overwritten by different versions
         /// every time one is run (certainly true in MI 8.5, but not in more recent versions!)</remarks>
-        public static object ConnectToRunningMI(string ver)
+        public static object ConnectToRunningMI(string curVer, string miVer)
         {
             object MIObj1 = null;
             int stoploop = 0;
@@ -1784,7 +1818,9 @@ namespace HLU.GISApplication.MapInfo
             {
                 try
                 {
-                    MIObj1 = System.Runtime.InteropServices.Marshal.GetActiveObject("MapInfo.Application." + ver);
+                    // Get the object of the relevant version of MapInfo
+                    MIObj1 = System.Runtime.InteropServices.Marshal.GetActiveObject(curVer);
+
                     stoploop = 1;
                     //MIObj1.Visible = true;
                     //MIObj1.Do("print \"OLE connection to existing instance\" & chr$(13) & \"Hello World\"");
@@ -1796,14 +1832,13 @@ namespace HLU.GISApplication.MapInfo
                         System.Threading.Thread.Sleep(1000);
                         countloop += 1;
                     }
-
                 }
             }
 
             if (MIObj1 == null)
             {
-                MessageBox.Show("No Running instances of MapInfo version " + ver, "Connect to MapInfo",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("No Running instances of MapInfo version " + miVer, "Connect to MapInfo",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //---------------------------------------------------------------------
@@ -1814,6 +1849,138 @@ namespace HLU.GISApplication.MapInfo
             return MIObj1;
 
         }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 062 Enable tool to run in multi-user environment.
+        // 
+        /// <summary>
+        /// Get a snapshot of the running object table (ROT).
+        /// </summary>
+        /// <returns>A hashtable mapping the name of the object
+        ///     in the ROT to the corresponding object</returns>
+        public static Hashtable GetRunningObjectTable()
+        {
+            Hashtable result = new Hashtable();
+
+            IntPtr numFetched = Marshal.AllocHGlobal(4);
+            IRunningObjectTable runningObjectTable;
+            IEnumMoniker monikerEnumerator;
+            IMoniker[] monikers = new IMoniker[1];
+
+            GetRunningObjectTable(0, out runningObjectTable);
+            runningObjectTable.EnumRunning(out monikerEnumerator);
+            monikerEnumerator.Reset();
+
+            while (monikerEnumerator.Next(1, monikers, numFetched) == 0)
+            {
+                IBindCtx ctx;
+                CreateBindCtx(0, out ctx);
+
+                string runningObjectName;
+                monikers[0].GetDisplayName(ctx, null, out runningObjectName);
+
+                object runningObjectVal;
+                runningObjectTable.GetObject(monikers[0], out runningObjectVal);
+
+                result[runningObjectName] = runningObjectVal;
+            }
+
+            return result;
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 062 Enable tool to run in multi-user environment.
+        // 
+        /// <summary>
+        /// Get a table of the currently running instances of MapInfo.
+        /// </summary>
+        /// <param name="openSolutionsOnly">Only return instances
+        ///                   that have opened a solution</param>
+        /// <returns>A hashtable mapping the name of the IDE
+        ///       in the running object table to the corresponding
+        ///                                  DTE object</returns>
+        public static Hashtable GetMIInstances()
+        {
+            // Create a new hash table for the running instances
+            // of MapInfo
+            Hashtable runningMIInstances = new Hashtable();
+
+            // Get a hash table of all the objects in the 
+            // running object table (ROT)
+            Hashtable runningObjects = GetRunningObjectTable();
+
+            // Loop through all the objects in the ROT looking for
+            // any that relate to MapInfo
+            IDictionaryEnumerator rotEnumerator = runningObjects.GetEnumerator();
+            while (rotEnumerator.MoveNext())
+            {
+                // Get the key for the ROT object
+                string candidateName = (string)rotEnumerator.Key;
+
+                // Skip the object if it doesn't relate to MapInfo
+                if (!candidateName.StartsWith("!MapInfo.Application"))
+                    continue;
+
+                // Cast the ROT object value as a MapInfo object
+                MapInfoApplication miapp = rotEnumerator.Value as MapInfoApplication;
+
+                // Skip the ROT object if the CAST failed
+                if (miapp == null)
+                    continue;
+
+                // Store the MapInfo object in the running instances
+                // hash table
+                runningMIInstances[candidateName] = miapp;
+            }
+
+            // Return the hash table of all the running instances
+            // of MapInfo
+            return runningMIInstances;
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 062 Enable tool to run in multi-user environment.
+        // 
+        /// <summary>
+        /// Connects to the newly started instance of MapInfo
+        /// </summary>
+        /// <param name="miProcess">The first MapInfo process that was not
+        /// running when the tool started</param>
+        /// <remarks>Identifies the first instance of MapInfo from the ROT that wasn't already
+        /// running when the tool started</remarks>
+        public static MapInfoApplication ConnectToNewMI(Process miProcess)
+        {
+            // Create a new hash table of all the running instances
+            // of MapInfo
+            Hashtable miInstances = GetMIInstances();
+
+            // Loop through all the running instances of
+            // MapInfo
+            foreach(DictionaryEntry mi in miInstances)
+            {
+                // Cast the ROT object value as a MapInfo object
+                MapInfoApplication miInst = (MapInfoApplication)mi.Value;
+
+                // Skip the ROT object if the CAST failed
+                if (miInst == null)
+                    continue;
+
+                // Return the MapInfo object if the process ID is
+                // the same as the first MapInfo process that wasn't
+                // already runnign when the tool started
+                if (mi.Key.ToString() == String.Format("!MapInfo.Application:{0}", miProcess.Id))
+                    return miInst;
+            }
+
+            MessageBox.Show("Unable to identify newly started instance of MapInfo", "Connect to MapInfo",
+            MessageBoxButton.OK, MessageBoxImage.Error);
+
+            return null;
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Finding installed version of MI
@@ -1830,7 +1997,6 @@ namespace HLU.GISApplication.MapInfo
             }
 
             return miPath;
-
         }
 
         private void EnableStandardTools()
@@ -1855,29 +2021,48 @@ namespace HLU.GISApplication.MapInfo
         }
 
         /// <summary>
-        /// Returns the MapInfo process that wasn't running already when the tool started
+        /// Returns the first MapInfo process that wasn't already running
+        /// when the tool started
         /// </summary>
         /// <param name="miProcs"></param>
         /// <returns></returns>
         private Process GetMapInfoProcess(Process[] miProcs)
         {
             if (miProcs == null) return null;
-            var q = Process.GetProcesses().Where(p => (Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)) && 
-                (p.MainWindowHandle != IntPtr.Zero)).Where(p => (miProcs.Count(mip => mip.Id == p.Id) == 0));
 
-            if (q.Count() == 1)
+            //---------------------------------------------------------------------
+            // FIX: 062 Enable tool to run in multi-user environment.
+            // 
+            int stoploop = 0;
+            int countloop = 0;
+            // Wait up to 60 seconds for MapInfo to start
+            while (stoploop != 1 || countloop > 60)
             {
-                Process miProcess = q.ElementAt(0);
-                if (miProcess.MainModule.FileName == _mapInfoApp.FullName)
+                // Get all the MapInfo processes that weren't already running
+                var q = Process.GetProcesses().Where(p => (Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)) &&
+                    (p.MainWindowHandle != IntPtr.Zero)).Where(p => (miProcs.Count(mip => mip.Id == p.Id) == 0));
+
+                // If at least one MapInfo process has been found
+                if (q.Count() > 0)
+                {
+                    // Return the first process found
+                    Process miProcess = q.ElementAt(0);
                     return miProcess;
+                }
+
+                // Otherwise sleep for one second and loop again
+                System.Threading.Thread.Sleep(1000);
+                countloop += 1;
             }
+            //---------------------------------------------------------------------
+
             return null;
         }
 
         private Process[] GetMapInfoProcesses()
         {
-            return Process.GetProcesses().Where(p => 
-                Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)).ToArray();
+            return Process.GetProcesses().Where(p =>
+            Regex.IsMatch(p.ProcessName, "MapInfow", RegexOptions.IgnoreCase)).ToArray();
         }
 
         #region Implementation of SqlBuilder
@@ -2010,7 +2195,7 @@ namespace HLU.GISApplication.MapInfo
         /// <param name="targetList">The target list of data columns.</param>
         /// <param name="whereConds">The SQL WHERE conditions.</param>
         /// <returns></returns>
-        public override DataTable SqlSelect(bool selectDistinct,
+        public override DataTable SqlSelect(bool selectDistinct, 
             DataColumn[] targetList, List<SqlFilterCondition> whereConds)
         {
             if ((_mapInfoApp == null) || (targetList == null) || (targetList.Length == 0)) 
@@ -2506,7 +2691,6 @@ namespace HLU.GISApplication.MapInfo
             if ((_mapInfoParentWindow == null) || !WinAPI.IsWindow(_mapInfoParentWindow) || !_mapInfoApp.Visible)
             {
                 _mapInfoApp.Visible = true;
-                _mapInfoProcess = GetMapInfoProcess(_mapInfoProcsPreStart);
                 if (_mapInfoProcess == null) return;
                 _mapInfoParentWindow = _mapInfoProcess.MainWindowHandle;
             }
