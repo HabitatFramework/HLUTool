@@ -143,10 +143,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Interop.MSDASC.dll</HintPath>
     </Reference>
-    <Reference Include="MapinfoDotNetWrapper, Version=1.0.2.0, Culture=neutral, PublicKeyToken=4d14eb36cacd27c6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\MapinfoDotNetWrapper.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Mono.Security.dll</HintPath>
@@ -466,7 +462,6 @@
     <Compile Include="GISApplication\GISAppFactory.cs" />
     <Compile Include="GISApplication\MapInfo\MapInfoApp.cs" />
     <Compile Include="GISApplication\MapInfo\MapInfoConstants.cs" />
-    <Compile Include="GISApplication\MapInfo\MapInfoCustomCallback.cs" />
     <Compile Include="GISApplication\ScratchDb.cs" />
     <Compile Include="GISApplication\WinAPI.cs" />
     <Compile Include="PipeList.cs" />
@@ -563,7 +558,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Data\Model\HluDataSet.xsc">
       <DependentUpon>HluDataSet.xsd</DependentUpon>
     </None>
