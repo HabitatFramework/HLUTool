@@ -287,7 +287,7 @@ namespace HLU.UI.ViewModel
                 if (ex is NpgsqlException)
                     MessageBox.Show(ex.Message, "PostgreSQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 else
-                    MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, "HBIC Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -405,7 +405,7 @@ namespace HLU.UI.ViewModel
                 if (ex is NpgsqlException)
                     MessageBox.Show(ex.Message, "PostgreSQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 else
-                    MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, "HBIC Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

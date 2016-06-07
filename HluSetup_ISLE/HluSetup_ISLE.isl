@@ -351,6 +351,7 @@
 		<row><td>HluArcMapExtension.Primary_output</td><td>{5B287E73-A66E-4135-AF62-6C9BD3E07DD1}</td><td>INSTALLDIR</td><td>2</td><td/><td>hluarcmapextension.primary_o</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{5A4A78E2-8483-45A9-AC17-79D2A1A4F2A4}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Interop.MSDASC.dll</td><td>{1D335A7E-1A15-4414-9663-F0FE99031544}</td><td>INSTALLDIR</td><td>2</td><td/><td>interop.msdasc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>MapinfoDotNetWrapper.dll</td><td>{3DF2EB2E-4810-4910-B36A-813A9EC97A8B}</td><td>INSTALLDIR</td><td>2</td><td/><td>mapinfodotnetwrapper.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Mono.Security.dll</td><td>{D8CE37BE-F0F6-4A1B-86E0-B3B853D6C2CF}</td><td>INSTALLDIR</td><td>2</td><td/><td>mono.security.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Npgsql.dll</td><td>{64265E6F-5702-4C1C-8461-F584B9A478FB}</td><td>INSTALLDIR</td><td>2</td><td/><td>npgsql.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Oracle.DataAccess.dll</td><td>{73345735-7359-47EC-89BB-3FAB1B98F30D}</td><td>INSTALLDIR</td><td>2</td><td/><td>oracle.dataaccess.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1892,6 +1893,7 @@
 		<row><td>AlwaysInstall</td><td>HluArcMapExtension.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>Interop.MSDASC.dll</td></row>
+		<row><td>AlwaysInstall</td><td>MapinfoDotNetWrapper.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Mono.Security.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Npgsql.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Oracle.DataAccess.dll</td></row>
@@ -1920,6 +1922,7 @@
 		<row><td>hlugistool.primary_output</td><td>HLUGISTool.Primary_output</td><td>HLUGISTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUGISTool&gt;|Built</td><td>3</td><td/></row>
 		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
 		<row><td>license.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\License.txt</td><td>1</td><td/></row>
+		<row><td>mapinfodotnetwrapper.dll</td><td>MapinfoDotNetWrapper.dll</td><td>MAPINF~1.DLL|MapinfoDotNetWrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\MapinfoDotNetWrapper.dll</td><td>1</td><td/></row>
 		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
 		<row><td>npgsql.dll</td><td>Npgsql.dll</td><td>Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Npgsql.dll</td><td>1</td><td/></row>
 		<row><td>oracle.dataaccess.dll</td><td>Oracle.DataAccess.dll</td><td>ORACLE~1.DLL|Oracle.DataAccess.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Oracle.DataAccess.dll</td><td>1</td><td/></row>
@@ -2189,6 +2192,7 @@
 		<row><td>HluArcMapExtension.Primary_output</td><td/><td/><td>_5FD44DB7_5106_45F8_B23C_86F0B65C3EEE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_372EEF8A_829A_42F4_99DC_A299A59C5291_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Interop.MSDASC.dll</td><td/><td/><td>_BE67E254_38B6_451F_A7A5_C938302DCAFC_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>MapinfoDotNetWrapper.dll</td><td/><td/><td>_CB27E0B3_C4E4_4514_81BA_36E752A79CE4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Mono.Security.dll</td><td/><td/><td>_3B4B0A25_ACC5_45EB_BCEA_D20FE1D137F1_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Npgsql.dll</td><td/><td/><td>_4BBCD042_2FBE_4B27_836D_88C2186C0BEC_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Oracle.DataAccess.dll</td><td/><td/><td>_F20AE7C0_0D03_481E_949D_941C5B466F51_FILTER</td><td/><td/><td/><td/></row>
@@ -4627,9 +4631,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{E29C2D77-8A6D-4A6B-8ACC-B69A9AD97531}</td><td/></row>
-		<row><td>ProductName</td><td>HLU GIS Tool 2.4.1</td><td/></row>
-		<row><td>ProductVersion</td><td>2.4.1.0</td><td/></row>
+		<row><td>ProductCode</td><td>{7CA542F2-BA74-4A79-B251-02F2A18D7669}</td><td/></row>
+		<row><td>ProductName</td><td>HLU GIS Tool 2.4.0</td><td/></row>
+		<row><td>ProductVersion</td><td>2.4.0.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4919,7 +4923,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>2.4.1.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>2.4.0.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">

@@ -151,9 +151,7 @@
                             <ColumnDefinition Width="10*" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Name="GridHistoryColumns"
-                              Grid.Row="0"
-                              Grid.Column="0">
+                        <Grid Name="GridHistoryColumns" Grid.Row="0" Grid.Column="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
