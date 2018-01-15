@@ -2980,6 +2980,7 @@ namespace HLU.UI.ViewModel
 
                 _gisSelection = NewGisSelectionTable();
                 _gisApp.ReadMapSelection(ref _gisSelection);
+
                 _incidSelectionWhereClause = null;
                 AnalyzeGisSelectionSet(true);
                 if (_gisSelection.Rows.Count > 0)
@@ -4172,7 +4173,7 @@ namespace HLU.UI.ViewModel
         private void IncidCurrentRowDerivedValuesRetrieve()
         {
             _incidLastModifiedUser = _incidCurrentRow.last_modified_user_id;
-            _incidLastModifiedDate = _incidCurrentRow.last_modified_date;
+            _incidLastModifiedDate = Convert.IsDBNull(_incidCurrentRow.last_modified_date) ? DateTime.MinValue : _incidCurrentRow.last_modified_date;
             _incidIhsHabitat = _incidCurrentRow.Isihs_habitatNull() ? null : _incidCurrentRow.ihs_habitat;
         }
 

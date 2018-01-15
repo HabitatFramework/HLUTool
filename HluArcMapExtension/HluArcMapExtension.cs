@@ -359,7 +359,12 @@ namespace HLU
 
         public string Description
         {
-            get { return "HLU ArcMap Extension\r\n\r\nProvides interface to HLU GIS Tool."; }
+            get
+            {
+                return String.Format("HLU ArcMap Extension {0}\r\n{1}\r\n\r\nProvides an interface to the HLU GIS Tool.",
+                    System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014 SxBRC.");
+            }
         }
 
         /// <summary>
@@ -616,6 +621,8 @@ namespace HLU
                     null, esriJoinType.esriLeftInnerJoin);
                 _joinedTable = false;
             }
+
+            MessageBox.Show("Feature layer selection changed", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
             PipeSelection(_hluFeatureSelection);
 
@@ -1159,6 +1166,8 @@ namespace HLU
 
         private void PipeSelection(IFeatureSelection featureSelection)
         {
+            MessageBox.Show("Getting selection ...", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+
             try
             {
                 if ((_selectFieldOrdinals == null) || (_selectFieldOrdinals.Length == 0)) return;
@@ -1167,6 +1176,8 @@ namespace HLU
                     _hluFeatureSelection = (IFeatureSelection)_hluLayer;
                 if (_hluFeatureSelection.SelectionSet.Count == 0)
                 {
+                    MessageBox.Show("Selected feature count is zero", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+
                     _pipeData.Clear();
                     return;
                 }
@@ -1180,8 +1191,14 @@ namespace HLU
                     IRow selectRow;
                     featureSelection.SelectionSet.Search(null, true, out resultCursor);
 
+                    MessageBox.Show(string.Format("Selected feature field count is {0}", resultCursor.Fields.FieldCount), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+
                     if (_sendColumnHeaders && (_selectColumns != null))
+                    {
                         _pipeData.Add(String.Join(",", _selectColumns));
+
+                        MessageBox.Show("Sending column headers", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
 
                     while ((selectRow = resultCursor.NextRow()) != null)
                     {
@@ -1190,6 +1207,8 @@ namespace HLU
                             sb.Append(String.Format("{0}{1}", _pipeFieldDelimiter,
                                 selectRow.get_Value(_selectFieldOrdinals[i])));
                         _pipeData.Add(sb.Remove(0, 1).ToString());
+
+                        MessageBox.Show(string.Format("Sending feature details for OID {0}", selectRow.OID), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
                     Marshal.FinalReleaseComObject(resultCursor);
@@ -3513,6 +3532,7 @@ namespace HLU
                     // 
                     // Return the number of valid layers and the total number of
                     // map windows.
+
                     _pipeData.AddRange(new string[] { _hluLayerList.Count.ToString(), maps.Count.ToString() });
                     //---------------------------------------------------------------------
                     _pipeData.Add(_pipeTransmissionInterrupt);
@@ -3580,6 +3600,8 @@ namespace HLU
 
                     if (_hluLayer == null)
                     {
+                        //MessageBox.Show(string.Format("{0} is valid layer", _hluLayer.Name), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+
                         _hluLayer = hluLayer;
                         _hluFeatureClass = hluFeatureClass;
                         _hluWS = hluWS;
@@ -3594,6 +3616,8 @@ namespace HLU
                         _hluFieldNames = hluFieldNames;
                     }
                     //---------------------------------------------------------------------
+
+                    //MessageBox.Show(string.Format("{0} valid layers found", _hluLayerList.Count.ToString()), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     return true;
                 }
@@ -3664,6 +3688,9 @@ namespace HLU
                             IFeatureLayer featureLayer = layer as IFeatureLayer;
                             if (IsHluLayer(featureLayer))
                             {
+
+                                MessageBox.Show(string.Format("{0} is valid layer", featureLayer.Name), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+
                                 _hluView = map as IActiveView;
                                 _pipeData.Add("true");
                                 _pipeData.Add(_pipeTransmissionInterrupt);
