@@ -721,19 +721,19 @@ namespace HLU.GISApplication.ArcGIS
 
             try
             {
-                MessageBox.Show("Requesting read of map selection", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Requesting read of map selection", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 List<string> selectionList = IpcArcMap(new string[] { "rs" }.Concat(
                     resultTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName)).ToArray());
 
                 if (selectionList == null)
                 {
-                    MessageBox.Show("Returned selection list is null", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show("Returned selection list is null", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     return;
                 }
 
-                MessageBox.Show(string.Format("Returned selection list has {0} records", selectionList.Count), "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show(string.Format("Returned selection list has {0} records", selectionList.Count), "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (string s in selectionList)
                 {
