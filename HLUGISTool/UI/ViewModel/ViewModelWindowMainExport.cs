@@ -1,6 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -34,6 +34,7 @@ using HLU.Properties;
 using HLU.UI.View;
 using HLU.Data;
 using HLU.Date;
+using DAO;
 
 namespace HLU.UI.ViewModel
 {
@@ -247,7 +248,7 @@ namespace HLU.UI.ViewModel
                     rowCount = _viewModelMain.IncidRowCount(false);
                 
                 // Warn the user if the export is very large.
-                if (rowCount > 5000)
+                if (rowCount > 50000)
                 {
                     MessageBoxResult userResponse = MessageBoxResult.No;
                     userResponse = MessageBox.Show("This export operation may take some time.\n\nDo you wish to proceed?", "HLU: Export",
@@ -259,16 +260,32 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // FIX: 065 Prompt for the GIS layer name before starting export.
+                //
+                // Create a temporary database containing an empty attribute data table.
+                tempPath = ExportEmptyMdb(exportTable);
+
+                // Exit if there was an error creating the database.
+                if (String.IsNullOrEmpty(tempPath))
+                    return;
+
+                // Call the GIS application export prompt method to prompt
+                // the user for the name and location of the new GIS layer.
+                _viewModelMain.GISApplication.ExportPrompt(tempPath, exportTable.TableName, _attributesLength, selectedOnly);
+
+                _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting to temporary table ...");
+
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
-                tempPath = ExportMdb(targetList.ToString(), fromClause.ToString(), exportFilter,
+                exportRowCount = ExportMdb(tempPath, targetList.ToString(), fromClause.ToString(), exportFilter,
                     _viewModelMain.DataBase, exportFields, exportTable, sortOrdinals,
                     matrixOrdinals, formationOrdinals, managementOrdinals, complexOrdinals, bapOrdinals, sourceOrdinals,
-                    fieldMapTemplate, out exportRowCount);
+                    fieldMapTemplate);
+                //---------------------------------------------------------------------
 
-                // Exit if there was an error creating the database or the
-                // database is empty.
-                if (String.IsNullOrEmpty(tempPath))
+                // Exit if the database is empty.
+                if (exportRowCount == 0)
                     return;
 
                 _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting from GIS ...");
@@ -276,7 +293,7 @@ namespace HLU.UI.ViewModel
                 // Call the GIS application export method to join the
                 // temporary attribute data to the GIS feature layer
                 // and save them as a new GIS layer.
-                _viewModelMain.GISApplication.Export(tempPath, exportTable.TableName, _attributesLength, selectedOnly);
+                _viewModelMain.GISApplication.Export(tempPath, exportTable.TableName, selectedOnly);
 
                 // Remove the current record filter.
                 //_viewModelMain.IncidSelection = null;
@@ -291,6 +308,8 @@ namespace HLU.UI.ViewModel
             }
             finally
             {
+                // Try and delete the temporary database or, if that fails,
+                // make a note of it to delete it later.
                 if (!String.IsNullOrEmpty(tempPath))
                 {
                     string[] tempFiles = Directory.GetFiles(Path.GetDirectoryName(tempPath),
@@ -301,6 +320,7 @@ namespace HLU.UI.ViewModel
                         catch { _viewModelMain.ExportMdbs.Add(fName); }
                     }
                 }
+
                 _viewModelMain.ChangeCursor(Cursors.Arrow, null);
             }
         }
@@ -1120,13 +1140,8 @@ namespace HLU.UI.ViewModel
             if (targetList.Length > 1) targetList.Remove(0, 1);
         }
 
-        private string ExportMdb(string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
-            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
-            int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals, 
-            int[][] fieldMap, out int exportRowCount)
+        private string ExportEmptyMdb(DataTable exportTable)
         {
-            exportRowCount = -1;
-            int outputRowCount = 0;
             DbOleDb dbOut = null;
 
             string tempPath = String.Empty;
@@ -1153,8 +1168,81 @@ namespace HLU.UI.ViewModel
                 //
                 // Throw an error if the table cannot be created.
                 if (!dbOut.CreateTable(exportTable))
-                    throw new Exception("Error creating the export table");
+                    throw new Exception("Error creating the temporary export table");
                 //---------------------------------------------------------------------
+
+                DataSet datasetOut = new DataSet("Export");
+
+                IDbDataAdapter adapterOut = dbOut.CreateAdapter(exportTable);
+                adapterOut.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+                adapterOut.Fill(datasetOut);
+                //int[] pkOrdinals = exportTable.PrimaryKey.Select(c => c.Ordinal).ToArray();
+                //exportTable.PrimaryKey = pkOrdinals.Select(o => exportTable.Columns[o]).ToArray();
+                //adapterOut.TableMappings.Clear();
+                //adapterOut.TableMappings.Add(exportTable.TableName, datasetOut.Tables[0].TableName);
+
+                //exportTable = datasetOut.Tables[0];
+
+                //DataRow exportRow = exportTable.NewRow();
+
+                //exportTable.Rows.Add(exportRow);
+
+                //exportRow[exportColumn] = outValue;
+
+                // Commit the output.
+                //adapterOut.Update(datasetOut);
+
+                return tempPath;
+
+            }
+            //---------------------------------------------------------------------
+            // FIX: 054 Improve error reporting during exports.
+            //
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Export failed. The error message was:\n\n{0}.",
+                    ex.Message), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Delete the temporary database if it was created.
+                if (File.Exists(tempPath))
+                {
+                    try { File.Delete(tempPath); }
+                    catch { _viewModelMain.ExportMdbs.Add(tempPath); }
+                }
+
+                // Return a null database path as the export didn't finish.
+                return null;
+            }
+            //---------------------------------------------------------------------
+            finally
+            {
+                if ((dbOut != null) && (dbOut.Connection.State != ConnectionState.Closed))
+                {
+                    try { dbOut.Connection.Close(); }
+                    catch { }
+                }
+            }
+        }
+
+        private int ExportMdbOld(string tempPath, string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
+            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
+            int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals,
+            int[][] fieldMap)
+        {
+            int exportRowCount = -1;
+            int outputRowCount = 0;
+            DbOleDb dbOut = null;
+
+            try
+            {
+                string connString = String.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};", tempPath);
+                string defaultSchema = "";
+                bool promptPwd = false;
+                dbOut = new DbOleDb(ref connString, ref defaultSchema, ref promptPwd,
+                    Properties.Resources.PasswordMaskString, Settings.Default.UseAutomaticCommandBuilders,
+                    true, Settings.Default.DbIsUnicode, Settings.Default.DbUseTimeZone, 255,
+                    Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
+                    Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
 
                 DataSet datasetOut = new DataSet("Export");
 
@@ -1225,8 +1313,11 @@ namespace HLU.UI.ViewModel
                         sortOrdinals, exportFilter[j], dataBase);
 
                     // Execute the sql to retrieve the records.
+                    //---------------------------------------------------------------------
+                    // FIX: 063 Apply user's option database connection timeout.
                     using (IDataReader reader = _viewModelMain.DataBase.ExecuteReader(sql,
-                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text))
+                        _viewModelMain.DBConnectionTimeout, CommandType.Text))
+                    //---------------------------------------------------------------------
                     {
                         string currIncid = String.Empty;
                         string prevIncid = String.Empty;
@@ -1591,7 +1682,7 @@ namespace HLU.UI.ViewModel
                 if (exportRowCount < 1)
                     throw new Exception("Export query did not retrieve any rows");
 
-                return tempPath;
+                return exportRowCount;
                 //---------------------------------------------------------------------
 
             }
@@ -1610,8 +1701,8 @@ namespace HLU.UI.ViewModel
                     catch { _viewModelMain.ExportMdbs.Add(tempPath); }
                 }
 
-                // Return a null database path as the export didn't finish.
-                return null;
+                // Return a zero export row count as the export didn't finish.
+                return 0;
             }
             //---------------------------------------------------------------------
             finally
@@ -1623,6 +1714,486 @@ namespace HLU.UI.ViewModel
                 }
             }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 066 Improve performance of exporting to temporary database.
+        //
+        /// <summary>
+        /// Exports the attribute data to a temporary access database. Uses DAO instead
+        /// of a DataAdapter to improve performance.
+        /// </summary>
+        /// <param name="tempPath">Path and name of the temporary database.</param>
+        /// <param name="targetListStr">The SELECT clause containing the list of output fields from the source database.</param>
+        /// <param name="fromClauseStr">The FROM clause to output the fields from the source database.</param>
+        /// <param name="exportFilter">The WHERE clause to apply for the export.</param>
+        /// <param name="dataBase">The source database type.</param>
+        /// <param name="exportFields">The list of export fields to create in the temporary database.</param>
+        /// <param name="exportTable">The DataTable of the export table.</param>
+        /// <param name="sortOrdinals">The column ordinals of the sort columns.</param>
+        /// <param name="matrixOrdinals">The column ordinals of the matrix columns.</param>
+        /// <param name="formationOrdinals">The column ordinals of the formation columns.</param>
+        /// <param name="managementOrdinals">The column ordinals of the management columns.</param>
+        /// <param name="complexOrdinals">The column ordinals of the complex columns.</param>
+        /// <param name="bapOrdinals">The column ordinals of the priority habitat columns.</param>
+        /// <param name="sourceOrdinals">The column ordinals of the source columns.</param>
+        /// <param name="fieldMap">The field mapping from the input source to the output table.</param>
+        /// <returns></returns>
+        private int ExportMdb(string tempPath, string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
+            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
+            int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals,
+            int[][] fieldMap)
+        {
+            int outputRowCount = 0;
+
+        	DAO.DBEngine dbEngine = new DAO.DBEngine();
+
+            try
+            {
+
+            	DAO.Database db = dbEngine.OpenDatabase(tempPath);
+            	DAO.Recordset AccesssRecordset = db.OpenRecordset(exportTable.TableName);
+            	DAO.Field[] AccesssFields;
+
+                // If there is only one long list then chunk
+                // it up into smaller lists.
+                if (exportFilter.Count == 1)
+                {
+                    try
+                    {
+                        List<SqlFilterCondition> whereCond = new List<SqlFilterCondition>();
+                        whereCond = exportFilter[0];
+                        exportFilter = whereCond.ChunkClause(240).ToList();
+                    }
+                    catch { }
+                }
+
+                //---------------------------------------------------------------------
+                // FIX: 047 Break exporting attributes into chunks to avoid errors
+                // with excessive sql lengths.
+                //
+                outputRowCount = 0;
+
+                //---------------------------------------------------------------------
+                // FIX: 046 Don't export duplicate record details for the
+                // same incid.
+                //
+                // Set the field map indexes to the start of the array.
+                int[] fieldMapIndex = new int[fieldMap.Length];
+                for (int k = 0; k < fieldMap.Length; k++)
+                {
+                    fieldMapIndex[k] = 1;
+                }
+                //---------------------------------------------------------------------
+
+                for (int j = 0; j < exportFilter.Count; j++)
+                {
+                    AccesssFields = new DAO.Field[exportTable.Columns.Count];
+                	AccesssRecordset.AddNew();
+                    bool rowAdded = false;
+
+                    // Union the constituent parts of the export query
+                    // together into a single SQL string.
+                    string sql = ScratchDb.UnionQuery(targetListStr, fromClauseStr,
+                        sortOrdinals, exportFilter[j], dataBase);
+
+                    // Execute the sql to retrieve the records.
+                    //---------------------------------------------------------------------
+                    // FIX: 063 Apply user's option database connection timeout.
+                    using (IDataReader reader = _viewModelMain.DataBase.ExecuteReader(sql,
+                        _viewModelMain.DBConnectionTimeout, CommandType.Text))
+                    //---------------------------------------------------------------------
+                    {
+                        string currIncid = String.Empty;
+                        string prevIncid = String.Empty;
+                        int currMatrixId = -1;
+                        int currFormationId = -1;
+                        int currManagementId = -1;
+                        int currComplexId = -1;
+                        int currBapId = -1;
+                        int currSourceId = -1;
+                        int currSourceDateStart = 0;
+                        int currSourceDateEnd = 0;
+                        List<int> matrixIds = null;
+                        List<int> formationIds = null;
+                        List<int> managementIds = null;
+                        List<int> complexIds = null;
+                        List<int> bapIds = null;
+                        List<int> sourceIds = null;
+                        string currSourceDateType = String.Empty;
+                        int exportColumn;
+
+                        // Read each record and process the contents.
+                        while (reader.Read())
+                        {
+                            // Get the current incid.
+                            currIncid = reader.GetString(_incidOrdinal);
+
+                            //---------------------------------------------------------------------
+                            // FIX: 046 Don't export duplicate record details for the
+                            // same incid.
+                            //
+                            // Get the current matrix id.
+                            if (_matrixIdOrdinal != -1)
+                            {
+                                object matrixIdValue = reader.GetValue(_matrixIdOrdinal);
+                                if (matrixIdValue != DBNull.Value)
+                                    currMatrixId = (int)matrixIdValue;
+                                else
+                                    currMatrixId = -1;
+                            }
+
+                            // Get the current formation id.
+                            if (_formationIdOrdinal != -1)
+                            {
+                                object FormationIdValue = reader.GetValue(_formationIdOrdinal);
+                                if (FormationIdValue != DBNull.Value)
+                                    currFormationId = (int)FormationIdValue;
+                                else
+                                    currFormationId = -1;
+                            }
+
+                            // Get the current Management id.
+                            if (_managementIdOrdinal != -1)
+                            {
+                                object ManagementIdValue = reader.GetValue(_managementIdOrdinal);
+                                if (ManagementIdValue != DBNull.Value)
+                                    currManagementId = (int)ManagementIdValue;
+                                else
+                                    currManagementId = -1;
+                            }
+
+                            // Get the current Complex id.
+                            if (_complexIdOrdinal != -1)
+                            {
+                                object ComplexIdValue = reader.GetValue(_complexIdOrdinal);
+                                if (ComplexIdValue != DBNull.Value)
+                                    currComplexId = (int)ComplexIdValue;
+                                else
+                                    currComplexId = -1;
+                            }
+
+                            // Get the current bap id (or equivalent lookup table field).
+                            if (_bapIdOrdinal != -1)
+                            {
+                                object bapIdValue = reader.GetValue(_bapIdOrdinal);
+                                if (bapIdValue != DBNull.Value)
+                                    currBapId = (int)bapIdValue;
+                                else
+                                    currBapId = -1;
+                            }
+
+                            // Get the current source id (or equivalent lookup table field).
+                            if (_sourceIdOrdinal != -1)
+                            {
+                                object sourceIdValue = reader.GetValue(_sourceIdOrdinal);
+                                if (sourceIdValue != DBNull.Value)
+                                    currSourceId = (int)sourceIdValue;
+                                else
+                                    currSourceId = -1;
+                            }
+                            //---------------------------------------------------------------------
+
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR17 (Exporting date fields)
+                            // Store all of the source date fields for use later when
+                            // formatting the attribute data.
+                            //
+                            // Get the current source date start.
+                            if ((_sourceDateStartOrdinals.Count() > 0) &&
+                                !reader.IsDBNull(_sourceDateStartOrdinals[0]))
+                                currSourceDateStart = reader.GetInt32(_sourceDateStartOrdinals[0]);
+
+                            // Get the current source date type.
+                            if ((_sourceDateEndOrdinals.Count() > 0) &&
+                                !reader.IsDBNull(_sourceDateEndOrdinals[0]))
+                                currSourceDateEnd = reader.GetInt32(_sourceDateEndOrdinals[0]);
+
+                            // Get the current source date type.
+                            if ((_sourceDateTypeOrdinals.Count() > 0) &&
+                                !reader.IsDBNull(_sourceDateTypeOrdinals[0]))
+                                currSourceDateType = reader.GetString(_sourceDateTypeOrdinals[0]);
+                            //---------------------------------------------------------------------
+
+                            // If this incid is different to the last record's incid
+                            // then process all the fields.
+                            if (currIncid != prevIncid)
+                            {
+                                // If the last export row has not been added then
+                                // add it now.
+                                if ((AccesssFields[0] != null) && (AccesssFields[0].Value != null))
+                                {
+						            AccesssRecordset.Update();
+                                    rowAdded = true;
+
+                                    // Increment the output row count.
+                                    outputRowCount += 1;
+                                }
+
+                                // Store the last incid.
+                                prevIncid = currIncid;
+
+                                //---------------------------------------------------------------------
+                                // FIX: 046 Don't export duplicate record details for the
+                                // same incid.
+                                //
+                                matrixIds = new List<int>();
+                                formationIds = new List<int>();
+                                managementIds = new List<int>();
+                                complexIds = new List<int>();
+                                bapIds = new List<int>();
+                                sourceIds = new List<int>();
+
+                                // Reset the field map indexes to the start of the array.
+                                for (int k = 0; k < fieldMap.Length; k++)
+                                {
+                                    fieldMapIndex[k] = 1;
+                                }
+                                //---------------------------------------------------------------------
+
+                                // Create a new export row ready for the next values.
+                            	AccesssRecordset.AddNew();
+                                rowAdded = false;
+
+                                // Loop through all the fields in the field map
+                                // to transfer the values from the input reader
+                                // to the correct field in the export row.
+                                for (int i = 0; i < fieldMap.GetLength(0); i++)
+                                {
+                                    //---------------------------------------------------------------------
+                                    // FIX: 046 Don't export duplicate record details for the
+                                    // same incid.
+                                    //
+                                    // Set the export column ordinal from the current
+                                    // field map index for this field.
+                                    exportColumn = fieldMap[i][fieldMapIndex[i]];
+
+                                    // Increment the field map index for this field.
+                                    fieldMapIndex[i] += 1;
+                                    //---------------------------------------------------------------------
+
+                                    // If this field is not mapped from the input reader
+                                    // set the export table value to null.
+                                    if (fieldMap[i][0] == -1)
+                                        continue;
+
+                                    // For the first time... setup the field name.
+                                    if (AccesssFields[exportColumn] == null)
+                                        AccesssFields[exportColumn] = AccesssRecordset.Fields[exportTable.Columns[exportColumn].ColumnName];
+
+                                    // Store the input value of the current column.
+                                    object inValue = reader.GetValue(fieldMap[i][0]);
+
+                                    // If the value is null then skip this field.
+                                    if (inValue == DBNull.Value)
+                                        continue;
+
+                                    // Get the properties for the current export field.
+                                    ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
+                                    //---------------------------------------------------------------------
+                                    // FIX: 048 Enable fields to be exported using a different
+                                    // data type.
+                                    //
+                                    // Convert the input value to the output value data type and format.
+                                    object outValue;
+                                    outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
+                                        exportTable.Columns[exportColumn].DataType,
+                                        (exportField != null) ? exportField.FieldFormat : null,
+                                        currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                    //---------------------------------------------------------------------
+
+                                    // If the value is not null.
+                                    if (outValue != null)
+                                    {
+                                        // Get the maximum length of the column.
+                                        int fieldLength = exportTable.Columns[exportColumn].MaxLength;
+
+                                        // If the maximum length of the column is shorter
+                                        // than the value then truncate the value as it
+                                        // is transferred  to the export row.
+                                        if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
+											AccesssFields[exportColumn].Value = outValue.ToString().Substring(0, fieldLength);
+                                        else
+                                            AccesssFields[exportColumn].Value = outValue;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Loop through all the fields in the field map
+                                // to transfer the values from the input reader
+                                // to the correct field in the export row.
+                                for (int i = 0; i < fieldMap.GetLength(0); i++)
+                                {
+                                    // Only process fields that have multiple outputs
+                                    // specified in the field map.
+                                    if (fieldMapIndex[i] < fieldMap[i].Length)
+                                    {
+                                        //---------------------------------------------------------------------
+                                        // FIX: 046 Don't export duplicate record details for the
+                                        // same incid.
+                                        //
+                                        // Set the export column ordinal from the current
+                                        // field map index for this field.
+                                        exportColumn = fieldMap[i][fieldMapIndex[i]];
+
+                                        // If the value is not null and the string value is different
+                                        // to the last string value for this incid, or, the column is
+                                        // allowed to have duplicates and the bap or source is different
+                                        // to the last bap or source, then output the value.
+                                        if (Array.IndexOf(matrixOrdinals, exportColumn) != -1)
+                                        {
+                                            if (matrixIds.Contains(currMatrixId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(formationOrdinals, exportColumn) != -1)
+                                        {
+                                            if (formationIds.Contains(currFormationId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(managementOrdinals, exportColumn) != -1)
+                                        {
+                                            if (managementIds.Contains(currManagementId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(complexOrdinals, exportColumn) != -1)
+                                        {
+                                            if (complexIds.Contains(currComplexId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(bapOrdinals, exportColumn) != -1)
+                                        {
+                                            if (bapIds.Contains(currBapId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(sourceOrdinals, exportColumn) != -1)
+                                        {
+                                            if (sourceIds.Contains(currSourceId))
+                                                continue;
+                                        }
+
+                                        // Increment the field map index for this field.
+                                        fieldMapIndex[i] += 1;
+                                        //---------------------------------------------------------------------
+
+                                        // If this field is not mapped from the input reader
+                                        // set the export table value to null.
+                                        if (fieldMap[i][0] == -1)
+                                            continue;
+
+                                        // For the first time... setup the field name.
+                                        if (AccesssFields[exportColumn] == null)
+                                            AccesssFields[exportColumn] = AccesssRecordset.Fields[exportTable.Columns[exportColumn].ColumnName];
+
+                                        // Store the input value of the current column.
+                                        object inValue = reader.GetValue(fieldMap[i][0]);
+
+                                        // If the value is null then skip this field.
+                                        if (inValue == DBNull.Value)
+                                            continue;
+
+                                        // Get the properties for the current export field.
+                                        ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
+
+                                        //---------------------------------------------------------------------
+                                        // FIX: 048 Enable fields to be exported using a different
+                                        // data type.
+                                        //
+                                        // Convert the input value to the output value data type and format.
+                                        object outValue;
+                                        outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
+                                            exportTable.Columns[exportColumn].DataType,
+                                            (exportField != null) ? exportField.FieldFormat : null,
+                                            currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                        //---------------------------------------------------------------------
+
+                                        // If the value is not null.
+                                        if (outValue != null)
+                                        {
+                                            // Get the maximum length of the output column.
+                                            int fieldLength = exportTable.Columns[exportColumn].MaxLength;
+
+                                            // If the maximum length of the column is shorter
+    	                                    // than the value then truncate the value as it
+        	                                // is transferred  to the export row.
+            	                            if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
+												AccesssFields[exportColumn].Value = outValue.ToString().Substring(0, fieldLength);
+                    	                    else
+                        	                    AccesssFields[exportColumn].Value = outValue;
+                                        }
+                                    }
+                                }
+                            }
+
+                            //---------------------------------------------------------------------
+                            // FIX: 046 Don't export duplicate record details for the
+                            // same incid.
+                            //
+                            // Store the current ids so that they are not output again.
+                            matrixIds.Add(currMatrixId);
+                            formationIds.Add(currFormationId);
+                            managementIds.Add(currManagementId);
+                            complexIds.Add(currComplexId);
+                            bapIds.Add(currBapId);
+                            sourceIds.Add(currSourceId);
+                            //---------------------------------------------------------------------
+                        }
+                    }
+
+                    // If the last export row has not been saved then
+                    // save it now.
+                    if (!rowAdded && (AccesssFields[0] != null) && (AccesssFields[0].Value != null))
+                    {
+			            AccesssRecordset.Update();
+
+                        // Increment the output row count.
+                        outputRowCount += 1;
+                    }
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 054 Improve error reporting during exports.
+                //
+                // Exit if no records were exported.
+                if (outputRowCount < 1)
+                    throw new Exception("Export query did not retrieve any rows");
+                //---------------------------------------------------------------------
+
+		        AccesssRecordset.Close();
+            	db.Close();
+
+                return outputRowCount;
+
+            }
+            //---------------------------------------------------------------------
+            // FIX: 054 Improve error reporting during exports.
+            //
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Export failed. The error message was:\n\n{0}.",
+                    ex.Message), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Delete the temporary database if it was created.
+                if (File.Exists(tempPath))
+                {
+                    try { File.Delete(tempPath); }
+                    catch { _viewModelMain.ExportMdbs.Add(tempPath); }
+                }
+
+                // Return a zero export row count as the export didn't finish.
+                return 0;
+            }
+            //---------------------------------------------------------------------
+            finally
+            {
+
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(dbEngine);
+    	        dbEngine = null;
+
+            }
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Gets the length of the original source field.

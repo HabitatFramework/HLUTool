@@ -1,9 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HBIC.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HLU.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="WhereClauseMaxLength" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">65536</Value>
+    </Setting>
+    <Setting Name="ExportInEditSession" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

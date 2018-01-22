@@ -1,7 +1,7 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -84,6 +84,7 @@ namespace HLU
         public delegate void SelectByJoinDelegate(string scratchMdbPath, string selectionDatasetName);
         public delegate void ZoomSelectedDelegate();
         public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter);
+        public delegate void ExportPromptDelegate(string mdbPathName, string attributeDatasetName);
         public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, bool selectedOnly);
         public delegate void IsHluWorkspaceDelegate();
         public delegate void ListHluLayersDelegate();
@@ -145,6 +146,8 @@ namespace HLU
         private bool _sendColumnHeaders;
         private bool _joinedTable = false;
         private bool _pipeCalling = false;
+        private IDatasetName _exportDatasetName;
+
         private static List<string> _pipeData;
         private System.Windows.Forms.Control _dummyControl;
         private static int _whereClauseLengthMax = Properties.Settings.Default.WhereClauseMaxLength;
@@ -164,10 +167,12 @@ namespace HLU
         private static ZoomSelectedDelegate _zoomSelDel;
         private static ZoomSelectedCursorDelegate _zoomSelCursorDel;
         private static ExportDelegate _exportDel;
+        private static ExportPromptDelegate _exportPromptDel;
         private static IsHluWorkspaceDelegate _isHluWorkspaceDel;
         private static ListHluLayersDelegate _ListHluLayersDel;
         private static IsHluLayerDelegate _isHluLayerDel;
         private static IsEditingDelegate _isEditingDel;
+        private static bool _exportInEditSession = Properties.Settings.Default.ExportInEditSession;
         
         #endregion
 
@@ -345,6 +350,7 @@ namespace HLU
                 _selByJoinDel = new SelectByJoinDelegate(SelectByJoin);
                 _zoomSelDel = new ZoomSelectedDelegate(ZoomSelected);
                 _zoomSelCursorDel = new ZoomSelectedCursorDelegate(ZoomSelectedCursor);
+                _exportPromptDel = new ExportPromptDelegate(ExportPrompt);
                 _exportDel = new ExportDelegate(Export);
                 _isHluWorkspaceDel = new IsHluWorkspaceDelegate(IsHluWorkspace);
                 _ListHluLayersDel = new ListHluLayersDelegate(ListHluLayers);
@@ -870,6 +876,25 @@ namespace HLU
                         }
                         catch { _pipeData.Clear(); }
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 065 Prompt for the GIS layer name before starting export.
+                    //
+                    case "ep": // export prompt: cmd, mdbPathName, attributeDatasetName
+                        if (_pipeData.Count == 3)
+                        {
+                            try
+                            {
+                                string mdbPathName = _pipeData[1];
+                                string attributeDatasetName = _pipeData[2];
+                                _pipeData.Clear();
+
+                                _dummyControl.Invoke(_exportPromptDel,
+                                    new object[] { mdbPathName, attributeDatasetName });
+                            }
+                            catch { _pipeData.Clear(); }
+                        }
+                        break;
+                    //---------------------------------------------------------------------
                     case "ex": // export: cmd, mdbPathName, attributeDatasetName, selectedOnly
                         if (_pipeData.Count == 4)
                         {
@@ -2417,6 +2442,116 @@ namespace HLU
 
         #region Export
 
+        //---------------------------------------------------------------------
+        // FIX: 065 Prompt for the GIS layer name before starting export.
+        //
+        /// <summary>
+        /// Prompts the user for the export layer name.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path to save the
+        /// temporary attribute data to.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
+        /// <returns></returns>
+        private void ExportPrompt(string tempMdbPathName, string attributeDatasetName)
+        {
+            IDataset attributeDataset;
+            ITable exportAttributes;
+            IWorkspaceFactory tempWorkspaceFactory = new OLEDBWorkspaceFactoryClass();
+            object outWS = null;
+            _exportDatasetName = null;
+
+            try
+            {
+                SetCursor(true);
+
+                OpenOleDbWorkspace(tempMdbPathName, attributeDatasetName, ref tempWorkspaceFactory,
+                    out attributeDataset, out exportAttributes);
+
+                IDisplayTable hluDisplayTable = (IDisplayTable)_hluLayer;
+                IFeatureClass hluDisplayTableFeatureClass = (IFeatureClass)hluDisplayTable.DisplayTable;
+
+                // Prompt the user for where to save the export layer.
+                IExportOperation exportOp = new ExportOperation();
+                bool saveProjection;
+                esriExportTableOptions exportOptions;
+                IDatasetName exportDatasetName;
+                exportDatasetName = exportOp.GetOptions(hluDisplayTableFeatureClass,
+                    _hluLayer.Name, _hluFeatureSelection != null && _hluFeatureSelection.SelectionSet.Count > 0, 
+                    true, _application.hWnd, out saveProjection, out exportOptions);
+
+                // If no export dataset name was chosen by the user then cancel the export.
+                if (exportDatasetName == null)
+                {
+                    _pipeData.Add("cancelled");
+                    return;
+                }
+
+                // Open the export dataset workspace.
+                outWS = ((IName)exportDatasetName.WorkspaceName).Open();
+
+                // Determine if the export layer is a shapefile.
+                bool isShp = IsShp(outWS as IWorkspace);
+
+                //---------------------------------------------------------------------
+                // FIX: 050 Warn ArcGIS users if field names may be truncated or
+                // renamed exporting to shapefiles.
+                //
+                // If the export layer is a shapefile check if any of
+                // the attribute field names will be truncated.
+                if (isShp)
+                {
+                    bool fieldNamesTruncated = false;
+                    for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
+                    {
+                        IField attributeField = exportAttributes.Fields.get_Field(i);
+                        if (attributeField.Name.Length > 10)
+                        {
+                            fieldNamesTruncated = true;
+                            break;
+                        }
+                    }
+
+                    // Warn the user that some field names may get truncated.
+                    if (fieldNamesTruncated)
+                    {
+                        MessageBoxResult userResponse = MessageBoxResult.No;
+                        userResponse = MessageBox.Show("Some field names may get truncated or renamed exporting to a shapefile.\n\nDo you wish to proceed?", "HLU: Export",
+                            MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (userResponse != MessageBoxResult.Yes)
+                        {
+                            _pipeData.Add("cancelled");
+                            return;
+                        }
+                    }
+                }
+                //---------------------------------------------------------------------
+
+                // Save the export dataset name
+                _exportDatasetName = exportDatasetName;
+
+            }
+            catch (Exception ex) { _pipeData.Add(ex.Message); }
+            finally
+            {
+                // Destroy workspace factory.
+                attributeDataset = null;
+                exportAttributes = null;
+                tempWorkspaceFactory = null;
+
+                SetCursor(false);
+            }
+        }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Exports the HLU features and attribute data to a new GIS layer file.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path containing the
+        /// attribute data.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
+        /// <param name="selectedOnly">If set to <c>true</c> only selected features
+        /// will be exported.</param>
+        /// <returns></returns>
         private void Export(string tempMdbPathName, string attributeDatasetName, bool selectedOnly)
         {
             IRelationshipClass relClass = null;
@@ -2444,23 +2579,15 @@ namespace HLU
                 int totalFeatureCount = _hluLayer.FeatureClass.FeatureCount(null);
                 int exportFeatureCount = 0;
 
-                // Prompt the user for where to save the export layer.
-                IExportOperation exportOp = new ExportOperation();
-                bool saveProjection;
-                esriExportTableOptions exportOptions;
-                IDatasetName exportDatasetName = exportOp.GetOptions(hluDisplayTableFeatureClass,
-                    _hluLayer.Name, _hluFeatureSelection != null && _hluFeatureSelection.SelectionSet.Count > 0, 
-                    true, _application.hWnd, out saveProjection, out exportOptions);
-
-                // If no export dataset name was chosen by the user then cancel the export.
-                if (exportDatasetName == null)
+                // Double-check if an export dataset name was chosen by the user.
+                if (_exportDatasetName == null)
                 {
                     _pipeData.Add("cancelled");
                     return;
                 }
 
                 // Open the export dataset workspace.
-                outWS = ((IName)exportDatasetName.WorkspaceName).Open();
+                outWS = ((IName)_exportDatasetName.WorkspaceName).Open();
 
                 // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
@@ -2514,9 +2641,6 @@ namespace HLU
                 // joining the temporary layer to the attribute dataset.
                 if (selectedOnly)
                 {
-                    // Set the export options for which records to export.
-                    exportOptions = esriExportTableOptions.esriExportSelectedRecords;
-
                     // Set the input DataSet name
                     IDataset inDataset;
                     inDataset = (IDataset)hluDisplayTable.DisplayTable;
@@ -2526,8 +2650,8 @@ namespace HLU
                     // set the output temporary DataSet name
                     IFeatureClassName outFCName = new FeatureClassNameClass();
                     IDatasetName outDatasetName = (IDatasetName)outFCName;
-                    outDatasetName.Name = String.Format("{0}_temp", exportDatasetName.Name);
-                    outDatasetName.WorkspaceName = exportDatasetName.WorkspaceName;
+                    outDatasetName.Name = String.Format("{0}_temp", _exportDatasetName.Name);
+                    outDatasetName.WorkspaceName = _exportDatasetName.WorkspaceName;
 
                     // Get the selected features for export
                     ISelectionSet selectionSet = _hluFeatureSelection.SelectionSet;
@@ -2540,6 +2664,7 @@ namespace HLU
                     }
 
                     // Export the selected features to the temporary dataset.
+                    IExportOperation exportOp = new ExportOperation();
                     exportOp.ExportFeatureClass(inDatasetName, null, selectionSet, geomDef, (IFeatureClassName)outDatasetName, _application.hWnd);
 
                     // Cast the workspace to IFeatureWorkspace and open the feature class.
@@ -2571,9 +2696,6 @@ namespace HLU
                 {
                     // Clear any current selection.
                     _hluFeatureSelection.SelectionSet = null;
-
-                    // Set the export options for which records to export.
-                    exportOptions = esriExportTableOptions.esriExportAllRecords;
 
                     // Set the join feature class to the current HLU feature class.
                     joinFeatureClass = _hluFeatureClass;
@@ -2629,11 +2751,11 @@ namespace HLU
                 IFields outFields = CreateFieldsCollection(true, geomDef.HasZ, geomDef.HasM, outWS,
                     joinFeatureClass.ShapeType, exportFields.Select(f => f.Length).ToArray(),
                     exportFields.Select(f => f.Name).ToArray(), exportFields.Select(f => f.Name).ToArray(),
-                    exportFields.Select(f => f.Type).ToArray(), exportFields.Select(f => f.Type != 
+                    exportFields.Select(f => f.Type).ToArray(), exportFields.Select(f => f.Type !=
                         esriFieldType.esriFieldTypeOID).ToArray(), geomDef.SpatialReference);
 
                 // Create the output feature class.
-                outFeatureClass = CreateFeatureClass(exportDatasetName.Name, null, outWS,
+                outFeatureClass = CreateFeatureClass(_exportDatasetName.Name, null, outWS,
                     outFields, esriFeatureType.esriFTSimple, joinFeatureClass.ShapeType, null, null);
 
                 // Map the fields between the display and table and the output feature
@@ -2916,27 +3038,38 @@ namespace HLU
 
             // Set the continue progress to true.
             bool contProgress = true;
-
+            
             IWorkspaceEdit workspaceEdit = null;
             IWorkspace wsOut = outWS as IWorkspace;
             bool restoreEditSession = InEditingSession;
             if (restoreEditSession) CloseEditSession(true);
 
-            // If the workspace is remote then the data is being accessed
-            // via ArcSDE.
-            if (wsOut.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace)
+            //---------------------------------------------------------------------
+            // FIX: 064 Perform the export outside of an edit session.
+            //          This will commit changes during the process rather
+            //          than saving them all to the end of the edit session
+            //          which should (hopefully) reduce the demand on memory.
+
+            // If using an edit session then start it now.
+            if (_exportInEditSession)
             {
-                Editor.StartEditing(wsOut);
-                Editor.StartOperation();
+                // If the workspace is remote then the data is being accessed
+                // via ArcSDE.
+                if (wsOut.WorkspaceFactory.WorkspaceType == esriWorkspaceType.esriRemoteDatabaseWorkspace)
+                {
+                    Editor.StartEditing(wsOut);
+                    Editor.StartOperation();
+                }
+                // Otherwise, it must be a FileSystem (for shapefiles)
+                // or LocalDatabase (for geodatabases) workspace.
+                else
+                {
+                    workspaceEdit = (IWorkspaceEdit)outWS;
+                    workspaceEdit.StartEditing(true);
+                    workspaceEdit.StartEditOperation();
+                }
             }
-            // Otherwise, it must be a FileSystem (for shapefiles)
-            // or LocalDatabase (for geodatabases) workspace.
-            else
-            {
-                workspaceEdit = (IWorkspaceEdit)outWS;
-                workspaceEdit.StartEditing(true);
-                workspaceEdit.StartEditOperation();
-            }
+            //---------------------------------------------------------------------
             
             IFeatureCursor exportFeatureCursor =
                 (IFeatureCursor)hluDisplayTable.SearchDisplayTable(exportQueryFilter, true);
@@ -2980,6 +3113,7 @@ namespace HLU
                             featureBuffer.set_Value(ixGeom2, geom2);
                     }
 
+                    // Insert the feature into the feature class
                     try { insertCursor.InsertFeature(featureBuffer); }
                     catch { }
 
@@ -2988,18 +3122,27 @@ namespace HLU
                     if (!contProgress)
                         throw new Exception("Export cancelled by user.");
                 }
+
+                // Flush and release the output cursor.
                 FlushCursor(false, ref insertCursor);
 
-                if (workspaceEdit == null)
+                //---------------------------------------------------------------------
+                // FIX: 064 Perform the export outside of an edit session.
+                // If using an edit session then stop it now.
+                if (_exportInEditSession)
                 {
-                    Editor.StopOperation(String.Empty);
-                    Editor.StopEditing(true);
+                    if (workspaceEdit == null)
+                    {
+                        Editor.StopOperation(String.Empty);
+                        Editor.StopEditing(true);
+                    }
+                    else
+                    {
+                        workspaceEdit.StopEditOperation();
+                        workspaceEdit.StopEditing(true);
+                    }
                 }
-                else
-                {
-                    workspaceEdit.StopEditOperation();
-                    workspaceEdit.StopEditing(true);
-                }
+                //---------------------------------------------------------------------
             }
             catch
             {
@@ -3018,8 +3161,10 @@ namespace HLU
             }
             finally
             {
+                // Flush and release the input cursor.
                 FlushCursor(true, ref exportFeatureCursor);
 
+                // Restore any edit session in use before the export.
                 if (restoreEditSession) OpenEditSession();
 
                 // Hide the progress dialog.

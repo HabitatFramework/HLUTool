@@ -1,7 +1,7 @@
 // HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -912,22 +912,56 @@ namespace HLU.GISApplication.ArcGIS
             IpcArcMap(new string[] { "zs" });
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 065 Prompt for the GIS layer name before starting export.
+        //
         /// <summary>
-        /// Exports the HLU features and attribute data to a new GIS layer
-        /// file.
+        /// Prompts the user for the export layer name.
         /// </summary>
         /// <param name="tempMdbPathName">Name of the temporary MDB path to save the
-        /// attribute data to.</param>
+        /// temporary attribute data to.</param>
         /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
         /// <param name="attributesLength">Length of the attribute data row.</param>
+        /// <returns></returns>
+        public override bool ExportPrompt(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
+        {
+            List<string> returnList = IpcArcMap(
+                new string[] { "ep", tempMdbPathName, attributeDatasetName });
+            
+            if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
+            {
+                // Display message if no output layer is entered by the user.
+                MessageBox.Show("Export cancelled.", "HLU: Export",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+            else if (returnList.Count > 0)
+            {
+                MessageBox.Show(String.Format("The export operation failed. The Message returned was:\n\n{0}",
+                    returnList[0]), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Exports the HLU features and attribute data to a new GIS layer file.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path containing the
+        /// attribute data.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
         /// <param name="selectedOnly">If set to <c>true</c> only selected features
         /// will be exported.</param>
         /// <returns></returns>
-        public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
+        public override bool Export(string tempMdbPathName, string attributeDatasetName, bool selectedOnly)
         {
             List<string> returnList = IpcArcMap(
                 new string[] { "ex", tempMdbPathName, attributeDatasetName, (selectedOnly ? "true" : "false") });
-            
+
             if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
             {
                 // Display message if no output layer is entered by the user.
