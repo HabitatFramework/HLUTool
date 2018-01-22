@@ -30,7 +30,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HLUTool")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14, 2016 TVERC.Copyright © 2014 SxBRC")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14, 2016 TVERC.Copyright © 2014,2018 SxBRC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
