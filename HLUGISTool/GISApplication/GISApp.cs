@@ -1,7 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013, 2016 Thames Valley Environmental Records Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -149,7 +149,13 @@ namespace HLU.GISApplication
 
         public abstract DataTable MergeFeaturesLogically(string keepIncid, DataColumn[] historyColumns);
 
-        public abstract bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly);
+        //---------------------------------------------------------------------
+        // FIX: 065 Prompt for the GIS layer name before starting export.
+        //
+        public abstract bool ExportPrompt(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly);
+        //---------------------------------------------------------------------
+
+        public abstract bool Export(string tempMdbPathName, string attributeDatasetName, bool selectedOnly);
 
         public abstract DataTable SqlSelect(string scratchMdbPath, string selectionTableName, DataColumn[] targetColumns);
 

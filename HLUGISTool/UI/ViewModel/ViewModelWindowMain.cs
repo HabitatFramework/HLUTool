@@ -1,7 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
-// Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -228,6 +228,7 @@ namespace HLU.UI.ViewModel
         private int _origIncidIhsComplexCount = 0;
         private SqlFilterCondition _incidMMPolygonsIncidFilter;
         private DataColumn[] _historyColumns;
+        private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
         private int _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
         private int _incidRowCount;
         private int _incidPageRowNoMin = 0;
@@ -908,6 +909,14 @@ namespace HLU.UI.ViewModel
             get { return _refillIncidTable; }
             set { _refillIncidTable = true; }
     }
+
+        //---------------------------------------------------------------------
+        // FIX: 063 Apply user's option database connection timeout.
+        internal int DBConnectionTimeout
+        {
+            get { return _dbConnectionTimeout; }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -2205,10 +2214,15 @@ namespace HLU.UI.ViewModel
             // re-set static variables (IncidPageSize might be dangerous to change on the fly)
             if (saveSettings)
             {
+                //---------------------------------------------------------------------
+                // FIX: 063 Apply user's option database connection timeout.
+                _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
+                //---------------------------------------------------------------------
                 _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
                 _historyColumns = InitializeHistoryColumns(_historyColumns);
                 VagueDate.Delimiter = Settings.Default.VagueDateDelimiter;
                 VagueDate.SeasonNames = Settings.Default.SeasonNames.Cast<string>().ToArray();
+
 
                 OnPropertyChanged("ShowNVCCodesText");
             }

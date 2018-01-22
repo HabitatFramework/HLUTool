@@ -1,7 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
-// Copyright © 2014-15 Sussex Biodiversity Record Centre
+// Copyright © 2014-15, 2018 Sussex Biodiversity Record Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -127,6 +127,11 @@ namespace HLU.GISApplication.MapInfo
 
         private Regex _whereNullRegex = new Regex(@"\s+((?<isnot>IS\s+NOT)|(?<is>IS))\s+(?<null>NULL)",
             RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary>
+        /// The path and name of the export file.
+        /// </summary>
+        private string _outTabPath;
 
         #endregion
 
@@ -1211,14 +1216,22 @@ namespace HLU.GISApplication.MapInfo
             finally { if (indexColumns != null) CreateIndexes(_hluLayer, indexColumns); }
         }
 
-        public override bool Export(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
+        //---------------------------------------------------------------------
+        // FIX: 065 Prompt for the GIS layer name before starting export.
+        //
+        /// <summary>
+        /// Prompts the user for the export layer name.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path to save the
+        /// temporary attribute data to.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
+        /// <param name="attributesLength">Length of the attribute data row.</param>
+        /// <param name="selectedOnly">If set to <c>true</c> only selected features
+        /// will be exported.</param>
+        /// <returns></returns>
+        public override bool ExportPrompt(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
             long outFeatureCount = 0;
-            string attributeTable = String.Empty;
-            string outTable = String.Empty;
-            string selTable = String.Empty;
-            string joinLayer = String.Empty;
-            string[] indexColumns = null;
 
             try
             {
@@ -1293,6 +1306,49 @@ namespace HLU.GISApplication.MapInfo
                     return false;
                 }
 
+                // Save the export file path and name
+                _outTabPath = saveFileFlg.FileName;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Export failed. The error message returned was:\n\n" + ex.Message,
+                    "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            finally { }
+
+        }
+        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Exports the HLU features and attribute data to a new GIS layer file.
+        /// </summary>
+        /// <param name="tempMdbPathName">Name of the temporary MDB path containing the
+        /// attribute data.</param>
+        /// <param name="attributeDatasetName">Name of the attribute dataset.</param>
+        /// <param name="selectedOnly">If set to <c>true</c> only selected features
+        /// will be exported.</param>
+        /// <returns></returns>
+        public override bool Export(string tempMdbPathName, string attributeDatasetName, bool selectedOnly)
+        {
+            string attributeTable = String.Empty;
+            string outTable = String.Empty;
+            string selTable = String.Empty;
+            string joinLayer = String.Empty;
+            string[] indexColumns = null;
+
+            try
+            {
+                // Double-check an export dataset name was chosen by the user.
+                if (_outTabPath == null)
+                {
+                    MessageBox.Show("Export cancelled. No output table selected.",
+                        "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
                 //---------------------------------------------------------------------
                 // FIX: 035 Only export selected features, not all features for
                 // selected incids.
@@ -1301,7 +1357,7 @@ namespace HLU.GISApplication.MapInfo
                 if (selectedOnly)
                 {
                     // Set the path and name of the temporary table.
-                    string tempTabPath = Regex.Replace(saveFileFlg.FileName, ".tab", "_tmp.tab", RegexOptions.IgnoreCase);
+                    string tempTabPath = Regex.Replace(_outTabPath, ".tab", "_tmp.tab", RegexOptions.IgnoreCase);
 
                     // Set the name of the temporary table (without the path or extension).
                     string tempTabName = Path.GetFileNameWithoutExtension(tempTabPath);
@@ -1339,9 +1395,6 @@ namespace HLU.GISApplication.MapInfo
                     joinLayer = _hluLayer;
                 }
                 //---------------------------------------------------------------------
-
-                // Set the name of the export file.
-                string outTabPath = saveFileFlg.FileName;
 
                 //Register (build) a MapInfo table from the Access attribute table
                 _mapInfoApp.Do(String.Format("Register Table {0} Type {1} Table {2}",
@@ -1403,7 +1456,7 @@ namespace HLU.GISApplication.MapInfo
                 // FIX: 026 Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Commit Table {0} As {1}",
-                    QuoteIdentifier(selTable), QuoteValue(outTabPath)));
+                    QuoteIdentifier(selTable), QuoteValue(_outTabPath)));
                 _mapInfoApp.Do("Set ProgressBars On");
                 //---------------------------------------------------------------------
 
@@ -1411,7 +1464,7 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(selTable)));
 
                 // Re-open the exported table (so that it can be updated)
-                _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(outTabPath)));
+                _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(_outTabPath)));
 
                 // Get the name of the exported table
                 outTable = _mapInfoApp.Eval(String.Format("TableInfo(0, {0})",

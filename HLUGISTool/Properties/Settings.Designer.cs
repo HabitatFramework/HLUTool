@@ -51,7 +51,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public int DbConnectionTimeout {
             get {
@@ -220,8 +220,8 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Documents and Settings\\hartmutt\\My Documents\\Visual Studio 2008\\Projects\\HBICG" +
-            "ISTool\\HBICGISTool\\Logo.png")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Documents and Settings\\hartmutt\\My Documents\\Visual Studio 2008\\Projects\\HLUGI" +
+            "STool\\HLUGISTool\\Logo.png")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public string LogoPath {
             get {
