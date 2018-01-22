@@ -272,7 +272,12 @@ namespace HLU.UI.ViewModel
 
                 // Call the GIS application export prompt method to prompt
                 // the user for the name and location of the new GIS layer.
-                _viewModelMain.GISApplication.ExportPrompt(tempPath, exportTable.TableName, _attributesLength, selectedOnly);
+                bool exportReady = false;
+                exportReady = _viewModelMain.GISApplication.ExportPrompt(tempPath, exportTable.TableName, _attributesLength, selectedOnly);
+
+                // Exit if no export file was selected or the export exceeds the max size.
+                if (!exportReady)
+                    return;
 
                 _viewModelMain.ChangeCursor(Cursors.Wait, "Exporting to temporary table ...");
 
@@ -1803,6 +1808,10 @@ namespace HLU.UI.ViewModel
                         _viewModelMain.DBConnectionTimeout, CommandType.Text))
                     //---------------------------------------------------------------------
                     {
+                        // Exit if no records were exported.
+                        if ((reader == null))
+                            throw new Exception("Export query failed or timed out");
+
                         string currIncid = String.Empty;
                         string prevIncid = String.Empty;
                         int currMatrixId = -1;

@@ -1232,6 +1232,7 @@ namespace HLU.GISApplication.MapInfo
         public override bool ExportPrompt(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly)
         {
             long outFeatureCount = 0;
+            _outTabPath = null;
 
             try
             {
