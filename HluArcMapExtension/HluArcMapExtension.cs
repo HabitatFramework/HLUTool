@@ -2592,40 +2592,6 @@ namespace HLU
                 // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
 
-                //---------------------------------------------------------------------
-                // FIX: 050 Warn ArcGIS users if field names may be truncated or
-                // renamed exporting to shapefiles.
-                //
-                // If the export layer is a shapefile check if any of
-                // the attribute field names will be truncated.
-                if (isShp)
-                {
-                    bool fieldNamesTruncated = false;
-                    for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
-                    {
-                        IField attributeField = exportAttributes.Fields.get_Field(i);
-                        if (attributeField.Name.Length > 10)
-                        {
-                            fieldNamesTruncated = true;
-                            break;
-                        }
-                    }
-
-                    // Warn the user that some field names may get truncated.
-                    if (fieldNamesTruncated)
-                    {
-                        MessageBoxResult userResponse = MessageBoxResult.No;
-                        userResponse = MessageBox.Show("Some field names may get truncated or renamed exporting to a shapefile.\n\nDo you wish to proceed?", "HLU: Export",
-                            MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (userResponse != MessageBoxResult.Yes)
-                        {
-                            _pipeData.Add("cancelled");
-                            return;
-                        }
-                    }
-                }
-                //---------------------------------------------------------------------
-
                 // Get the geometry definition for the feature layer.
                 IGeometryDef geomDef = _hluFeatureClass.Fields.get_Field(_hluFeatureClass.FindField(
                     _hluFeatureClass.ShapeFieldName)).GeometryDef;
