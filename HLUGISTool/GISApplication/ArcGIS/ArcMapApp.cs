@@ -931,9 +931,9 @@ namespace HLU.GISApplication.ArcGIS
             if ((returnList.Count > 0) && (returnList[0] == "cancelled"))
             {
                 // Display message if no output layer is entered by the user.
-                MessageBox.Show("Export cancelled.", "HLU: Export",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return true;
+                MessageBox.Show("Export cancelled. No output table selected.",
+                    "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
             else if (returnList.Count > 0)
             {
