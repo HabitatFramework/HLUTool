@@ -369,7 +369,7 @@ namespace HLU
             {
                 return String.Format("HLU ArcMap Extension {0}\r\n{1}\r\n\r\nProvides an interface to the HLU GIS Tool.",
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014 SxBRC.");
+                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014,2018 SxBRC.");
             }
         }
 
