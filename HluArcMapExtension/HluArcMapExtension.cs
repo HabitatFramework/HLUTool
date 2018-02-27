@@ -1072,12 +1072,19 @@ namespace HLU
                     // invalidate only the selection cache. Flag the original selection
                     _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
 
+                    //---------------------------------------------------------------------
+                    // FIX: 067 Select features directly rather than via selection set.
+                    //
                     // perform selection
-                    ISelectionSet selSet = hluDisplayTable.SelectDisplayTable(queryFilter,
-                        esriSelectionType.esriSelectionTypeHybrid, esriSelectionOption.esriSelectionOptionNormal, null);
+                    //ISelectionSet selSet = hluDisplayTable.SelectDisplayTable(queryFilter,
+                    //    esriSelectionType.esriSelectionTypeHybrid, esriSelectionOption.esriSelectionOptionNormal, null);
+
+                    //_hluFeatureSelection = (IFeatureSelection)_hluLayer;
+                    //_hluFeatureSelection.SelectionSet = selSet;
 
                     _hluFeatureSelection = (IFeatureSelection)_hluLayer;
-                    _hluFeatureSelection.SelectionSet = selSet;
+                    _hluFeatureSelection.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultNew, false);
+                    //---------------------------------------------------------------------
                 }
                 else // multi-column join: use cumulative selection sets
                 {

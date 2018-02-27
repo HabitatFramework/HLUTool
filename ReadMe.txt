@@ -1,4 +1,4 @@
-HLU GIS Tool 2.4.2
+HLU GIS Tool 2.4.3
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
