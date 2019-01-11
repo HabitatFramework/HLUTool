@@ -243,5 +243,17 @@
     <Setting Name="ShowNVCCodes" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="AutoZoomSelection" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoSelectOnGis" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MinimumAutoZoom" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="MapDistanceUnits" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">m</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

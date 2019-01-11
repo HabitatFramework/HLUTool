@@ -887,7 +887,96 @@ namespace HLU.GISApplication.MapInfo
 
         public override void ZoomSelected()
         {
-            _mapInfoApp.RunMenuCommand((int)MapInfoConstants.MenuDef95Query.M_QUERY_FIND_SELECTION);
+            //---------------------------------------------------------------------
+            // FIX: 070 Improve zoom to selected features scaling.
+            //
+            //_mapInfoApp.RunMenuCommand((int)MapInfoConstants.MenuDef95Query.M_QUERY_FIND_SELECTION);
+
+            // Get the name of the table that the current selection is based on.
+            string tableName = _mapInfoApp.Eval(String.Format(
+                "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
+            if (!TableExists(tableName)) return;
+
+            // Check that the table is the same as the expected table.
+            if (tableName != _hluLayer)
+            {
+                //---------------------------------------------------------------------
+                // FIX: 052 Ensure get map selection works when selection is based
+                // on joining two or more tables in MapInfo.
+                //
+                // Get the name of the temporary table that the current selection
+                // is based on (in case the selection was done by joining two or
+                // more tables).
+                string mapName = _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", tableName,
+                (int)MapInfoConstants.TableInfo.TAB_INFO_MAPPABLE_TABLE));
+                if (!TableExists(mapName)) return;
+
+                // Check that the mappable table is the same as the expected table
+                // and if not return.
+                if (mapName != _hluLayer)
+                    return;
+                //---------------------------------------------------------------------
+            }
+
+            // Get the name of the query that contains the current selection.
+            string selName = _mapInfoApp.Eval(String.Format(
+                "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
+            if (string.IsNullOrEmpty(selName)) return;
+
+            // Get the extents of the current selection.
+            float selMinX = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MINX)));
+            float selMaxX = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MAXX)));
+            float selMinY = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MINY)));
+            float selMaxY = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MAXY)));
+
+            // Get the current map window id.
+            int mapWindowID = _hluMapWindowID;
+
+            // Check that the current map window id is set.
+            if (mapWindowID == -1)
+            {
+                Int32.Parse(_mapInfoApp.Eval("FrontWindow()"));
+
+                // Check that a map window has been found and if not return.
+                if ((mapWindowID <= 0) || Int32.Parse(_mapInfoApp.Eval(String.Format(
+                    "WindowInfo({0}, {1})", _hluMapWindowID, (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) !=
+                    (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER) return;
+            }
+
+            // Get the extents of the current map window.
+            float winMinX = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MINX)));
+            float winMaxX = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MAXX)));
+            float winMinY = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MINY)));
+            float winMaxY = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MAXY)));
+
+            // Check if the current selection fits in the map window and if
+            // not zoom to the extent of the whole selection.
+            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
+            {
+                _mapInfoApp.RunCommand(String.Format("select * from {0} into ZoomSelection NoSelect", selName));
+
+                _mapInfoApp.Do("Set Map Redraw Off");
+                _mapInfoApp.Do("Add Map Layer ZoomSelection");
+                _mapInfoApp.Do("Set Map Zoom Entire Layer ZoomSelection");
+                _mapInfoApp.Do("Remove Map Layer ZoomSelection");
+                _mapInfoApp.Do("Close Table ZoomSelection");
+
+                // Get the zoom value of the new map window position.
+                float winZoom = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_ZOOM)));
+
+                // Get the minimum auto zoom value and map distance units.
+                float minZoom = Settings.Default.MinimumAutoZoom;
+                string distUnits = Settings.Default.MapDistanceUnits;
+
+                // Check if the map window has zoomed in beyond the minimum
+                // auto zoom size.
+                if (winZoom < minZoom)
+                    _mapInfoApp.Do(String.Format("Set Map Zoom {0} Units \"{1}\"", minZoom, distUnits));
+                
+                _mapInfoApp.Do("Set Map Redraw On");
+            }
+            //---------------------------------------------------------------------
+
         }
 
         private void CreateIndexes(string layerName, string[] columnNames)

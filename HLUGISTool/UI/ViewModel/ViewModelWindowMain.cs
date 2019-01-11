@@ -113,8 +113,9 @@ namespace HLU.UI.ViewModel
         private ICommand _closeCommand;
         private ICommand _copyCommand;
         private ICommand _pasteCommand;
+        private ICommand _autoZoomSelectedCommand;
+        private ICommand _autoSelectOnGisCommand;
         private ICommand _zoomSelectionCommand;
-        private ICommand _gisWinMaximiseCommand;
         private ICommand _gisWinSideBySideCommand;
         private ICommand _gisWinSwitchToCommand;
         private ICommand _optionsCommand;
@@ -204,6 +205,7 @@ namespace HLU.UI.ViewModel
         private bool _saving = false;
         private bool _autoSplit = true;
         private bool _splitting = false;
+        private bool _filterByMap = false;
         private bool _comingFromIncidIhsMatrix2 = false;
         private bool _comingFromIncidIhsMatrix3 = false;
         private bool _comingFromIncidIhsFormation2 = false;
@@ -263,6 +265,8 @@ namespace HLU.UI.ViewModel
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
+        private bool _autoZoomSelection = Settings.Default.AutoZoomSelection;
+        private bool _autoSelectOnGis = Settings.Default.AutoSelectOnGis;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -1218,8 +1222,8 @@ namespace HLU.UI.ViewModel
             {
                 if (_navigateFirstCommand == null)
                 {
-                    Action<object> nagigateFirstAction = new Action<object>(this.NavigateFirstClicked);
-                    _navigateFirstCommand = new RelayCommand(nagigateFirstAction, param => this.CanNavigateBackward);
+                    Action<object> navigateFirstAction = new Action<object>(this.NavigateFirstClicked);
+                    _navigateFirstCommand = new RelayCommand(navigateFirstAction, param => this.CanNavigateBackward);
                 }
                 return _navigateFirstCommand;
             }
@@ -1251,8 +1255,8 @@ namespace HLU.UI.ViewModel
             {
                 if (_navigatePreviousCommand == null)
                 {
-                    Action<object> nagigatePreviousAction = new Action<object>(this.NavigatePreviousClicked);
-                    _navigatePreviousCommand = new RelayCommand(nagigatePreviousAction, param => this.CanNavigateBackward);
+                    Action<object> navigatePreviousAction = new Action<object>(this.NavigatePreviousClicked);
+                    _navigatePreviousCommand = new RelayCommand(navigatePreviousAction, param => this.CanNavigateBackward);
                 }
                 return _navigatePreviousCommand;
             }
@@ -1286,8 +1290,8 @@ namespace HLU.UI.ViewModel
             {
                 if (_navigateNextCommand == null)
                 {
-                    Action<object> nagigateNextAction = new Action<object>(this.NavigateNextClicked);
-                    _navigateNextCommand = new RelayCommand(nagigateNextAction, param => this.CanNavigateForward);
+                    Action<object> navigateNextAction = new Action<object>(this.NavigateNextClicked);
+                    _navigateNextCommand = new RelayCommand(navigateNextAction, param => this.CanNavigateForward);
                 }
                 return _navigateNextCommand;
             }
@@ -1325,8 +1329,8 @@ namespace HLU.UI.ViewModel
             {
                 if (_navigateLastCommand == null)
                 {
-                    Action<object> nagigateLastAction = new Action<object>(this.NavigateLastClicked);
-                    _navigateLastCommand = new RelayCommand(nagigateLastAction, param => this.CanNavigateForward);
+                    Action<object> navigateLastAction = new Action<object>(this.NavigateLastClicked);
+                    _navigateLastCommand = new RelayCommand(navigateLastAction, param => this.CanNavigateForward);
                 }
                 return _navigateLastCommand;
             }
@@ -1674,20 +1678,41 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void UpdateClicked(object param)
         {
-            // If there are no features selected in the GIS (because there is no
-            // active filter) then re-select the current incid features in GIS.
             _saving = true;
             _savingAttempted = false;
+
+            //---------------------------------------------------------------------
+            // FIX: 069 Enable auto select of features on change of incid.
+            //
+            // If there are no features selected in the GIS (because there is no
+            // active filter).
             if (_incidsSelectedMapCount <= 0)
             {
-                SelectOnMap(true);
-            }
+                // Ask the user before re-selecting the current incid features in GIS.
+                if (MessageBox.Show("There are no features selected in the GIS.\n" +
+                            "Would you like to apply the changes to all features for this incid?", "HLU: Save Changes",
+                            MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    SelectOnMap(false);
 
-            // If there are still no features selected in the GIS this suggests
-            // that the feature layer contains only a subset of the database
-            // features so this incid cannot be updated.
-            if (_incidsSelectedMapCount <= 0)
-                return;
+                    // If there are still no features selected in the GIS this suggests
+                    // that the feature layer contains only a subset of the database
+                    // features so this incid cannot be updated.
+                    if (_incidsSelectedMapCount <= 0)
+                        return;
+
+                    // Count the number of toids and fragments for the current incid
+                    // selected in the GIS and in the database.
+                    CountToidFrags();
+
+                    // Refresh all the status type fields.
+                    RefreshStatus();
+
+                }
+                else
+                    return;
+            }
+            //---------------------------------------------------------------------
 
             // If in bulk update mode then perform the bulk update and exit.
             if (_bulkUpdateMode == true)
@@ -2093,6 +2118,66 @@ namespace HLU.UI.ViewModel
 
         #region View
 
+        //---------------------------------------------------------------------
+        // FIX: 068 Enable auto zoom when selecting features on map.
+        //
+        public ICommand AutoZoomSelectedCommand
+        {
+            get
+            {
+                if (_autoZoomSelectedCommand == null)
+                {
+                    Action<object> autoZoomSelectionAction = new Action<object>(this.AutoZoomSelectedClicked);
+                    _autoZoomSelectedCommand = new RelayCommand(autoZoomSelectionAction, param => this.CanAutoZoomSelected);
+                }
+                return _autoZoomSelectedCommand;
+            }
+        }
+
+        private void AutoZoomSelectedClicked(object param)
+        {
+            // Update the auto zoom on selected option.
+            _autoZoomSelection = !_autoZoomSelection;
+                
+            // Save the new auto zoom option in the user settings.
+            Settings.Default.AutoZoomSelection = _autoZoomSelection;
+            Settings.Default.Save();
+
+        }
+
+        public bool CanAutoZoomSelected { get { return HaveGisApp; } }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 069 Enable auto select of features on change of incid.
+        //
+        public ICommand AutoSelectOnGisCommand
+        {
+            get
+            {
+                if (_autoSelectOnGisCommand == null)
+                {
+                    Action<object> autoSelectiOnGisAction = new Action<object>(this.AutoSelectOnGisClicked);
+                    _autoSelectOnGisCommand = new RelayCommand(autoSelectiOnGisAction, param => this.CanAutoSelectOnGis);
+                }
+                return _autoSelectOnGisCommand;
+            }
+        }
+
+        private void AutoSelectOnGisClicked(object param)
+        {
+            // Update the auto select on GIS option.
+            _autoSelectOnGis = !_autoSelectOnGis;
+
+            // Save the new auto select on GIS option in the user settings.
+            Settings.Default.AutoSelectOnGis = _autoSelectOnGis;
+            Settings.Default.Save();
+
+        }
+
+        public bool CanAutoSelectOnGis { get { return HaveGisApp; } }
+        //---------------------------------------------------------------------
+
         public ICommand ZoomSelectionCommand
         {
             get
@@ -2113,26 +2198,6 @@ namespace HLU.UI.ViewModel
 
         public bool CanZoomSelection { get { return HaveGisApp && _gisSelection != null; } }
 
-        public ICommand GisWinMaximiseCommand
-        {
-            get
-            {
-                if (_gisWinMaximiseCommand == null)
-                {
-                    Action<object> gisWinMaximiseAction = new Action<object>(this.GisWinMaximiseClicked);
-                    _gisWinMaximiseCommand = new RelayCommand(gisWinMaximiseAction, param => this.CanGisWinMaximise);
-                }
-                return _gisWinMaximiseCommand;
-            }
-        }
-
-        private void GisWinMaximiseClicked(object param)
-        {
-            _gisApp.Window(ProcessWindowStyle.Maximized, IntPtr.Zero);
-        }
-
-        public bool CanGisWinMaximise { get { return HaveGisApp; } }
-        
         public ICommand GisWinSideBySideCommand
         {
             get
@@ -2503,6 +2568,9 @@ namespace HLU.UI.ViewModel
                             // incids, toids and fragments selected.
                             AnalyzeGisSelectionSet(true);
 
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
                             // Set the filter back to the first incid.
                             SetFilter();
 
@@ -2687,6 +2755,9 @@ namespace HLU.UI.ViewModel
                             // incids, toids and fragments selected.
                             AnalyzeGisSelectionSet(true);
 
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
                             // Set the filter back to the first incid.
                             SetFilter();
 
@@ -2808,7 +2879,20 @@ namespace HLU.UI.ViewModel
 
         private void SelectOnMapClicked(object param)
         {
-            SelectOnMap(true);
+            SelectOnMap(false);
+
+            //---------------------------------------------------------------------
+            // FIX: 068 Enable auto zoom when selecting features on map.
+            // Count the number of toids/fragments and refresh the status fields
+            // outside of the map selection method.
+            //
+            // Count the number of toids and fragments for the current incid
+            // selected in the GIS and in the database.
+            CountToidFrags();
+
+            // Refresh all the status type fields.
+            RefreshStatus();
+            //---------------------------------------------------------------------
         }
 
         private bool CanSelectOnMap
@@ -2841,15 +2925,16 @@ namespace HLU.UI.ViewModel
                 // Determine if a filter with more than one incid is currently active.
                 bool multiIncidFilter = (IsFiltered && _incidSelection.Rows.Count > 1);
 
-                // If a multi-incid filter is active then save the details.
-                if (multiIncidFilter)
-                {
-                    // Save the current table of selected incids.
-                    prevIncidSelection = _incidSelection;
+                //---------------------------------------------------------------------
+                // FIX: 069 Enable auto select of features on change of incid.
+                // Always save the current tables to for restoring later.
+                //
+                // Save the current table of selected incids.
+                prevIncidSelection = _incidSelection;
 
-                    // Save the current table of selected GIS features.
-                    prevGISSelection = _gisSelection;
-                }
+                // Save the current table of selected GIS features.
+                prevGISSelection = _gisSelection;
+                //---------------------------------------------------------------------
 
                 // Reset the table of selected incids.
                 _incidSelection = NewIncidSelectionTable();
@@ -2918,22 +3003,41 @@ namespace HLU.UI.ViewModel
                     // the number of incids, toids and fragments selected.
                     AnalyzeGisSelectionSet(updateIncidSelection);
 
-                    // Count the number of toids and fragments for the current incid
-                    // selected in the GIS and in the database.
-                    CountToidFrags();
-
-                    // Refresh all the status type fields.
-                    RefreshStatus();
                 }
                 else
                 {
+                    //---------------------------------------------------------------------
+                    // FIX: 069 Enable auto select of features on change of incid.
+                    // Restore the previous tables and don't reset the filter
+                    // after selecting features on the map.
+                    //
+                    // Restore the previous table of selected incids.
+                    _incidSelection = prevIncidSelection;
+
+                    // Restore the previous table of selected GIS features.
+                    //_gisSelection = prevGISSelection;
+
                     // Analyse the results of the GIS selection by counting
                     // the number of incids, toids and fragments selected.
-                    AnalyzeGisSelectionSet(updateIncidSelection);
+                    AnalyzeGisSelectionSet(false);
 
                     // Set the filter back to the first incid.
-                    SetFilter();
+                    //SetFilter();
+                    //---------------------------------------------------------------------
                 }
+
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+
+                //---------------------------------------------------------------------
+                // FIX: 068 Enable auto zoom when selecting features on map.
+                //
+                // Zoom to the GIS selection if auto zoom is on.
+                if (_gisSelection != null && _autoZoomSelection)
+                {
+                    _gisApp.ZoomSelected();
+                }
+                //---------------------------------------------------------------------
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
@@ -2997,6 +3101,10 @@ namespace HLU.UI.ViewModel
 
                 _incidSelectionWhereClause = null;
                 AnalyzeGisSelectionSet(true);
+
+                // Indicate the selection came from the map.
+                _filterByMap = true;
+
                 if (_gisSelection.Rows.Count > 0)
                 {
                     SetFilter();
@@ -3137,6 +3245,9 @@ namespace HLU.UI.ViewModel
                 // incids, toids and fragments selected.
                 AnalyzeGisSelectionSet(true);
 
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+
                 // Set the filter back to the first incid.
                 SetFilter();
 
@@ -3208,6 +3319,7 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
+                    // Set the status to processing and the cursor to wait.
                     ChangeCursor(Cursors.Wait, "Processing ...");
 
                     // Backup the current selection (filter).
@@ -3228,38 +3340,50 @@ namespace HLU.UI.ViewModel
                     {
                         // Analyse the results of the GIS selection by counting the number of
                         // incids, toids and fragments selected.
-                        AnalyzeGisSelectionSet(true);
+                        AnalyzeGisSelectionSet(false);
+
+                        // Indicate the selection came from the map.
+                        _filterByMap = true;
 
                         // Set the filter back to the first incid.
                         SetFilter();
 
-                        // Reset the cursor back to normal.
-                        ChangeCursor(Cursors.Arrow, null);
+                        //---------------------------------------------------------------------
+                        // FIX: 068 Enable auto zoom when selecting features on map.
+                        //
+                        // Zoom to the GIS selection if auto zoom is on.
+                        if (_gisSelection != null && _autoZoomSelection)
+                        {
+                            _gisApp.ZoomSelected();
+                        }
+                        //---------------------------------------------------------------------
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
                         // Restore the previous selection (filter).
                         _incidSelection = incidSelectionBackup;
-
-                        // Reset the cursor back to normal.
-                        ChangeCursor(Cursors.Arrow, null);
                     }
                 }
                 catch (Exception ex)
                 {
                     _incidSelection = null;
-                    ChangeCursor(Cursors.Arrow, null);
-                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Message, "HLU", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                finally { RefreshStatus(); }
+                // Make sure the cursor is always reset.
+                finally
+                {
+                    // Reset the cursor back to normal
+                    ChangeCursor(Cursors.Arrow, null);
+                }
+                //RefreshStatus();
             }
         }
+
         //---------------------------------------------------------------------
 
         #endregion
@@ -3879,22 +4003,34 @@ namespace HLU.UI.ViewModel
                     //
                     //return String.Format("of {0} (filtered){1}{2}", _incidSelection.Rows.Count,
                     //    String.Format(" [T:{0}]", numToids.ToString()), String.Format(" [F:{0}]", numFrags.ToString()));
-                    return String.Format("of {0} (filtered) {1}{2} of {3}{4}", _incidSelection.Rows.Count,
-                        String.Format("[{0}:", _toidsIncidGisCount.ToString()),
-                        String.Format("{0}", _fragsIncidGisCount.ToString()),
-                        String.Format("{0}:", _toidsIncidDbCount.ToString()),
-                        String.Format("{0}]", _fragsIncidDbCount.ToString()));
+                    return String.Format("of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
+                        _toidsIncidGisCount.ToString(),
+                        _fragsIncidGisCount.ToString(),
+                        _toidsIncidDbCount.ToString(),
+                        _fragsIncidDbCount.ToString());
                     //---------------------------------------------------------------------
                 }
                 else if ((_bulkUpdateMode == true) && (_incidSelection != null) && (_incidSelection.Rows.Count > 0))
                 {
-                    return String.Format("[I:{0}]{1}{2}", _incidsSelectedMapCount,
-                        String.Format(" [T:{0}]", _toidsSelectedMapCount.ToString()),
-                        String.Format(" [F:{0}]", _fragsSelectedMapCount.ToString()));
+                    return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
+                        _toidsSelectedMapCount.ToString(),
+                        _fragsSelectedMapCount.ToString());
                 }
                 else
                 {
-                    return String.Format("of {0}", _incidRowCount);
+                    //---------------------------------------------------------------------
+                    // FIX: 069 Enable auto select of features on change of incid.
+                    //
+                    // Include the total toid and fragment counts for the current Incid
+                    // in the status area, and the currently select toid and fragment
+                    // counts, when auto selecting features on change of incid.
+                    //
+                    return String.Format("of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
+                        _toidsIncidGisCount.ToString(),
+                        _fragsIncidGisCount.ToString(),
+                        _toidsIncidDbCount.ToString(),
+                        _fragsIncidDbCount.ToString());
+                    //---------------------------------------------------------------------
                 }
             }
         }
@@ -4056,6 +4192,15 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void NewIncidCurrentRow()
         {
+            // Re-check GIS selection in case it has changed.
+            if (_gisApp != null)
+            {
+                _gisSelection = NewGisSelectionTable();
+                _gisApp.ReadMapSelection(ref _gisSelection);
+                _incidSelectionWhereClause = null;
+                AnalyzeGisSelectionSet(false);
+            }
+
             bool canMove = false;
             if (!IsFiltered)
             {
@@ -4112,6 +4257,14 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // FIX: 069 Enable auto select of features on change of incid.
+                //
+                // Select the current DB record on the Map.
+                if (_gisApp != null && _autoSelectOnGis && !_filterByMap)
+                    SelectOnMap(false);
+                //---------------------------------------------------------------------
+
                 // Count the number of toids and fragments for the current incid
                 // selected in the GIS and in the database.
                 CountToidFrags();
@@ -4127,6 +4280,7 @@ namespace HLU.UI.ViewModel
                 RefreshSource2();
                 RefreshSource3();
                 RefreshHistory();
+
             }
             CheckEditingControlState();
         }
@@ -4142,8 +4296,8 @@ namespace HLU.UI.ViewModel
             // Count the number of toids and fragments for this incid selected
             // in the GIS. They are counted here, once when the incid changes,
             // instead of in StatusIncid() which is constantly being called.
-            _toidsIncidGisCount = -1;
-            _fragsIncidGisCount = -1;
+            _toidsIncidGisCount = 0;
+            _fragsIncidGisCount = 0;
             if (_gisSelection != null)
             {
                 DataRow[] gisRows = _gisSelection.AsEnumerable()
@@ -4159,27 +4313,34 @@ namespace HLU.UI.ViewModel
             // for this incid so that they can be included in the status area.
             _fragsIncidDbCount = -1;
             _toidsIncidDbCount = -1;
-            if (IsFiltered)
-            {
-                // Count the total number of fragments in the database for
-                // this incid.
-                _fragsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
-                    "SELECT COUNT(*) FROM {0} WHERE {1} = {2}",
-                    _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
-                    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
-                    _db.QuoteValue(_incidCurrentRow.incid)),
-                    _db.Connection.ConnectionTimeout, CommandType.Text);
 
-                // Count the total number of toids in the database for
-                // this incid.
-                _toidsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
-                    "SELECT COUNT(*) FROM (SELECT DISTINCT {0} FROM {1} WHERE {2} = {3}) AS T",
-                    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
-                    _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
-                    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
-                    _db.QuoteValue(_incidCurrentRow.incid)),
-                    _db.Connection.ConnectionTimeout, CommandType.Text);
-            }
+            //---------------------------------------------------------------------
+            // FIX: 069 Enable auto select of features on change of incid.
+            // Count the number of toids and fragments in the database
+            // regardless of whether a filter is currently applied.
+            //
+            // Count the total number of fragments in the database for
+            // this incid.
+            //if (IsFiltered)
+            //{
+            _fragsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM {0} WHERE {1} = {2}",
+                _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
+                _db.QuoteValue(_incidCurrentRow.incid)),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+
+            // Count the total number of toids in the database for
+            // this incid.
+            _toidsIncidDbCount = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM (SELECT DISTINCT {0} FROM {1} WHERE {2} = {3}) AS T",
+                _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
+                _db.QualifyTableName(_hluDS.incid_mm_polygons.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
+                _db.QuoteValue(_incidCurrentRow.incid)),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+            //---------------------------------------------------------------------
+            //}
             //---------------------------------------------------------------------
 
         }
