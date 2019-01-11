@@ -853,5 +853,50 @@ namespace HLU.Properties {
                 this["ShowNVCCodes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoZoomSelection {
+            get {
+                return ((bool)(this["AutoZoomSelection"]));
+            }
+            set {
+                this["AutoZoomSelection"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoSelectOnGis {
+            get {
+                return ((bool)(this["AutoSelectOnGis"]));
+            }
+            set {
+                this["AutoSelectOnGis"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int MinimumAutoZoom {
+            get {
+                return ((int)(this["MinimumAutoZoom"]));
+            }
+            set {
+                this["MinimumAutoZoom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("m")]
+        public string MapDistanceUnits {
+            get {
+                return ((string)(this["MapDistanceUnits"]));
+            }
+        }
     }
 }

@@ -24,6 +24,7 @@
                 <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/>
                 <!--  <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />  -->
             </ResourceDictionary.MergedDictionaries>
@@ -62,10 +63,6 @@
                           IsEnabled="{Binding CanBulkUpdate}" />
             </MenuItem>
             <MenuItem Header="_View">
-                <MenuItem x:Name="MenuItemGisMaximise"
-                          Command="{Binding GisWinMaximiseCommand}"
-                          Header="_Maximise GIS Window"
-                          IsEnabled="{Binding CanGisWinMaximise}" />
                 <MenuItem x:Name="MenuItemGisSideBySide"
                           Command="{Binding GisWinSideBySideCommand}"
                           Header="Windows _Side By Side"
@@ -73,16 +70,15 @@
                 <MenuItem x:Name="MenuItemAppKeepOnTop"
                           Header="_Keep Tool Window on Top"
                           IsCheckable="True" />
-
-
                 <MenuItem x:Name="MenuItemGisSwitchTo"
                           Command="{Binding GisWinSwitchToCommand}"
                           Header="S_witch To GIS Window"
                           IsEnabled="{Binding CanGisWinSwitchTo}" />
-                <MenuItem x:Name="MenuItemZoomSelected"
-                          Command="{Binding ZoomSelectionCommand}"
-                          Header="_Zoom To Selection"
-                          IsEnabled="{Binding CanZoomSelection}" />
+                <Separator />
+                <MenuItem x:Name="MenuItemAutoZoomSelected"
+                          Command="{Binding AutoZoomSelectedCommand}"
+                          Header="Auto _Zoom To Selection"
+                          IsCheckable="True" />
             </MenuItem>
             <MenuItem Header="_Select">
                 <MenuItem x:Name="MenuItemFilterByAttributes"
@@ -105,6 +101,11 @@
                           Command="{Binding ReadMapSelectionCommand}"
                           Header="Get _Map Selection"
                           IsEnabled="{Binding CanReadMapSelection}" />
+                <Separator />
+                <MenuItem x:Name="MenuItemAutoSelectOnGis"
+                          Command="{Binding AutoSelectOnGisCommand}"
+                          Header="_Auto Select INCID on GIS"
+                          IsCheckable="True" />
                 <!--
                     <MenuItem x:Name="MenuItemSelectByIncid"
                     Command="{Binding SelectByIncidCommand}"
@@ -220,17 +221,6 @@
             <ToolBar x:Name="ToolBarView"
                      Band="1"
                      BandIndex="2">
-                <!--
-                    <Button Name="ButtonGisMaximise"
-                    Command="{Binding Path=GisWinMaximiseCommand}"
-                    IsEnabled="{Binding Path=CanGisWinMaximise}"
-                    ToolTip="Maximise GIS Window"
-                    ToolTipService.ShowOnDisabled="True">
-                    <Image Width="16"
-                    Height="16"
-                    Source="..\..\Icons\GisWinMaximise.png" />
-                    </Button>
-                -->
                 <Button Name="ButtonGisSideBySide"
                         Command="{Binding Path=GisWinSideBySideCommand}"
                         IsEnabled="{Binding Path=CanGisWinSideBySide}"

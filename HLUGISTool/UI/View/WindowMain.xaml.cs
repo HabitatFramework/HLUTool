@@ -38,7 +38,9 @@ namespace HLU
     {
         private ComboBox[] _comboBoxes;
         private MenuItem[] _menuItems;
-        public string lastStyle = null;
+        public string _lastStyle = null;
+        public bool _autoZoom = false;
+        public bool _autoSelect = false;
 
         public WindowMain()
         {
@@ -56,11 +58,32 @@ namespace HLU
             // Create an array of all the menu items in the window.
             _menuItems = FindControls.FindLogicalChildren<MenuItem>(this.MenuBar).ToArray();
 
-            // Set the last style to be the default style (already loaded).
-            lastStyle = Settings.Default.InterfaceStyle;
+            // Get the last style to be the default style (already loaded).
+            _lastStyle = Settings.Default.InterfaceStyle;
 
             // Check the menu item for the default style.
-            CheckMenuItem(lastStyle, true);
+            CheckMenuItem(_lastStyle, true);
+
+            //---------------------------------------------------------------------
+            // FIX: 068 Enable auto zoom when selecting features on map.
+            //
+            // Get the auto zoom option default value.
+            _autoZoom = Settings.Default.AutoZoomSelection;
+
+            // Check the menu item for the auto zoom option.
+            CheckMenuItem("MenuItemAutoZoomSelected", _autoZoom);
+            //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: 069 Enable auto select of features on change of incid.
+            //
+            // Get the auto select option default value.
+            _autoSelect = Settings.Default.AutoSelectOnGis;
+
+            // Check the menu item for the auto select option.
+            CheckMenuItem("MenuItemAutoSelectOnGis", _autoSelect);
+            //---------------------------------------------------------------------
+
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -242,10 +265,10 @@ namespace HLU
             if (App.LoadStyleDictionaryFromFile(styleName))
             {
                 // Clear the check against the last menu item style.
-                CheckMenuItem(lastStyle, false);
+                CheckMenuItem(_lastStyle, false);
 
                 // Store the last style as the current menu item.
-                lastStyle = mi.Name;
+                _lastStyle = mi.Name;
             }
         }
         //---------------------------------------------------------------------
