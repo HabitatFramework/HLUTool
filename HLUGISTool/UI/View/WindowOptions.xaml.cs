@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -33,20 +34,10 @@ namespace HLU.UI.View
             InitializeComponent();
         }
 
-        private void ForceIsSelectedUpdate(ListBox listBoxControl)
-        {
-            for (int i = 0; i < listBoxControl.Items.Count; i++)
-            {
-                SelectionItem<string> it = listBoxControl.Items[i] as SelectionItem<string>;
-                if (it.IsSelected)
-                {
-                    it.IsSelected = !it.IsSelected;
-                    it.IsSelected = !it.IsSelected;
-                    listBoxControl.SelectedItems.Add(listBoxControl.Items[i]);
-                }
-            }
-        }
-
+        //---------------------------------------------------------------------
+        // FIX: 071 Add minimum auto zoom scale to options
+        // Initialise selected history column list items when GIS tab has focus.
+        //
         /// <summary>
         /// Fakes a click on each history column list item so that their checkboxes are properly initialised.
         /// </summary>
@@ -62,6 +53,21 @@ namespace HLU.UI.View
                 if ((l.Items.Count > 0) &&
                     (l.Items[0].GetType().ToString().StartsWith(this.GetType().Namespace.Replace("View", "UserControls") + ".SelectionItem")))
                     ForceIsSelectedUpdate(l);
+            }
+        }
+        //---------------------------------------------------------------------
+
+        private void ForceIsSelectedUpdate(ListBox listBoxControl)
+        {
+            for (int i = 0; i < listBoxControl.Items.Count; i++)
+            {
+                SelectionItem<string> it = listBoxControl.Items[i] as SelectionItem<string>;
+                if (it.IsSelected)
+                {
+                    it.IsSelected = !it.IsSelected;
+                    it.IsSelected = !it.IsSelected;
+                    listBoxControl.SelectedItems.Add(listBoxControl.Items[i]);
+                }
             }
         }
     }

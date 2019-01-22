@@ -2,6 +2,7 @@
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014-15, 2018 Sussex Biodiversity Record Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
