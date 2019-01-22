@@ -5,7 +5,6 @@
         Title="{Binding WindowTitle}"
         Width="480"
         Height="Auto"
-        Activated="Window_Activated"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
@@ -20,30 +19,48 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <DockPanel Margin="4,4,4,4"
+    <DockPanel Width="Auto"
+               Margin="0,0,0,0"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch">
-        <Grid VerticalAlignment="Stretch">
+
+        <Grid x:Name="GridMain" Margin="4,2,4,4">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="255" />
                 <RowDefinition Height="4" />
                 <RowDefinition Height="23" />
             </Grid.RowDefinitions>
-            <Grid Name="GridOptions" Grid.Row="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="4" />
-                    <RowDefinition />
-                    <RowDefinition Height="4" />
-                    <RowDefinition />
-                    <RowDefinition Height="4" />
-                    <RowDefinition />
-                    <RowDefinition Height="4" />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <GroupBox Name="GroupBoxDatabase"
-                          Grid.Row="0"
+
+            <TabControl x:Name="TabControlData"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,2,0,0"
+                        IsEnabled="{Binding TabControlDataEnabled}">
+
+                <!--  Database  -->
+
+                <TabItem x:Name="TabDatabase"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding TabDatabaseEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="DatabaseTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="Database"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+
+                <GroupBox x:Name="GroupBoxDatabase"
                           Height="Auto"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
@@ -60,98 +77,110 @@
                             <ColumnDefinition Width="70" />
                             <ColumnDefinition Width="30" />
                         </Grid.ColumnDefinitions>
-                        <Label Name="LabelConnectionTimeout"
+                        <Label x:Name="LabelConnectionTimeout"
                                Grid.Row="0"
                                Grid.Column="0"
-                               Margin="0,0,8,4"
+                               Margin="0,4,8,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Timeout [s]
-                        </Label>
-                        <TextBox Name="TextBoxConnectionTimeout"
+                               VerticalAlignment="Center" Content="Timeout [secs]"/>
+                        <TextBox x:Name="TextBoxConnectionTimeout"
                                  Grid.Row="0"
                                  Grid.Column="1"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=DbConnectionTimeout,
-                                                Converter={StaticResource nullableValueConverter},
-                                                ValidatesOnDataErrors=True}"
+                                 Text="{Binding DbConnectionTimeout, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
                                  TextAlignment="Right" />
 
-                        <Label Name="LabelIncidPageSize"
+                        <Label x:Name="LabelIncidPageSize"
                                Grid.Row="1"
                                Grid.Column="0"
-                               Margin="0,0,8,4"
+                               Margin="0,4,8,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Page Size
-                        </Label>
-                        <TextBox Name="TextBoxIncidPageSize"
+                               VerticalAlignment="Center" Content="Page Size"/>
+                        <TextBox x:Name="TextBoxIncidPageSize"
                                  Grid.Row="1"
                                  Grid.Column="1"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=IncidTablePageSize,
-                                                Converter={StaticResource nullableValueConverter},
-                                                ValidatesOnDataErrors=True}"
+                                 Text="{Binding IncidTablePageSize, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
                                  TextAlignment="Right" />
 
-                        <Label Name="LabelHistoryDisplayLastN"
+                        <Label x:Name="LabelHistoryDisplayLastN"
                                Grid.Row="0"
                                Grid.Column="2"
-                               Margin="8,0,8,4"
+                               Margin="8,4,8,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Display History Rows
-                        </Label>
-                        <TextBox Name="TextBoxHistoryDisplayLastN"
+                               VerticalAlignment="Center" Content="Display History Rows"/>
+                        <TextBox x:Name="TextBoxHistoryDisplayLastN"
                                  Grid.Row="0"
                                  Grid.Column="3"
                                  Grid.ColumnSpan="2"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=HistoryDisplayLastN,
-                                                Converter={StaticResource nullableValueConverter},
-                                                ValidatesOnDataErrors=True}"
+                                 Text="{Binding HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
                                  TextAlignment="Right" />
 
-                        <Label Name="LabelBulkUpdateBlankRowMeansDelete"
+                        <Label x:Name="LabelBulkUpdateBlankRowMeansDelete"
                                Grid.Row="1"
                                Grid.Column="2"
                                Grid.ColumnSpan="2"
-                               Margin="8,0,8,4"
+                               Margin="8,4,8,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Delete Empty Bulk Update Rows?
-                        </Label>
-                        <CheckBox Name="CheckBoxBulkUpdateBlankRowMeansDelete"
+                               VerticalAlignment="Center" Content="Delete Empty Bulk Update Rows?"/>
+                        <CheckBox x:Name="CheckBoxBulkUpdateBlankRowMeansDelete"
                                   Grid.Row="1"
                                   Grid.Column="4"
-                                  Margin="4,4,4,4"
+                                  Margin="4,8,4,8"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"
-                                  IsChecked="{Binding Path=BulkUpdateBlankRowMeansDelete}" />
+                                  IsChecked="{Binding BulkUpdateBlankRowMeansDelete}" />
                     </Grid>
                 </GroupBox>
-                <GroupBox Name="GroupBoxGis"
-                          Grid.Row="2"
+
+                        </ScrollViewer>
+                    </AdornerDecorator>
+        		</TabItem>
+
+                <TabItem x:Name="TabGIS"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         GotFocus="TabGIS_GotFocus"
+                         IsEnabled="{Binding TabGISEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="GISTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="GIS"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxGis"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="GIS Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="9*" MinWidth="170" />
                             <ColumnDefinition Width="10*" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Name="GridHistoryColumns"
+                        <Grid x:Name="GridHistoryColumns"
                               Grid.Row="0"
                               Grid.Column="0">
                             <Grid.RowDefinitions>
@@ -161,21 +190,21 @@
                                 <ColumnDefinition Width="Auto" MinWidth="55" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Label Name="LabelHistoryColumns1"
+                            <Label x:Name="LabelHistoryColumns1"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top">
                                 <TextBlock HorizontalAlignment="Right"
-                                           Text="{Binding Path=HistoryColumnsLabel}"
+                                           Text="{Binding HistoryColumnsLabel}"
                                            TextWrapping="Wrap" />
                             </Label>
 
-                            <ListBox Name="ListBoxHistoryColumns"
+                            <ListBox x:Name="ListBoxHistoryColumns"
                                      Grid.Row="0"
                                      Grid.Column="1"
-                                     Margin="4,4,4,4"
+                                     Margin="4,8,4,8"
                                      BorderBrush="Black"
                                      BorderThickness="1"
                                      ItemsSource="{Binding HistoryColumns}"
@@ -217,11 +246,10 @@
                         </Grid>
 
                         <Grid Name="GridGisApp"
-							  Grid.Row="0"
+                              Grid.Row="0"
                               Grid.Column="1"
                               Margin="8,0,0,0">
                             <Grid.RowDefinitions>
-                                <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
@@ -230,34 +258,29 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label Name="LabelPreferredGis"
+                            <Label x:Name="LabelPreferredGis"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Preferred GIS Application
-                            </Label>
-                            <ComboBox Name="ComboBoxPreferredGis"
+                                   VerticalAlignment="Center" Content="Preferred GIS Application"/>
+                            <ComboBox x:Name="ComboBoxPreferredGis"
                                       Grid.Row="0"
                                       Grid.Column="1"
-                                      Margin="4,4,4,4"
+                                      Margin="4,8,4,8"
                                       BorderThickness="1"
-                                      IsEnabled="{Binding Path=GisAppsEnabled}"
-                                      ItemsSource="{Binding Path=GisApps}"
-                                      SelectedValue="{Binding Path=PreferredGis,
-                                                              ValidatesOnDataErrors=True}" />
+                                      IsEnabled="{Binding GisAppsEnabled}"
+                                      ItemsSource="{Binding GisApps}"
+                                      SelectedValue="{Binding PreferredGis, ValidatesOnDataErrors=True}" />
 
-                            <Label Name="LabelMapPath"
+                            <Label x:Name="LabelMapPath"
                                    Grid.Row="1"
                                    Grid.Column="0"
                                    Grid.ColumnSpan="2"
-                                   Margin="4,4,4,0"
+                                   Margin="4,8,4,0"
                                    HorizontalAlignment="Left"
-                                   VerticalAlignment="Bottom">
-                                Map Document/Workspace:
-                            </Label>
-                            <Grid Name="GridMapPath"
+                                   VerticalAlignment="Bottom" Content="Map Document/Workspace:"/>
+                            <Grid x:Name="GridMapPath"
                                   Grid.Row="2"
                                   Grid.Column="0"
                                   Grid.ColumnSpan="2">
@@ -265,128 +288,163 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="30" />
                                 </Grid.ColumnDefinitions>
-                                <TextBox Name="TextBoxMapPath"
+                                <TextBox x:Name="TextBoxMapPath"
                                          Grid.Column="0"
-                                         Margin="4,4,1,4"
+                                         Margin="4,8,1,8"
                                          BorderThickness="1"
                                          IsEnabled="False"
-                                         Text="{Binding Path=MapDocument,
-                                                        ValidatesOnDataErrors=True}"
+                                         Text="{Binding MapDocument, ValidatesOnDataErrors=True}"
                                          TextAlignment="Left"
-                                         ToolTip="{Binding Path=MapPath}"
+                                         ToolTip="{Binding MapPath}"
                                          ToolTipService.ShowOnDisabled="True" />
-                                <Button Name="ButtonBrowseMap"
+                                <Button x:Name="ButtonBrowseMap"
                                         Grid.Column="1"
-                                        Margin="1,4,4,4"
-                                        Command="{Binding Path=BrowseMapPathCommand}"
+                                        Margin="1,8,4,8"
+                                        Command="{Binding BrowseMapPathCommand}"
                                         Content="..."
-                                        IsEnabled="{Binding Path=CanBrowseMapPath}" />
+                                        IsEnabled="{Binding CanBrowseMapPath}" />
                             </Grid>
 
                         </Grid>
 
-                        <Grid Name="GridExportPath"
-								Grid.Row="1"
-								Grid.ColumnSpan="2">
+                        <Grid x:Name="GridExportPath"
+                              Grid.Row="1"
+                              Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="170" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelExportPath"
+                            <Label x:Name="LabelExportPath"
                                    Grid.Column="0"
-                                   Margin="4,0,4,0"
+                                   Margin="4,4,4,4"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Export Default Directory:
-                            </Label>
-                            <TextBox Name="TextBoxExportPath"
+                                   VerticalAlignment="Center" Content="Export Default Directory:"/>
+                            <TextBox x:Name="TextBoxExportPath"
                                      Grid.Column="1"
-                                     Margin="4,4,1,4"
+                                     Margin="4,8,1,8"
                                      BorderThickness="1"
                                      IsEnabled="False"
-                                     Text="{Binding Path=ExportPath,
-                                                    ValidatesOnDataErrors=True}"
+                                     Text="{Binding ExportPath, ValidatesOnDataErrors=True}"
                                      TextAlignment="Left"
-                                     ToolTip="{Binding Path=ExportPath}"
+                                     ToolTip="{Binding ExportPath}"
                                      ToolTipService.ShowOnDisabled="True" />
-                            <Button Name="ButtonBrowseExportPath"
+                            <Button x:Name="ButtonBrowseExportPath"
                                     Grid.Column="2"
-                                    Margin="1,4,4,4"
-                                    Command="{Binding Path=BrowseExportPathCommand}"
+                                    Margin="1,8,4,8"
+                                    Command="{Binding BrowseExportPathCommand}"
                                     Content="..."
-                                    IsEnabled="{Binding Path=CanBrowseExportPath}" />
+                                    IsEnabled="{Binding CanBrowseExportPath}" />
+                        </Grid>
+
+                        <Grid x:Name="GridMinAutoZoom"
+                              Grid.Row="2"
+                              Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelMinAutoZoom"
+                                   Grid.Column="0"
+                                   Margin="4,4,4,4"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="{Binding MinAutoZoomText}"/>
+                            <TextBox x:Name="TextBoxMinAutoZoom"
+                                     Grid.Column="1"
+                                     Margin="4,8,1,8"
+                                     BorderThickness="1"
+	                                 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+		                             TextAlignment="Right" />
                         </Grid>
 
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Name="GroupBoxInterface"
-                          Grid.Row="4"
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+                <TabItem x:Name="TabInterface"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding TabGISEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="InterfaceTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="Interface"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxInterface"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Interface Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid Name="GridSubsetUpdateAction" Grid.Row="0">
+                        <Grid x:Name="GridSubsetUpdateAction" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelSubsetUpdateAction"
+                            <Label x:Name="LabelSubsetUpdateAction"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Action To Take When Updating Subset
-                            </Label>
-                            <ComboBox Name="ComboBoxSubsetUpdateAction"
+                                   VerticalAlignment="Center" Content="Action To Take When Updating Subset"/>
+                            <ComboBox x:Name="ComboBoxSubsetUpdateAction"
                                       Grid.Row="0"
                                       Grid.Column="1"
-                                      Margin="4,4,4,4"
+                                      Margin="4,8,4,8"
                                       BorderThickness="1"
-                                      ItemsSource="{Binding Path=SubsetUpdateActions}"
-                                      SelectedValue="{Binding Path=SubsetUpdateAction,
-                                                              ValidatesOnDataErrors=True}" />
+                                      ItemsSource="{Binding SubsetUpdateActions}"
+                                      SelectedValue="{Binding SubsetUpdateAction, ValidatesOnDataErrors=True}" />
 
                         </Grid>
 
-                        <Grid Name="GridPreferredHabitatClass" Grid.Row="1">
+                        <Grid x:Name="GridPreferredHabitatClass" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" MinWidth="260" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelPreferredHabitatClass"
+                            <Label x:Name="LabelPreferredHabitatClass"
                                    Grid.Row="1"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Preferred Habitat Class
-                            </Label>
-                            <ComboBox Name="ComboBoxPreferredHabitatClass"
+                                   VerticalAlignment="Center" Content="Preferred Habitat Class"/>
+                            <ComboBox x:Name="ComboBoxPreferredHabitatClass"
                                       Grid.Row="1"
                                       Grid.Column="1"
-                                      Margin="4,4,4,4"
+                                      Margin="4,8,4,8"
                                       BorderThickness="1"
                                       DisplayMemberPath="description"
-                                      ItemsSource="{Binding Path=HabitatClassCodes}"
-                                      SelectedValue="{Binding Path=PreferredHabitatClass,
-                                                              ValidatesOnDataErrors=True}"
+                                      ItemsSource="{Binding HabitatClassCodes}"
+                                      SelectedValue="{Binding PreferredHabitatClass, ValidatesOnDataErrors=True}"
                                       SelectedValuePath="code" />
 
                         </Grid>
 
-                        <Grid Name="GridShowandNotify" Grid.Row="3">
+                        <Grid x:Name="GridShowandNotify" Grid.Row="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="20" />
@@ -394,75 +452,93 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelShowNVCCodes"
+                            <Label x:Name="LabelShowNVCCodes"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Show NVC Codes?
-                            </Label>
-                            <CheckBox Name="CheckBoxShowNVCCodes"
+                                   VerticalAlignment="Center" Content="Show NVC Codes?"/>
+                            <CheckBox x:Name="CheckBoxShowNVCCodes"
                                       Grid.Row="0"
                                       Grid.Column="1"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
-                                      IsChecked="{Binding Path=ShowNVCCodes}" />
-                            <Label Name="LabelNotifyOnSplitMerge"
+                                      IsChecked="{Binding ShowNVCCodes}" />
+                            <Label x:Name="LabelNotifyOnSplitMerge"
                                    Grid.Row="0"
                                    Grid.Column="2"
-                                   Margin="14,4,4,4"
+                                   Margin="14,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Notify After Completing Split/Merge?
-                            </Label>
-                            <CheckBox Name="CheckBoxNotifyOnSplitMerge"
+                                   VerticalAlignment="Center" Content="Notify After Completing Split/Merge?"/>
+                            <CheckBox x:Name="CheckBoxNotifyOnSplitMerge"
                                       Grid.Row="0"
                                       Grid.Column="3"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
-                                      IsChecked="{Binding Path=NotifyOnSplitMerge}" />
+                                      IsChecked="{Binding NotifyOnSplitMerge}" />
                         </Grid>
 
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Name="GroupBoxSqlQuery"
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+                <TabItem x:Name="TabSQL"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding TabSQLEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="SQLTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="SQL Query"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxSqlQuery"
                           Grid.Row="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
-                          Header="Sql Query Options">
+                          Header="SQL Query Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid Name="GridWarnBeforeGISSelect" Grid.Row="0">
+                        <Grid x:Name="GridWarnBeforeGISSelect" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelWarnBeforeGISSelect"
+                            <Label x:Name="LabelWarnBeforeGISSelect"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Warn Before GIS Select?
-                            </Label>
-                            <ComboBox Name="ComboBoxWarnBeforeGISSelect"
+                                   VerticalAlignment="Center" Content="Warn Before GIS Select?"/>
+                            <ComboBox x:Name="ComboBoxWarnBeforeGISSelect"
                                       Grid.Column="1"
-                                      Margin="4,4,4,4"
+                                      Margin="4,8,4,8"
                                       BorderThickness="1"
-                                      ItemsSource="{Binding Path=WarnBeforeGISSelectOptions}"
-                                      SelectedValue="{Binding Path=WarnBeforeGISSelect,
-                                                              ValidatesOnDataErrors=True}" />
+                                      ItemsSource="{Binding WarnBeforeGISSelectOptions}"
+                                      SelectedValue="{Binding WarnBeforeGISSelect, ValidatesOnDataErrors=True}" />
 
                         </Grid>
 
-                        <Grid Name="GridSQLSelect" Grid.Row="1">
+                        <Grid x:Name="GridSQLSelect" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
@@ -470,77 +546,92 @@
                                 <ColumnDefinition Width="90" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelUseAdvancedSQL"
+                            <Label x:Name="LabelUseAdvancedSQL"
                                    Grid.Column="0"
-                                   Margin="4,0,4,0"
+                                   Margin="4,4,4,4"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Use Advanced Query Builder?
-                            </Label>
-                            <CheckBox Name="CheckBoxUseAdvancedSQL"
+                                   VerticalAlignment="Center" Content="Use Advanced Query Builder?"/>
+                            <CheckBox x:Name="CheckBoxUseAdvancedSQL"
                                       Grid.Column="1"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
-                                      IsChecked="{Binding Path=UseAdvancedSQL}" />
+                                      IsChecked="{Binding UseAdvancedSQL}" />
 
-                            <Label Name="LabelMaxGetValues"
+                            <Label x:Name="LabelMaxGetValues"
                                    Grid.Column="2"
-                                   Margin="0,4,4,4"
+                                   Margin="0,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Get Values Count
-                            </Label>
-                            <TextBox Name="TextBoxMaxGetValues"
+                                   VerticalAlignment="Center" Content="Get Values Count"/>
+                            <TextBox x:Name="TextBoxMaxGetValues"
                                      Grid.Column="3"
-                                     Margin="4,4,4,4"
+                                     Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
-                                     IsEnabled="{Binding Path=CanBrowseSqlPath}"
-                                     Text="{Binding Path=GetValueRows,
-                                                    Converter={StaticResource nullableValueConverter},
-                                                    ValidatesOnDataErrors=True}"
+                                     Text="{Binding GetValueRows, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
                                      TextAlignment="Right" />
 
                         </Grid>
 
-                        <Grid Name="GridSqlPath" Grid.Row="2">
+                        <Grid x:Name="GridSqlPath" Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="170" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="LabelSqlPath"
+                            <Label x:Name="LabelSqlPath"
                                    Grid.Row="1"
                                    Grid.Column="0"
-                                   Margin="4,0,4,0"
+                                   Margin="4,4,4,4"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Sql Query Default Directory:
-                            </Label>
-                            <TextBox Name="TextBoxSqlPath"
+                                   VerticalAlignment="Center" Content="Sql Query Default Directory:"/>
+                            <TextBox x:Name="TextBoxSqlPath"
                                      Grid.Column="1"
-                                     Margin="4,4,1,4"
+                                     Margin="4,8,1,8"
                                      BorderThickness="1"
                                      IsEnabled="False"
-                                     Text="{Binding Path=SqlPath,
-                                                    ValidatesOnDataErrors=True}"
+                                     Text="{Binding SqlPath, ValidatesOnDataErrors=True}"
                                      TextAlignment="Left"
-                                     ToolTip="{Binding Path=SqlPath}"
+                                     ToolTip="{Binding SqlPath}"
                                      ToolTipService.ShowOnDisabled="True" />
-                            <Button Name="ButtonBrowseSql"
+                            <Button x:Name="ButtonBrowseSql"
                                     Grid.Column="2"
-                                    Margin="1,4,4,4"
-                                    Command="{Binding Path=BrowseSqlPathCommand}"
+                                    Margin="1,8,4,8"
+                                    Command="{Binding BrowseSqlPathCommand}"
                                     Content="..."
-                                    IsEnabled="{Binding Path=CanBrowseSqlPath}" />
+                                    IsEnabled="{Binding CanBrowseSqlPath}" />
                         </Grid>
 
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Name="GroupBoxSeasons"
-                          Grid.Row="8"
+
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+                <TabItem x:Name="TabDates"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding TabDatesEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="DatesTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="Vague Dates"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxDates"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Vague Date Season Names">
@@ -556,73 +647,61 @@
                             <ColumnDefinition Width="Auto" MinWidth="55" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label Name="LabelSeasonSpring"
+                        <Label x:Name="LabelSeasonSpring"
                                Grid.Row="0"
                                Grid.Column="0"
-                               Margin="4,4,4,4"
+                               Margin="4,8,4,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Spring
-                        </Label>
-                        <Label Name="LabelSeasonSummer"
+                               VerticalAlignment="Center" Content="Spring"/>
+                        <Label x:Name="LabelSeasonSummer"
                                Grid.Row="1"
                                Grid.Column="0"
-                               Margin="4,4,4,4"
+                               Margin="4,8,4,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Summer
-                        </Label>
-                        <Label Name="LabelSeasonAutumn"
+                               VerticalAlignment="Center" Content="Summer"/>
+                        <Label x:Name="LabelSeasonAutumn"
                                Grid.Row="0"
                                Grid.Column="2"
-                               Margin="4,4,4,4"
+                               Margin="4,8,4,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Autumn
-                        </Label>
-                        <Label Name="LabelSeasonWinter"
+                               VerticalAlignment="Center" Content="Autumn"/>
+                        <Label x:Name="LabelSeasonWinter"
                                Grid.Row="1"
                                Grid.Column="2"
-                               Margin="4,4,4,4"
+                               Margin="4,8,4,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center">
-                            Winter
-                        </Label>
+                               VerticalAlignment="Center" Content="Winter"/>
 
-                        <TextBox Name="TextBoxSeasonSpring"
+                        <TextBox x:Name="TextBoxSeasonSpring"
                                  Grid.Row="0"
                                  Grid.Column="1"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=SeasonSpring,
-                                                ValidatesOnDataErrors=True}" />
-                        <TextBox Name="TextBoxSeasonSummer"
+                                 Text="{Binding SeasonSpring, ValidatesOnDataErrors=True}" />
+                        <TextBox x:Name="TextBoxSeasonSummer"
                                  Grid.Row="1"
                                  Grid.Column="1"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=SeasonSummer,
-                                                ValidatesOnDataErrors=True}" />
-                        <TextBox Name="TextBoxSeasonAutumn"
+                                 Text="{Binding SeasonSummer, ValidatesOnDataErrors=True}" />
+                        <TextBox x:Name="TextBoxSeasonAutumn"
                                  Grid.Row="0"
                                  Grid.Column="3"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=SeasonAutumn,
-                                                ValidatesOnDataErrors=True}" />
-                        <TextBox Name="TextBoxSeasonWinter"
+                                 Text="{Binding SeasonAutumn, ValidatesOnDataErrors=True}" />
+                        <TextBox x:Name="TextBoxSeasonWinter"
                                  Grid.Row="1"
                                  Grid.Column="3"
-                                 Margin="4,4,4,4"
+                                 Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding Path=SeasonWinter,
-                                                ValidatesOnDataErrors=True}" />
+                                 Text="{Binding SeasonWinter, ValidatesOnDataErrors=True}" />
 
-                        <Grid Name="GridDateDelimter"
+                        <Grid x:Name="GridDateDelimter"
                               Grid.Row="2"
                               Grid.ColumnSpan="4"
                               HorizontalAlignment="Right">
@@ -630,48 +709,51 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-                            <Label Name="LabelDateDelimiter"
+                            <Label x:Name="LabelDateDelimiter"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center">
-                                Vague Date Delimiter
-                            </Label>
-                            <TextBox Name="TextBoxVagueDateDelimiter"
+                                   VerticalAlignment="Center" Content="Vague Date Delimiter"/>
+                            <TextBox x:Name="TextBoxVagueDateDelimiter"
                                      Grid.Row="0"
                                      Grid.Column="1"
-                                     Margin="4,4,4,4"
+                                     Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
-                                     Text="{Binding Path=VagueDateDelimiter,
-                                                    ValidatesOnDataErrors=True}"
+                                     Text="{Binding VagueDateDelimiter, ValidatesOnDataErrors=True}"
                                      TextAlignment="Center" />
                         </Grid>
                     </Grid>
                 </GroupBox>
-            </Grid>
 
-            <Grid Name="GridButtons" Grid.Row="2">
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+
+        	</TabControl>
+
+
+            <Grid x:Name="GridButtons" Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="82" />
-                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="60" />
                 </Grid.ColumnDefinitions>
-                <Button Name="ButtonOk"
+                <Button x:Name="ButtonCancel"
                         Grid.Column="1"
-                        Margin="0,0,2,0"
-                        Command="{Binding Path=OkCommand}"
-                        IsDefault="True">
-                    _OK
-                </Button>
-                <Button Name="ButtonCancel"
+                        Margin="2,0,2,0"
+                        Command="{Binding CancelCommand}"
+                        IsCancel="True" Content="_Cancel"/>
+                <Button x:Name="ButtonSave"
                         Grid.Column="2"
-                        Margin="2,0,0,0"
-                        Command="{Binding Path=CancelCommand}"
-                        IsCancel="True">
-                    _Cancel
-                </Button>
+                            Margin="2,0,0,0"
+                            Background="Red"
+                            Foreground="White"
+                        Command="{Binding SaveCommand}"
+                        IsDefault="True" Content="_Save"/>
             </Grid>
         </Grid>
     </DockPanel>

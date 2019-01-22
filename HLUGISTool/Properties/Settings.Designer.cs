@@ -857,6 +857,7 @@ namespace HLU.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public bool AutoZoomSelection {
             get {
                 return ((bool)(this["AutoZoomSelection"]));
@@ -869,6 +870,7 @@ namespace HLU.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public bool AutoSelectOnGis {
             get {
                 return ((bool)(this["AutoSelectOnGis"]));
@@ -881,6 +883,7 @@ namespace HLU.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public int MinimumAutoZoom {
             get {
                 return ((int)(this["MinimumAutoZoom"]));
@@ -896,6 +899,15 @@ namespace HLU.Properties {
         public string MapDistanceUnits {
             get {
                 return ((string)(this["MapDistanceUnits"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000000")]
+        public int MaximumAutoZoom {
+            get {
+                return ((int)(this["MaximumAutoZoom"]));
             }
         }
     }

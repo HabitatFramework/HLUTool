@@ -33,26 +33,6 @@ namespace HLU.UI.View
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Fakes a click on each history column list item so that their checkboxes are properly initialised.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Window_Activated(object sender, System.EventArgs e)
-        {
-            List<DependencyObject> listBoxes = new List<DependencyObject>();
-            FindControls.GetChildren(this, typeof(ListBox), ref listBoxes);
-
-            foreach (ListBox l in listBoxes)
-            {
-                if ((l.Items.Count > 0) && 
-                    (l.Items[0].GetType().ToString().StartsWith(this.GetType().Namespace.Replace("View", "UserControls") + ".SelectionItem")))
-                    ForceIsSelectedUpdate(l);
-            }
-
-
-        }
-
         private void ForceIsSelectedUpdate(ListBox listBoxControl)
         {
             for (int i = 0; i < listBoxControl.Items.Count; i++)
@@ -64,6 +44,24 @@ namespace HLU.UI.View
                     it.IsSelected = !it.IsSelected;
                     listBoxControl.SelectedItems.Add(listBoxControl.Items[i]);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Fakes a click on each history column list item so that their checkboxes are properly initialised.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TabGIS_GotFocus(object sender, RoutedEventArgs e)
+        {
+            List<DependencyObject> listBoxes = new List<DependencyObject>();
+            FindControls.GetChildren(this, typeof(ListBox), ref listBoxes);
+
+            foreach (ListBox l in listBoxes)
+            {
+                if ((l.Items.Count > 0) &&
+                    (l.Items[0].GetType().ToString().StartsWith(this.GetType().Namespace.Replace("View", "UserControls") + ".SelectionItem")))
+                    ForceIsSelectedUpdate(l);
             }
         }
     }

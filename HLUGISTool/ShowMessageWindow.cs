@@ -34,7 +34,7 @@ namespace HLU
             if ((_messageWindow.Owner = App.GetActiveWindow()) == null)
                 throw (new Exception("No parent window loaded"));
 
-            _messageWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _messageWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             // Create ViewModel to which main window binds
             _messageWindowViewModel = new ViewModelMessageWindow();

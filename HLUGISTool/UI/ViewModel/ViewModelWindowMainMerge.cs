@@ -131,7 +131,7 @@ namespace HLU.UI.ViewModel
 
                 _mergeFeaturesWindow = new WindowMergeFeatures();
                 _mergeFeaturesWindow.Owner = App.Current.MainWindow;
-                _mergeFeaturesWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _mergeFeaturesWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 _mergeFeaturesWindow.MaxHeight = App.Current.MainWindow.ActualHeight;
 
                 HluDataSet.incidDataTable selectTable = new HluDataSet.incidDataTable();
@@ -344,7 +344,7 @@ namespace HLU.UI.ViewModel
                 {
                     _mergeFeaturesWindow = new WindowMergeFeatures();
                     _mergeFeaturesWindow.Owner = App.Current.MainWindow;
-                    _mergeFeaturesWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    _mergeFeaturesWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                     _mergeFeaturesViewModelPhysical = new ViewModelMergeFeatures
                         <HluDataSet.incid_mm_polygonsDataTable, HluDataSet.incid_mm_polygonsRow>(selectTable,

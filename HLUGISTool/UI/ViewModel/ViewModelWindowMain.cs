@@ -1619,7 +1619,7 @@ namespace HLU.UI.ViewModel
                 _windowWarnSplitMerge = new WindowNotifyOnSplitMerge();
                 if ((_windowWarnSplitMerge.Owner = App.GetActiveWindow()) == null)
                     throw (new Exception("No parent window loaded"));
-                _windowWarnSplitMerge.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _windowWarnSplitMerge.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
                 _viewModelWinWarnSplitMerge = new ViewModelWindowNotifyOnSplitMerge(msgText);
@@ -1922,7 +1922,7 @@ namespace HLU.UI.ViewModel
                 _windowWarnSubsetUpdate = new WindowWarnOnSubsetUpdate();
                 if ((_windowWarnSubsetUpdate.Owner = App.GetActiveWindow()) == null)
                     throw (new Exception("No parent window loaded"));
-                _windowWarnSubsetUpdate.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _windowWarnSubsetUpdate.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
                 _viewModelWinWarnSubsetUpdate = new ViewModelWindowWarnOnSubsetUpdate(
@@ -2260,7 +2260,7 @@ namespace HLU.UI.ViewModel
         {
             _windowOptions = new WindowOptions();
             _windowOptions.Owner = App.Current.MainWindow;
-            _windowOptions.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _windowOptions.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             _viewModelOptions = new ViewModelOptions();
             _viewModelOptions.RequestClose += 
@@ -2447,7 +2447,7 @@ namespace HLU.UI.ViewModel
                 _qryBuilderWindow = new WindowQueryBuilder();
                 if ((_qryBuilderWindow.Owner = App.GetActiveWindow()) == null)
                     throw (new Exception("No parent window loaded"));
-                _qryBuilderWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _qryBuilderWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
                 _qryBuilderViewModel = new ViewModelQueryBuilder(HluDataset);
@@ -2631,7 +2631,7 @@ namespace HLU.UI.ViewModel
                 _qrySelectQueryWindow = new WindowSelectQuery();
                 if ((_qrySelectQueryWindow.Owner = App.GetActiveWindow()) == null)
                     throw (new Exception("No parent window loaded"));
-                _qrySelectQueryWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _qrySelectQueryWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
                 _viewModelWinSelectQuery = new ViewModelWindowSelectQuery(HluDataset, _db);
@@ -2818,7 +2818,7 @@ namespace HLU.UI.ViewModel
                 _windowWarnGISSelect = new WindowWarnOnGISSelect();
                 if ((_windowWarnGISSelect.Owner = App.GetActiveWindow()) == null)
                     throw (new Exception("No parent window loaded"));
-                _windowWarnGISSelect.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _windowWarnGISSelect.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
                 _viewModelWinWarnGISSelect = new ViewModelWindowWarnOnGISSelect(
@@ -3103,7 +3103,8 @@ namespace HLU.UI.ViewModel
                 AnalyzeGisSelectionSet(true);
 
                 // Indicate the selection came from the map.
-                _filterByMap = true;
+                if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
+                    _filterByMap = true;
 
                 if (_gisSelection.Rows.Count > 0)
                 {
@@ -3118,7 +3119,7 @@ namespace HLU.UI.ViewModel
                             {
                                 _windowCompSplit = new WindowCompletePhysicalSplit();
                                 _windowCompSplit.Owner = App.Current.MainWindow;
-                                _windowCompSplit.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                                _windowCompSplit.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                                 _vmCompSplit = new ViewModelCompletePhysicalSplit(_reason, _process, _reasonCodes, _processCodes);
                                 _vmCompSplit.RequestClose += new ViewModelCompletePhysicalSplit.RequestCloseEventHandler(vmCompSplit_RequestClose);
                                 _windowCompSplit.DataContext = _vmCompSplit;
@@ -3343,7 +3344,8 @@ namespace HLU.UI.ViewModel
                         AnalyzeGisSelectionSet(false);
 
                         // Indicate the selection came from the map.
-                        _filterByMap = true;
+                        if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
+                            _filterByMap = true;
 
                         // Set the filter back to the first incid.
                         SetFilter();
@@ -3769,7 +3771,7 @@ namespace HLU.UI.ViewModel
             {
                 _windowSwitchGISLayer = new WindowSwitchGISLayer();
                 _windowSwitchGISLayer.Owner = App.Current.MainWindow;
-                _windowSwitchGISLayer.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _windowSwitchGISLayer.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 //---------------------------------------------------------------------
                 // FIX: 059 Do not display map window number with layer name

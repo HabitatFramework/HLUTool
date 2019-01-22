@@ -41,7 +41,7 @@ namespace HLU.UI.ViewModel
     {
         #region Fields
 
-        private ICommand _okCommand;
+        private ICommand _saveCommand;
         private ICommand _cancelCommand;
         private ICommand _browseMapPathCommand;
         private ICommand _browseExportPathCommand;
@@ -60,14 +60,17 @@ namespace HLU.UI.ViewModel
         private int _preferredGis = Settings.Default.PreferredGis;
         private string _mapPath = Settings.Default.MapPath;
         private string _exportPath = Settings.Default.ExportPath;
-        private string _sqlPath = Settings.Default.SqlPath;
+        private int? _minAutoZoom = Settings.Default.MinimumAutoZoom;
+
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
-        private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+
+        private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
         private int? _getValueRows = Settings.Default.GetValueRows;
+        private string _sqlPath = Settings.Default.SqlPath;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
@@ -145,58 +148,65 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Ok Command
+        public delegate void Test();
+
+        #region Save Command
 
         /// <summary>
-        /// Create Ok button command
+        /// Create Save button command
         /// </summary>
         /// <value></value>
         /// <returns></returns>
         /// <remarks></remarks>
-        public ICommand OkCommand
+        public ICommand SaveCommand
         {
             get
             {
-                if (_okCommand == null)
+                if (_saveCommand == null)
                 {
-                    Action<object> okAction = new Action<object>(this.OkCommandClick);
-                    _okCommand = new RelayCommand(okAction, param => this.CanOk);
+                    Action<object> saveAction = new Action<object>(this.SaveCommandClick);
+                    _saveCommand = new RelayCommand(saveAction, param => this.CanSave);
                 }
 
-                return _okCommand;
+                return _saveCommand;
             }
         }
 
         /// <summary>
-        /// Handles event when Ok button is clicked
+        /// Handles event when Save button is clicked
         /// </summary>
         /// <param name="param"></param>
         /// <remarks></remarks>
-        private void OkCommandClick(object param)
+        private void SaveCommandClick(object param)
         {
+            // Database options
             Settings.Default.DbConnectionTimeout = (int)_dbConnectionTimeout;
             Settings.Default.IncidTablePageSize = (int)_incidTablePageSize;
             Settings.Default.HistoryDisplayLastN = (int)_historyDisplayLastN;
             Settings.Default.BulkUpdateBlankRowMeansDelete = _bulkUpdateBlankRowMeansDelete;
 
-            Settings.Default.MapPath = _mapPath;
-            Settings.Default.PreferredGis = _preferredGis;
-            
+            // GIS options
             Settings.Default.HistoryColumnOrdinals = new StringCollection();
             Settings.Default.HistoryColumnOrdinals.AddRange(_historyColumns.Where(c => c.IsSelected)
                 .Select(c => _incidMMPolygonsTable.Columns[UnescapeAccessKey(c.Item)].Ordinal.ToString()).ToArray());
+            Settings.Default.PreferredGis = _preferredGis;
+            Settings.Default.MapPath = _mapPath;
+            Settings.Default.ExportPath = _exportPath;
+            Settings.Default.MinimumAutoZoom = (int)_minAutoZoom;
 
+            // Interface options
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
             Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
-            Settings.Default.ExportPath = _exportPath;
 
+            // SQL Query options
             Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
             Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
             Settings.Default.SqlPath = _sqlPath;
             Settings.Default.GetValueRows = (int)_getValueRows;
 
+            // Vague Dates options
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
             Settings.Default.SeasonNames[2] = _seasonAutumn;
@@ -214,7 +224,7 @@ namespace HLU.UI.ViewModel
         /// <value></value>
         /// <returns></returns>
         /// <remarks></remarks>
-        private bool CanOk { get { return String.IsNullOrEmpty(Error); } }
+        private bool CanSave { get { return String.IsNullOrEmpty(Error); } }
 
         #endregion
 
@@ -638,6 +648,38 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // FIX: 071 Add minimum auto zoom scale to options
+        // Validate the minimum auto zoom scale.
+        //
+        /// <summary>
+        /// Gets the default minimum auto zoom scale text.
+        /// </summary>
+        /// <value>
+        /// The Minimum auto zoom scale text.
+        /// </value>
+        public string MinAutoZoomText
+        {
+            get
+            {
+                string distUnits = Settings.Default.MapDistanceUnits;
+                return string.Format("Minimum auto zoom size ({0}):", distUnits);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the default minimum auto zoom scale.
+        /// </summary>
+        /// <value>
+        /// The Minimum auto zoom scale.
+        /// </value>
+        public int? MinAutoZoom
+        {
+            get { return _minAutoZoom; }
+            set { _minAutoZoom = value; }
+        }
+        //---------------------------------------------------------------------
+
         #endregion
 
         #region Sql Query
@@ -854,6 +896,14 @@ namespace HLU.UI.ViewModel
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
                 //---------------------------------------------------------------------
+                // FIX: 071 Add minimum auto zoom scale to options
+                // Validate the minimum auto zoom scale.
+                if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
+                    error.Append("\n" + "Minimum auto zoom scale must be greater than 0.");
+                if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
+                    error.Append("\n" + String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom));
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
                 // CHANGED: CR10 (Attribute updates for incid subsets)
                 // Validate the users preferred action when updating a
                 // subset of features for an incid.
@@ -950,6 +1000,16 @@ namespace HLU.UI.ViewModel
                         if (_historyColumns.Count(h => h.IsSelected) == 0)
                             error = "Please select columns to be recorded in history trail.";
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 071 Add minimum auto zoom scale to options
+                    // Validate the minimum auto zoom scale.
+                    case "MinAutoZoom":
+                        if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
+                            error = "Minimum auto zoom scale must be greater than 0.";
+                        if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
+                            error = String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom);
+                        break;
+                    //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Validate the users preferred action when updating a
