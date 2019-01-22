@@ -24,7 +24,6 @@
                 <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
-                <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/>
                 <!--  <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />  -->
             </ResourceDictionary.MergedDictionaries>

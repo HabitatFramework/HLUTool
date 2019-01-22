@@ -70,7 +70,7 @@ namespace HLU.UI.ViewModel
         {
             _windowExport = new WindowExport();
             _windowExport.Owner = App.Current.MainWindow;
-            _windowExport.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _windowExport.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             // Fill all export formats if there are any export fields
             // defined for the export format.
