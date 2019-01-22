@@ -98,6 +98,10 @@ namespace HLU.Data.Model {
         
         private lut_legacy_habitatDataTable tablelut_legacy_habitat;
         
+        private osmmDataTable tableosmm;
+        
+        private lut_osmm_ihs_xrefDataTable tablelut_osmm_ihs_xref;
+        
         private global::System.Data.DataRelation relationFK_lut_boundary_map_incid;
         
         private global::System.Data.DataRelation relationfk_exports_fields_exports;
@@ -191,6 +195,8 @@ namespace HLU.Data.Model {
         private global::System.Data.DataRelation relationfk_xref_habitat_type_lut_ihs_habitat;
         
         private global::System.Data.DataRelation relationfk_incid_lut_legacy_habitat;
+        
+        private global::System.Data.DataRelation relationfk_history_incid_mm_polygons;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
@@ -330,6 +336,12 @@ namespace HLU.Data.Model {
                 }
                 if ((ds.Tables["lut_legacy_habitat"] != null)) {
                     base.Tables.Add(new lut_legacy_habitatDataTable(ds.Tables["lut_legacy_habitat"]));
+                }
+                if ((ds.Tables["osmm"] != null)) {
+                    base.Tables.Add(new osmmDataTable(ds.Tables["osmm"]));
+                }
+                if ((ds.Tables["lut_osmm_ihs_xref"] != null)) {
+                    base.Tables.Add(new lut_osmm_ihs_xrefDataTable(ds.Tables["lut_osmm_ihs_xref"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -721,6 +733,26 @@ namespace HLU.Data.Model {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public osmmDataTable osmm {
+            get {
+                return this.tableosmm;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public lut_osmm_ihs_xrefDataTable lut_osmm_ihs_xref {
+            get {
+                return this.tablelut_osmm_ihs_xref;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.BrowsableAttribute(true)]
         [global::System.ComponentModel.DesignerSerializationVisibilityAttribute(global::System.ComponentModel.DesignerSerializationVisibility.Visible)]
         public override global::System.Data.SchemaSerializationMode SchemaSerializationMode {
@@ -896,6 +928,12 @@ namespace HLU.Data.Model {
                 }
                 if ((ds.Tables["lut_legacy_habitat"] != null)) {
                     base.Tables.Add(new lut_legacy_habitatDataTable(ds.Tables["lut_legacy_habitat"]));
+                }
+                if ((ds.Tables["osmm"] != null)) {
+                    base.Tables.Add(new osmmDataTable(ds.Tables["osmm"]));
+                }
+                if ((ds.Tables["lut_osmm_ihs_xref"] != null)) {
+                    base.Tables.Add(new lut_osmm_ihs_xrefDataTable(ds.Tables["lut_osmm_ihs_xref"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -1152,6 +1190,18 @@ namespace HLU.Data.Model {
                     this.tablelut_legacy_habitat.InitVars();
                 }
             }
+            this.tableosmm = ((osmmDataTable)(base.Tables["osmm"]));
+            if ((initTable == true)) {
+                if ((this.tableosmm != null)) {
+                    this.tableosmm.InitVars();
+                }
+            }
+            this.tablelut_osmm_ihs_xref = ((lut_osmm_ihs_xrefDataTable)(base.Tables["lut_osmm_ihs_xref"]));
+            if ((initTable == true)) {
+                if ((this.tablelut_osmm_ihs_xref != null)) {
+                    this.tablelut_osmm_ihs_xref.InitVars();
+                }
+            }
             this.relationFK_lut_boundary_map_incid = this.Relations["FK_lut_boundary_map_incid"];
             this.relationfk_exports_fields_exports = this.Relations["fk_exports_fields_exports"];
             this.relationfk_habitat_history_incid = this.Relations["fk_habitat_history_incid"];
@@ -1199,6 +1249,7 @@ namespace HLU.Data.Model {
             this.relationfk_xref_habitat_type_lut_habitat_type = this.Relations["fk_xref_habitat_type_lut_habitat_type"];
             this.relationfk_xref_habitat_type_lut_ihs_habitat = this.Relations["fk_xref_habitat_type_lut_ihs_habitat"];
             this.relationfk_incid_lut_legacy_habitat = this.Relations["fk_incid_lut_legacy_habitat"];
+            this.relationfk_history_incid_mm_polygons = this.Relations["fk_history_incid_mm_polygons"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1283,6 +1334,10 @@ namespace HLU.Data.Model {
             base.Tables.Add(this.tablelut_habitat_type_ihs_habitat);
             this.tablelut_legacy_habitat = new lut_legacy_habitatDataTable();
             base.Tables.Add(this.tablelut_legacy_habitat);
+            this.tableosmm = new osmmDataTable();
+            base.Tables.Add(this.tableosmm);
+            this.tablelut_osmm_ihs_xref = new lut_osmm_ihs_xrefDataTable();
+            base.Tables.Add(this.tablelut_osmm_ihs_xref);
             global::System.Data.ForeignKeyConstraint fkc;
             fkc = new global::System.Data.ForeignKeyConstraint("FK_lut_boundary_map_incid", new global::System.Data.DataColumn[] {
                         this.tablelut_boundary_map.codeColumn}, new global::System.Data.DataColumn[] {
@@ -1479,6 +1534,14 @@ namespace HLU.Data.Model {
                         this.tablelut_legacy_habitat.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid.legacy_habitatColumn}, false);
             this.Relations.Add(this.relationfk_incid_lut_legacy_habitat);
+            this.relationfk_history_incid_mm_polygons = new global::System.Data.DataRelation("fk_history_incid_mm_polygons", new global::System.Data.DataColumn[] {
+                        this.tableincid_mm_polygons.incidColumn,
+                        this.tableincid_mm_polygons.toidColumn,
+                        this.tableincid_mm_polygons.toid_fragment_idColumn}, new global::System.Data.DataColumn[] {
+                        this.tablehistory.incidColumn,
+                        this.tablehistory.toidColumn,
+                        this.tablehistory.toid_fragment_idColumn}, false);
+            this.Relations.Add(this.relationfk_history_incid_mm_polygons);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1705,6 +1768,18 @@ namespace HLU.Data.Model {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private bool ShouldSerializeosmm() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private bool ShouldSerializelut_osmm_ihs_xref() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void SchemaChanged(object sender, global::System.ComponentModel.CollectionChangeEventArgs e) {
             if ((e.Action == global::System.ComponentModel.CollectionChangeAction.Remove)) {
                 this.InitVars();
@@ -1868,6 +1943,12 @@ namespace HLU.Data.Model {
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public delegate void lut_legacy_habitatRowChangeEventHandler(object sender, lut_legacy_habitatRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public delegate void osmmRowChangeEventHandler(object sender, osmmRowChangeEvent e);
+        
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public delegate void lut_osmm_ihs_xrefRowChangeEventHandler(object sender, lut_osmm_ihs_xrefRowChangeEvent e);
         
         /// <summary>
         ///Represents the strongly named DataTable class.
@@ -5358,6 +5439,12 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnshape_area;
             
+            private global::System.Data.DataColumn columnspatial_flag;
+            
+            private global::System.Data.DataColumn columnprocess_flag;
+            
+            private global::System.Data.DataColumn columnchange_flag;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incid_mm_polygonsDataTable() {
@@ -5449,6 +5536,30 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn spatial_flagColumn {
+                get {
+                    return this.columnspatial_flag;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn process_flagColumn {
+                get {
+                    return this.columnprocess_flag;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn change_flagColumn {
+                get {
+                    return this.columnchange_flag;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -5484,7 +5595,7 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow Addincid_mm_polygonsRow(incidRow parentincidRowByFK_incid_incid_mm_polygons, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, double shape_length, double shape_area) {
+            public incid_mm_polygonsRow Addincid_mm_polygonsRow(incidRow parentincidRowByFK_incid_incid_mm_polygons, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, double shape_length, double shape_area, string spatial_flag, int process_flag, string change_flag) {
                 incid_mm_polygonsRow rowincid_mm_polygonsRow = ((incid_mm_polygonsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -5493,7 +5604,10 @@ namespace HLU.Data.Model {
                         ihs_category,
                         ihs_summary,
                         shape_length,
-                        shape_area};
+                        shape_area,
+                        spatial_flag,
+                        process_flag,
+                        change_flag};
                 if ((parentincidRowByFK_incid_incid_mm_polygons != null)) {
                     columnValuesArray[0] = parentincidRowByFK_incid_incid_mm_polygons[0];
                 }
@@ -5535,6 +5649,9 @@ namespace HLU.Data.Model {
                 this.columnihs_summary = base.Columns["ihs_summary"];
                 this.columnshape_length = base.Columns["shape_length"];
                 this.columnshape_area = base.Columns["shape_area"];
+                this.columnspatial_flag = base.Columns["spatial_flag"];
+                this.columnprocess_flag = base.Columns["process_flag"];
+                this.columnchange_flag = base.Columns["change_flag"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5554,6 +5671,12 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnshape_length);
                 this.columnshape_area = new global::System.Data.DataColumn("shape_area", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnshape_area);
+                this.columnspatial_flag = new global::System.Data.DataColumn("spatial_flag", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnspatial_flag);
+                this.columnprocess_flag = new global::System.Data.DataColumn("process_flag", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnprocess_flag);
+                this.columnchange_flag = new global::System.Data.DataColumn("change_flag", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnchange_flag);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnincid,
                                 this.columntoid,
@@ -5569,6 +5692,8 @@ namespace HLU.Data.Model {
                 this.columntoid_fragment_id.MaxLength = 5;
                 this.columnihs_category.MaxLength = 2;
                 this.columnihs_summary.MaxLength = 50;
+                this.columnspatial_flag.MaxLength = 1;
+                this.columnchange_flag.MaxLength = 1;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -13757,6 +13882,1048 @@ namespace HLU.Data.Model {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class osmmDataTable : global::System.Data.TypedTableBase<osmmRow> {
+            
+            private global::System.Data.DataColumn columntoid;
+            
+            private global::System.Data.DataColumn columnversion;
+            
+            private global::System.Data.DataColumn columnversion_date;
+            
+            private global::System.Data.DataColumn columnreason_for_change;
+            
+            private global::System.Data.DataColumn columnchange_date;
+            
+            private global::System.Data.DataColumn columntheme;
+            
+            private global::System.Data.DataColumn columndesc_group;
+            
+            private global::System.Data.DataColumn columndesc_term;
+            
+            private global::System.Data.DataColumn columnmake;
+            
+            private global::System.Data.DataColumn columnfeat_code;
+            
+            private global::System.Data.DataColumn columncalc_area;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmDataTable() {
+                this.TableName = "osmm";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal osmmDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected osmmDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn toidColumn {
+                get {
+                    return this.columntoid;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn versionColumn {
+                get {
+                    return this.columnversion;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn version_dateColumn {
+                get {
+                    return this.columnversion_date;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn reason_for_changeColumn {
+                get {
+                    return this.columnreason_for_change;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn change_dateColumn {
+                get {
+                    return this.columnchange_date;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn themeColumn {
+                get {
+                    return this.columntheme;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn desc_groupColumn {
+                get {
+                    return this.columndesc_group;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn desc_termColumn {
+                get {
+                    return this.columndesc_term;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn makeColumn {
+                get {
+                    return this.columnmake;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn feat_codeColumn {
+                get {
+                    return this.columnfeat_code;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn calc_areaColumn {
+                get {
+                    return this.columncalc_area;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRow this[int index] {
+                get {
+                    return ((osmmRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event osmmRowChangeEventHandler osmmRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event osmmRowChangeEventHandler osmmRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event osmmRowChangeEventHandler osmmRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event osmmRowChangeEventHandler osmmRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void AddosmmRow(osmmRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRow AddosmmRow(string toid, int version, System.DateTime version_date, string reason_for_change, System.DateTime change_date, string theme, string desc_group, string desc_term, string make, int feat_code, double calc_area) {
+                osmmRow rowosmmRow = ((osmmRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        toid,
+                        version,
+                        version_date,
+                        reason_for_change,
+                        change_date,
+                        theme,
+                        desc_group,
+                        desc_term,
+                        make,
+                        feat_code,
+                        calc_area};
+                rowosmmRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowosmmRow);
+                return rowosmmRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRow FindBytoid(string toid) {
+                return ((osmmRow)(this.Rows.Find(new object[] {
+                            toid})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                osmmDataTable cln = ((osmmDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new osmmDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal void InitVars() {
+                this.columntoid = base.Columns["toid"];
+                this.columnversion = base.Columns["version"];
+                this.columnversion_date = base.Columns["version_date"];
+                this.columnreason_for_change = base.Columns["reason_for_change"];
+                this.columnchange_date = base.Columns["change_date"];
+                this.columntheme = base.Columns["theme"];
+                this.columndesc_group = base.Columns["desc_group"];
+                this.columndesc_term = base.Columns["desc_term"];
+                this.columnmake = base.Columns["make"];
+                this.columnfeat_code = base.Columns["feat_code"];
+                this.columncalc_area = base.Columns["calc_area"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            private void InitClass() {
+                this.columntoid = new global::System.Data.DataColumn("toid", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntoid);
+                this.columnversion = new global::System.Data.DataColumn("version", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnversion);
+                this.columnversion_date = new global::System.Data.DataColumn("version_date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnversion_date);
+                this.columnreason_for_change = new global::System.Data.DataColumn("reason_for_change", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnreason_for_change);
+                this.columnchange_date = new global::System.Data.DataColumn("change_date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnchange_date);
+                this.columntheme = new global::System.Data.DataColumn("theme", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntheme);
+                this.columndesc_group = new global::System.Data.DataColumn("desc_group", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndesc_group);
+                this.columndesc_term = new global::System.Data.DataColumn("desc_term", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndesc_term);
+                this.columnmake = new global::System.Data.DataColumn("make", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmake);
+                this.columnfeat_code = new global::System.Data.DataColumn("feat_code", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnfeat_code);
+                this.columncalc_area = new global::System.Data.DataColumn("calc_area", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncalc_area);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columntoid}, true));
+                this.columntoid.AllowDBNull = false;
+                this.columntoid.Unique = true;
+                this.columntoid.MaxLength = 20;
+                this.columnversion.AllowDBNull = false;
+                this.columnreason_for_change.AllowDBNull = false;
+                this.columnreason_for_change.MaxLength = 80;
+                this.columntheme.AllowDBNull = false;
+                this.columntheme.MaxLength = 80;
+                this.columndesc_group.AllowDBNull = false;
+                this.columndesc_group.MaxLength = 150;
+                this.columndesc_term.MaxLength = 150;
+                this.columnmake.AllowDBNull = false;
+                this.columnmake.MaxLength = 20;
+                this.columnfeat_code.AllowDBNull = false;
+                this.columncalc_area.AllowDBNull = false;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRow NewosmmRow() {
+                return ((osmmRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new osmmRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(osmmRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.osmmRowChanged != null)) {
+                    this.osmmRowChanged(this, new osmmRowChangeEvent(((osmmRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.osmmRowChanging != null)) {
+                    this.osmmRowChanging(this, new osmmRowChangeEvent(((osmmRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.osmmRowDeleted != null)) {
+                    this.osmmRowDeleted(this, new osmmRowChangeEvent(((osmmRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.osmmRowDeleting != null)) {
+                    this.osmmRowDeleting(this, new osmmRowChangeEvent(((osmmRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void RemoveosmmRow(osmmRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                HluDataSet ds = new HluDataSet();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "osmmDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class lut_osmm_ihs_xrefDataTable : global::System.Data.TypedTableBase<lut_osmm_ihs_xrefRow> {
+            
+            private global::System.Data.DataColumn columnosmm_id;
+            
+            private global::System.Data.DataColumn columnmake;
+            
+            private global::System.Data.DataColumn columndesc_group;
+            
+            private global::System.Data.DataColumn columndesc_term;
+            
+            private global::System.Data.DataColumn columntheme;
+            
+            private global::System.Data.DataColumn columnihs_habitat;
+            
+            private global::System.Data.DataColumn columnihs_matrix1;
+            
+            private global::System.Data.DataColumn columnihs_matrix2;
+            
+            private global::System.Data.DataColumn columnihs_matrix3;
+            
+            private global::System.Data.DataColumn columnihs_formation1;
+            
+            private global::System.Data.DataColumn columnihs_formation2;
+            
+            private global::System.Data.DataColumn columnihs_management1;
+            
+            private global::System.Data.DataColumn columnihs_management2;
+            
+            private global::System.Data.DataColumn columnihs_complex1;
+            
+            private global::System.Data.DataColumn columnihs_complex2;
+            
+            private global::System.Data.DataColumn columnmanmade;
+            
+            private global::System.Data.DataColumn columncomments;
+            
+            private global::System.Data.DataColumn columnis_local;
+            
+            private global::System.Data.DataColumn columnadded_by;
+            
+            private global::System.Data.DataColumn columnadded_date;
+            
+            private global::System.Data.DataColumn columnmodified_by;
+            
+            private global::System.Data.DataColumn columnmodified_date;
+            
+            private global::System.Data.DataColumn columnsystem_supplied;
+            
+            private global::System.Data.DataColumn columncustodian;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefDataTable() {
+                this.TableName = "lut_osmm_ihs_xref";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal lut_osmm_ihs_xrefDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected lut_osmm_ihs_xrefDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn osmm_idColumn {
+                get {
+                    return this.columnosmm_id;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn makeColumn {
+                get {
+                    return this.columnmake;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn desc_groupColumn {
+                get {
+                    return this.columndesc_group;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn desc_termColumn {
+                get {
+                    return this.columndesc_term;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn themeColumn {
+                get {
+                    return this.columntheme;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_habitatColumn {
+                get {
+                    return this.columnihs_habitat;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_matrix1Column {
+                get {
+                    return this.columnihs_matrix1;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_matrix2Column {
+                get {
+                    return this.columnihs_matrix2;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_matrix3Column {
+                get {
+                    return this.columnihs_matrix3;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_formation1Column {
+                get {
+                    return this.columnihs_formation1;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_formation2Column {
+                get {
+                    return this.columnihs_formation2;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_management1Column {
+                get {
+                    return this.columnihs_management1;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_management2Column {
+                get {
+                    return this.columnihs_management2;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_complex1Column {
+                get {
+                    return this.columnihs_complex1;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn ihs_complex2Column {
+                get {
+                    return this.columnihs_complex2;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn manmadeColumn {
+                get {
+                    return this.columnmanmade;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn commentsColumn {
+                get {
+                    return this.columncomments;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn is_localColumn {
+                get {
+                    return this.columnis_local;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn added_byColumn {
+                get {
+                    return this.columnadded_by;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn added_dateColumn {
+                get {
+                    return this.columnadded_date;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn modified_byColumn {
+                get {
+                    return this.columnmodified_by;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn modified_dateColumn {
+                get {
+                    return this.columnmodified_date;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn system_suppliedColumn {
+                get {
+                    return this.columnsystem_supplied;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn custodianColumn {
+                get {
+                    return this.columncustodian;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRow this[int index] {
+                get {
+                    return ((lut_osmm_ihs_xrefRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_osmm_ihs_xrefRowChangeEventHandler lut_osmm_ihs_xrefRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_osmm_ihs_xrefRowChangeEventHandler lut_osmm_ihs_xrefRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_osmm_ihs_xrefRowChangeEventHandler lut_osmm_ihs_xrefRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public event lut_osmm_ihs_xrefRowChangeEventHandler lut_osmm_ihs_xrefRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Addlut_osmm_ihs_xrefRow(lut_osmm_ihs_xrefRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRow Addlut_osmm_ihs_xrefRow(
+                        int osmm_id, 
+                        string make, 
+                        string desc_group, 
+                        string desc_term, 
+                        string theme, 
+                        string ihs_habitat, 
+                        string ihs_matrix1, 
+                        string ihs_matrix2, 
+                        string ihs_matrix3, 
+                        string ihs_formation1, 
+                        string ihs_formation2, 
+                        string ihs_management1, 
+                        string ihs_management2, 
+                        string ihs_complex1, 
+                        string ihs_complex2, 
+                        bool manmade, 
+                        string comments, 
+                        bool is_local, 
+                        string added_by, 
+                        System.DateTime added_date, 
+                        string modified_by, 
+                        System.DateTime modified_date, 
+                        bool system_supplied, 
+                        string custodian) {
+                lut_osmm_ihs_xrefRow rowlut_osmm_ihs_xrefRow = ((lut_osmm_ihs_xrefRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        osmm_id,
+                        make,
+                        desc_group,
+                        desc_term,
+                        theme,
+                        ihs_habitat,
+                        ihs_matrix1,
+                        ihs_matrix2,
+                        ihs_matrix3,
+                        ihs_formation1,
+                        ihs_formation2,
+                        ihs_management1,
+                        ihs_management2,
+                        ihs_complex1,
+                        ihs_complex2,
+                        manmade,
+                        comments,
+                        is_local,
+                        added_by,
+                        added_date,
+                        modified_by,
+                        modified_date,
+                        system_supplied,
+                        custodian};
+                rowlut_osmm_ihs_xrefRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowlut_osmm_ihs_xrefRow);
+                return rowlut_osmm_ihs_xrefRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRow FindByosmm_id(int osmm_id) {
+                return ((lut_osmm_ihs_xrefRow)(this.Rows.Find(new object[] {
+                            osmm_id})));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                lut_osmm_ihs_xrefDataTable cln = ((lut_osmm_ihs_xrefDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new lut_osmm_ihs_xrefDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal void InitVars() {
+                this.columnosmm_id = base.Columns["osmm_id"];
+                this.columnmake = base.Columns["make"];
+                this.columndesc_group = base.Columns["desc_group"];
+                this.columndesc_term = base.Columns["desc_term"];
+                this.columntheme = base.Columns["theme"];
+                this.columnihs_habitat = base.Columns["ihs_habitat"];
+                this.columnihs_matrix1 = base.Columns["ihs_matrix1"];
+                this.columnihs_matrix2 = base.Columns["ihs_matrix2"];
+                this.columnihs_matrix3 = base.Columns["ihs_matrix3"];
+                this.columnihs_formation1 = base.Columns["ihs_formation1"];
+                this.columnihs_formation2 = base.Columns["ihs_formation2"];
+                this.columnihs_management1 = base.Columns["ihs_management1"];
+                this.columnihs_management2 = base.Columns["ihs_management2"];
+                this.columnihs_complex1 = base.Columns["ihs_complex1"];
+                this.columnihs_complex2 = base.Columns["ihs_complex2"];
+                this.columnmanmade = base.Columns["manmade"];
+                this.columncomments = base.Columns["comments"];
+                this.columnis_local = base.Columns["is_local"];
+                this.columnadded_by = base.Columns["added_by"];
+                this.columnadded_date = base.Columns["added_date"];
+                this.columnmodified_by = base.Columns["modified_by"];
+                this.columnmodified_date = base.Columns["modified_date"];
+                this.columnsystem_supplied = base.Columns["system_supplied"];
+                this.columncustodian = base.Columns["custodian"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            private void InitClass() {
+                this.columnosmm_id = new global::System.Data.DataColumn("osmm_id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnosmm_id);
+                this.columnmake = new global::System.Data.DataColumn("make", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmake);
+                this.columndesc_group = new global::System.Data.DataColumn("desc_group", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndesc_group);
+                this.columndesc_term = new global::System.Data.DataColumn("desc_term", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndesc_term);
+                this.columntheme = new global::System.Data.DataColumn("theme", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntheme);
+                this.columnihs_habitat = new global::System.Data.DataColumn("ihs_habitat", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_habitat);
+                this.columnihs_matrix1 = new global::System.Data.DataColumn("ihs_matrix1", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_matrix1);
+                this.columnihs_matrix2 = new global::System.Data.DataColumn("ihs_matrix2", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_matrix2);
+                this.columnihs_matrix3 = new global::System.Data.DataColumn("ihs_matrix3", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_matrix3);
+                this.columnihs_formation1 = new global::System.Data.DataColumn("ihs_formation1", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_formation1);
+                this.columnihs_formation2 = new global::System.Data.DataColumn("ihs_formation2", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_formation2);
+                this.columnihs_management1 = new global::System.Data.DataColumn("ihs_management1", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_management1);
+                this.columnihs_management2 = new global::System.Data.DataColumn("ihs_management2", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_management2);
+                this.columnihs_complex1 = new global::System.Data.DataColumn("ihs_complex1", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_complex1);
+                this.columnihs_complex2 = new global::System.Data.DataColumn("ihs_complex2", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnihs_complex2);
+                this.columnmanmade = new global::System.Data.DataColumn("manmade", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmanmade);
+                this.columncomments = new global::System.Data.DataColumn("comments", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncomments);
+                this.columnis_local = new global::System.Data.DataColumn("is_local", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnis_local);
+                this.columnadded_by = new global::System.Data.DataColumn("added_by", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnadded_by);
+                this.columnadded_date = new global::System.Data.DataColumn("added_date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnadded_date);
+                this.columnmodified_by = new global::System.Data.DataColumn("modified_by", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_by);
+                this.columnmodified_date = new global::System.Data.DataColumn("modified_date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_date);
+                this.columnsystem_supplied = new global::System.Data.DataColumn("system_supplied", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnsystem_supplied);
+                this.columncustodian = new global::System.Data.DataColumn("custodian", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncustodian);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnosmm_id}, true));
+                this.columnosmm_id.AllowDBNull = false;
+                this.columnosmm_id.Unique = true;
+                this.columnmake.AllowDBNull = false;
+                this.columnmake.MaxLength = 20;
+                this.columndesc_group.AllowDBNull = false;
+                this.columndesc_group.MaxLength = 150;
+                this.columndesc_term.MaxLength = 150;
+                this.columntheme.AllowDBNull = false;
+                this.columntheme.MaxLength = 80;
+                this.columnihs_habitat.AllowDBNull = false;
+                this.columnihs_habitat.MaxLength = 8;
+                this.columnihs_matrix1.MaxLength = 8;
+                this.columnihs_matrix2.MaxLength = 8;
+                this.columnihs_matrix3.MaxLength = 8;
+                this.columnihs_formation1.MaxLength = 8;
+                this.columnihs_formation2.MaxLength = 8;
+                this.columnihs_management1.MaxLength = 8;
+                this.columnihs_management2.MaxLength = 8;
+                this.columnihs_complex1.MaxLength = 8;
+                this.columnihs_complex2.MaxLength = 8;
+                this.columncomments.MaxLength = 150;
+                this.columnis_local.AllowDBNull = false;
+                this.columnadded_by.AllowDBNull = false;
+                this.columnadded_by.MaxLength = 40;
+                this.columnadded_date.AllowDBNull = false;
+                this.columnmodified_by.MaxLength = 40;
+                this.columnsystem_supplied.AllowDBNull = false;
+                this.columncustodian.AllowDBNull = false;
+                this.columncustodian.MaxLength = 8;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRow Newlut_osmm_ihs_xrefRow() {
+                return ((lut_osmm_ihs_xrefRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new lut_osmm_ihs_xrefRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(lut_osmm_ihs_xrefRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.lut_osmm_ihs_xrefRowChanged != null)) {
+                    this.lut_osmm_ihs_xrefRowChanged(this, new lut_osmm_ihs_xrefRowChangeEvent(((lut_osmm_ihs_xrefRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.lut_osmm_ihs_xrefRowChanging != null)) {
+                    this.lut_osmm_ihs_xrefRowChanging(this, new lut_osmm_ihs_xrefRowChangeEvent(((lut_osmm_ihs_xrefRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.lut_osmm_ihs_xrefRowDeleted != null)) {
+                    this.lut_osmm_ihs_xrefRowDeleted(this, new lut_osmm_ihs_xrefRowChangeEvent(((lut_osmm_ihs_xrefRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.lut_osmm_ihs_xrefRowDeleting != null)) {
+                    this.lut_osmm_ihs_xrefRowDeleting(this, new lut_osmm_ihs_xrefRowChangeEvent(((lut_osmm_ihs_xrefRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Removelut_osmm_ihs_xrefRow(lut_osmm_ihs_xrefRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                HluDataSet ds = new HluDataSet();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "lut_osmm_ihs_xrefDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class exportsRow : global::System.Data.DataRow {
@@ -14353,6 +15520,17 @@ namespace HLU.Data.Model {
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["fk_history_lut_operation"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public incid_mm_polygonsRow incid_mm_polygonsRowParent {
+                get {
+                    return ((incid_mm_polygonsRow)(this.GetParentRow(this.Table.ParentRelations["fk_history_incid_mm_polygons"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["fk_history_incid_mm_polygons"]);
                 }
             }
             
@@ -15421,6 +16599,54 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string spatial_flag {
+                get {
+                    try {
+                        return ((string)(this[this.tableincid_mm_polygons.spatial_flagColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'spatial_flag\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableincid_mm_polygons.spatial_flagColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int process_flag {
+                get {
+                    try {
+                        return ((int)(this[this.tableincid_mm_polygons.process_flagColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'process_flag\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableincid_mm_polygons.process_flagColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string change_flag {
+                get {
+                    try {
+                        return ((string)(this[this.tableincid_mm_polygons.change_flagColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'change_flag\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableincid_mm_polygons.change_flagColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow incidRow {
                 get {
                     return ((incidRow)(this.GetParentRow(this.Table.ParentRelations["FK_incid_incid_mm_polygons"])));
@@ -15476,6 +16702,53 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void Setshape_areaNull() {
                 this[this.tableincid_mm_polygons.shape_areaColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isspatial_flagNull() {
+                return this.IsNull(this.tableincid_mm_polygons.spatial_flagColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setspatial_flagNull() {
+                this[this.tableincid_mm_polygons.spatial_flagColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isprocess_flagNull() {
+                return this.IsNull(this.tableincid_mm_polygons.process_flagColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setprocess_flagNull() {
+                this[this.tableincid_mm_polygons.process_flagColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Ischange_flagNull() {
+                return this.IsNull(this.tableincid_mm_polygons.change_flagColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setchange_flagNull() {
+                this[this.tableincid_mm_polygons.change_flagColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public historyRow[] GethistoryRows() {
+                if ((this.Table.ChildRelations["fk_history_incid_mm_polygons"] == null)) {
+                    return new historyRow[0];
+                }
+                else {
+                    return ((historyRow[])(base.GetChildRows(this.Table.ChildRelations["fk_history_incid_mm_polygons"])));
+                }
             }
         }
         
@@ -18113,6 +19386,710 @@ namespace HLU.Data.Model {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class osmmRow : global::System.Data.DataRow {
+            
+            private osmmDataTable tableosmm;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal osmmRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableosmm = ((osmmDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string toid {
+                get {
+                    return ((string)(this[this.tableosmm.toidColumn]));
+                }
+                set {
+                    this[this.tableosmm.toidColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int version {
+                get {
+                    return ((int)(this[this.tableosmm.versionColumn]));
+                }
+                set {
+                    this[this.tableosmm.versionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public System.DateTime version_date {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableosmm.version_dateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'version_date\' in table \'osmm\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableosmm.version_dateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string reason_for_change {
+                get {
+                    return ((string)(this[this.tableosmm.reason_for_changeColumn]));
+                }
+                set {
+                    this[this.tableosmm.reason_for_changeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public System.DateTime change_date {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tableosmm.change_dateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'change_date\' in table \'osmm\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableosmm.change_dateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string theme {
+                get {
+                    return ((string)(this[this.tableosmm.themeColumn]));
+                }
+                set {
+                    this[this.tableosmm.themeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string desc_group {
+                get {
+                    return ((string)(this[this.tableosmm.desc_groupColumn]));
+                }
+                set {
+                    this[this.tableosmm.desc_groupColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string desc_term {
+                get {
+                    try {
+                        return ((string)(this[this.tableosmm.desc_termColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'desc_term\' in table \'osmm\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableosmm.desc_termColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string make {
+                get {
+                    return ((string)(this[this.tableosmm.makeColumn]));
+                }
+                set {
+                    this[this.tableosmm.makeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int feat_code {
+                get {
+                    return ((int)(this[this.tableosmm.feat_codeColumn]));
+                }
+                set {
+                    this[this.tableosmm.feat_codeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public double calc_area {
+                get {
+                    return ((double)(this[this.tableosmm.calc_areaColumn]));
+                }
+                set {
+                    this[this.tableosmm.calc_areaColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isversion_dateNull() {
+                return this.IsNull(this.tableosmm.version_dateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setversion_dateNull() {
+                this[this.tableosmm.version_dateColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Ischange_dateNull() {
+                return this.IsNull(this.tableosmm.change_dateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setchange_dateNull() {
+                this[this.tableosmm.change_dateColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isdesc_termNull() {
+                return this.IsNull(this.tableosmm.desc_termColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setdesc_termNull() {
+                this[this.tableosmm.desc_termColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class lut_osmm_ihs_xrefRow : global::System.Data.DataRow {
+            
+            private lut_osmm_ihs_xrefDataTable tablelut_osmm_ihs_xref;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal lut_osmm_ihs_xrefRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tablelut_osmm_ihs_xref = ((lut_osmm_ihs_xrefDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int osmm_id {
+                get {
+                    return ((int)(this[this.tablelut_osmm_ihs_xref.osmm_idColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.osmm_idColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string make {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.makeColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.makeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string desc_group {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.desc_groupColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.desc_groupColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string desc_term {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.desc_termColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'desc_term\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.desc_termColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string theme {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.themeColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.themeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_habitat {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_habitatColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_habitatColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_matrix1 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_matrix1Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_matrix1\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_matrix1Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_matrix2 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_matrix2Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_matrix2\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_matrix2Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_matrix3 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_matrix3Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_matrix3\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_matrix3Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_formation1 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_formation1Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_formation1\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_formation1Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_formation2 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_formation2Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_formation2\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_formation2Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_management1 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_management1Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_management1\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_management1Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_management2 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_management2Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_management2\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_management2Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_complex1 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_complex1Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_complex1\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_complex1Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string ihs_complex2 {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.ihs_complex2Column]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_complex2\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.ihs_complex2Column] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool manmade {
+                get {
+                    try {
+                        return ((bool)(this[this.tablelut_osmm_ihs_xref.manmadeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'manmade\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.manmadeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string comments {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.commentsColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'comments\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.commentsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool is_local {
+                get {
+                    return ((bool)(this[this.tablelut_osmm_ihs_xref.is_localColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.is_localColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string added_by {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.added_byColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.added_byColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public System.DateTime added_date {
+                get {
+                    return ((global::System.DateTime)(this[this.tablelut_osmm_ihs_xref.added_dateColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.added_dateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string modified_by {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_osmm_ihs_xref.modified_byColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'modified_by\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.modified_byColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public System.DateTime modified_date {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tablelut_osmm_ihs_xref.modified_dateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'modified_date\' in table \'lut_osmm_ihs_xref\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.modified_dateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool system_supplied {
+                get {
+                    return ((bool)(this[this.tablelut_osmm_ihs_xref.system_suppliedColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.system_suppliedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string custodian {
+                get {
+                    return ((string)(this[this.tablelut_osmm_ihs_xref.custodianColumn]));
+                }
+                set {
+                    this[this.tablelut_osmm_ihs_xref.custodianColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isdesc_termNull() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.desc_termColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setdesc_termNull() {
+                this[this.tablelut_osmm_ihs_xref.desc_termColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_matrix1Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_matrix1Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_matrix1Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_matrix1Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_matrix2Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_matrix2Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_matrix2Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_matrix2Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_matrix3Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_matrix3Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_matrix3Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_matrix3Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_formation1Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_formation1Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_formation1Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_formation1Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_formation2Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_formation2Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_formation2Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_formation2Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_management1Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_management1Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_management1Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_management1Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_management2Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_management2Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_management2Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_management2Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_complex1Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_complex1Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_complex1Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_complex1Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isihs_complex2Null() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.ihs_complex2Column);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setihs_complex2Null() {
+                this[this.tablelut_osmm_ihs_xref.ihs_complex2Column] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsmanmadeNull() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.manmadeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetmanmadeNull() {
+                this[this.tablelut_osmm_ihs_xref.manmadeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IscommentsNull() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.commentsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetcommentsNull() {
+                this[this.tablelut_osmm_ihs_xref.commentsColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Ismodified_byNull() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.modified_byColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setmodified_byNull() {
+                this[this.tablelut_osmm_ihs_xref.modified_byColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Ismodified_dateNull() {
+                return this.IsNull(this.tablelut_osmm_ihs_xref.modified_dateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setmodified_dateNull() {
+                this[this.tablelut_osmm_ihs_xref.modified_dateColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -19356,6 +21333,74 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_legacy_habitatRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public class osmmRowChangeEvent : global::System.EventArgs {
+            
+            private osmmRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRowChangeEvent(osmmRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public osmmRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public class lut_osmm_ihs_xrefRowChangeEvent : global::System.EventArgs {
+            
+            private lut_osmm_ihs_xrefRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRowChangeEvent(lut_osmm_ihs_xrefRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_osmm_ihs_xrefRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -23845,10 +25890,13 @@ SELECT matrix_id, incid, matrix FROM incid_ihs_matrix WHERE (matrix_id = @matrix
             tableMapping.ColumnMappings.Add("ihs_summary", "ihs_summary");
             tableMapping.ColumnMappings.Add("shape_length", "shape_length");
             tableMapping.ColumnMappings.Add("shape_area", "shape_area");
+            tableMapping.ColumnMappings.Add("spatial_flag", "spatial_flag");
+            tableMapping.ColumnMappings.Add("process_flag", "process_flag");
+            tableMapping.ColumnMappings.Add("change_flag", "change_flag");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [dbo].[incid_mm_polygons] WHERE (([incid] = @Original_incid) AND ([toid] = @Original_toid) AND ([toid_fragment_id] = @Original_toid_fragment_id) AND ((@IsNull_ihs_category = 1 AND [ihs_category] IS NULL) OR ([ihs_category] = @Original_ihs_category)) AND ((@IsNull_ihs_summary = 1 AND [ihs_summary] IS NULL) OR ([ihs_summary] = @Original_ihs_summary)) AND ((@IsNull_shape_length = 1 AND [shape_length] IS NULL) OR ([shape_length] = @Original_shape_length)) AND ((@IsNull_shape_area = 1 AND [shape_area] IS NULL) OR ([shape_area] = @Original_shape_area)))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [incid_mm_polygons] WHERE (([incid] = @Original_incid) AND ([toid] = @Original_toid) AND ([toid_fragment_id] = @Original_toid_fragment_id) AND ((@IsNull_ihs_category = 1 AND [ihs_category] IS NULL) OR ([ihs_category] = @Original_ihs_category)) AND ((@IsNull_ihs_summary = 1 AND [ihs_summary] IS NULL) OR ([ihs_summary] = @Original_ihs_summary)) AND ((@IsNull_shape_length = 1 AND [shape_length] IS NULL) OR ([shape_length] = @Original_shape_length)) AND ((@IsNull_shape_area = 1 AND [shape_area] IS NULL) OR ([shape_area] = @Original_shape_area)) AND ((@IsNull_spatial_flag = 1 AND [spatial_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_process_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_process_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_flag] = @Original_change_flag)))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -23861,10 +25909,16 @@ SELECT matrix_id, incid, matrix FROM incid_ihs_matrix WHERE (matrix_id = @matrix
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_shape_length", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_length", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_shape_area", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_shape_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_spatial_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_spatial_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[incid_mm_polygons] ([incid], [toid], [toid_fragment_id], [ihs_category], [ihs_summary], [shape_length], [shape_area]) VALUES (@incid, @toid, @toid_fragment_id, @ihs_category, @ihs_summary, @shape_length, @shape_area);
-SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area FROM incid_mm_polygons WHERE (incid = @incid) AND (toid = @toid) AND (toid_fragment_id = @toid_fragment_id)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [incid_mm_polygons] ([incid], [toid], [toid_fragment_id], [ihs_category], [ihs_summary], [shape_length], [shape_area], [spatial_flag], [process_flag], [change_flag]) VALUES (@incid, @toid, @toid_fragment_id, @ihs_category, @ihs_summary, @shape_length, @shape_area, @spatial_flag, @process_flag, @change_flag);
+SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area, spatial_flag, process_flag, change_flag FROM incid_mm_polygons WHERE (incid = @incid) AND (toid = @toid) AND (toid_fragment_id = @toid_fragment_id)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -23873,10 +25927,13 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_summary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_summary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@shape_length", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_length", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@shape_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@spatial_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[incid_mm_polygons] SET [incid] = @incid, [toid] = @toid, [toid_fragment_id] = @toid_fragment_id, [ihs_category] = @ihs_category, [ihs_summary] = @ihs_summary, [shape_length] = @shape_length, [shape_area] = @shape_area WHERE (([incid] = @Original_incid) AND ([toid] = @Original_toid) AND ([toid_fragment_id] = @Original_toid_fragment_id) AND ((@IsNull_ihs_category = 1 AND [ihs_category] IS NULL) OR ([ihs_category] = @Original_ihs_category)) AND ((@IsNull_ihs_summary = 1 AND [ihs_summary] IS NULL) OR ([ihs_summary] = @Original_ihs_summary)) AND ((@IsNull_shape_length = 1 AND [shape_length] IS NULL) OR ([shape_length] = @Original_shape_length)) AND ((@IsNull_shape_area = 1 AND [shape_area] IS NULL) OR ([shape_area] = @Original_shape_area)));
-SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area FROM incid_mm_polygons WHERE (incid = @incid) AND (toid = @toid) AND (toid_fragment_id = @toid_fragment_id)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [incid_mm_polygons] SET [incid] = @incid, [toid] = @toid, [toid_fragment_id] = @toid_fragment_id, [ihs_category] = @ihs_category, [ihs_summary] = @ihs_summary, [shape_length] = @shape_length, [shape_area] = @shape_area, [spatial_flag] = @spatial_flag, [process_flag] = @process_flag, [change_flag] = @change_flag WHERE (([incid] = @Original_incid) AND ([toid] = @Original_toid) AND ([toid_fragment_id] = @Original_toid_fragment_id) AND ((@IsNull_ihs_category = 1 AND [ihs_category] IS NULL) OR ([ihs_category] = @Original_ihs_category)) AND ((@IsNull_ihs_summary = 1 AND [ihs_summary] IS NULL) OR ([ihs_summary] = @Original_ihs_summary)) AND ((@IsNull_shape_length = 1 AND [shape_length] IS NULL) OR ([shape_length] = @Original_shape_length)) AND ((@IsNull_shape_area = 1 AND [shape_area] IS NULL) OR ([shape_area] = @Original_shape_area)) AND ((@IsNull_spatial_flag = 1 AND [spatial_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_process_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_process_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_flag] = @Original_change_flag)));
+SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area, spatial_flag, process_flag, change_flag FROM incid_mm_polygons WHERE (incid = @incid) AND (toid = @toid) AND (toid_fragment_id = @toid_fragment_id)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -23885,6 +25942,9 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_summary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_summary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@shape_length", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_length", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@shape_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@spatial_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_toid_fragment_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid_fragment_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -23896,13 +25956,19 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_shape_length", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_length", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_shape_area", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_shape_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "shape_area", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_spatial_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_spatial_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_flag", global::System.Data.SqlDbType.Char, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HluConnectionString;
+            this._connection.ConnectionString = "Data Source=ZIPY\\SQLEXPRESS2016;Initial Catalog=HLUData;Integrated Security=True";
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -23911,8 +25977,9 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, sh" +
-                "ape_area FROM dbo.incid_mm_polygons";
+            this._commandCollection[0].CommandText = "SELECT        incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_len" +
+                "gth, shape_area, spatial_flag, process_flag, change_flag\r\nFROM            incid_" +
+                "mm_polygons";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -23973,7 +26040,7 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_incid, string Original_toid, string Original_toid_fragment_id, string Original_ihs_category, string Original_ihs_summary, global::System.Nullable<double> Original_shape_length, global::System.Nullable<double> Original_shape_area) {
+        public virtual int Delete(string Original_incid, string Original_toid, string Original_toid_fragment_id, string Original_ihs_category, string Original_ihs_summary, global::System.Nullable<double> Original_shape_length, global::System.Nullable<double> Original_shape_area, string Original_spatial_flag, global::System.Nullable<int> Original_process_flag, string Original_change_flag) {
             if ((Original_incid == null)) {
                 throw new global::System.ArgumentNullException("Original_incid");
             }
@@ -24024,6 +26091,30 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
                 this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
+            if ((Original_spatial_flag == null)) {
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[12].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[12].Value = ((string)(Original_spatial_flag));
+            }
+            if ((Original_process_flag.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[14].Value = ((int)(Original_process_flag.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[14].Value = global::System.DBNull.Value;
+            }
+            if ((Original_change_flag == null)) {
+                this.Adapter.DeleteCommand.Parameters[15].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[15].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[16].Value = ((string)(Original_change_flag));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -24044,7 +26135,7 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string incid, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, global::System.Nullable<double> shape_length, global::System.Nullable<double> shape_area) {
+        public virtual int Insert(string incid, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, global::System.Nullable<double> shape_length, global::System.Nullable<double> shape_area, string spatial_flag, global::System.Nullable<int> process_flag, string change_flag) {
             if ((incid == null)) {
                 throw new global::System.ArgumentNullException("incid");
             }
@@ -24087,6 +26178,24 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             else {
                 this.Adapter.InsertCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
+            if ((spatial_flag == null)) {
+                this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[7].Value = ((string)(spatial_flag));
+            }
+            if ((process_flag.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[8].Value = ((int)(process_flag.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            if ((change_flag == null)) {
+                this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[9].Value = ((string)(change_flag));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -24107,7 +26216,27 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string incid, string toid, string toid_fragment_id, string ihs_category, string ihs_summary, global::System.Nullable<double> shape_length, global::System.Nullable<double> shape_area, string Original_incid, string Original_toid, string Original_toid_fragment_id, string Original_ihs_category, string Original_ihs_summary, global::System.Nullable<double> Original_shape_length, global::System.Nullable<double> Original_shape_area) {
+        public virtual int Update(
+                    string incid, 
+                    string toid, 
+                    string toid_fragment_id, 
+                    string ihs_category, 
+                    string ihs_summary, 
+                    global::System.Nullable<double> shape_length, 
+                    global::System.Nullable<double> shape_area, 
+                    string spatial_flag, 
+                    global::System.Nullable<int> process_flag, 
+                    string change_flag, 
+                    string Original_incid, 
+                    string Original_toid, 
+                    string Original_toid_fragment_id, 
+                    string Original_ihs_category, 
+                    string Original_ihs_summary, 
+                    global::System.Nullable<double> Original_shape_length, 
+                    global::System.Nullable<double> Original_shape_area, 
+                    string Original_spatial_flag, 
+                    global::System.Nullable<int> Original_process_flag, 
+                    string Original_change_flag) {
             if ((incid == null)) {
                 throw new global::System.ArgumentNullException("incid");
             }
@@ -24150,55 +26279,97 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
             else {
                 this.Adapter.UpdateCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
+            if ((spatial_flag == null)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(spatial_flag));
+            }
+            if ((process_flag.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(process_flag.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            if ((change_flag == null)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(change_flag));
+            }
             if ((Original_incid == null)) {
                 throw new global::System.ArgumentNullException("Original_incid");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(Original_incid));
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(Original_incid));
             }
             if ((Original_toid == null)) {
                 throw new global::System.ArgumentNullException("Original_toid");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(Original_toid));
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(Original_toid));
             }
             if ((Original_toid_fragment_id == null)) {
                 throw new global::System.ArgumentNullException("Original_toid_fragment_id");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(Original_toid_fragment_id));
+                this.Adapter.UpdateCommand.Parameters[12].Value = ((string)(Original_toid_fragment_id));
             }
             if ((Original_ihs_category == null)) {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[11].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(Original_ihs_category));
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_ihs_category));
             }
             if ((Original_ihs_summary == null)) {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_ihs_summary));
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((string)(Original_ihs_summary));
             }
             if ((Original_shape_length.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((double)(Original_shape_length.Value));
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[18].Value = ((double)(Original_shape_length.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[15].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[18].Value = global::System.DBNull.Value;
             }
             if ((Original_shape_area.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[17].Value = ((double)(Original_shape_area.Value));
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((double)(Original_shape_area.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
+            }
+            if ((Original_spatial_flag == null)) {
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[22].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[22].Value = ((string)(Original_spatial_flag));
+            }
+            if ((Original_process_flag.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[24].Value = ((int)(Original_process_flag.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[24].Value = global::System.DBNull.Value;
+            }
+            if ((Original_change_flag == null)) {
+                this.Adapter.UpdateCommand.Parameters[25].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[26].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[25].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[26].Value = ((string)(Original_change_flag));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -24220,8 +26391,25 @@ SELECT incid, toid, toid_fragment_id, ihs_category, ihs_summary, shape_length, s
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string ihs_category, string ihs_summary, global::System.Nullable<double> shape_length, global::System.Nullable<double> shape_area, string Original_incid, string Original_toid, string Original_toid_fragment_id, string Original_ihs_category, string Original_ihs_summary, global::System.Nullable<double> Original_shape_length, global::System.Nullable<double> Original_shape_area) {
-            return this.Update(Original_incid, Original_toid, Original_toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area, Original_incid, Original_toid, Original_toid_fragment_id, Original_ihs_category, Original_ihs_summary, Original_shape_length, Original_shape_area);
+        public virtual int Update(
+                    string ihs_category, 
+                    string ihs_summary, 
+                    global::System.Nullable<double> shape_length, 
+                    global::System.Nullable<double> shape_area, 
+                    string spatial_flag, 
+                    global::System.Nullable<int> process_flag, 
+                    string change_flag, 
+                    string Original_incid, 
+                    string Original_toid, 
+                    string Original_toid_fragment_id, 
+                    string Original_ihs_category, 
+                    string Original_ihs_summary, 
+                    global::System.Nullable<double> Original_shape_length, 
+                    global::System.Nullable<double> Original_shape_area, 
+                    string Original_spatial_flag, 
+                    global::System.Nullable<int> Original_process_flag, 
+                    string Original_change_flag) {
+            return this.Update(Original_incid, Original_toid, Original_toid_fragment_id, ihs_category, ihs_summary, shape_length, shape_area, spatial_flag, process_flag, change_flag, Original_incid, Original_toid, Original_toid_fragment_id, Original_ihs_category, Original_ihs_summary, Original_shape_length, Original_shape_area, Original_spatial_flag, Original_process_flag, Original_change_flag);
         }
     }
     
@@ -33376,6 +35564,1734 @@ SELECT code, description, sort_order FROM lut_legacy_habitat WHERE (code = @code
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
         public virtual int Update(string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
             return this.Update(Original_code, description, sort_order, Original_code, Original_description, Original_sort_order);
+        }
+    }
+    
+    /// <summary>
+    ///Represents the connection and commands used to retrieve and save data.
+    ///</summary>
+    [global::System.ComponentModel.DesignerCategoryAttribute("code")]
+    [global::System.ComponentModel.ToolboxItem(true)]
+    [global::System.ComponentModel.DataObjectAttribute(true)]
+    [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
+        ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+    public partial class osmmTableAdapter : global::System.ComponentModel.Component {
+        
+        private global::System.Data.SqlClient.SqlDataAdapter _adapter;
+        
+        private global::System.Data.SqlClient.SqlConnection _connection;
+        
+        private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
+        
+        private bool _clearBeforeFill;
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public osmmTableAdapter() {
+            this.ClearBeforeFill = true;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
+            get {
+                if ((this._adapter == null)) {
+                    this.InitAdapter();
+                }
+                return this._adapter;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection {
+            get {
+                if ((this._connection == null)) {
+                    this.InitConnection();
+                }
+                return this._connection;
+            }
+            set {
+                this._connection = value;
+                if ((this.Adapter.InsertCommand != null)) {
+                    this.Adapter.InsertCommand.Connection = value;
+                }
+                if ((this.Adapter.DeleteCommand != null)) {
+                    this.Adapter.DeleteCommand.Connection = value;
+                }
+                if ((this.Adapter.UpdateCommand != null)) {
+                    this.Adapter.UpdateCommand.Connection = value;
+                }
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
+                    if ((this.CommandCollection[i] != null)) {
+                        ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
+                    }
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
+            get {
+                if ((this._commandCollection == null)) {
+                    this.InitCommandCollection();
+                }
+                return this._commandCollection;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public bool ClearBeforeFill {
+            get {
+                return this._clearBeforeFill;
+            }
+            set {
+                this._clearBeforeFill = value;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitAdapter() {
+            this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
+            global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
+            tableMapping.SourceTable = "Table";
+            tableMapping.DataSetTable = "osmm";
+            tableMapping.ColumnMappings.Add("toid", "toid");
+            tableMapping.ColumnMappings.Add("version", "version");
+            tableMapping.ColumnMappings.Add("version_date", "version_date");
+            tableMapping.ColumnMappings.Add("reason_for_change", "reason_for_change");
+            tableMapping.ColumnMappings.Add("change_date", "change_date");
+            tableMapping.ColumnMappings.Add("theme", "theme");
+            tableMapping.ColumnMappings.Add("desc_group", "desc_group");
+            tableMapping.ColumnMappings.Add("desc_term", "desc_term");
+            tableMapping.ColumnMappings.Add("make", "make");
+            tableMapping.ColumnMappings.Add("feat_code", "feat_code");
+            tableMapping.ColumnMappings.Add("calc_area", "calc_area");
+            this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [osmm] WHERE (([toid] = @Original_toid) AND ([version] = @Original_version) AND ((@IsNull_version_date = 1 AND [version_date] IS NULL) OR ([version_date] = @Original_version_date)) AND ([reason_for_change] = @Original_reason_for_change) AND ((@IsNull_change_date = 1 AND [change_date] IS NULL) OR ([change_date] = @Original_change_date)) AND ([theme] = @Original_theme) AND ([desc_group] = @Original_desc_group) AND ((@IsNull_desc_term = 1 AND [desc_term] IS NULL) OR ([desc_term] = @Original_desc_term)) AND ([make] = @Original_make) AND ([feat_code] = @Original_feat_code) AND ([calc_area] = @Original_calc_area))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_version", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_version_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_version_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_reason_for_change", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "reason_for_change", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_desc_term", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_feat_code", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "feat_code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_calc_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "calc_area", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.InsertCommand.Connection = this.Connection;
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [osmm] ([toid], [version], [version_date], [reason_for_change], [change_date], [theme], [desc_group], [desc_term], [make], [feat_code], [calc_area]) VALUES (@toid, @version, @version_date, @reason_for_change, @change_date, @theme, @desc_group, @desc_term, @make, @feat_code, @calc_area);
+SELECT toid, version, version_date, reason_for_change, change_date, theme, desc_group, desc_term, make, feat_code, calc_area FROM osmm WHERE (toid = @toid)";
+            this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@version", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@version_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@reason_for_change", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "reason_for_change", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@feat_code", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "feat_code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@calc_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "calc_area", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [osmm] SET [toid] = @toid, [version] = @version, [version_date] = @version_date, [reason_for_change] = @reason_for_change, [change_date] = @change_date, [theme] = @theme, [desc_group] = @desc_group, [desc_term] = @desc_term, [make] = @make, [feat_code] = @feat_code, [calc_area] = @calc_area WHERE (([toid] = @Original_toid) AND ([version] = @Original_version) AND ((@IsNull_version_date = 1 AND [version_date] IS NULL) OR ([version_date] = @Original_version_date)) AND ([reason_for_change] = @Original_reason_for_change) AND ((@IsNull_change_date = 1 AND [change_date] IS NULL) OR ([change_date] = @Original_change_date)) AND ([theme] = @Original_theme) AND ([desc_group] = @Original_desc_group) AND ((@IsNull_desc_term = 1 AND [desc_term] IS NULL) OR ([desc_term] = @Original_desc_term)) AND ([make] = @Original_make) AND ([feat_code] = @Original_feat_code) AND ([calc_area] = @Original_calc_area));
+SELECT toid, version, version_date, reason_for_change, change_date, theme, desc_group, desc_term, make, feat_code, calc_area FROM osmm WHERE (toid = @toid)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@version", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@version_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@reason_for_change", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "reason_for_change", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@feat_code", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "feat_code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@calc_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "calc_area", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_toid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "toid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_version", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_version_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_version_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "version_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_reason_for_change", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "reason_for_change", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_desc_term", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_feat_code", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "feat_code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_calc_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "calc_area", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitConnection() {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HluConnectionString;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitCommandCollection() {
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
+            this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[0].Connection = this.Connection;
+            this._commandCollection[0].CommandText = "SELECT        toid, version, version_date, reason_for_change, change_date, theme," +
+                " desc_group, desc_term, make, feat_code, calc_area\r\nFROM            osmm";
+            this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
+        public virtual int Fill(HluDataSet.osmmDataTable dataTable) {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
+        public virtual HluDataSet.osmmDataTable GetData() {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            HluDataSet.osmmDataTable dataTable = new HluDataSet.osmmDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet.osmmDataTable dataTable) {
+            return this.Adapter.Update(dataTable);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet dataSet) {
+            return this.Adapter.Update(dataSet, "osmm");
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow dataRow) {
+            return this.Adapter.Update(new global::System.Data.DataRow[] {
+                        dataRow});
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+            return this.Adapter.Update(dataRows);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(string Original_toid, int Original_version, global::System.Nullable<global::System.DateTime> Original_version_date, string Original_reason_for_change, global::System.Nullable<global::System.DateTime> Original_change_date, string Original_theme, string Original_desc_group, string Original_desc_term, string Original_make, int Original_feat_code, double Original_calc_area) {
+            if ((Original_toid == null)) {
+                throw new global::System.ArgumentNullException("Original_toid");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_toid));
+            }
+            this.Adapter.DeleteCommand.Parameters[1].Value = ((int)(Original_version));
+            if ((Original_version_date.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((System.DateTime)(Original_version_date.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            if ((Original_reason_for_change == null)) {
+                throw new global::System.ArgumentNullException("Original_reason_for_change");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((string)(Original_reason_for_change));
+            }
+            if ((Original_change_date.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[6].Value = ((System.DateTime)(Original_change_date.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[6].Value = global::System.DBNull.Value;
+            }
+            if ((Original_theme == null)) {
+                throw new global::System.ArgumentNullException("Original_theme");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((string)(Original_theme));
+            }
+            if ((Original_desc_group == null)) {
+                throw new global::System.ArgumentNullException("Original_desc_group");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[8].Value = ((string)(Original_desc_group));
+            }
+            if ((Original_desc_term == null)) {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[10].Value = ((string)(Original_desc_term));
+            }
+            if ((Original_make == null)) {
+                throw new global::System.ArgumentNullException("Original_make");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((string)(Original_make));
+            }
+            this.Adapter.DeleteCommand.Parameters[12].Value = ((int)(Original_feat_code));
+            this.Adapter.DeleteCommand.Parameters[13].Value = ((double)(Original_calc_area));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
+        public virtual int Insert(string toid, int version, global::System.Nullable<global::System.DateTime> version_date, string reason_for_change, global::System.Nullable<global::System.DateTime> change_date, string theme, string desc_group, string desc_term, string make, int feat_code, double calc_area) {
+            if ((toid == null)) {
+                throw new global::System.ArgumentNullException("toid");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(toid));
+            }
+            this.Adapter.InsertCommand.Parameters[1].Value = ((int)(version));
+            if ((version_date.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[2].Value = ((System.DateTime)(version_date.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            if ((reason_for_change == null)) {
+                throw new global::System.ArgumentNullException("reason_for_change");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[3].Value = ((string)(reason_for_change));
+            }
+            if ((change_date.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[4].Value = ((System.DateTime)(change_date.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
+            if ((theme == null)) {
+                throw new global::System.ArgumentNullException("theme");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[5].Value = ((string)(theme));
+            }
+            if ((desc_group == null)) {
+                throw new global::System.ArgumentNullException("desc_group");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[6].Value = ((string)(desc_group));
+            }
+            if ((desc_term == null)) {
+                this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[7].Value = ((string)(desc_term));
+            }
+            if ((make == null)) {
+                throw new global::System.ArgumentNullException("make");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(make));
+            }
+            this.Adapter.InsertCommand.Parameters[9].Value = ((int)(feat_code));
+            this.Adapter.InsertCommand.Parameters[10].Value = ((double)(calc_area));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.InsertCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.InsertCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    string toid, 
+                    int version, 
+                    global::System.Nullable<global::System.DateTime> version_date, 
+                    string reason_for_change, 
+                    global::System.Nullable<global::System.DateTime> change_date, 
+                    string theme, 
+                    string desc_group, 
+                    string desc_term, 
+                    string make, 
+                    int feat_code, 
+                    double calc_area, 
+                    string Original_toid, 
+                    int Original_version, 
+                    global::System.Nullable<global::System.DateTime> Original_version_date, 
+                    string Original_reason_for_change, 
+                    global::System.Nullable<global::System.DateTime> Original_change_date, 
+                    string Original_theme, 
+                    string Original_desc_group, 
+                    string Original_desc_term, 
+                    string Original_make, 
+                    int Original_feat_code, 
+                    double Original_calc_area) {
+            if ((toid == null)) {
+                throw new global::System.ArgumentNullException("toid");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(toid));
+            }
+            this.Adapter.UpdateCommand.Parameters[1].Value = ((int)(version));
+            if ((version_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((System.DateTime)(version_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            if ((reason_for_change == null)) {
+                throw new global::System.ArgumentNullException("reason_for_change");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(reason_for_change));
+            }
+            if ((change_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((System.DateTime)(change_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
+            if ((theme == null)) {
+                throw new global::System.ArgumentNullException("theme");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(theme));
+            }
+            if ((desc_group == null)) {
+                throw new global::System.ArgumentNullException("desc_group");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(desc_group));
+            }
+            if ((desc_term == null)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(desc_term));
+            }
+            if ((make == null)) {
+                throw new global::System.ArgumentNullException("make");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(make));
+            }
+            this.Adapter.UpdateCommand.Parameters[9].Value = ((int)(feat_code));
+            this.Adapter.UpdateCommand.Parameters[10].Value = ((double)(calc_area));
+            if ((Original_toid == null)) {
+                throw new global::System.ArgumentNullException("Original_toid");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(Original_toid));
+            }
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((int)(Original_version));
+            if ((Original_version_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((System.DateTime)(Original_version_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
+            }
+            if ((Original_reason_for_change == null)) {
+                throw new global::System.ArgumentNullException("Original_reason_for_change");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((string)(Original_reason_for_change));
+            }
+            if ((Original_change_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((System.DateTime)(Original_change_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
+            }
+            if ((Original_theme == null)) {
+                throw new global::System.ArgumentNullException("Original_theme");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[18].Value = ((string)(Original_theme));
+            }
+            if ((Original_desc_group == null)) {
+                throw new global::System.ArgumentNullException("Original_desc_group");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((string)(Original_desc_group));
+            }
+            if ((Original_desc_term == null)) {
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[21].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((string)(Original_desc_term));
+            }
+            if ((Original_make == null)) {
+                throw new global::System.ArgumentNullException("Original_make");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[22].Value = ((string)(Original_make));
+            }
+            this.Adapter.UpdateCommand.Parameters[23].Value = ((int)(Original_feat_code));
+            this.Adapter.UpdateCommand.Parameters[24].Value = ((double)(Original_calc_area));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    int version, 
+                    global::System.Nullable<global::System.DateTime> version_date, 
+                    string reason_for_change, 
+                    global::System.Nullable<global::System.DateTime> change_date, 
+                    string theme, 
+                    string desc_group, 
+                    string desc_term, 
+                    string make, 
+                    int feat_code, 
+                    double calc_area, 
+                    string Original_toid, 
+                    int Original_version, 
+                    global::System.Nullable<global::System.DateTime> Original_version_date, 
+                    string Original_reason_for_change, 
+                    global::System.Nullable<global::System.DateTime> Original_change_date, 
+                    string Original_theme, 
+                    string Original_desc_group, 
+                    string Original_desc_term, 
+                    string Original_make, 
+                    int Original_feat_code, 
+                    double Original_calc_area) {
+            return this.Update(Original_toid, version, version_date, reason_for_change, change_date, theme, desc_group, desc_term, make, feat_code, calc_area, Original_toid, Original_version, Original_version_date, Original_reason_for_change, Original_change_date, Original_theme, Original_desc_group, Original_desc_term, Original_make, Original_feat_code, Original_calc_area);
+        }
+    }
+    
+    /// <summary>
+    ///Represents the connection and commands used to retrieve and save data.
+    ///</summary>
+    [global::System.ComponentModel.DesignerCategoryAttribute("code")]
+    [global::System.ComponentModel.ToolboxItem(true)]
+    [global::System.ComponentModel.DataObjectAttribute(true)]
+    [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
+        ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+    public partial class lut_osmm_ihs_xrefTableAdapter : global::System.ComponentModel.Component {
+        
+        private global::System.Data.SqlClient.SqlDataAdapter _adapter;
+        
+        private global::System.Data.SqlClient.SqlConnection _connection;
+        
+        private global::System.Data.SqlClient.SqlCommand[] _commandCollection;
+        
+        private bool _clearBeforeFill;
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public lut_osmm_ihs_xrefTableAdapter() {
+            this.ClearBeforeFill = true;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private global::System.Data.SqlClient.SqlDataAdapter Adapter {
+            get {
+                if ((this._adapter == null)) {
+                    this.InitAdapter();
+                }
+                return this._adapter;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        internal global::System.Data.SqlClient.SqlConnection Connection {
+            get {
+                if ((this._connection == null)) {
+                    this.InitConnection();
+                }
+                return this._connection;
+            }
+            set {
+                this._connection = value;
+                if ((this.Adapter.InsertCommand != null)) {
+                    this.Adapter.InsertCommand.Connection = value;
+                }
+                if ((this.Adapter.DeleteCommand != null)) {
+                    this.Adapter.DeleteCommand.Connection = value;
+                }
+                if ((this.Adapter.UpdateCommand != null)) {
+                    this.Adapter.UpdateCommand.Connection = value;
+                }
+                for (int i = 0; (i < this.CommandCollection.Length); i = (i + 1)) {
+                    if ((this.CommandCollection[i] != null)) {
+                        ((global::System.Data.SqlClient.SqlCommand)(this.CommandCollection[i])).Connection = value;
+                    }
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        protected global::System.Data.SqlClient.SqlCommand[] CommandCollection {
+            get {
+                if ((this._commandCollection == null)) {
+                    this.InitCommandCollection();
+                }
+                return this._commandCollection;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        public bool ClearBeforeFill {
+            get {
+                return this._clearBeforeFill;
+            }
+            set {
+                this._clearBeforeFill = value;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitAdapter() {
+            this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
+            global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
+            tableMapping.SourceTable = "Table";
+            tableMapping.DataSetTable = "lut_osmm_ihs_xref";
+            tableMapping.ColumnMappings.Add("osmm_id", "osmm_id");
+            tableMapping.ColumnMappings.Add("make", "make");
+            tableMapping.ColumnMappings.Add("desc_group", "desc_group");
+            tableMapping.ColumnMappings.Add("desc_term", "desc_term");
+            tableMapping.ColumnMappings.Add("theme", "theme");
+            tableMapping.ColumnMappings.Add("ihs_habitat", "ihs_habitat");
+            tableMapping.ColumnMappings.Add("ihs_matrix1", "ihs_matrix1");
+            tableMapping.ColumnMappings.Add("ihs_matrix2", "ihs_matrix2");
+            tableMapping.ColumnMappings.Add("ihs_matrix3", "ihs_matrix3");
+            tableMapping.ColumnMappings.Add("ihs_formation1", "ihs_formation1");
+            tableMapping.ColumnMappings.Add("ihs_formation2", "ihs_formation2");
+            tableMapping.ColumnMappings.Add("ihs_management1", "ihs_management1");
+            tableMapping.ColumnMappings.Add("ihs_management2", "ihs_management2");
+            tableMapping.ColumnMappings.Add("ihs_complex1", "ihs_complex1");
+            tableMapping.ColumnMappings.Add("ihs_complex2", "ihs_complex2");
+            tableMapping.ColumnMappings.Add("manmade", "manmade");
+            tableMapping.ColumnMappings.Add("comments", "comments");
+            tableMapping.ColumnMappings.Add("is_local", "is_local");
+            tableMapping.ColumnMappings.Add("added_by", "added_by");
+            tableMapping.ColumnMappings.Add("added_date", "added_date");
+            tableMapping.ColumnMappings.Add("modified_by", "modified_by");
+            tableMapping.ColumnMappings.Add("modified_date", "modified_date");
+            tableMapping.ColumnMappings.Add("system_supplied", "system_supplied");
+            tableMapping.ColumnMappings.Add("custodian", "custodian");
+            this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_osmm_ihs_xref] WHERE (([osmm_id] = @Original_osmm_id) AND ([make" +
+                "] = @Original_make) AND ([desc_group] = @Original_desc_group) AND ((@IsNull_desc" +
+                "_term = 1 AND [desc_term] IS NULL) OR ([desc_term] = @Original_desc_term)) AND (" +
+                "[theme] = @Original_theme) AND ([ihs_habitat] = @Original_ihs_habitat) AND ((@Is" +
+                "Null_ihs_matrix1 = 1 AND [ihs_matrix1] IS NULL) OR ([ihs_matrix1] = @Original_ih" +
+                "s_matrix1)) AND ((@IsNull_ihs_matrix2 = 1 AND [ihs_matrix2] IS NULL) OR ([ihs_ma" +
+                "trix2] = @Original_ihs_matrix2)) AND ((@IsNull_ihs_matrix3 = 1 AND [ihs_matrix3]" +
+                " IS NULL) OR ([ihs_matrix3] = @Original_ihs_matrix3)) AND ((@IsNull_ihs_formatio" +
+                "n1 = 1 AND [ihs_formation1] IS NULL) OR ([ihs_formation1] = @Original_ihs_format" +
+                "ion1)) AND ((@IsNull_ihs_formation2 = 1 AND [ihs_formation2] IS NULL) OR ([ihs_f" +
+                "ormation2] = @Original_ihs_formation2)) AND ((@IsNull_ihs_management1 = 1 AND [i" +
+                "hs_management1] IS NULL) OR ([ihs_management1] = @Original_ihs_management1)) AND" +
+                " ((@IsNull_ihs_management2 = 1 AND [ihs_management2] IS NULL) OR ([ihs_managemen" +
+                "t2] = @Original_ihs_management2)) AND ((@IsNull_ihs_complex1 = 1 AND [ihs_comple" +
+                "x1] IS NULL) OR ([ihs_complex1] = @Original_ihs_complex1)) AND ((@IsNull_ihs_com" +
+                "plex2 = 1 AND [ihs_complex2] IS NULL) OR ([ihs_complex2] = @Original_ihs_complex" +
+                "2)) AND ((@IsNull_manmade = 1 AND [manmade] IS NULL) OR ([manmade] = @Original_m" +
+                "anmade)) AND ((@IsNull_comments = 1 AND [comments] IS NULL) OR ([comments] = @Or" +
+                "iginal_comments)) AND ([is_local] = @Original_is_local) AND ([added_by] = @Origi" +
+                "nal_added_by) AND ([added_date] = @Original_added_date) AND ((@IsNull_modified_b" +
+                "y = 1 AND [modified_by] IS NULL) OR ([modified_by] = @Original_modified_by)) AND" +
+                " ((@IsNull_modified_date = 1 AND [modified_date] IS NULL) OR ([modified_date] = " +
+                "@Original_modified_date)) AND ([system_supplied] = @Original_system_supplied) AN" +
+                "D ([custodian] = @Original_custodian))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_desc_term", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_habitat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix3", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix3", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_formation1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_formation1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_formation2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_formation2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_management1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_management1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_management2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_management2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_complex1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_complex1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_complex2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_complex2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_manmade", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_manmade", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_comments", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_added_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_by", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_added_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_by", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_system_supplied", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "system_supplied", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_custodian", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "custodian", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.InsertCommand.Connection = this.Connection;
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [lut_osmm_ihs_xref] ([osmm_id], [make], [desc_group], [desc_term], [theme], [ihs_habitat], [ihs_matrix1], [ihs_matrix2], [ihs_matrix3], [ihs_formation1], [ihs_formation2], [ihs_management1], [ihs_management2], [ihs_complex1], [ihs_complex2], [manmade], [comments], [is_local], [added_by], [added_date], [modified_by], [modified_date], [system_supplied], [custodian]) VALUES (@osmm_id, @make, @desc_group, @desc_term, @theme, @ihs_habitat, @ihs_matrix1, @ihs_matrix2, @ihs_matrix3, @ihs_formation1, @ihs_formation2, @ihs_management1, @ihs_management2, @ihs_complex1, @ihs_complex2, @manmade, @comments, @is_local, @added_by, @added_date, @modified_by, @modified_date, @system_supplied, @custodian);
+SELECT osmm_id, make, desc_group, desc_term, theme, ihs_habitat, ihs_matrix1, ihs_matrix2, ihs_matrix3, ihs_formation1, ihs_formation2, ihs_management1, ihs_management2, ihs_complex1, ihs_complex2, manmade, comments, is_local, added_by, added_date, modified_by, modified_date, system_supplied, custodian FROM lut_osmm_ihs_xref WHERE (osmm_id = @osmm_id)";
+            this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_habitat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix3", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_formation1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_formation2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_management1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_management2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_complex1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_complex2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@manmade", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@added_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_by", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@added_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@system_supplied", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "system_supplied", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@custodian", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "custodian", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = "UPDATE [lut_osmm_ihs_xref] SET [osmm_id] = @osmm_id, [make] = @make, [desc_group]" +
+                " = @desc_group, [desc_term] = @desc_term, [theme] = @theme, [ihs_habitat] = @ihs" +
+                "_habitat, [ihs_matrix1] = @ihs_matrix1, [ihs_matrix2] = @ihs_matrix2, [ihs_matri" +
+                "x3] = @ihs_matrix3, [ihs_formation1] = @ihs_formation1, [ihs_formation2] = @ihs_" +
+                "formation2, [ihs_management1] = @ihs_management1, [ihs_management2] = @ihs_manag" +
+                "ement2, [ihs_complex1] = @ihs_complex1, [ihs_complex2] = @ihs_complex2, [manmade" +
+                "] = @manmade, [comments] = @comments, [is_local] = @is_local, [added_by] = @adde" +
+                "d_by, [added_date] = @added_date, [modified_by] = @modified_by, [modified_date] " +
+                "= @modified_date, [system_supplied] = @system_supplied, [custodian] = @custodian" +
+                " WHERE (([osmm_id] = @Original_osmm_id) AND ([make] = @Original_make) AND ([desc" +
+                "_group] = @Original_desc_group) AND ((@IsNull_desc_term = 1 AND [desc_term] IS N" +
+                "ULL) OR ([desc_term] = @Original_desc_term)) AND ([theme] = @Original_theme) AND" +
+                " ([ihs_habitat] = @Original_ihs_habitat) AND ((@IsNull_ihs_matrix1 = 1 AND [ihs_" +
+                "matrix1] IS NULL) OR ([ihs_matrix1] = @Original_ihs_matrix1)) AND ((@IsNull_ihs_" +
+                "matrix2 = 1 AND [ihs_matrix2] IS NULL) OR ([ihs_matrix2] = @Original_ihs_matrix2" +
+                ")) AND ((@IsNull_ihs_matrix3 = 1 AND [ihs_matrix3] IS NULL) OR ([ihs_matrix3] = " +
+                "@Original_ihs_matrix3)) AND ((@IsNull_ihs_formation1 = 1 AND [ihs_formation1] IS" +
+                " NULL) OR ([ihs_formation1] = @Original_ihs_formation1)) AND ((@IsNull_ihs_forma" +
+                "tion2 = 1 AND [ihs_formation2] IS NULL) OR ([ihs_formation2] = @Original_ihs_for" +
+                "mation2)) AND ((@IsNull_ihs_management1 = 1 AND [ihs_management1] IS NULL) OR ([" +
+                "ihs_management1] = @Original_ihs_management1)) AND ((@IsNull_ihs_management2 = 1" +
+                " AND [ihs_management2] IS NULL) OR ([ihs_management2] = @Original_ihs_management" +
+                "2)) AND ((@IsNull_ihs_complex1 = 1 AND [ihs_complex1] IS NULL) OR ([ihs_complex1" +
+                "] = @Original_ihs_complex1)) AND ((@IsNull_ihs_complex2 = 1 AND [ihs_complex2] I" +
+                "S NULL) OR ([ihs_complex2] = @Original_ihs_complex2)) AND ((@IsNull_manmade = 1 " +
+                "AND [manmade] IS NULL) OR ([manmade] = @Original_manmade)) AND ((@IsNull_comment" +
+                "s = 1 AND [comments] IS NULL) OR ([comments] = @Original_comments)) AND ([is_loc" +
+                "al] = @Original_is_local) AND ([added_by] = @Original_added_by) AND ([added_date" +
+                "] = @Original_added_date) AND ((@IsNull_modified_by = 1 AND [modified_by] IS NUL" +
+                "L) OR ([modified_by] = @Original_modified_by)) AND ((@IsNull_modified_date = 1 A" +
+                "ND [modified_date] IS NULL) OR ([modified_date] = @Original_modified_date)) AND " +
+                "([system_supplied] = @Original_system_supplied) AND ([custodian] = @Original_cus" +
+                "todian));\r\nSELECT osmm_id, make, desc_group, desc_term, theme, ihs_habitat, ihs_" +
+                "matrix1, ihs_matrix2, ihs_matrix3, ihs_formation1, ihs_formation2, ihs_managemen" +
+                "t1, ihs_management2, ihs_complex1, ihs_complex2, manmade, comments, is_local, ad" +
+                "ded_by, added_date, modified_by, modified_date, system_supplied, custodian FROM " +
+                "lut_osmm_ihs_xref WHERE (osmm_id = @osmm_id)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_habitat", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_matrix3", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_formation1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_formation2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_management1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_management2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_complex1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ihs_complex2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@manmade", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@added_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_by", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@added_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@system_supplied", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "system_supplied", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@custodian", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "custodian", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_make", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "make", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_group", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_group", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_desc_term", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_desc_term", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "desc_term", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_theme", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "theme", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_habitat", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_habitat", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_matrix3", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_matrix3", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_matrix3", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_formation1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_formation1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_formation2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_formation2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_formation2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_management1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_management1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_management2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_management2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_management2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_complex1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_complex1", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex1", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_ihs_complex2", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ihs_complex2", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ihs_complex2", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_manmade", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_manmade", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "manmade", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_comments", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_added_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_by", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_added_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "added_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_by", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_by", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_by", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_date", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_date", global::System.Data.SqlDbType.SmallDateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_system_supplied", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "system_supplied", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_custodian", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "custodian", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitConnection() {
+            this._connection = new global::System.Data.SqlClient.SqlConnection();
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HluConnectionString;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        private void InitCommandCollection() {
+            this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
+            this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
+            this._commandCollection[0].Connection = this.Connection;
+            this._commandCollection[0].CommandText = @"SELECT        osmm_id, make, desc_group, desc_term, theme, ihs_habitat, ihs_matrix1, ihs_matrix2, ihs_matrix3, ihs_formation1, ihs_formation2, ihs_management1, ihs_management2, ihs_complex1, ihs_complex2, manmade, comments, 
+                         is_local, added_by, added_date, modified_by, modified_date, system_supplied, custodian
+FROM            lut_osmm_ihs_xref";
+            this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
+        public virtual int Fill(HluDataSet.lut_osmm_ihs_xrefDataTable dataTable) {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            if ((this.ClearBeforeFill == true)) {
+                dataTable.Clear();
+            }
+            int returnValue = this.Adapter.Fill(dataTable);
+            return returnValue;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
+        public virtual HluDataSet.lut_osmm_ihs_xrefDataTable GetData() {
+            this.Adapter.SelectCommand = this.CommandCollection[0];
+            HluDataSet.lut_osmm_ihs_xrefDataTable dataTable = new HluDataSet.lut_osmm_ihs_xrefDataTable();
+            this.Adapter.Fill(dataTable);
+            return dataTable;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet.lut_osmm_ihs_xrefDataTable dataTable) {
+            return this.Adapter.Update(dataTable);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(HluDataSet dataSet) {
+            return this.Adapter.Update(dataSet, "lut_osmm_ihs_xref");
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow dataRow) {
+            return this.Adapter.Update(new global::System.Data.DataRow[] {
+                        dataRow});
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        public virtual int Update(global::System.Data.DataRow[] dataRows) {
+            return this.Adapter.Update(dataRows);
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(
+                    int Original_osmm_id, 
+                    string Original_make, 
+                    string Original_desc_group, 
+                    string Original_desc_term, 
+                    string Original_theme, 
+                    string Original_ihs_habitat, 
+                    string Original_ihs_matrix1, 
+                    string Original_ihs_matrix2, 
+                    string Original_ihs_matrix3, 
+                    string Original_ihs_formation1, 
+                    string Original_ihs_formation2, 
+                    string Original_ihs_management1, 
+                    string Original_ihs_management2, 
+                    string Original_ihs_complex1, 
+                    string Original_ihs_complex2, 
+                    global::System.Nullable<bool> Original_manmade, 
+                    string Original_comments, 
+                    bool Original_is_local, 
+                    string Original_added_by, 
+                    System.DateTime Original_added_date, 
+                    string Original_modified_by, 
+                    global::System.Nullable<global::System.DateTime> Original_modified_date, 
+                    bool Original_system_supplied, 
+                    string Original_custodian) {
+            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_osmm_id));
+            if ((Original_make == null)) {
+                throw new global::System.ArgumentNullException("Original_make");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_make));
+            }
+            if ((Original_desc_group == null)) {
+                throw new global::System.ArgumentNullException("Original_desc_group");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((string)(Original_desc_group));
+            }
+            if ((Original_desc_term == null)) {
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((string)(Original_desc_term));
+            }
+            if ((Original_theme == null)) {
+                throw new global::System.ArgumentNullException("Original_theme");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_theme));
+            }
+            if ((Original_ihs_habitat == null)) {
+                throw new global::System.ArgumentNullException("Original_ihs_habitat");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[6].Value = ((string)(Original_ihs_habitat));
+            }
+            if ((Original_ihs_matrix1 == null)) {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[7].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[8].Value = ((string)(Original_ihs_matrix1));
+            }
+            if ((Original_ihs_matrix2 == null)) {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[10].Value = ((string)(Original_ihs_matrix2));
+            }
+            if ((Original_ihs_matrix3 == null)) {
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[12].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[11].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[12].Value = ((string)(Original_ihs_matrix3));
+            }
+            if ((Original_ihs_formation1 == null)) {
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[14].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[14].Value = ((string)(Original_ihs_formation1));
+            }
+            if ((Original_ihs_formation2 == null)) {
+                this.Adapter.DeleteCommand.Parameters[15].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[15].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[16].Value = ((string)(Original_ihs_formation2));
+            }
+            if ((Original_ihs_management1 == null)) {
+                this.Adapter.DeleteCommand.Parameters[17].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[18].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[17].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[18].Value = ((string)(Original_ihs_management1));
+            }
+            if ((Original_ihs_management2 == null)) {
+                this.Adapter.DeleteCommand.Parameters[19].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[20].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[19].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[20].Value = ((string)(Original_ihs_management2));
+            }
+            if ((Original_ihs_complex1 == null)) {
+                this.Adapter.DeleteCommand.Parameters[21].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[22].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[21].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[22].Value = ((string)(Original_ihs_complex1));
+            }
+            if ((Original_ihs_complex2 == null)) {
+                this.Adapter.DeleteCommand.Parameters[23].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[24].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[23].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[24].Value = ((string)(Original_ihs_complex2));
+            }
+            if ((Original_manmade.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[25].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[26].Value = ((bool)(Original_manmade.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[25].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[26].Value = global::System.DBNull.Value;
+            }
+            if ((Original_comments == null)) {
+                this.Adapter.DeleteCommand.Parameters[27].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[28].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[27].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[28].Value = ((string)(Original_comments));
+            }
+            this.Adapter.DeleteCommand.Parameters[29].Value = ((bool)(Original_is_local));
+            if ((Original_added_by == null)) {
+                throw new global::System.ArgumentNullException("Original_added_by");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[30].Value = ((string)(Original_added_by));
+            }
+            this.Adapter.DeleteCommand.Parameters[31].Value = ((System.DateTime)(Original_added_date));
+            if ((Original_modified_by == null)) {
+                this.Adapter.DeleteCommand.Parameters[32].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[33].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[32].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[33].Value = ((string)(Original_modified_by));
+            }
+            if ((Original_modified_date.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[34].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[35].Value = ((System.DateTime)(Original_modified_date.Value));
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[34].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[35].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.DeleteCommand.Parameters[36].Value = ((bool)(Original_system_supplied));
+            if ((Original_custodian == null)) {
+                throw new global::System.ArgumentNullException("Original_custodian");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[37].Value = ((string)(Original_custodian));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
+        public virtual int Insert(
+                    int osmm_id, 
+                    string make, 
+                    string desc_group, 
+                    string desc_term, 
+                    string theme, 
+                    string ihs_habitat, 
+                    string ihs_matrix1, 
+                    string ihs_matrix2, 
+                    string ihs_matrix3, 
+                    string ihs_formation1, 
+                    string ihs_formation2, 
+                    string ihs_management1, 
+                    string ihs_management2, 
+                    string ihs_complex1, 
+                    string ihs_complex2, 
+                    global::System.Nullable<bool> manmade, 
+                    string comments, 
+                    bool is_local, 
+                    string added_by, 
+                    System.DateTime added_date, 
+                    string modified_by, 
+                    global::System.Nullable<global::System.DateTime> modified_date, 
+                    bool system_supplied, 
+                    string custodian) {
+            this.Adapter.InsertCommand.Parameters[0].Value = ((int)(osmm_id));
+            if ((make == null)) {
+                throw new global::System.ArgumentNullException("make");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(make));
+            }
+            if ((desc_group == null)) {
+                throw new global::System.ArgumentNullException("desc_group");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[2].Value = ((string)(desc_group));
+            }
+            if ((desc_term == null)) {
+                this.Adapter.InsertCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[3].Value = ((string)(desc_term));
+            }
+            if ((theme == null)) {
+                throw new global::System.ArgumentNullException("theme");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[4].Value = ((string)(theme));
+            }
+            if ((ihs_habitat == null)) {
+                throw new global::System.ArgumentNullException("ihs_habitat");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[5].Value = ((string)(ihs_habitat));
+            }
+            if ((ihs_matrix1 == null)) {
+                this.Adapter.InsertCommand.Parameters[6].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[6].Value = ((string)(ihs_matrix1));
+            }
+            if ((ihs_matrix2 == null)) {
+                this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[7].Value = ((string)(ihs_matrix2));
+            }
+            if ((ihs_matrix3 == null)) {
+                this.Adapter.InsertCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(ihs_matrix3));
+            }
+            if ((ihs_formation1 == null)) {
+                this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[9].Value = ((string)(ihs_formation1));
+            }
+            if ((ihs_formation2 == null)) {
+                this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[10].Value = ((string)(ihs_formation2));
+            }
+            if ((ihs_management1 == null)) {
+                this.Adapter.InsertCommand.Parameters[11].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[11].Value = ((string)(ihs_management1));
+            }
+            if ((ihs_management2 == null)) {
+                this.Adapter.InsertCommand.Parameters[12].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[12].Value = ((string)(ihs_management2));
+            }
+            if ((ihs_complex1 == null)) {
+                this.Adapter.InsertCommand.Parameters[13].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[13].Value = ((string)(ihs_complex1));
+            }
+            if ((ihs_complex2 == null)) {
+                this.Adapter.InsertCommand.Parameters[14].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[14].Value = ((string)(ihs_complex2));
+            }
+            if ((manmade.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[15].Value = ((bool)(manmade.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[15].Value = global::System.DBNull.Value;
+            }
+            if ((comments == null)) {
+                this.Adapter.InsertCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[16].Value = ((string)(comments));
+            }
+            this.Adapter.InsertCommand.Parameters[17].Value = ((bool)(is_local));
+            if ((added_by == null)) {
+                throw new global::System.ArgumentNullException("added_by");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[18].Value = ((string)(added_by));
+            }
+            this.Adapter.InsertCommand.Parameters[19].Value = ((System.DateTime)(added_date));
+            if ((modified_by == null)) {
+                this.Adapter.InsertCommand.Parameters[20].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[20].Value = ((string)(modified_by));
+            }
+            if ((modified_date.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[21].Value = ((System.DateTime)(modified_date.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[21].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.InsertCommand.Parameters[22].Value = ((bool)(system_supplied));
+            if ((custodian == null)) {
+                throw new global::System.ArgumentNullException("custodian");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[23].Value = ((string)(custodian));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
+            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.InsertCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.InsertCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    int osmm_id, 
+                    string make, 
+                    string desc_group, 
+                    string desc_term, 
+                    string theme, 
+                    string ihs_habitat, 
+                    string ihs_matrix1, 
+                    string ihs_matrix2, 
+                    string ihs_matrix3, 
+                    string ihs_formation1, 
+                    string ihs_formation2, 
+                    string ihs_management1, 
+                    string ihs_management2, 
+                    string ihs_complex1, 
+                    string ihs_complex2, 
+                    global::System.Nullable<bool> manmade, 
+                    string comments, 
+                    bool is_local, 
+                    string added_by, 
+                    System.DateTime added_date, 
+                    string modified_by, 
+                    global::System.Nullable<global::System.DateTime> modified_date, 
+                    bool system_supplied, 
+                    string custodian, 
+                    int Original_osmm_id, 
+                    string Original_make, 
+                    string Original_desc_group, 
+                    string Original_desc_term, 
+                    string Original_theme, 
+                    string Original_ihs_habitat, 
+                    string Original_ihs_matrix1, 
+                    string Original_ihs_matrix2, 
+                    string Original_ihs_matrix3, 
+                    string Original_ihs_formation1, 
+                    string Original_ihs_formation2, 
+                    string Original_ihs_management1, 
+                    string Original_ihs_management2, 
+                    string Original_ihs_complex1, 
+                    string Original_ihs_complex2, 
+                    global::System.Nullable<bool> Original_manmade, 
+                    string Original_comments, 
+                    bool Original_is_local, 
+                    string Original_added_by, 
+                    System.DateTime Original_added_date, 
+                    string Original_modified_by, 
+                    global::System.Nullable<global::System.DateTime> Original_modified_date, 
+                    bool Original_system_supplied, 
+                    string Original_custodian) {
+            this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(osmm_id));
+            if ((make == null)) {
+                throw new global::System.ArgumentNullException("make");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(make));
+            }
+            if ((desc_group == null)) {
+                throw new global::System.ArgumentNullException("desc_group");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(desc_group));
+            }
+            if ((desc_term == null)) {
+                this.Adapter.UpdateCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(desc_term));
+            }
+            if ((theme == null)) {
+                throw new global::System.ArgumentNullException("theme");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(theme));
+            }
+            if ((ihs_habitat == null)) {
+                throw new global::System.ArgumentNullException("ihs_habitat");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(ihs_habitat));
+            }
+            if ((ihs_matrix1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[6].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(ihs_matrix1));
+            }
+            if ((ihs_matrix2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(ihs_matrix2));
+            }
+            if ((ihs_matrix3 == null)) {
+                this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(ihs_matrix3));
+            }
+            if ((ihs_formation1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(ihs_formation1));
+            }
+            if ((ihs_formation2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(ihs_formation2));
+            }
+            if ((ihs_management1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[11].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(ihs_management1));
+            }
+            if ((ihs_management2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[12].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[12].Value = ((string)(ihs_management2));
+            }
+            if ((ihs_complex1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(ihs_complex1));
+            }
+            if ((ihs_complex2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(ihs_complex2));
+            }
+            if ((manmade.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((bool)(manmade.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[15].Value = global::System.DBNull.Value;
+            }
+            if ((comments == null)) {
+                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((string)(comments));
+            }
+            this.Adapter.UpdateCommand.Parameters[17].Value = ((bool)(is_local));
+            if ((added_by == null)) {
+                throw new global::System.ArgumentNullException("added_by");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[18].Value = ((string)(added_by));
+            }
+            this.Adapter.UpdateCommand.Parameters[19].Value = ((System.DateTime)(added_date));
+            if ((modified_by == null)) {
+                this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((string)(modified_by));
+            }
+            if ((modified_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((System.DateTime)(modified_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[21].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[22].Value = ((bool)(system_supplied));
+            if ((custodian == null)) {
+                throw new global::System.ArgumentNullException("custodian");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((string)(custodian));
+            }
+            this.Adapter.UpdateCommand.Parameters[24].Value = ((int)(Original_osmm_id));
+            if ((Original_make == null)) {
+                throw new global::System.ArgumentNullException("Original_make");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[25].Value = ((string)(Original_make));
+            }
+            if ((Original_desc_group == null)) {
+                throw new global::System.ArgumentNullException("Original_desc_group");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[26].Value = ((string)(Original_desc_group));
+            }
+            if ((Original_desc_term == null)) {
+                this.Adapter.UpdateCommand.Parameters[27].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[28].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[27].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[28].Value = ((string)(Original_desc_term));
+            }
+            if ((Original_theme == null)) {
+                throw new global::System.ArgumentNullException("Original_theme");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[29].Value = ((string)(Original_theme));
+            }
+            if ((Original_ihs_habitat == null)) {
+                throw new global::System.ArgumentNullException("Original_ihs_habitat");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[30].Value = ((string)(Original_ihs_habitat));
+            }
+            if ((Original_ihs_matrix1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[31].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[32].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[31].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[32].Value = ((string)(Original_ihs_matrix1));
+            }
+            if ((Original_ihs_matrix2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[33].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[34].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[33].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[34].Value = ((string)(Original_ihs_matrix2));
+            }
+            if ((Original_ihs_matrix3 == null)) {
+                this.Adapter.UpdateCommand.Parameters[35].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[36].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[35].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[36].Value = ((string)(Original_ihs_matrix3));
+            }
+            if ((Original_ihs_formation1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[37].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[38].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[37].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[38].Value = ((string)(Original_ihs_formation1));
+            }
+            if ((Original_ihs_formation2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[39].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[40].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[39].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[40].Value = ((string)(Original_ihs_formation2));
+            }
+            if ((Original_ihs_management1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[41].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[42].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[41].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[42].Value = ((string)(Original_ihs_management1));
+            }
+            if ((Original_ihs_management2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[43].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[44].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[43].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[44].Value = ((string)(Original_ihs_management2));
+            }
+            if ((Original_ihs_complex1 == null)) {
+                this.Adapter.UpdateCommand.Parameters[45].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[46].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[45].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[46].Value = ((string)(Original_ihs_complex1));
+            }
+            if ((Original_ihs_complex2 == null)) {
+                this.Adapter.UpdateCommand.Parameters[47].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[48].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[47].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[48].Value = ((string)(Original_ihs_complex2));
+            }
+            if ((Original_manmade.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[49].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[50].Value = ((bool)(Original_manmade.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[49].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[50].Value = global::System.DBNull.Value;
+            }
+            if ((Original_comments == null)) {
+                this.Adapter.UpdateCommand.Parameters[51].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[52].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[51].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[52].Value = ((string)(Original_comments));
+            }
+            this.Adapter.UpdateCommand.Parameters[53].Value = ((bool)(Original_is_local));
+            if ((Original_added_by == null)) {
+                throw new global::System.ArgumentNullException("Original_added_by");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[54].Value = ((string)(Original_added_by));
+            }
+            this.Adapter.UpdateCommand.Parameters[55].Value = ((System.DateTime)(Original_added_date));
+            if ((Original_modified_by == null)) {
+                this.Adapter.UpdateCommand.Parameters[56].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[57].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[56].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[57].Value = ((string)(Original_modified_by));
+            }
+            if ((Original_modified_date.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[58].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[59].Value = ((System.DateTime)(Original_modified_date.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[58].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[59].Value = global::System.DBNull.Value;
+            }
+            this.Adapter.UpdateCommand.Parameters[60].Value = ((bool)(Original_system_supplied));
+            if ((Original_custodian == null)) {
+                throw new global::System.ArgumentNullException("Original_custodian");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[61].Value = ((string)(Original_custodian));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    string make, 
+                    string desc_group, 
+                    string desc_term, 
+                    string theme, 
+                    string ihs_habitat, 
+                    string ihs_matrix1, 
+                    string ihs_matrix2, 
+                    string ihs_matrix3, 
+                    string ihs_formation1, 
+                    string ihs_formation2, 
+                    string ihs_management1, 
+                    string ihs_management2, 
+                    string ihs_complex1, 
+                    string ihs_complex2, 
+                    global::System.Nullable<bool> manmade, 
+                    string comments, 
+                    bool is_local, 
+                    string added_by, 
+                    System.DateTime added_date, 
+                    string modified_by, 
+                    global::System.Nullable<global::System.DateTime> modified_date, 
+                    bool system_supplied, 
+                    string custodian, 
+                    int Original_osmm_id, 
+                    string Original_make, 
+                    string Original_desc_group, 
+                    string Original_desc_term, 
+                    string Original_theme, 
+                    string Original_ihs_habitat, 
+                    string Original_ihs_matrix1, 
+                    string Original_ihs_matrix2, 
+                    string Original_ihs_matrix3, 
+                    string Original_ihs_formation1, 
+                    string Original_ihs_formation2, 
+                    string Original_ihs_management1, 
+                    string Original_ihs_management2, 
+                    string Original_ihs_complex1, 
+                    string Original_ihs_complex2, 
+                    global::System.Nullable<bool> Original_manmade, 
+                    string Original_comments, 
+                    bool Original_is_local, 
+                    string Original_added_by, 
+                    System.DateTime Original_added_date, 
+                    string Original_modified_by, 
+                    global::System.Nullable<global::System.DateTime> Original_modified_date, 
+                    bool Original_system_supplied, 
+                    string Original_custodian) {
+            return this.Update(Original_osmm_id, make, desc_group, desc_term, theme, ihs_habitat, ihs_matrix1, ihs_matrix2, ihs_matrix3, ihs_formation1, ihs_formation2, ihs_management1, ihs_management2, ihs_complex1, ihs_complex2, manmade, comments, is_local, added_by, added_date, modified_by, modified_date, system_supplied, custodian, Original_osmm_id, Original_make, Original_desc_group, Original_desc_term, Original_theme, Original_ihs_habitat, Original_ihs_matrix1, Original_ihs_matrix2, Original_ihs_matrix3, Original_ihs_formation1, Original_ihs_formation2, Original_ihs_management1, Original_ihs_management2, Original_ihs_complex1, Original_ihs_complex2, Original_manmade, Original_comments, Original_is_local, Original_added_by, Original_added_date, Original_modified_by, Original_modified_date, Original_system_supplied, Original_custodian);
         }
     }
 }
