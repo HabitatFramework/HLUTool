@@ -1193,6 +1193,7 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 _lut_ihs_matrixTableAdapter = new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
                 _lut_importanceTableAdapter = new HluTableAdapter<HluDataSet.lut_importanceDataTable, HluDataSet.lut_importanceRow>(_db);
                 _lut_last_incidTableAdapter = new HluTableAdapter<HluDataSet.lut_last_incidDataTable, HluDataSet.lut_last_incidRow>(_db);
+                _lut_legacy_habitatTableAdapter = new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
                 _lut_operationTableAdapter = new HluTableAdapter<HluDataSet.lut_operationDataTable, HluDataSet.lut_operationRow>(_db);
                 _lut_osmm_ihs_xrefTableAdapter = new HluTableAdapter<HluDataSet.lut_osmm_ihs_xrefDataTable, HluDataSet.lut_osmm_ihs_xrefRow>(_db);
                 _lut_processTableAdapter = new HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow>(_db);
