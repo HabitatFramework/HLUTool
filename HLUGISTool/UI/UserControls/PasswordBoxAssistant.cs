@@ -40,14 +40,14 @@ namespace HLU.UI.UserControls
 
         #region Public Methods
 
-        public static void SetBindPassword(DependencyObject dp, bool value)
-        {
-            dp.SetValue(BindPassword, value);
-        }
-
         public static bool GetBindPassword(DependencyObject dp)
         {
             return (bool)dp.GetValue(BindPassword);
+        }
+
+        public static void SetBindPassword(DependencyObject dp, bool value)
+        {
+            dp.SetValue(BindPassword, value);
         }
 
         public static string GetBoundPassword(DependencyObject dp)

@@ -438,6 +438,9 @@ namespace HLU.UI.ViewModel
                         }
                     }
                     else
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow);
+
                         // Warn the user that the no valid tables were found.
                         MessageBox.Show(App.GetActiveWindow(), "No valid tables were found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -653,6 +656,7 @@ namespace HLU.UI.ViewModel
             set
             {
                 _table = value;
+                _column = null;
                 OnPropertyChanged("Table");
                 OnPropertyChanged("Columns");
                 OnPropertyChanged("ColumnIsEnabled");

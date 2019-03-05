@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -17,40 +17,32 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-using HLU.Data.Connection;
-using HLU.Properties;
+using System.Text.RegularExpressions;
+using HLU.Data;
+using HLU.Data.Model;
 
 namespace HLU.UI.ViewModel
 {
-    class ViewModelSelectConnection : ViewModelBase, IDataErrorInfo
+    //---------------------------------------------------------------------
+    // FIX: 076 Add option to filter by single INCID.
+    // 
+    class ViewModelQueryIncid : ViewModelBase, IDataErrorInfo
     {
-        #region private Members
+        #region Fields
 
-        private IntPtr _windowHandle;
-        private string _displayName;
-        private RelayCommand _okCommand;
-        private RelayCommand _cancelCommand;
-        private ConnectionTypes[] _connectionTypes;
-        private ConnectionTypes _connectionType;
+        private ICommand _okCommand;
+        private ICommand _cancelCommand;
+        private string _displayName = "Query Incid";
+        private String _queryIncid;
 
         #endregion
 
-        #region Constructor
-
-        public ViewModelSelectConnection()
-        {
-            _connectionTypes = Enum.GetValues(typeof(ConnectionTypes)).Cast<ConnectionTypes>()
-                .Where(t => t != HLU.Data.Connection.ConnectionTypes.Unknown).ToArray();
-            object initVal = Enum.Parse(typeof(ConnectionTypes), Resources.DefaultConnectionType, true);
-            if (initVal != null) _connectionType = (ConnectionTypes)initVal;
-        }
-
-        #endregion
-
-        #region Display Name
+        #region ViewModelBase Members
 
         public override string DisplayName
         {
@@ -58,18 +50,17 @@ namespace HLU.UI.ViewModel
             set { _displayName = value; }
         }
 
-        #endregion
-
-        #region Window Title
-
-        public override string WindowTitle { get { return DisplayName; } }
+        public override string WindowTitle
+        {
+            get { return DisplayName; }
+        }
 
         #endregion
 
         #region RequestClose
 
         // declare the delegate since using non-generic pattern
-        public delegate void RequestCloseEventHandler(ConnectionTypes connType, string errorMsg);
+        public delegate void RequestCloseEventHandler(String queryIncid);
 
         // declare the event
         public event RequestCloseEventHandler RequestClose;
@@ -105,16 +96,22 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
-            this.RequestClose(_connectionType, null);
+            this.RequestClose(QueryIncid);
         }
 
         /// <summary>
-        /// Determines whether the Ok button is enabled
+        /// 
         /// </summary>
         /// <value></value>
         /// <returns></returns>
         /// <remarks></remarks>
-        private bool CanOk { get { return _connectionType != HLU.Data.Connection.ConnectionTypes.Unknown; } }
+        private bool CanOk
+        { 
+            get 
+            {
+                return (String.IsNullOrEmpty(Error) && (_queryIncid != null));
+            } 
+        }
 
         #endregion
 
@@ -135,7 +132,6 @@ namespace HLU.UI.ViewModel
                     Action<object> cancelAction = new Action<object>(this.CancelCommandClick);
                     _cancelCommand = new RelayCommand(cancelAction);
                 }
-
                 return _cancelCommand;
             }
         }
@@ -147,57 +143,34 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void CancelCommandClick(object param)
         {
-            this.RequestClose(HLU.Data.Connection.ConnectionTypes.Unknown, null);
+            this.RequestClose(null);
         }
 
         #endregion
 
-        #region Connection Types
+        #region Query Incid
 
-        public ConnectionTypes[] ConnectionTypes
+        public string QueryIncid
         {
-            get { return _connectionTypes; }
-            set { }
-        }
-
-        public ConnectionTypes ConnectionType
-        {
-            get { return _connectionType; }
-            set { if (value != _connectionType) _connectionType = value; }
-        }
-
-        #endregion
-
-        #region View Events
-
-        public void ViewEvents(IntPtr windowHandle, string propertyName)
-        {
-            if (windowHandle != IntPtr.Zero) _windowHandle = windowHandle;
-
-            switch (propertyName)
-            {
-                case "ConnectionType":
-                    //LoadSchemata();
-                    break;
-            }
+            get { return _queryIncid; }
+            set { _queryIncid = value; }
         }
 
         #endregion
 
         #region IDataErrorInfo Members
 
-        string IDataErrorInfo.Error
+        public string Error
         {
             get
             {
-                if (_connectionType == HLU.Data.Connection.ConnectionTypes.Unknown)
-                    return "Please choose a connection type";
-                else
-                    return null;
+                if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
+                    return "Please enter a valid incid with format {nnnn:nnnnnnn}.";
+                else return null;
             }
         }
 
-        string IDataErrorInfo.this[string columnName]
+        public string this[string columnName]
         {
             get
             {
@@ -205,9 +178,9 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
-                    case "ConnectionType":
-                        if (_connectionType == HLU.Data.Connection.ConnectionTypes.Unknown)
-                            error = "Error: You must choose a connection type";
+                    case "QueryIncid":
+                        if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
+                            error = "Error: You must enter a valid incid with format {nnnn:nnnnnnn}.";
                         break;
                 }
 
@@ -220,4 +193,5 @@ namespace HLU.UI.ViewModel
 
         #endregion
     }
+    //---------------------------------------------------------------------
 }

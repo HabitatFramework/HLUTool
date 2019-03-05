@@ -410,16 +410,16 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     case "DataSource":
-                        if (String.IsNullOrEmpty(_connStrBuilder.DataSource)) 
-                            error = "Please provide a data source";
+                        if (String.IsNullOrEmpty(_connStrBuilder.DataSource))
+                            error = "Error: You must provide a data source";
                         break;
                     case "UserID":
                         //if (!_connStrBuilder.IntegratedSecurity && String.IsNullOrEmpty(_connStrBuilder.UserID))
-                        if (String.IsNullOrEmpty(_connStrBuilder.UserID)) error = "Please provide a user ID";
+                        if (String.IsNullOrEmpty(_connStrBuilder.UserID)) error = "Error: You must provide a user ID";
                         break;
                     case "DefaultSchema":
                         if (String.IsNullOrEmpty(_defaultSchema))
-                            error = "Please provide a default schema";
+                            error = "Error: You must provide a default schema";
                         break;
                 }
 

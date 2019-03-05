@@ -19,6 +19,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
                 <!--<ResourceDictionary Source="Dictionary\WindowDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\HluTheme.xaml" />-->
             </ResourceDictionary.MergedDictionaries>
@@ -32,7 +33,8 @@
 			IsEnabled="True"
 			HorizontalScrollBarVisibility="Auto"
 			VerticalScrollBarVisibility="Auto"
-			Text="{Binding Path=MessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+			Text="{Binding Path=MessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+            Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         <Grid
 			Margin="0,4,0,0"
 			Height="23"

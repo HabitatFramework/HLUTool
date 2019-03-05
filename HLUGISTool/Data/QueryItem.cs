@@ -317,7 +317,7 @@ namespace HLU.Data
                     _sqlCond.Value.ToString().Equals(String.Empty))))
                 {
                     _isComplete = false;
-                    return "A table, column, operator and (except for the IS NULL operators) a value are required";
+                    return "Error: A table, column, operator and (except for the IS NULL operators) a value are required";
                 }
                 else
                 {

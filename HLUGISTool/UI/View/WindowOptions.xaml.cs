@@ -35,7 +35,7 @@ namespace HLU.UI.View
         }
 
         //---------------------------------------------------------------------
-        // FIX: 071 Add minimum auto zoom scale to options
+        // FIX: 071 Add minimum auto zoom scale to options.
         // Initialise selected history column list items when GIS tab has focus.
         //
         /// <summary>

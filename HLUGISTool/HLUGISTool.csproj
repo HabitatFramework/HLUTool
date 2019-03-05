@@ -222,6 +222,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\Dictionary\ErrorMessageConverterDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\View\WindowQueryIncid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\Dictionary\ThemeShinyBlue.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -344,6 +352,7 @@
     </Compile>
     <Compile Include="Base36.cs" />
     <Compile Include="Converters\CodeNameDescriptionConverter.cs" />
+    <Compile Include="Converters\ErrorMessageConverter.cs" />
     <Compile Include="Converters\NullableValueConverter.cs" />
     <Compile Include="Data\ExportField.cs" />
     <Compile Include="Data\GISLayer.cs" />
@@ -355,11 +364,16 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="UI\UserControls\UniformGrid.cs" />
+    <Compile Include="UI\ViewModel\ViewModelQueryIncid.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowNotifyOnSplitMerge.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSelectQuery.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowWarnOnSubsetUpdate.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
+    <Compile Include="UI\View\WindowQueryIncid.xaml.cs">
+      <DependentUpon>WindowQueryIncid.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\View\WindowNotifyOnSplitMerge.xaml.cs">
       <DependentUpon>WindowNotifyOnSplitMerge.xaml</DependentUpon>
     </Compile>

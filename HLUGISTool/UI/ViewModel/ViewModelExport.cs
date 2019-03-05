@@ -222,8 +222,8 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     case "ExportID":
-                        if (_exportID == -1) 
-                            error = "Please choosed an export format";
+                        if (_exportID == -1)
+                            error = "Error: You must choose an export format";
                         break;
                 }
 

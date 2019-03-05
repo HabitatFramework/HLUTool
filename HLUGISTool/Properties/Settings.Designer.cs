@@ -909,5 +909,71 @@ namespace HLU.Properties {
                 return ((int)(this["MaximumAutoZoom"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Never</string>
+  <string>When Outstanding</string>
+  <string>Always</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection ShowOSMMUpdatesOptions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["ShowOSMMUpdatesOptions"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Always")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string ShowOSMMUpdatesOption {
+            get {
+                return ((string)(this["ShowOSMMUpdatesOption"]));
+            }
+            set {
+                this["ShowOSMMUpdatesOption"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ResetUpdatesFlag {
+            get {
+                return ((bool)(this["ResetUpdatesFlag"]));
+            }
+            set {
+                this["ResetUpdatesFlag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowGroupHeaders {
+            get {
+                return ((bool)(this["ShowGroupHeaders"]));
+            }
+            set {
+                this["ShowGroupHeaders"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool AppKeepOnTop {
+            get {
+                return ((bool)(this["AppKeepOnTop"]));
+            }
+            set {
+                this["AppKeepOnTop"] = value;
+            }
+        }
     }
 }

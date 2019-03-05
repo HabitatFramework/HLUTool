@@ -52,6 +52,7 @@ namespace HLU.UI.ViewModel
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
             new HluDataSet.incid_mm_polygonsDataTable();
         private List<int> _gisIDColumnOrdinals;
+        private List<string> _showOSMMUpdatesOptions;
 
         private int? _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
         private int? _incidTablePageSize = Settings.Default.IncidTablePageSize;
@@ -67,6 +68,8 @@ namespace HLU.UI.ViewModel
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+        private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
+        private bool _resetUpdatesFlag = Settings.Default.ResetUpdatesFlag;
 
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
@@ -87,6 +90,10 @@ namespace HLU.UI.ViewModel
 
         #region Constructor
 
+        /// <summary>
+        /// Get the default values from settings.
+        /// </summary>
+        /// <remarks></remarks>
         public ViewModelOptions()
         {
             _gisIDColumnOrdinals = Settings.Default.GisIDColumnOrdinals.Cast<string>()
@@ -103,6 +110,13 @@ namespace HLU.UI.ViewModel
             foreach (SelectionItem<string> si in _historyColumns)
                 si.IsSelected = historyColumnOrdinals.Contains(
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
+
+            //---------------------------------------------------------------------
+            // FIX: 072 Add show OSMM update attributes to options.
+            // A new option to enable the user to determine whether to show
+            // the OSMM update attributes for the current incid.
+            _showOSMMUpdatesOptions = Settings.Default.ShowOSMMUpdatesOptions.Cast<string>().ToList();
+            //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
             // FIX: 010 Don't clear the map path when cancelling option updates
@@ -200,6 +214,8 @@ namespace HLU.UI.ViewModel
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
             Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+            Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
+            Settings.Default.ResetUpdatesFlag = _resetUpdatesFlag;
 
             // SQL Query options
             Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
@@ -441,12 +457,6 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
-        /// <summary>
-        /// Gets or sets the preferred habitat class.
-        /// </summary>
-        /// <value>
-        /// The preferred habitat class.
-        /// </value>
         public string PreferredHabitatClass
         {
             get
@@ -496,6 +506,64 @@ namespace HLU.UI.ViewModel
         {
             get { return _showNVCCodes; }
             set { _showNVCCodes = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 072 Add show OSMM update attributes to options.
+        // A new option to enable the user to determine whether to show
+        // the OSMM update attributes for the current incid.
+        // 
+        /// <summary>
+        /// Gets or sets the list of available show OSMM Update options from
+        /// the class.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public string[] ShowOSMMUpdatesOptions
+        {
+            get
+            {
+                return _showOSMMUpdatesOptions.Cast<string>().ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred show OSMM Update option.
+        /// </summary>
+        /// <value>
+        /// The preferred show OSMM Update option.
+        /// </value>
+        public string ShowOSMMUpdatesOption
+        {
+            get { return _showOSMMUpdatesOption; }
+            set
+            {
+                _showOSMMUpdatesOption = value;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 073 Add reset OSMM update process flag to options.
+        // A new option to enable the user to determine whether to reset
+        // the OSMM update process flag when manually updating the current
+        // incid.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to reset the OSMM Update
+        /// process flag when applying manual updates.
+        /// </summary>
+        /// <value>
+        /// The preferred option to reset the OSMM Update process flag
+        /// when applying manual updates.
+        /// </value>
+        public bool ResetUpdatesFlag
+        {
+            get { return _resetUpdatesFlag; }
+            set { _resetUpdatesFlag = value; }
         }
         //---------------------------------------------------------------------
 
@@ -650,7 +718,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 071 Add minimum auto zoom scale to options
+        // FIX: 071 Add minimum auto zoom scale to options.
         // Validate the minimum auto zoom scale.
         //
         /// <summary>
@@ -875,7 +943,7 @@ namespace HLU.UI.ViewModel
                 StringBuilder error = new StringBuilder();
 
                 //---------------------------------------------------------------------
-                // FIX: 017 Validate that mandatory values are not blank
+                // FIX: 017 Validate that mandatory values are not blank.
                 // Validate that the database timeout period, database page size and
                 // history rows to display are not null.
                 if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
@@ -897,7 +965,7 @@ namespace HLU.UI.ViewModel
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
                 //---------------------------------------------------------------------
-                // FIX: 071 Add minimum auto zoom scale to options
+                // FIX: 071 Add minimum auto zoom scale to options.
                 // Validate the minimum auto zoom scale.
                 if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
                     error.Append("\n" + "Minimum auto zoom scale must be greater than 0.");
@@ -916,6 +984,13 @@ namespace HLU.UI.ViewModel
                 // Validate the users preferred habitat class.
                 if (PreferredHabitatClass == null)
                     error.Append("Please select your preferred habitat class.");
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // FIX: 072 Add show OSMM update attributes to options.
+                // A new option to enable the user to determine whether to show
+                // the OSMM update attributes for the current incid.
+                if (ShowOSMMUpdatesOption == null)
+                    error.Append("Please select the option of when to display any OSMM Updates.");
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
                 // CHANGED: CR5 (Select by attributes interface)
@@ -971,25 +1046,25 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     case "DbConnectionTimeout":
                         if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
-                            error = "Please enter a database timeout greater than 0 seconds.";
+                            error = "Error: Enter a database timeout greater than 0 seconds.";
                         break;
                     case "IncidTablePageSize":
                         if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
-                            error = "Please enter a database page size greater than 0 rows.";
+                            error = "Error: Enter a database page size greater than 0 rows.";
                         break;
                     case "HistoryDisplayLastN":
                         if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
-                            error = "Number of history rows to be displayed must be greater than 0.";
+                            error = "Error: Number of history rows to be displayed must be greater than 0.";
                         break;
                     //---------------------------------------------------------------------
                     case "PreferredGis":
                         if (GisAppsEnabled && (PreferredGis == GISApplications.None))
-                            error = "Please select your preferred GIS application.";
+                            error = "Error: Select your preferred GIS application.";
                         break;
                     case "MapDocument":
                         if (String.IsNullOrEmpty(MapDocument))
                         {
-                            error = "Please enter a path to a GIS workspace.";
+                            error = "Error: Enter a path to a GIS workspace.";
                         }
                         else
                         {
@@ -999,16 +1074,16 @@ namespace HLU.UI.ViewModel
                         break;
                     case "HistoryColumns":
                         if (_historyColumns.Count(h => h.IsSelected) == 0)
-                            error = "Please select columns to be recorded in history trail.";
+                            error = "Error: Select columns to be recorded in history trail.";
                         break;
                     //---------------------------------------------------------------------
-                    // FIX: 071 Add minimum auto zoom scale to options
+                    // FIX: 071 Add minimum auto zoom scale to options.
                     // Validate the minimum auto zoom scale.
                     case "MinAutoZoom":
                         if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
-                            error = "Minimum auto zoom scale must be greater than 0.";
+                            error = "Error: Minimum auto zoom scale must be greater than 0.";
                         if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
-                            error = String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom);
+                            error = String.Format("Error: Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom);
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
@@ -1017,7 +1092,7 @@ namespace HLU.UI.ViewModel
                     // subset of features for an incid.
                     case "SubsetUpdateAction":
                         if (SubsetUpdateAction == null)
-                            error = "Please select the action to take when updating an incid subset.";
+                            error = "Error: Select the action to take when updating an incid subset.";
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
@@ -1025,7 +1100,16 @@ namespace HLU.UI.ViewModel
                     // Validate the users preferred habitat class.
                     case "PreferredHabitatClass":
                         if (PreferredHabitatClass == null)
-                            error = "Please select your preferred habitat class.";
+                            error = "Error: Select your preferred habitat class.";
+                        break;
+                    //---------------------------------------------------------------------
+                    //---------------------------------------------------------------------
+                    // FIX: 072 Add show OSMM update attributes to options.
+                    // A new option to enable the user to determine whether to show
+                    // the OSMM update attributes for the current incid.
+                    case "ShowOSMMUpdatesOption":
+                        if (ShowOSMMUpdatesOption == null)
+                            error = "Error: Select option of when to display any OSMM Updates.";
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
@@ -1035,32 +1119,32 @@ namespace HLU.UI.ViewModel
                     // a sql query.
                     case "GetValueRows":
                         if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
-                            error = "Number of value rows to be retrieved must be greater than 0.";
+                            error = "Error: Number of value rows to be retrieved must be greater than 0.";
                         if (Convert.ToInt32(GetValueRows) > Settings.Default.MaxGetValueRows)
-                            error = String.Format("Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows);
+                            error = String.Format("Error: Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows);
                         break;
                     //---------------------------------------------------------------------
                     case "SeasonSpring":
                         if (String.IsNullOrEmpty(SeasonSpring))
-                            error = "Please enter a season name for spring.";
+                            error = "Error: You must enter a season name for spring.";
                         break;
                     case "SeasonSummer":
                         if (String.IsNullOrEmpty(SeasonSummer))
-                            error = "Please enter a season name for summer.";
+                            error = "Error: You must enter a season name for summer.";
                         break;
                     case "SeasonAutumn":
                         if (String.IsNullOrEmpty(SeasonAutumn))
-                            error = "Please enter a season name for autumn.";
+                            error = "Error: You must enter a season name for autumn.";
                         break;
                     case "SeasonWinter":
                         if (String.IsNullOrEmpty(SeasonWinter))
-                            error = "Please enter a season name for winter.";
+                            error = "Error: You must enter a season name for winter.";
                         break;
                     case "VagueDateDelimiter":
                         if (String.IsNullOrEmpty(VagueDateDelimiter))
-                            error = "Please enter a vague date delimiter character.";
+                            error = "Error: You must enter a vague date delimiter character.";
                         else if (VagueDateDelimiter.Length > 1)
-                            error = "Vague date delimiter must be a single character.";
+                            error = "Error: Vague date delimiter must be a single character.";
                         break;
                 }
 
