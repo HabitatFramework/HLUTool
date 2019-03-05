@@ -7,11 +7,20 @@
         ShowInTaskbar="False" ResizeMode="NoResize" Background="{DynamicResource WindowBackgroundBrush}" 
         Icon="..\..\..\Icons\HLUIcon.png" Activated="Window_Activated" WindowStyle="SingleBorderWindow">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Dictionary\ErrorMessageConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <StackPanel Name="StackPanelMain" Margin="4">
         <GroupBox Name="GroupBoxConnectionType" Header="Connection Type" TabIndex="3" Margin="0,4,0,0" Padding="0">
             <ComboBox Name="ComboBoxConnectionType" TabIndex="0" 
                       ItemsSource="{Binding Path=ConnectionTypes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       Text="{Binding Path=DefaultSchema, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                       SelectedItem="{Binding Path=ConnectionType}" IsEditable="True" IsReadOnly="True" Margin="0,4,0,0" />
         </GroupBox>
 

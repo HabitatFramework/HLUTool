@@ -172,11 +172,11 @@ namespace HLU.UI.ViewModel
                 {
                     case "Reason":
                         if (String.IsNullOrEmpty(_reason))
-                            error = "Please select a value for Reason.";
+                            error = "Error: You must select a value for Reason.";
                         break;
                     case "Process":
                         if (String.IsNullOrEmpty(_process))
-                            error = "Please select a value for Process.";
+                            error = "Error: You must select a value for Process.";
                         break;
                 }
                 CommandManager.InvalidateRequerySuggested();

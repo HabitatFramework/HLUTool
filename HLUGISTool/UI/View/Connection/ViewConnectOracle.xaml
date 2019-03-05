@@ -7,9 +7,17 @@
         ShowInTaskbar="False" ResizeMode="NoResize" Background="{DynamicResource WindowBackgroundBrush}" 
         Icon="..\..\..\Icons\HLUIcon.png" Activated="Window_Activated">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Dictionary\ErrorMessageConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <StackPanel Name="StackPanelMain" Margin="4">
         <GroupBox Name="GroupBoxDataSource" Header="Data Source" Margin="0,4,0,0" Padding="0">
-            <ComboBox Name="ComboBoxDataSource" ItemsSource="{Binding Path=DataSources, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=DataSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedItem="{Binding Path=DataSource}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
+            <ComboBox Name="ComboBoxDataSource" ItemsSource="{Binding Path=DataSources, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Text="{Binding Path=DataSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" SelectedItem="{Binding Path=DataSource}" Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" IsEditable="True" IsReadOnly="False" Margin="0,4,0,0" DropDownOpened="ComboBox_DropDownOpened" />
         </GroupBox>
 
         <GroupBox Name="Authentication" Header="Authentication" Margin="0,4,0,0" Padding="0">
@@ -24,11 +32,11 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Label Name="LabelUserID" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" Content="User ID" />
-                <TextBox Name="TextBoxUserID" Grid.Row="0" Grid.Column="1" Text="{Binding Path=UserID, Mode=TwoWay, ValidatesOnDataErrors=True}" Margin="0,4,0,2" />
+                <TextBox Name="TextBoxUserID" Grid.Row="0" Grid.Column="1" Text="{Binding Path=UserID, Mode=TwoWay, ValidatesOnDataErrors=True}" Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" Margin="0,4,0,2" />
                 <Label Name="LabelDBAPrivilege" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,4,0" Content="Connect As" />
                 <ComboBox Name="ComboBoxDBAPrivilege" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Path=DBAPrivilegeOptions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Path=DBAPrivilegeOption}" IsEditable="False" IsReadOnly="False" Margin="0,4,0,2" />                
                 <Label Name="LabelPassword" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4,4,0" Content="Password" />
-                <PasswordBox Name="TextBoxPassword" Grid.Row="2" Grid.Column="1" hlu:PasswordBoxAssistant.BindPassword="true" hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="0,4,0,2" ></PasswordBox>
+                <PasswordBox Name="TextBoxPassword" Grid.Row="2" Grid.Column="1" hlu:PasswordBoxAssistant.BindPassword="true" hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" Margin="0,4,0,2" ></PasswordBox>
             </Grid>
         </GroupBox>
 

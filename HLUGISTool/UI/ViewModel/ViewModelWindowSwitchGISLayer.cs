@@ -212,7 +212,7 @@ namespace HLU.UI.ViewModel
                 {
                     case "SelectedHLULayer":
                         if ((_selectedHLULayer == null) || !AvailableHLULayers.Contains(_selectedHLULayer))
-                            error = "This tool requires a valid HLU Layer.";
+                            error = "Error: This tool requires a valid HLU Layer.";
                         break;
                 }
                 CommandManager.InvalidateRequerySuggested();

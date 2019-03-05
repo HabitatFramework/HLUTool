@@ -256,7 +256,7 @@ namespace HLU.UI.ViewModel
                 string error = String.Empty;
 
                 if ((_resultFeature == null) || (_selectedIndex < 0) || (_selectedIndex >= _selectedFeatures.Rows.Count))
-                    error = "Please select the feature whose attributes will be retained.";
+                    error = "Error: You must select the feature whose attributes will be retained.";
 
                 return error;
             }
@@ -272,11 +272,11 @@ namespace HLU.UI.ViewModel
                 {
                     case "SelectedIndex":
                         if ((_selectedIndex < 0) || (_selectedIndex >= _selectedFeatures.Rows.Count))
-                            error = "Please select the feature whose attributes will be retained.";
+                            error = "Error: You must select the feature whose attributes will be retained.";
                         break;
                     case "ResultFeature":
                         if (_resultFeature == null)
-                            error = "Please select the feature whose attributes will be retained.";
+                            error = "Error: You must select the feature whose attributes will be retained.";
                         break;
                 }
 

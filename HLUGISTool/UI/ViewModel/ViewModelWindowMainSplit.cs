@@ -2,6 +2,7 @@
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013 Thames Valley Environmental Records Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -846,6 +847,60 @@ namespace HLU.UI.ViewModel
                     // Update the table with the new rows.
                     if (_viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter.Update(_viewModelMain.HluDataset.incid_sources) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_sources.TableName));
+                }
+
+                if ((_viewModelMain.IncidOSMMUpdatesRows != null) && (_viewModelMain.IncidOSMMUpdatesRows.Length > 0))
+                {
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR10 (Attribute updates for incid subsets)
+                    // Copy the values of any IncidOSMMUpdates rows rather than
+                    // copying the rows themselves so that any pending changes
+                    // to the rows can be discarded afterwards.
+                    //
+
+                    // Create a local copy of the IncidOSMMUpdates rows.
+                    List<HluDataSet.incid_osmm_updatesRow> OSMMUpdatesRows = new List<HluDataSet.incid_osmm_updatesRow>();
+
+                    // Copy the column values for each row in the IncidOSMMUpdates table.
+                    foreach (HluDataSet.incid_osmm_updatesRow row in _viewModelMain.IncidOSMMUpdatesRows)
+                    {
+                        if (row != null)
+                        {
+                            HluDataSet.incid_osmm_updatesRow newIncidOSMMUpdatesRow = _viewModelMain.IncidOSMMUpdatesTable.Newincid_osmm_updatesRow();
+                            for (int i = 0; i < _viewModelMain.IncidOSMMUpdatesTable.Columns.Count; i++)
+                                if (!row.IsNull(i)) newIncidOSMMUpdatesRow[i] = row[i];
+
+                            OSMMUpdatesRows.Add(newIncidOSMMUpdatesRow);
+                        }
+                    }
+
+                    // Discard any changes to the IncidOSMMUpdates table once a copy has been
+                    // made.
+                    _viewModelMain.IncidOSMMUpdatesTable.RejectChanges();
+
+                    // Remove any rows added by the edit that have been discarded but
+                    // are still in the rows array.
+                    for (int i = 0; i < _viewModelMain.IncidOSMMUpdatesRows.Count(); i++)
+                    {
+                        if ((_viewModelMain.IncidOSMMUpdatesRows[i] != null) && (_viewModelMain.IncidOSMMUpdatesRows[i].incidRow == null))
+                        {
+                            if (_viewModelMain.IncidOSMMUpdatesRows[i].RowState != DataRowState.Detached)
+                                _viewModelMain.IncidOSMMUpdatesRows[i].Delete();
+                            _viewModelMain.IncidOSMMUpdatesRows[i] = null;
+                        }
+                    }
+                    //---------------------------------------------------------------------
+
+                    // Clone the temporary rows, replacing the original incid with the
+                    // new incid.
+                    foreach (HluDataSet.incid_osmm_updatesRow row in OSMMUpdatesRows)
+                        _viewModelMain.HluDataset.incid_osmm_updates.Addincid_osmm_updatesRow(
+                            CloneRow<HluDataSet.incid_osmm_updatesRow, HluDataSet.incid_osmm_updatesDataTable>(
+                            row, _viewModelMain.HluDataset.incid_osmm_updates.incidColumn.Ordinal, newIncid));
+
+                    // Update the table with the new rows.
+                    if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(_viewModelMain.HluDataset.incid_osmm_updates) == -1)
+                        throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_osmm_updates.TableName));
                 }
 
                 if (startTransaction) _viewModelMain.DataBase.CommitTransaction();

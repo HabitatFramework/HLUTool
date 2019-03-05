@@ -9,6 +9,7 @@
     //
     // Copyright (c) 2014 Sussex Biodiversity Record Centre
     // Copyright (c) 2016 Thames Valley Environmental Records Centre
+    // Copyright (c) 2019 London & South East Record Centres (LaSER)
     //
     // This file is part of HLUTool.
     //
@@ -145,12 +146,37 @@
     </Style>
 
 
+
+    <!--  HighlightTemplate  -->
+    <ControlTemplate x:Key="WarningTemplate">
+        <DockPanel>
+            <Grid DockPanel.Dock="Right">
+                <Polygon Points="0,17 14,17, 7,1"
+                         VerticalAlignment="Center"
+                         Fill="Orange"
+                         Stroke="Black"
+                         StrokeThickness="0.5" />
+                <TextBlock Margin="0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Padding="5,4,0,0"
+                           Text="!"
+                           ToolTip="{Binding RelativeSource={RelativeSource Self},
+                                             Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Grid>
+            <Border BorderBrush="Orange" BorderThickness="1">
+                <AdornedElementPlaceholder />
+            </Border>
+        </DockPanel>
+    </ControlTemplate>
+
     <!--  ErrorTemplate  -->
     <ControlTemplate x:Key="ErrorTemplate">
         <DockPanel>
             <Grid DockPanel.Dock="Right">
-                <Ellipse Width="12"
-                         Height="12"
+                <Ellipse Width="14"
+                         Height="14"
                          VerticalAlignment="Center"
                          Fill="Red"
                          Stroke="Black"
@@ -159,7 +185,7 @@
                            VerticalAlignment="Center"
                            FontWeight="Bold"
                            Foreground="White"
-                           Padding="4,0,0,0"
+                           Padding="5,0,0,0"
                            Text="!"
                            ToolTip="{Binding RelativeSource={RelativeSource Self},
                                              Path=(Validation.Errors).CurrentItem.ErrorContent}" />
@@ -170,11 +196,36 @@
         </DockPanel>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="LabelWarningTemplate">
+        <DockPanel>
+            <Grid DockPanel.Dock="Right">
+                <Polygon Points="0,17 14,17, 7,1"
+                         VerticalAlignment="Center"
+                         Fill="Orange"
+                         Stroke="Black"
+                         StrokeThickness="0.5" />
+                <TextBlock Margin="0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Padding="5,4,0,0"
+                           Text="!"
+                           ToolTip="{Binding RelativeSource={RelativeSource Self},
+                                             Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+            </Grid>
+            <Border BorderBrush="Orange"
+                    BorderThickness="1"
+                    Padding="4,0,4,2">
+                <AdornedElementPlaceholder />
+            </Border>
+        </DockPanel>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="LabelErrorTemplate">
         <DockPanel>
             <Grid DockPanel.Dock="Right">
-                <Ellipse Width="12"
-                         Height="12"
+                <Ellipse Width="14"
+                         Height="14"
                          VerticalAlignment="Center"
                          Fill="Red"
                          Stroke="Black"
@@ -183,7 +234,7 @@
                            VerticalAlignment="Center"
                            FontWeight="Bold"
                            Foreground="White"
-                           Padding="4,0,0,0"
+                           Padding="5,0,0,0"
                            Text="!"
                            ToolTip="{Binding RelativeSource={RelativeSource Self},
                                              Path=(Validation.Errors).CurrentItem.ErrorContent}" />
@@ -196,10 +247,32 @@
         </DockPanel>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="DataGridValidationWarningTemplate">
+        <Grid>
+            <Polygon Points="0,17 14,17, 7,1"
+                         VerticalAlignment="Center"
+                         Fill="Orange"
+                         Stroke="Black"
+                         StrokeThickness="0.5" />
+            <TextBlock Margin="0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Padding="5,4,0,0"
+                       Text="!"
+                       ToolTip="{Binding RelativeSource={RelativeSource FindAncestor,
+                                                                        AncestorType={x:Type tkit:DataGridRow}},
+                                         Path=(Validation.Errors).CurrentItem.ErrorContent}"
+                       Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type tkit:DataGridRow}},
+                                            Path=(Validation.HasError)}" />
+            <!--  Converter={StaticResource bool2VisibilityConverter}}" />  -->
+        </Grid>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="DataGridValidationErrorTemplate">
         <Grid>
-            <Ellipse Width="12"
-                     Height="12"
+            <Ellipse Width="14"
+                     Height="14"
                      VerticalAlignment="Center"
                      Fill="Red"
                      Stroke="Black"
@@ -208,7 +281,7 @@
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        Foreground="White"
-                       Padding="4,0,0,0"
+                       Padding="5,0,0,0"
                        Text="!"
                        ToolTip="{Binding RelativeSource={RelativeSource FindAncestor,
                                                                         AncestorType={x:Type tkit:DataGridRow}},
@@ -3505,9 +3578,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource WarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3576,8 +3660,6 @@
                                 CornerRadius="2,2,2,2"
                                 IsHitTestVisible="False"
                                 Opacity="0" />
-
-
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
@@ -3622,9 +3704,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource WarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3740,9 +3833,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource WarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -3903,7 +4007,7 @@
                     </ControlTemplate.Resources>
                     <Grid Margin="1,1,1,1" SnapsToDevicePixels="true">
                         <Rectangle x:Name="Background"
-                                   Fill="{DynamicResource NormalBrush}"
+                                   Fill="{StaticResource NormalBrush}"
                                    IsHitTestVisible="False"
                                    Opacity="0.25"
                                    RadiusX="1"
@@ -4175,9 +4279,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource WarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -4402,6 +4517,30 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false" />
+                        <!--  AM Start  -->
+                        <Trigger Property="Validation.HasError" Value="true">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
+                        </Trigger>
+                        <!--  AM End  -->
+                        <!--  HT Start  -->
+                        <Trigger Property="IsVisible" Value="False">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource LabelWarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource LabelErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -4431,9 +4570,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource LabelErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource LabelWarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource LabelErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -5000,9 +5150,20 @@
                         <Trigger Property="IsVisible" Value="False">
                             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
                         </Trigger>
-                        <Trigger Property="IsVisible" Value="True">
-                            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorTemplate}" />
-                        </Trigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource WarningTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Warning" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorTemplate}" />
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsVisible" Value="True" />
+                                <Condition Property="Tag" Value="Error" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
                         <!--  HT End  -->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

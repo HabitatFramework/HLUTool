@@ -14,6 +14,14 @@
         Visibility="Collapsed"
         WindowStartupLocation="CenterScreen">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Dictionary\ErrorMessageConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <StackPanel Name="StackPanelMain" Margin="4">
         <GroupBox Name="GroupBoxHost"
                   Margin="0,4,0,0"
@@ -23,7 +31,8 @@
                      Margin="2"
                      Text="{Binding Path=Host,
                                     Mode=TwoWay,
-                                    ValidatesOnDataErrors=True}" />
+                                    ValidatesOnDataErrors=True}"
+                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <GroupBox Name="GroupBoxPort"
@@ -34,7 +43,8 @@
                      Margin="2"
                      Text="{Binding Path=Port,
                                     Mode=TwoWay,
-                                    ValidatesOnDataErrors=True}" />
+                                    ValidatesOnDataErrors=True}"
+                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <GroupBox Name="GroupBoxSsl"
@@ -73,7 +83,8 @@
                      Margin="2"
                      Text="{Binding Path=UserName,
                                     Mode=TwoWay,
-                                    ValidatesOnDataErrors=True}" />
+                                    ValidatesOnDataErrors=True}"
+                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <GroupBox Name="GroupBoxPassword"
@@ -86,7 +97,8 @@
                          hlu:PasswordBoxAssistant.BoundPassword="{Binding Path=Password,
                                                                           Mode=TwoWay,
                                                                           UpdateSourceTrigger=PropertyChanged,
-                                                                          ValidatesOnDataErrors=True}" />
+                                                                          ValidatesOnDataErrors=True}"
+                         Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <GroupBox Name="GroupBoxDatabase"
@@ -105,7 +117,8 @@
                       Text="{Binding Path=Database,
                                      Mode=TwoWay,
                                      UpdateSourceTrigger=PropertyChanged,
-                                     ValidatesOnDataErrors=True}" />
+                                     ValidatesOnDataErrors=True}"
+                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <GroupBox Name="GroupBpxSearchPath"
@@ -124,7 +137,8 @@
                       Text="{Binding Path=SearchPath,
                                      Mode=TwoWay,
                                      UpdateSourceTrigger=PropertyChanged,
-                                     ValidatesOnDataErrors=True}" />
+                                     ValidatesOnDataErrors=True}"
+                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
         </GroupBox>
 
         <Grid Name="GridButtons"

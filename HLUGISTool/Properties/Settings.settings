@@ -258,5 +258,25 @@
     <Setting Name="MaximumAutoZoom" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">1000000</Value>
     </Setting>
+    <Setting Name="ShowOSMMUpdatesOptions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;Never&lt;/string&gt;
+  &lt;string&gt;When Outstanding&lt;/string&gt;
+  &lt;string&gt;Always&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="ShowOSMMUpdatesOption" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Always</Value>
+    </Setting>
+    <Setting Name="ResetUpdatesFlag" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowGroupHeaders" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppKeepOnTop" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

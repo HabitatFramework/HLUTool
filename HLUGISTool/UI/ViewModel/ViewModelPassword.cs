@@ -201,8 +201,8 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     case "Password":
-                        if (String.IsNullOrEmpty(_password)) 
-                            error = "Please provide a password";
+                        if (String.IsNullOrEmpty(_password))
+                            error = "Error: You must provide a password";
                         break;
                 }
 

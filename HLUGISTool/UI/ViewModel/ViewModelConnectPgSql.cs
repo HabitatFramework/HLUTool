@@ -476,23 +476,23 @@ namespace HLU.UI.ViewModel
                 {
                     case "Host":
                         if (String.IsNullOrEmpty(_connStrBuilder.Host))
-                            error = "Please provide a host name";
+                            error = "Error: You must provide a host name";
                         break;
                     case "Port":
                         if (_connStrBuilder.Port == 0)
-                            error = "Please provide a port";
+                            error = "Error: You must provide a port";
                         break;
                     case "Database":
                         if (String.IsNullOrEmpty(_connStrBuilder.Database))
-                            error = "Please provide a database name";
+                            error = "Error: You must provide a database name";
                         break;
                     case "UserName":
                         if (String.IsNullOrEmpty(_connStrBuilder.UserName))
-                            error = "Please provide a user name";
+                            error = "Error: You must provide a user name";
                         break;
                     case "SearchPath":
                         if (String.IsNullOrEmpty(_connStrBuilder.SearchPath))
-                            error = "Please provide a search path";
+                            error = "Error: You must provide a search path";
                         break;
                 }
 

@@ -96,6 +96,7 @@ namespace HLU.UI.ViewModel
         private ICommand _navigateNextCommand;
         private ICommand _navigateLastCommand;
         private ICommand _filterByAttributesCommand;
+        private ICommand _filterByIncidCommand;
         private ICommand _selectOnMapCommand;
         private ICommand _selectAllOnMapCommand;
         private ICommand _clearFilterCommand;
@@ -114,17 +115,20 @@ namespace HLU.UI.ViewModel
         private ICommand _closeCommand;
         private ICommand _copyCommand;
         private ICommand _pasteCommand;
+        private ICommand _appKeepOnTopCommand;
         private ICommand _autoZoomSelectedCommand;
         private ICommand _autoSelectOnGisCommand;
         private ICommand _zoomSelectionCommand;
         private ICommand _gisWinSideBySideCommand;
         private ICommand _gisWinSwitchToCommand;
+        private ICommand _resetToolWindowCommand;
         private ICommand _optionsCommand;
         private ICommand _aboutCommand;
 
         private WindowMainCopySwitches _copySwitches = new WindowMainCopySwitches();
         private WindowOptions _windowOptions;
         private WindowQueryBuilder _qryBuilderWindow;
+        private WindowQueryIncid _qryIncidWindow;
         private WindowSelectQuery _qrySelectQueryWindow;
         private WindowWarnOnGISSelect _windowWarnGISSelect;
         private WindowNotifyOnSplitMerge _windowWarnSplitMerge;
@@ -132,6 +136,7 @@ namespace HLU.UI.ViewModel
         private WindowSwitchGISLayer _windowSwitchGISLayer;
         private ViewModelOptions _viewModelOptions;
         private ViewModelQueryBuilder _qryBuilderViewModel;
+        private ViewModelQueryIncid _qryIncidViewModel;
         private ViewModelWindowSelectQuery _viewModelWinSelectQuery;
         private ViewModelWindowWarnOnGISSelect _viewModelWinWarnGISSelect;
         private ViewModelWindowNotifyOnSplitMerge _viewModelWinWarnSplitMerge;
@@ -144,9 +149,14 @@ namespace HLU.UI.ViewModel
 
         private string _displayName = "HLU GIS Tool";
         private int _windowHeight;
+        private int _windowWidth;
         private int _mapWindowsCount;
         private bool? _showingReasonProcessGroup = null;
         private bool? _showingNVCCodesText = null;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _resetUpdatesFlag = Settings.Default.ResetUpdatesFlag;
+        private bool? _showingOSMMUpdatesGroup = null;
+        private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private string _logoPath = String.Empty;
         private DbBase _db;
         private GISApp _gisApp;
@@ -167,6 +177,7 @@ namespace HLU.UI.ViewModel
         private HluDataSet.incid_ihs_complexRow[] _incidIhsComplexRows;
         private HluDataSet.incid_bapRow[] _incidBapRows;
         private HluDataSet.incid_sourcesRow[] _incidSourcesRows;
+        private HluDataSet.incid_osmm_updatesRow[] _incidOSMMUpdatesRows;
         private HluDataSet.historyRow[] _incidHistoryRows;
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
@@ -186,6 +197,7 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses;
+        private IEnumerable<HluDataSet.lut_osmm_ihs_xrefRow> _ihsOSMMXrefIds;
 
         private double _incidArea;
         private double _incidLength;
@@ -240,6 +252,11 @@ namespace HLU.UI.ViewModel
         private string _incidLastModifiedUser;
         private DateTime _incidLastModifiedDate;
         private string _incidLegacyHabitat;
+        private int _incidOSMMUpdatesOSMMXref;
+        private int _incidOSMMUpdatesProcessFlag;
+        private string _incidOSMMUpdatesSpatialFlag;
+        private string _incidOSMMUpdatesChangeFlag;
+        private int _incidOSMMUpdatesUpdateFlag;
         private Dictionary<Type, List<SqlFilterCondition>> _childRowFilterDict;
         private Dictionary<Type, string> _childRowOrderByDict;
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
@@ -258,6 +275,11 @@ namespace HLU.UI.ViewModel
         private string _processingMsg = "Processing ...";
         private bool _saved = false;
         private bool _savingAttempted;
+        private List<string> _ihsWarnings = new List<string>();
+        private List<string> _detailsWarnings = new List<string>();
+        private List<string[]> _source1Warnings;
+        private List<string[]> _source2Warnings;
+        private List<string[]> _source3Warnings;
         private List<string> _ihsErrors = new List<string>();
         private List<string> _detailsErrors = new List<string>();
         private List<string[]> _source1Errors;
@@ -266,8 +288,13 @@ namespace HLU.UI.ViewModel
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
+        private bool _appKeepOnTop = Settings.Default.AppKeepOnTop;
         private bool _autoZoomSelection = Settings.Default.AutoZoomSelection;
         private bool _autoSelectOnGis = Settings.Default.AutoSelectOnGis;
+        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+        private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
+        private int _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -450,6 +477,21 @@ namespace HLU.UI.ViewModel
                 }
                 ReadMapSelection(false);
 
+                //---------------------------------------------------------------------
+                // FIX: 068 Enable auto zoom when selecting features on map.
+                //
+                // If there are no selected features in the map
+                // zoom to the GIS selection if auto zoom is on.
+                if (((_gisSelection == null) || (_gisSelection.Rows.Count == 0)) && _autoZoomSelection)
+                {
+                    SelectOnMap(false);
+
+                    // Count the number of toids and fragments for the current incid
+                    // selected in the GIS and in the database.
+                    CountToidFrags();
+                }
+                //---------------------------------------------------------------------
+                    
                 // Clear the splash window status bar (or reset the cursor to an arrow)
                 if (haveSplashWin)
                     App.SplashViewModel.ProgressText = String.Empty;
@@ -637,25 +679,103 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Set the initial window height if not already set
+                //---------------------------------------------------------------------
+                // FIX: 077 Add option to reset window dimensions to default.
+                // 
+                // Set the initial window height if not already set.
                 if (_windowHeight == 0)
                 {
-                    _windowHeight = 887;
+                    if (_showGroupHeaders)
+                        _windowHeight = 975;
+                    else
+                        _windowHeight = 950;
 
-                    // Adjust the standard height if the NVC codes text is not showing
+                    // Adjust the standard height if the NVC codes text is not showing.
                     if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
                     if (!(bool)_showingNVCCodesText)
                         _windowHeight = _windowHeight - 26;
 
-                    // Adjust the standard height if the Reason and Process group is not showing
+                    // Adjust the standard height if the Reason and Process group is not showing.
                     if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
                     if (!(bool)_showingReasonProcessGroup)
-                        _windowHeight = _windowHeight - 46;
+                        _windowHeight = _windowHeight - 47;
+
+                    //---------------------------------------------------------------------
+                    // FIX: 074 Show pending OSMM update (if present).
+                    // 
+                    // Adjust the standard height if the OSMM Updates group is not showing.
+                    if (!_showingOSMMUpdatesGroup.HasValue) _showingOSMMUpdatesGroup = true;
+                    if (!(bool)_showingOSMMUpdatesGroup)
+                        _windowHeight = _windowHeight - 89;
+                    //---------------------------------------------------------------------
                 }
+                //---------------------------------------------------------------------
 
                 return _windowHeight;
             }
-            set { _windowHeight = value; }
+            set
+            {
+                _windowHeight = value;
+            }
+        }
+
+        //---------------------------------------------------------------------
+        // FIX: 077 Add option to reset window dimensions to default.
+        // 
+        /// <summary>
+        /// Adjusts the window height for any optional groups/fields.
+        /// </summary>
+        public void AdjustWindowHeight(int adjustment)
+        {
+            // Calculate the minimum window height.
+            int _defaultWindowHeight;
+            if (_showGroupHeaders)
+                _defaultWindowHeight = 975;
+            else
+                _defaultWindowHeight = 950;
+
+            // Adjust the minimum height if the NVC codes text is not showing.
+            if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
+            if (!(bool)_showingNVCCodesText)
+                _defaultWindowHeight -= 26;
+
+            // Adjust the minimum height if the Reason and Process group is not showing.
+            if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
+            if (!(bool)_showingReasonProcessGroup)
+                _defaultWindowHeight -= 47;
+
+            // Adjust the minimum height if the OSMM Updates group is not showing.
+            if (!(bool)_showingOSMMUpdatesGroup)
+                _defaultWindowHeight -= 89;
+
+            // Only adjust the window height if it needs to grow/shrink
+            if (_windowHeight == _defaultWindowHeight)
+                _windowHeight += adjustment;
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 077 Add option to reset window dimensions to default.
+        // 
+        /// <summary>
+        /// Get and set the window width.
+        /// </summary>
+        public int WindowWidth
+        {
+            get
+            {
+                // Set the initial window width if not already set.
+                if (_windowWidth == 0)
+                {
+                    _windowWidth = 492;
+                }
+
+                return _windowWidth;
+            }
+            set
+            {
+                _windowWidth = value;
+            }
         }
         //---------------------------------------------------------------------
 
@@ -799,6 +919,12 @@ namespace HLU.UI.ViewModel
             set { _incidSourcesRows = value; }
         }
 
+        internal HluDataSet.incid_osmm_updatesRow[] IncidOSMMUpdatesRows
+        {
+            get { return _incidOSMMUpdatesRows; }
+            set { _incidOSMMUpdatesRows = value; }
+        }
+
         internal ObservableCollection<BapEnvironment> IncidBapRowsAuto
         {
             get { return _incidBapRowsAuto; }
@@ -889,6 +1015,24 @@ namespace HLU.UI.ViewModel
         internal ViewModelWindowMainUpdate ViewModelUpdate
         {
             get { return _viewModelUpd; }
+        }
+
+        internal List<string[]> Source1Warnings
+        {
+            get { return _source1Warnings; }
+            set { _source1Warnings = value; }
+        }
+
+        internal List<string[]> Source2Warnings
+        {
+            get { return _source2Warnings; }
+            set { _source2Warnings = value; }
+        }
+
+        internal List<string[]> Source3Warnings
+        {
+            get { return _source3Warnings; }
+            set { _source3Warnings = value; }
         }
 
         internal List<string[]> Source1Errors
@@ -1615,7 +1759,7 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void NotifySplitMerge(string msgText)
         {
-            if (Settings.Default.NotifyOnSplitMerge)
+            if (_notifyOnSplitMerge)
             {
                 _windowWarnSplitMerge = new WindowNotifyOnSplitMerge();
                 if ((_windowWarnSplitMerge.Owner = App.GetActiveWindow()) == null)
@@ -1901,14 +2045,14 @@ namespace HLU.UI.ViewModel
         {
             // The user settings indicate that only the selected features
             // should be updated (by logically splitting them first).
-            if (Settings.Default.SubsetUpdateAction == 1)
+            if (_subsetUpdateAction == 1)
             {
                 _updateAllFeatures = false;
                 return true;
             }
             // The user settings indicate that all the features for the incid
             // should be updated.
-            else if (Settings.Default.SubsetUpdateAction == 2)
+            else if (_subsetUpdateAction == 2)
             {
                 _updateAllFeatures = true;
                 return true;
@@ -2120,6 +2264,34 @@ namespace HLU.UI.ViewModel
         #region View
 
         //---------------------------------------------------------------------
+        // FIX: 079 Save option to always keep app window on top.
+        //
+        public ICommand AppKeepOnTopCommand
+        {
+            get
+            {
+                if (_appKeepOnTopCommand == null)
+                {
+                    Action<object> appKeepOnTopAction = new Action<object>(this.AppKeepOnTopClicked);
+                    _appKeepOnTopCommand = new RelayCommand(appKeepOnTopAction);
+                }
+                return _appKeepOnTopCommand;
+            }
+        }
+
+        private void AppKeepOnTopClicked(object param)
+        {
+            // Update the auto zoom on selected option.
+            _appKeepOnTop = !_appKeepOnTop;
+
+            // Save the keep app window on top option in the user settings.
+            Settings.Default.AppKeepOnTop = _appKeepOnTop;
+            Settings.Default.Save();
+
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
         // FIX: 068 Enable auto zoom when selecting features on map.
         //
         public ICommand AutoZoomSelectedCommand
@@ -2220,6 +2392,33 @@ namespace HLU.UI.ViewModel
 
         public bool CanGisWinSideBySide { get { return HaveGisApp; } }
 
+        //---------------------------------------------------------------------
+        // FIX: 077 Add option to reset window dimensions to default.
+        // 
+        public ICommand ResetToolWindowCommand
+        {
+            get
+            {
+                if (_resetToolWindowCommand == null)
+                {
+                    Action<object> resetToolWindowAction = new Action<object>(this.ResetToolWindowClicked);
+                    _resetToolWindowCommand = new RelayCommand(resetToolWindowAction, param => this.CanResetToolWindow);
+                }
+                return _resetToolWindowCommand;
+            }
+        }
+
+        private void ResetToolWindowClicked(object param)
+        {
+            WindowHeight = 0;
+            WindowWidth = 0;
+            OnPropertyChanged("WindowHeight");
+            OnPropertyChanged("WindowWidth");
+        }
+        //---------------------------------------------------------------------
+
+        public bool CanResetToolWindow { get { return HaveGisApp; } }
+
         public ICommand GisWinSwitchToCommand
         {
             get
@@ -2288,9 +2487,20 @@ namespace HLU.UI.ViewModel
                 _historyColumns = InitializeHistoryColumns(_historyColumns);
                 VagueDate.Delimiter = Settings.Default.VagueDateDelimiter;
                 VagueDate.SeasonNames = Settings.Default.SeasonNames.Cast<string>().ToArray();
-
-
+                _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
+                _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+                _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+                _showNVCCodes = Settings.Default.ShowNVCCodes;
                 OnPropertyChanged("ShowNVCCodesText");
+                //---------------------------------------------------------------------
+                // FIX: 074 Show pending OSMM update (if present).
+                _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
+                OnPropertyChanged("ShowIncidOSMMUpdatesGroup");
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // FIX: 075 Reset OSMM update flag after manual updates.
+                _resetUpdatesFlag = Settings.Default.ResetUpdatesFlag;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -2812,8 +3022,8 @@ namespace HLU.UI.ViewModel
             // Warn the user either if the user option is set to
             // 'Always' or if a GIS table join will be used and
             // the user option is set to 'Joins'.
-            if ((Settings.Default.WarnBeforeGISSelect == 0) ||
-                (selectByjoin && Settings.Default.WarnBeforeGISSelect == 1))
+            if ((_warnBeforeGISSelect == 0) ||
+                (selectByjoin && _warnBeforeGISSelect == 1))
             //---------------------------------------------------------------------
             {
                 _windowWarnGISSelect = new WindowWarnOnGISSelect();
@@ -2854,6 +3064,182 @@ namespace HLU.UI.ViewModel
                 _incidSelectionWhereClause = null;
                 _incidSelection = null;
                 ChangeCursor(Cursors.Arrow, null);
+            }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
+        #region Filter by Incid Command
+
+        //---------------------------------------------------------------------
+        // FIX: 076 Add option to filter by single INCID.
+        // 
+        /// <summary>
+        /// FilterByIncid command.
+        /// </summary>
+        public ICommand FilterByIncidCommand
+        {
+            get
+            {
+                if (_filterByIncidCommand == null)
+                {
+                    Action<object> filterByIncidAction = new Action<object>(this.FilterByIncidClicked);
+                    _filterByIncidCommand = new RelayCommand(filterByIncidAction, param => this.CanFilterByIncid);
+                }
+                return _filterByIncidCommand;
+            }
+        }
+
+        private void FilterByIncidClicked(object param)
+        {
+            OpenQueryIncid();
+            //---------------------------------------------------------------------
+        }
+
+        private bool CanFilterByIncid
+        {
+            get { return _bulkUpdateMode == false && IncidCurrentRow != null; }
+        }
+
+        private void OpenQueryIncid()
+        {
+            try
+            {
+                _qryIncidWindow = new WindowQueryIncid();
+                if ((_qryIncidWindow.Owner = App.GetActiveWindow()) == null)
+                    throw (new Exception("No parent window loaded"));
+                _qryIncidWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                // create ViewModel to which main window binds
+                _qryIncidViewModel = new ViewModelQueryIncid();
+                _qryIncidViewModel.DisplayName = "HLU Filter By Incid";
+
+                // when ViewModel asks to be closed, close window
+                _qryIncidViewModel.RequestClose +=
+                    new ViewModelQueryIncid.RequestCloseEventHandler(_qryIncidViewModel_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _qryIncidWindow.DataContext = _qryIncidViewModel;
+
+                // show window
+                _qryIncidWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
+        }
+
+        protected void _qryIncidViewModel_RequestClose(String queryIncid)
+        {
+            _qryIncidViewModel.RequestClose -= _qryIncidViewModel_RequestClose;
+            _qryIncidWindow.Close();
+
+            if (!String.IsNullOrEmpty(queryIncid))
+            {
+                try
+                {
+                    // Backup the current selection (filter).
+                    DataTable incidSelectionBackup = _incidSelection;
+
+                    ChangeCursor(Cursors.Wait, "Processing ...");
+
+                    // Select only the incid database table to use in the query.
+                    List<DataTable> whereTables = new List<DataTable>();
+                    whereTables.Add(IncidTable);
+
+                    // Replace any connection type specific qualifiers and delimiters.
+                    string newWhereClause = null;
+                    string sqlWhereClause = String.Format("incid = '{0}'", queryIncid);
+                    newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
+
+                    // Create a selection DataTable of PK values of IncidTable.
+                    _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
+
+                    // Get a list of all the incids in the selection.
+                    _incidsSelectedMap = _incidSelection.AsEnumerable()
+                        .GroupBy(r => r.Field<string>(_incidSelection.Columns[0].ColumnName)).Select(g => g.Key).OrderBy(s => s);
+
+                    // Retrospectively set the where clause to match the list
+                    // of selected incids (for possible use later).
+                    _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
+                        IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
+
+                    // If there are any records in the selection (and the tool is
+                    // not currently in bulk update mode).
+                    if (IsFiltered)
+                    {
+                        // Find the expected number of features to be selected in GIS.
+                        int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
+
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR12 (Select by attribute performance)
+                        // Find the expected number of incids to be selected in GIS.
+                        //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
+                        int expectedNumIncids = _incidSelection.Rows.Count;
+                        //---------------------------------------------------------------------
+
+                        // Select the required incid(s) in GIS.
+                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
+                        {
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR21 (Select current incid in map)
+                            // Analyse the results, set the filter and reset the cursor AFTER
+                            // returning from performing the GIS selection so that other calls
+                            // to the PerformGisSelection method can control if/when these things
+                            // are done.
+                            //
+                            // Analyse the results of the GIS selection by counting the number of
+                            // incids, toids and fragments selected.
+                            AnalyzeGisSelectionSet(true);
+
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
+                            // Set the filter back to the first incid.
+                            SetFilter();
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+
+                            // Warn the user that no records were found.
+                            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                            //---------------------------------------------------------------------
+                        }
+                        else
+                        {
+                            // Restore the previous selection (filter).
+                            _incidSelection = incidSelectionBackup;
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+                        }
+                    }
+                    else
+                    {
+                        // Restore the previous selection (filter).
+                        _incidSelection = incidSelectionBackup;
+
+                        // Reset the cursor back to normal
+                        ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found
+                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _incidSelection = null;
+                    ChangeCursor(Cursors.Arrow, null);
+                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally { RefreshStatus(); }
             }
         }
         //---------------------------------------------------------------------
@@ -3431,6 +3817,9 @@ namespace HLU.UI.ViewModel
                 _fragsSelectedMapCount = -1;
                 _incidPageRowNoMax = -1;
 
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+
                 //---------------------------------------------------------------------
                 // CHANGED: CR10 (Attribute updates for incid subsets)
                 // Only move to the first incid in the index if required, to save
@@ -3964,6 +4353,20 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        public HluDataSet.incid_osmm_updatesDataTable IncidOSMMUpdatesTable
+        {
+            get
+            {
+                if (HluDataset.incid_osmm_updates.IsInitialized && (HluDataset.incid_osmm_updates.Rows.Count == 0))
+                {
+                    if (_hluTableAdapterMgr.incid_osmm_updatesTableAdapter == null)
+                        _hluTableAdapterMgr.incid_osmm_updatesTableAdapter =
+                            new HluTableAdapter<HluDataSet.incid_osmm_updatesDataTable, HluDataSet.incid_osmm_updatesRow>(_db);
+                }
+                return _hluDS.incid_osmm_updates;
+            }
+        }
+
         #endregion
 
         #region Data Rows
@@ -4241,6 +4644,26 @@ namespace HLU.UI.ViewModel
                 GetIncidChildRows(IncidCurrentRow);
 
                 //---------------------------------------------------------------------
+                // FIX: 074 Show pending OSMM update (if present).
+                if (_incidOSMMUpdatesRows.Length > 0)
+                {
+                    _incidOSMMUpdatesOSMMXref = _incidOSMMUpdatesRows[0].osmm_xref_id;
+                    _incidOSMMUpdatesProcessFlag = _incidOSMMUpdatesRows[0].process_flag;
+                    _incidOSMMUpdatesSpatialFlag = _incidOSMMUpdatesRows[0].Isspatial_flagNull() ? null : _incidOSMMUpdatesRows[0].spatial_flag;
+                    _incidOSMMUpdatesChangeFlag = _incidOSMMUpdatesRows[0].Ischange_flagNull() ? null : _incidOSMMUpdatesRows[0].change_flag;
+                    _incidOSMMUpdatesUpdateFlag = _incidOSMMUpdatesRows[0].update_flag;
+                }
+                else
+                {
+                    _incidOSMMUpdatesOSMMXref = 0;
+                    _incidOSMMUpdatesProcessFlag = 0;
+                    _incidOSMMUpdatesSpatialFlag = null;
+                    _incidOSMMUpdatesChangeFlag = null;
+                    _incidOSMMUpdatesUpdateFlag = 0;
+                }
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
                 // CHANGED: CR29 (Habitat classification and conversion to IHS)
                 // Clear the list of IHS codes then find the Habitat Type
                 // for the current incid IHS habitat (which will then reload
@@ -4277,6 +4700,7 @@ namespace HLU.UI.ViewModel
                 IhsMultiplexCodes(_incidIhsHabitat);
                 RefreshStatus();
                 RefreshHeader();
+                RefreshOSMMUpdate();
                 RefreshIhsTab();
                 RefreshDetailsTab();
                 RefreshSource1();
@@ -4641,6 +5065,10 @@ namespace HLU.UI.ViewModel
                 .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
                 .Remove(0, 1).ToString());
 
+            childRowOrberByDict.Add(typeof(HluDataSet.incid_osmm_updatesDataTable), _hluDS.incid_osmm_updates.PrimaryKey
+                .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
+                .Remove(0, 1).ToString());
+
             return childRowOrberByDict;
         }
 
@@ -4666,6 +5094,9 @@ namespace HLU.UI.ViewModel
 
             childRowFilterDict.Add(typeof(HluDataSet.incid_sourcesDataTable),
                 ChildRowFilter(_hluDS.incid, _hluDS.incid_sources));
+
+            childRowFilterDict.Add(typeof(HluDataSet.incid_osmm_updatesDataTable),
+                ChildRowFilter(_hluDS.incid, _hluDS.incid_osmm_updates));
 
             childRowFilterDict.Add(typeof(HluDataSet.historyDataTable),
                 ChildRowFilter(_hluDS.incid, _hluDS.history));
@@ -4769,6 +5200,11 @@ namespace HLU.UI.ViewModel
             HluDataSet.historyDataTable historyTable = _hluDS.history;
             _incidHistoryRows = GetIncidChildRowsDb(relValues,
                 _hluTableAdapterMgr.historyTableAdapter, ref historyTable);
+
+            HluDataSet.incid_osmm_updatesDataTable incidOSMMUpdatesTable = _hluDS.incid_osmm_updates;
+            _incidOSMMUpdatesRows = GetIncidChildRowsDb(relValues,
+                _hluTableAdapterMgr.incid_osmm_updatesTableAdapter, ref incidOSMMUpdatesTable);
+
         }
 
         private DataRelation GetRelation<P, C>(P parentTable, C childTable)
@@ -4837,6 +5273,20 @@ namespace HLU.UI.ViewModel
                             HluDataSet.incid_mm_polygonsRow>(_db);
 
                 _hluTableAdapterMgr.incid_mm_polygonsTableAdapter.Fill(table, whereClause); 
+            }
+        }
+
+        internal void GetIncidOSMMUpdatesRows(List<List<SqlFilterCondition>> whereClause,
+            ref HluDataSet.incid_osmm_updatesDataTable table)
+        {
+            if ((whereClause != null) && (whereClause.Count > 0))
+            {
+                if (_hluTableAdapterMgr.incid_osmm_updatesTableAdapter == null)
+                    _hluTableAdapterMgr.incid_osmm_updatesTableAdapter =
+                        new HluTableAdapter<HluDataSet.incid_osmm_updatesDataTable,
+                            HluDataSet.incid_osmm_updatesRow>(_db);
+
+                _hluTableAdapterMgr.incid_osmm_updatesTableAdapter.Fill(table, whereClause);
             }
         }
 
@@ -4940,6 +5390,16 @@ namespace HLU.UI.ViewModel
             return false;
         }
 
+        internal bool IsDirtyIncidOSMMUpdates()
+        {
+            if (_incidOSMMUpdatesRows != null)
+            {
+                foreach (DataRow r in _incidOSMMUpdatesRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+            }
+            return false;
+        }
+
         private bool IncidBapRowDirty(BapEnvironment be)
         {
             // deleted user BAP row
@@ -4987,6 +5447,7 @@ namespace HLU.UI.ViewModel
             RefreshBulkUpdateControls();
             RefreshStatus();
             RefreshHeader();
+            RefreshOSMMUpdate();
             RefreshIhsTab();
             RefreshDetailsTab();
             RefreshSources();
@@ -5034,6 +5495,16 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidLastModifiedDate");
             OnPropertyChanged("IncidCreatedUser");
             OnPropertyChanged("IncidLastModifiedUser");
+        }
+
+        private void RefreshOSMMUpdate()
+        {
+            OnPropertyChanged("ShowIncidOSMMUpdatesGroup");
+            OnPropertyChanged("IncidOSMMIhsSummary");
+            OnPropertyChanged("IncidOSMMProcessFlag");
+            OnPropertyChanged("IncidOSMMSpatialFlag");
+            OnPropertyChanged("IncidOSMMChangeFlag");
+            OnPropertyChanged("IncidOSMMUpdateStatus");
         }
 
         private void RefreshIhsTab()
@@ -5388,6 +5859,218 @@ namespace HLU.UI.ViewModel
             set { if ((IncidCurrentRow != null) && (value != null)) _incidLastModifiedUser = value; }
         }
 
+        #region OSMM Updates
+
+        //---------------------------------------------------------------------
+        // FIX: 074 Show pending OSMM update (if present).
+        // 
+        /// <summary>
+        /// Only show the OSMM Updates group if required, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowIncidOSMMUpdatesGroup
+        {
+            get
+            {
+                if (!_showingOSMMUpdatesGroup.HasValue) _showingOSMMUpdatesGroup = false;
+
+                // Show the group if "Always" required, or "When Outstanding"
+                // i.e. update flag is "Proposed" (> 0) or "Pending" = -1
+                if ((_showOSMMUpdates == "Always") ||
+                    (_showOSMMUpdates == "When Outstanding" && (IncidOSMMUpdateFlag > 0 || IncidOSMMUpdateFlag == -1)))
+                {
+                    if (!(bool)_showingOSMMUpdatesGroup)
+                    {
+                        AdjustWindowHeight(89);
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingOSMMUpdatesGroup = true;
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    if ((bool)_showingOSMMUpdatesGroup)
+                    {
+                        AdjustWindowHeight(-89);
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showingOSMMUpdatesGroup = false;
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets the OSMM Update proposed IHS Summary that relates to the
+        /// selected incid. It is used to show how the latest OSMM translates
+        /// directly to IHS.
+        /// </summary>
+        /// <value>
+        /// The string of IHS Summary related to the current incid.
+        /// </value>
+        public string IncidOSMMIhsSummary
+        {
+            get
+            {
+                if (_ihsOSMMXrefIds == null)
+                {
+                    _ihsOSMMXrefIds = from x in HluDataset.lut_osmm_ihs_xref
+                                       where x.is_local
+                                       select x;
+                }
+
+                if (_incidOSMMUpdatesOSMMXref <= 0) return null;
+
+                var q = _ihsOSMMXrefIds.Where(h => h.osmm_xref_id == _incidOSMMUpdatesOSMMXref);
+                if (q.Count() > 0)
+                    return q.ElementAt(0).ihs_summary;
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM process flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Process Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMProcessFlag
+        {
+            get
+            {
+                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.process_flagColumn))
+                    return _incidOSMMUpdatesRows[0].process_flag.ToString();
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM spatial flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Spatial Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMSpatialFlag
+        {
+            get
+            {
+                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.spatial_flagColumn))
+                    return _incidOSMMUpdatesRows[0].spatial_flag.ToString();
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM change flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Change Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMChangeFlag
+        {
+            get
+            {
+                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.change_flagColumn))
+                    return _incidOSMMUpdatesRows[0].change_flag.ToString();
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM update flag that relates to the selected incid.
+        /// It contains the update status of the latest OSMM translation.
+        /// </summary>
+        /// <value>
+        /// The integer value of Update Flag related to the current incid.
+        /// </value>
+        public Nullable<int> IncidOSMMUpdateFlag
+        {
+            get
+            {
+                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.update_flagColumn))
+                    return _incidOSMMUpdatesRows[0].update_flag;
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM update flag that relates to the selected incid.
+        /// It is used to show the update status of the latest OSMM
+        /// translation.
+        /// </summary>
+        /// <value>
+        /// The string interpretation of Update Flag related to the
+        /// current incid.
+        /// </value>
+        public string IncidOSMMUpdateStatus
+        {
+            get
+            {
+                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.update_flagColumn))
+                {
+                    // Values greater than zero indicate proposed changes
+                    if (_incidOSMMUpdatesRows[0].update_flag > 0)
+                        return "Proposed";
+                    else
+                    {
+                        switch (_incidOSMMUpdatesRows[0].update_flag)
+                        {
+                            case 0:
+                                return "Applied";
+                            case -1:
+                                return "Pending";
+                            case -2:
+                                return "Ignored";
+                            case -99:
+                                return "Rejected";
+                            default:
+                                return null;
+                        }
+                    }
+                }
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 075 Reset OSMM update flag after manual updates.
+        // 
+        /// <summary>
+        /// Indicates if the update flag should be reset when an incid
+        /// is manually updated.
+        /// </summary>
+        /// <value>
+        /// Reset the update flag when an incid is manually updated.
+        /// </value>
+        public bool ResetUpdatesFlag
+        {
+            get { return _resetUpdatesFlag; }
+            set { _resetUpdatesFlag = value; }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
         #region Reason and Process
 
         //---------------------------------------------------------------------
@@ -5406,7 +6089,7 @@ namespace HLU.UI.ViewModel
                 {
                     if (!(bool)_showingReasonProcessGroup)
                     {
-                        WindowHeight = _windowHeight + 46;
+                        AdjustWindowHeight(47);
                         OnPropertyChanged("WindowHeight");
                     }
 
@@ -5417,7 +6100,7 @@ namespace HLU.UI.ViewModel
                 {
                     if ((bool)_showingReasonProcessGroup)
                     {
-                        WindowHeight = _windowHeight - 46;
+                        AdjustWindowHeight(-47);
                         OnPropertyChanged("WindowHeight");
                     }
 
@@ -5679,11 +6362,11 @@ namespace HLU.UI.ViewModel
             {
                 if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
 
-                if (Settings.Default.ShowNVCCodes)
+                if (_showNVCCodes)
                 {
                     if (!(bool)_showingNVCCodesText)
                     {
-                        WindowHeight = _windowHeight + 26;
+                        AdjustWindowHeight(26);
                         OnPropertyChanged("WindowHeight");
                     }
 
@@ -5694,7 +6377,7 @@ namespace HLU.UI.ViewModel
                 {
                     if ((bool)_showingNVCCodesText)
                     {
-                        WindowHeight = _windowHeight - 26;
+                        AdjustWindowHeight(-26);
                         OnPropertyChanged("WindowHeight");
                     }
 
@@ -5738,6 +6421,21 @@ namespace HLU.UI.ViewModel
         #region IHS Multiplex Codes
 
         #region IHS Habitat
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string IhsHabitatHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Habitat";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_ihs_habitatRow[] IhsHabitatCodes
         {
@@ -5885,6 +6583,21 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region IHS Matrix
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string IhsMatrixHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Matrix";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_ihs_matrixRow[] IhsMatrix1Codes
         {
@@ -6334,6 +7047,21 @@ namespace HLU.UI.ViewModel
 
         #region IHS Formation
 
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string IhsFormationHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Formation";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
+
         public HluDataSet.lut_ihs_formationRow[] IhsFormation1Codes
         {
             get
@@ -6641,6 +7369,21 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region IHS Management
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string IhsManagementHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Management";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_ihs_managementRow[] IhsManagement1Codes
         {
@@ -6951,6 +7694,21 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region IHS Complex
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string IhsComplexHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Complex";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_ihs_complexRow[] IhsComplex1Codes
         {
@@ -8335,6 +9093,21 @@ namespace HLU.UI.ViewModel
         #region Site
 
         //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string DetailsSiteHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Site";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)
         // Display the site reference with the site name in the interface.
         public string IncidSiteRef
@@ -8404,6 +9177,8 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        #region Sources
+
         private bool CheckSources()
         {
             if (_bulkUpdateMode == true) return true;
@@ -8416,6 +9191,161 @@ namespace HLU.UI.ViewModel
             }
             return _incidSourcesRows != null;
         }
+
+        private Date.VagueDateInstance DefaultSourceDate(Date.VagueDateInstance currentDate, Nullable<int> sourceID)
+        {
+            if ((HluDataset == null) || (HluDataset.lut_sources == null)) return currentDate;
+
+            EnumerableRowCollection<HluDataSet.lut_sourcesRow> rows =
+                HluDataset.lut_sources.Where(r => r.source_id == sourceID &&
+                    !r.IsNull(HluDataset.lut_sources.source_date_defaultColumn));
+
+            if (rows.Count() > 0)
+            {
+                string defaultDate;
+                string dateType = VagueDate.GetType(rows.ElementAt(0).source_date_default, out defaultDate);
+                int startDate = VagueDate.ToTimeSpanDays(defaultDate, dateType, VagueDate.DateType.Start);
+                int endDate = VagueDate.ToTimeSpanDays(defaultDate, dateType, VagueDate.DateType.End);
+                return new Date.VagueDateInstance(startDate, endDate, dateType);
+            }
+
+            return currentDate;
+        }
+
+        private void UpdateIncidSourcesRow<T>(int rowNumber, int columnOrdinal, T newValue)
+        {
+            try
+            {
+                if (_incidSourcesRows == null) return;
+
+                if (_incidSourcesRows[rowNumber] == null)
+                {
+                    if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
+                    {
+                        HluDataSet.incid_sourcesRow newRow = IncidSourcesTable.Newincid_sourcesRow();
+                        newRow.incid_source_id = NextIncidSourceId;
+                        newRow.incid = IncidCurrentRow.incid;
+                        newRow.sort_order = rowNumber + 1;
+                        _incidSourcesRows[rowNumber] = newRow;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else if ((columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal) && (newValue == null))
+                {
+                    if (_incidSourcesRows[rowNumber].RowState != DataRowState.Detached)
+                        _incidSourcesRows[rowNumber].Delete();
+                    _incidSourcesRows[rowNumber] = null;
+                    return;
+                }
+
+                if ((columnOrdinal == HluDataset.incid_sources.source_date_startColumn.Ordinal) ||
+                    (columnOrdinal == HluDataset.incid_sources.source_date_endColumn.Ordinal))
+                {
+                    Date.VagueDateInstance vd = newValue as Date.VagueDateInstance;
+                    if (vd != null)
+                    {
+                        _incidSourcesRows[rowNumber].source_date_start = vd.StartDate;
+                        _incidSourcesRows[rowNumber].source_date_end = vd.EndDate;
+                        _incidSourcesRows[rowNumber].source_date_type = vd.DateType;
+                    }
+                    else
+                    {
+                        _incidSourcesRows[rowNumber].source_date_start = VagueDate.DateUnknown;
+                        _incidSourcesRows[rowNumber].source_date_end = VagueDate.DateUnknown;
+                        _incidSourcesRows[rowNumber].source_date_type = null;
+                    }
+                }
+                else if ((((_incidSourcesRows[rowNumber].IsNull(columnOrdinal) ^ (newValue == null)) ||
+                    ((!_incidSourcesRows[rowNumber].IsNull(columnOrdinal) && (newValue != null)))) &&
+                    !_incidSourcesRows[rowNumber][columnOrdinal].Equals(newValue)))
+                {
+                    _incidSourcesRows[rowNumber][columnOrdinal] = newValue;
+                }
+
+                if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
+                {
+                    try
+                    {
+                        HluDataSet.lut_sourcesRow lutRow =
+                            HluDataset.lut_sources.Single(r => r.source_id == _incidSourcesRows[rowNumber].source_id);
+                        if (!String.IsNullOrEmpty(lutRow.source_date_default))
+                        {
+                            string defaultDateString;
+                            string formatString = VagueDate.GetType(lutRow.source_date_default, out defaultDateString);
+                            int defaultStartDate = VagueDate.ToTimeSpanDays(defaultDateString,
+                                formatString, VagueDate.DateType.Start);
+                            int defaultEndDate = VagueDate.ToTimeSpanDays(defaultDateString,
+                                formatString, VagueDate.DateType.End);
+                            _incidSourcesRows[rowNumber].source_date_start = defaultStartDate;
+                            _incidSourcesRows[rowNumber].source_date_end = defaultEndDate;
+                        }
+                    }
+                    catch { }
+                }
+
+                if ((_incidSourcesRows[rowNumber].RowState == DataRowState.Detached) &&
+                    IsCompleteRow(_incidSourcesRows[rowNumber]))
+                {
+                    _incidSourcesRows[rowNumber].sort_order = rowNumber + 1;
+                    IncidSourcesTable.Addincid_sourcesRow(_incidSourcesRows[rowNumber]);
+                }
+            }
+            catch { }
+        }
+
+        public HluDataSet.lut_habitat_classRow[] SourceHabitatClassCodes
+        {
+            get
+            {
+                if (_sourceHabitatClassCodes == null)
+                {
+                    if (HluDataset.lut_habitat_class.IsInitialized && (HluDataset.lut_habitat_class.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
+                            _hluTableAdapterMgr.lut_habitat_classTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
+                    }
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    // CHANGED: CR32 (Local flags)
+                    // Only load habitat classes that are flagged as local.
+                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
+                }
+                return _sourceHabitatClassCodes;
+            }
+        }
+
+        public HluDataSet.lut_importanceRow[] SourceImportanceCodes
+        {
+            get
+            {
+                if (_sourceImportanceCodes == null)
+                {
+                    if (HluDataset.lut_importance.IsInitialized && (HluDataset.lut_importance.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_importanceTableAdapter == null)
+                            _hluTableAdapterMgr.lut_importanceTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_importanceDataTable, HluDataSet.lut_importanceRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
+                    }
+                    //---------------------------------------------------------------------
+                    // FIX: 025 Add default sort order to all lookup tables
+                    _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
+                }
+                return _sourceImportanceCodes;
+            }
+        }
+
+        #endregion
+
+        #region Source1
 
         public HluDataSet.lut_sourcesRow[] Source1Names
         {
@@ -8549,31 +9479,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_habitat_classRow[] SourceHabitatClassCodes
-        {
-            get
-            {
-                if (_sourceHabitatClassCodes == null)
-                {
-                    if (HluDataset.lut_habitat_class.IsInitialized && (HluDataset.lut_habitat_class.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_classTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
-                    }
-                    //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
-                    // CHANGED: CR32 (Local flags)
-                    // Only load habitat classes that are flagged as local.
-                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
-                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                    //---------------------------------------------------------------------
-                }
-                return _sourceHabitatClassCodes;
-            }
-        }
-
         public string IncidSource1HabitatClass
         {
             get
@@ -8657,28 +9562,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_importanceRow[] SourceImportanceCodes
-        {
-            get
-            {
-                if (_sourceImportanceCodes == null)
-                {
-                    if (HluDataset.lut_importance.IsInitialized && (HluDataset.lut_importance.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_importanceTableAdapter == null)
-                            _hluTableAdapterMgr.lut_importanceTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_importanceDataTable, HluDataSet.lut_importanceRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
-                    }
-                    //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
-                    _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                    //---------------------------------------------------------------------
-                }
-                return _sourceImportanceCodes;
-            }
-        }
-
         public string IncidSource1BoundaryImportance
         {
             get
@@ -8730,6 +9613,10 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
             }
         }
+
+        #endregion
+
+        #region Source2
 
         public HluDataSet.lut_sourcesRow[] Source2Names
         {
@@ -8997,6 +9884,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        #endregion
+
+        #region Source3
+
         public HluDataSet.lut_sourcesRow[] Source3Names
         {
             get
@@ -9263,109 +10154,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private Date.VagueDateInstance DefaultSourceDate(Date.VagueDateInstance currentDate, Nullable<int> sourceID)
-        {
-            if ((HluDataset == null) || (HluDataset.lut_sources == null)) return currentDate;
-
-            EnumerableRowCollection<HluDataSet.lut_sourcesRow> rows =
-                HluDataset.lut_sources.Where(r => r.source_id == sourceID &&
-                    !r.IsNull(HluDataset.lut_sources.source_date_defaultColumn));
-
-            if (rows.Count() > 0)
-            {
-                string defaultDate;
-                string dateType = VagueDate.GetType(rows.ElementAt(0).source_date_default, out defaultDate);
-                int startDate = VagueDate.ToTimeSpanDays(defaultDate, dateType, VagueDate.DateType.Start);
-                int endDate = VagueDate.ToTimeSpanDays(defaultDate, dateType, VagueDate.DateType.End);
-                return new Date.VagueDateInstance(startDate, endDate, dateType);
-            }
-
-            return currentDate;
-        }
-
-        private void UpdateIncidSourcesRow<T>(int rowNumber, int columnOrdinal, T newValue)
-        {
-            try
-            {
-                if (_incidSourcesRows == null) return;
-
-                if (_incidSourcesRows[rowNumber] == null)
-                {
-                    if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
-                    {
-                        HluDataSet.incid_sourcesRow newRow = IncidSourcesTable.Newincid_sourcesRow();
-                        newRow.incid_source_id = NextIncidSourceId;
-                        newRow.incid = IncidCurrentRow.incid;
-                        newRow.sort_order = rowNumber + 1;
-                        _incidSourcesRows[rowNumber] = newRow;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-                else if ((columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal) && (newValue == null))
-                {
-                    if (_incidSourcesRows[rowNumber].RowState != DataRowState.Detached)
-                        _incidSourcesRows[rowNumber].Delete();
-                    _incidSourcesRows[rowNumber] = null;
-                    return;
-                }
-
-                if ((columnOrdinal == HluDataset.incid_sources.source_date_startColumn.Ordinal) ||
-                    (columnOrdinal == HluDataset.incid_sources.source_date_endColumn.Ordinal))
-                {
-                    Date.VagueDateInstance vd = newValue as Date.VagueDateInstance;
-                    if (vd != null)
-                    {
-                        _incidSourcesRows[rowNumber].source_date_start = vd.StartDate;
-                        _incidSourcesRows[rowNumber].source_date_end = vd.EndDate;
-                        _incidSourcesRows[rowNumber].source_date_type = vd.DateType;
-                    }
-                    else
-                    {
-                        _incidSourcesRows[rowNumber].source_date_start = VagueDate.DateUnknown;
-                        _incidSourcesRows[rowNumber].source_date_end = VagueDate.DateUnknown;
-                        _incidSourcesRows[rowNumber].source_date_type = null;
-                    }
-                }
-                else if ((((_incidSourcesRows[rowNumber].IsNull(columnOrdinal) ^ (newValue == null)) || 
-                    ((!_incidSourcesRows[rowNumber].IsNull(columnOrdinal) && (newValue != null)))) && 
-                    !_incidSourcesRows[rowNumber][columnOrdinal].Equals(newValue)))
-                {
-                    _incidSourcesRows[rowNumber][columnOrdinal] = newValue;
-                }
-
-                if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
-                {
-                    try
-                    {
-                        HluDataSet.lut_sourcesRow lutRow =
-                            HluDataset.lut_sources.Single(r => r.source_id == _incidSourcesRows[rowNumber].source_id);
-                        if (!String.IsNullOrEmpty(lutRow.source_date_default))
-                        {
-                            string defaultDateString;
-                            string formatString = VagueDate.GetType(lutRow.source_date_default, out defaultDateString);
-                            int defaultStartDate = VagueDate.ToTimeSpanDays(defaultDateString,
-                                formatString, VagueDate.DateType.Start);
-                            int defaultEndDate = VagueDate.ToTimeSpanDays(defaultDateString,
-                                formatString, VagueDate.DateType.End);
-                            _incidSourcesRows[rowNumber].source_date_start = defaultStartDate;
-                            _incidSourcesRows[rowNumber].source_date_end = defaultEndDate;
-                        }
-                    }
-                    catch { }
-                }
-
-                if ((_incidSourcesRows[rowNumber].RowState == DataRowState.Detached) &&
-                    IsCompleteRow(_incidSourcesRows[rowNumber]))
-                {
-                    _incidSourcesRows[rowNumber].sort_order = rowNumber + 1;
-                    IncidSourcesTable.Addincid_sourcesRow(_incidSourcesRows[rowNumber]);
-                }
-            }
-            catch { }
-        }
+        #endregion
 
         #endregion
 
@@ -9407,7 +10196,7 @@ namespace HLU.UI.ViewModel
                                     @" at " + r.modified_date.ToLongTimeString() : String.Empty,
                                 modified_user_id = r.lut_userRow != null ? r.lut_userRow.user_name :
                                     !r.Ismodified_user_idNull() ? r.modified_user_id : String.Empty,
-                                modifid_process = r.lut_processRow != null ? r.lut_processRow.description : String.Empty,
+                                modified_process = r.lut_processRow != null ? r.lut_processRow.description : String.Empty,
                                 modified_reason = r.lut_reasonRow != null ? r.lut_reasonRow.description : String.Empty,
                                 modified_operation = r.lut_operationRow != null ? r.lut_operationRow.description : String.Empty,
                                 modified_incid = !r.Ismodified_incidNull() ? r.modified_incid : String.Empty,
@@ -9424,7 +10213,7 @@ namespace HLU.UI.ViewModel
                             select String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
                                 g.Key.modified_time, g.Key.modified_user_id) +
                                 //---------------------------------------------------------------------
-                                String.Format("\n\tProcess: {0}", g.Key.modifid_process) +
+                                String.Format("\n\tProcess: {0}", g.Key.modified_process) +
                                 String.Format("\n\tReason: {0}", g.Key.modified_reason) +
                                 String.Format("\n\tOperation: {0}", g.Key.modified_operation) +
                                 //---------------------------------------------------------------------
@@ -9745,7 +10534,7 @@ namespace HLU.UI.ViewModel
                 !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
 
             if ((q.Count() > 0) && (q.ElementAt(0).man_formation == 1) && String.IsNullOrEmpty(IncidIhsFormation1))
-                return String.Format("IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+                return String.Format("Error: IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
                     q.ElementAt(0).description);
             else
                 return null;
@@ -9761,7 +10550,7 @@ namespace HLU.UI.ViewModel
                 !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
 
             if ((q.Count() > 0) && (q.ElementAt(0).man_management == 1) && String.IsNullOrEmpty(IncidIhsManagement1))
-                return String.Format("IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+                return String.Format("Error: IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
                     q.ElementAt(0).description);
             else
                 return null;
@@ -9774,13 +10563,13 @@ namespace HLU.UI.ViewModel
             if (IncidSource1Id != null)
             {
                 if (IncidSource1Date == null)
-                    errors.Add(new string[] { "IncidSource1Date", "Date is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource1Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource1Date.IsBad)
-                    errors.Add(new string[] { "IncidSource1Date", "Invalid vague date" });
+                    errors.Add(new string[] { "IncidSource1Date", "Error: Invalid vague date" });
                 if (String.IsNullOrEmpty(IncidSource1HabitatClass))
-                    errors.Add(new string[] { "IncidSource1HabitatClass", "Habitat class is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource1HabitatClass", "Error: Habitat class is mandatory for each source" });
                 else if ((IncidSource1HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource1HabitatType))
-                    errors.Add(new string[] { "IncidSource1HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+                    errors.Add(new string[] { "IncidSource1HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
                 // FIX: 025 Use skip value from settings rather than hard-coded value
@@ -9788,7 +10577,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource1BoundaryImportance))
                 {
-                    errors.Add(new string[] { "IncidSource1BoundaryImportance", "Boundary importance is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource1BoundaryImportance", "Error: Boundary importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9803,7 +10592,7 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(IncidSource1HabitatImportance))
                 {
                     errors.Add(new string[] { "IncidSource1HabitatImportance", 
-                        "Habitat importance is mandatory for each source" });
+                        "Error: Habitat importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9820,19 +10609,19 @@ namespace HLU.UI.ViewModel
             {
                 if (IncidSource1Date != null)
                     errors.Add(new string[] { "IncidSource1Date", 
-                        "Date cannot be filled in if no source has been specified" });
+                        "Error: Date cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource1HabitatClass))
                     errors.Add(new string[] { "IncidSource1HabitatClass", 
-                        "Habitat class cannot be filled in if no source has been specified" });
+                        "Error: Habitat class cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource1HabitatType))
                     errors.Add(new string[] { "IncidSource1HabitatType", 
-                        "Habitat type cannot be filled in if no source has been specified" });
+                        "Error: Habitat type cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource1BoundaryImportance))
                     errors.Add(new string[] { "IncidSource1BoundaryImportance", 
-                        "Boundary importance cannot be filled in if no source has been specified" });
+                        "Error: Boundary importance cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource1HabitatImportance))
                     errors.Add(new string[] { "IncidSource1HabitatImportance", 
-                        "Habitat importance cannot be filled in if no source has been specified" });
+                        "Error: Habitat importance cannot be filled in if no source has been specified" });
             }
 
             return errors;
@@ -9845,13 +10634,13 @@ namespace HLU.UI.ViewModel
             if (IncidSource2Id != null)
             {
                 if (IncidSource2Date == null)
-                    errors.Add(new string[] { "IncidSource2Date", "Date is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource2Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource2Date.IsBad)
-                    errors.Add(new string[] { "IncidSource2Date", "Invalid vague date" });
+                    errors.Add(new string[] { "IncidSource2Date", "Error: Invalid vague date" });
                 if (String.IsNullOrEmpty(IncidSource2HabitatClass))
-                    errors.Add(new string[] { "IncidSource2HabitatClass", "Habitat class is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource2HabitatClass", "Error: Habitat class is mandatory for each source" });
                 else if ((IncidSource2HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource2HabitatType))
-                    errors.Add(new string[] { "IncidSource2HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+                    errors.Add(new string[] { "IncidSource2HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
                 // FIX: 025 Use skip value from settings rather than hard-coded value
@@ -9859,7 +10648,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource2BoundaryImportance))
                 {
-                    errors.Add(new string[] { "IncidSource2BoundaryImportance", "Boundary importance is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource2BoundaryImportance", "Error: Boundary importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9874,7 +10663,7 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(IncidSource2HabitatImportance))
                 {
                     errors.Add(new string[] { "IncidSource2HabitatImportance", 
-                        "Habitat importance is mandatory for each source" });
+                        "Error: Habitat importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9891,19 +10680,19 @@ namespace HLU.UI.ViewModel
             {
                 if (IncidSource2Date != null)
                     errors.Add(new string[] { "IncidSource2Date", 
-                        "Date cannot be filled in if no source has been specified" });
+                        "Error: Date cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource2HabitatClass))
                     errors.Add(new string[] { "IncidSource2HabitatClass", 
-                        "Habitat class cannot be filled in if no source has been specified" });
+                        "Error: Habitat class cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource2HabitatType))
                     errors.Add(new string[] { "IncidSource2HabitatType", 
-                        "Habitat type cannot be filled in if no source has been specified" });
+                        "Error: Habitat type cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource2BoundaryImportance))
                     errors.Add(new string[] { "IncidSource2BoundaryImportance", 
-                        "Boundary importance cannot be filled in if no source has been specified" });
+                        "Error: Boundary importance cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource2HabitatImportance))
                     errors.Add(new string[] { "IncidSource2HabitatImportance", 
-                        "Habitat importance cannot be filled in if no source has been specified" });
+                        "Error: Habitat importance cannot be filled in if no source has been specified" });
             }
 
             return errors;
@@ -9916,13 +10705,13 @@ namespace HLU.UI.ViewModel
             if (IncidSource3Id != null)
             {
                 if (IncidSource3Date == null)
-                    errors.Add(new string[] { "IncidSource3Date", "Date is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource3Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource3Date.IsBad)
-                    errors.Add(new string[] { "IncidSource3Date", "Invalid vague date" });
+                    errors.Add(new string[] { "IncidSource3Date", "Error: Invalid vague date" });
                 if (String.IsNullOrEmpty(IncidSource3HabitatClass))
-                    errors.Add(new string[] { "IncidSource3HabitatClass", "Habitat class is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource3HabitatClass", "Error: Habitat class is mandatory for each source" });
                 else if ((IncidSource3HabitatClass.ToLower() == "none") != String.IsNullOrEmpty(IncidSource3HabitatType))
-                    errors.Add(new string[] { "IncidSource3HabitatType", "Habitat type is mandatory if habitat class is filled in" });
+                    errors.Add(new string[] { "IncidSource3HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
                 // FIX: 025 Use skip value from settings rather than hard-coded value
@@ -9930,7 +10719,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource3BoundaryImportance))
                 {
-                    errors.Add(new string[] { "IncidSource3BoundaryImportance", "Boundary importance is mandatory for each source" });
+                    errors.Add(new string[] { "IncidSource3BoundaryImportance", "Error: Boundary importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9945,7 +10734,7 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(IncidSource3HabitatImportance))
                 {
                     errors.Add(new string[] { "IncidSource3HabitatImportance", 
-                        "Habitat importance is mandatory for each source" });
+                        "Error: Habitat importance is mandatory for each source" });
                 }
                 else
                 {
@@ -9962,19 +10751,19 @@ namespace HLU.UI.ViewModel
             {
                 if (IncidSource3Date != null)
                     errors.Add(new string[] { "IncidSource3Date", 
-                        "Date cannot be filled in if no source has been specified" });
+                        "Error: Date cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource3HabitatClass))
                     errors.Add(new string[] { "IncidSource3HabitatClass", 
-                        "Habitat class cannot be filled in if no source has been specified" });
+                        "Error: Habitat class cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource3HabitatType))
                     errors.Add(new string[] { "IncidSource3HabitatType", 
-                        "Habitat type cannot be filled in if no source has been specified" });
+                        "Error: Habitat type cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource3BoundaryImportance))
                     errors.Add(new string[] { "IncidSource3BoundaryImportance", 
-                        "Boundary importance cannot be filled in if no source has been specified" });
+                        "Error: Boundary importance cannot be filled in if no source has been specified" });
                 if (!String.IsNullOrEmpty(IncidSource3HabitatImportance))
                     errors.Add(new string[] { "IncidSource3HabitatImportance", 
-                        "Habitat importance cannot be filled in if no source has been specified" });
+                        "Error: Habitat importance cannot be filled in if no source has been specified" });
             }
 
             return errors;
@@ -10010,7 +10799,7 @@ namespace HLU.UI.ViewModel
             if ((checkVal == null) || checkVal.Equals(skipVal)) return;
 
             string[] split = propNamePat.Split(new string[] { propNamePatWildcard }, StringSplitOptions.None);
-            string errMsg = split[split.Length - 1];
+            string errMsg = String.Format("Error: {0}", split[split.Length - 1]);
 
             errMsg = Regex.Matches(errMsg, @"[A-Z][^A-Z\s]*").Cast<Match>()
                 .Aggregate(new StringBuilder(), (sb, m) => sb.Append(errMsg.Substring(m.Index, m.Length)).Append(" "))
@@ -10071,7 +10860,8 @@ namespace HLU.UI.ViewModel
             if ((checkVal == null) || checkVal.Equals(skipVal)) return;
 
             string[] split = propNamePat.Split(new string[] { propNamePatWildcard }, StringSplitOptions.None);
-            string errMsg = split[split.Length - 1];
+            string errMsg = String.Format("Error: {0}", split[split.Length - 1]);
+
             errMsg = Regex.Matches(errMsg, @"[A-Z][^A-Z\s]*").Cast<Match>()
                 .Aggregate(new StringBuilder(), (sb, m) => sb.Append(errMsg.Substring(m.Index, m.Length)).Append(" "))
                 .Append("of two sources cannot be equal for the same INCID").ToString();
@@ -10298,24 +11088,35 @@ namespace HLU.UI.ViewModel
                 {
                     case "Reason":
                         if (String.IsNullOrEmpty(Reason))
-                            error = "Reason is mandatory for the history trail of every INCID";
+                            error = "Error: Reason is mandatory for the history trail of every INCID";
                         break;
                     case "Process":
                         if (String.IsNullOrEmpty(Process))
-                            error = "Process is mandatory for the history trail of every INCID";
+                            error = "Error: Process is mandatory for the history trail of every INCID";
                         break;
                     case "Incid":
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 080 Functionality to display warning level messages.
+                    //    
+                    case "IncidOSMMUpdateStatus":
+                        if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
+                            error = "Warning: OSMM Update is outstanding";
+                        OnPropertyChanged("IhsTabLabel");
+                        break;
                     case "IhsTabLabel":
+                        if (_ihsWarnings != null && _ihsWarnings.Count > 0)
+                            error = "Warning: One or more Habitat fields have a warning";
+                    //---------------------------------------------------------------------
                         if (_ihsErrors != null && _ihsErrors.Count > 0)
-                            error = "One or more Habitat codes are in error";
+                            error = "Error: One or more Habitat fields are in error";
                         break;
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidIhsHabitat))
                         {
-                            error = "IHS Habitat is mandatory for every INCID";
+                            error = "Error: IHS Habitat is mandatory for every INCID";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10331,7 +11132,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
                         {
-                            error = "Matrix code 1 does not correspond to chosen IHS habitat";
+                            error = "Error: Matrix code 1 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10347,7 +11148,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
                         {
-                            error = "Matrix code 2 does not correspond to chosen IHS habitat";
+                            error = "Error: Matrix code 2 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10363,7 +11164,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) &&
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
                         {
-                            error = "Matrix code 3 does not correspond to chosen IHS habitat";
+                            error = "Error: Matrix code 3 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10379,7 +11180,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) &&
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
                         {
-                            error = "Formation code 1 does not correspond to chosen IHS habitat";
+                            error = "Error: Formation code 1 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10401,7 +11202,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) &&
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
                         {
-                            error = "Formation code 2 does not correspond to chosen IHS habitat";
+                            error = "Error: Formation code 2 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10417,7 +11218,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) &&
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
                         {
-                            error = "Management code 1 does not correspond to chosen IHS habitat";
+                            error = "Error: Management code 1 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10439,7 +11240,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
                         {
-                            error = "Management code 2 does not correspond to chosen IHS habitat";
+                            error = "Error: Management code 2 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10455,7 +11256,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) &&
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
                         {
-                            error = "Complex code 1 does not correspond to chosen IHS habitat";
+                            error = "Error: Complex code 1 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10471,7 +11272,7 @@ namespace HLU.UI.ViewModel
                         if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
                         {
-                            error = "Complex code 2 does not correspond to chosen IHS habitat";
+                            error = "Error: Complex code 2 does not correspond to chosen IHS habitat";
                             UpdateErrorList(ref _ihsErrors, columnName, true);
                         }
                         else
@@ -10481,15 +11282,21 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "DetailsTabLabel":
+                        //---------------------------------------------------------------------
+                        // FIX: 080 Functionality to display warning level messages.
+                        //    
+                        if (_detailsWarnings != null && _detailsWarnings.Count > 0)
+                            error = "Warning: One or more Details have a warning";
+                        //---------------------------------------------------------------------
                         if (_detailsErrors != null && _detailsErrors.Count > 0)
-                            error = "One or more Details are in error";
+                            error = "Error: One or more Details are in error";
                         break;
                     case "IncidBoundaryBaseMap":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
                         {
-                            error = "Boundary basemap is mandatory for every INCID";
+                            error = "Error: Boundary basemap is mandatory for every INCID";
                             UpdateErrorList(ref _detailsErrors, columnName, true);
                         }
                         else
@@ -10503,7 +11310,7 @@ namespace HLU.UI.ViewModel
                         // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
                         {
-                            error = "Digitisation basemap is mandatory for every INCID";
+                            error = "Error: Digitisation basemap is mandatory for every INCID";
                             UpdateErrorList(ref _detailsErrors, columnName, true);
                         }
                         else
@@ -10513,12 +11320,22 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("DetailsTabLabel");
                         break;
                     case "SourcesTabLabel":
+                        //---------------------------------------------------------------------
+                        // FIX: 080 Functionality to display warning level messages.
+                        //    
+                        // Check the Source field warnings to see if the Source tab label
+                        // should be flagged with a warning.
+                        if ((Source1Warnings != null && Source1Warnings.Count > 0) ||
+                            (Source2Warnings != null && Source2Warnings.Count > 0) ||
+                            (Source3Warnings != null && Source3Warnings.Count > 0))
+                            error = "Warning: One or more Sources have a warning";
+                        //---------------------------------------------------------------------
                         // Check the Source field errors to see if the Source tab label
                         // should be flagged as in error.
                         if ((Source1Errors != null && Source1Errors.Count > 0) ||
                             (Source2Errors != null && Source2Errors.Count > 0) ||
                             (Source3Errors != null && Source3Errors.Count > 0))
-                            error = "One or more Sources are in error";
+                            error = "Error: One or more Sources are in error";
                         break;
                     case "IncidSource1Id":
                     case "IncidSource1Date":

@@ -412,11 +412,11 @@ namespace HLU.UI.ViewModel
                 string error = null;
 
                 if (String.IsNullOrEmpty(_connStrBuilder.DataSource) || String.IsNullOrEmpty(_connStrBuilder.InitialCatalog))
-                    error = "Must provide at least server name and database";
+                    error = "Error: You must provide at least server name and database";
 
 
                 if (!_connStrBuilder.IntegratedSecurity && String.IsNullOrEmpty(_connStrBuilder.UserID))
-                        error = "Must provide user id (and usually password) if using SQL Server authentication";
+                    error = "Error: You must provide user id (and usually password) if using SQL Server authentication";
 
                 return error;
             }
@@ -432,19 +432,19 @@ namespace HLU.UI.ViewModel
                 {
                     case "Server":
                         if (String.IsNullOrEmpty(_connStrBuilder.DataSource))
-                            error = "Please choose a server";
+                            error = "Error: You must choose a server";
                         break;
                     case "Username":
                         if ((!_connStrBuilder.IntegratedSecurity) && (String.IsNullOrEmpty(_connStrBuilder.UserID)))
-                            error = "Please provide a user id";
+                            error = "Error: You must provide a user id";
                         break;
                     case "Database":
                         if (String.IsNullOrEmpty(_connStrBuilder.InitialCatalog))
-                            error = "Please choose a database";
+                            error = "Error: You must choose a database";
                         break;
                     case "DefaultSchema":
                         if (String.IsNullOrEmpty(_defaultSchema))
-                            error = "Please choose a default schema";
+                            error = "Error: You must choose a default schema";
                         break;
                 }
 

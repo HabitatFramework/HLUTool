@@ -39,6 +39,7 @@ namespace HLU
         private ComboBox[] _comboBoxes;
         private MenuItem[] _menuItems;
         public string _lastStyle = null;
+        public bool _keepOnTop = false;
         public bool _autoZoom = false;
         public bool _autoSelect = false;
 
@@ -63,6 +64,16 @@ namespace HLU
 
             // Check the menu item for the default style.
             CheckMenuItem(_lastStyle, true);
+
+            //---------------------------------------------------------------------
+            // FIX: 079 Save option to always keep app window on top.
+            //
+            // Get the app keep on top option default value.
+            _keepOnTop = Settings.Default.AppKeepOnTop;
+
+            // Check the menu item for the app keep on top option.
+            CheckMenuItem("MenuItemAppKeepOnTop", _keepOnTop);
+            //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
             // FIX: 068 Enable auto zoom when selecting features on map.

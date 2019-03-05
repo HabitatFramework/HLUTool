@@ -528,14 +528,14 @@ namespace HLU.UI.ViewModel
                 {
                     case "ConnectionString":
                         if (String.IsNullOrEmpty(_connStrBuilder.ConnectionString))
-                            error = "Please create a connection";
+                            error = "Error: You must create a connection";
                         break;
                     case "DefaultSchema":
                         //---------------------------------------------------------------------
                         // FIX: 055 Enable connection using Microsoft ACE driver.
                         //
-                        if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
-                            String.IsNullOrEmpty(_defaultSchema)) error = "Please provide a default schema";
+                        if ((_connAdo != null) && !IsMsAccess(_connAdo) &&
+                            String.IsNullOrEmpty(_defaultSchema)) error = "Error: You must provide a default schema";
                         //---------------------------------------------------------------------
                         break;
                 }

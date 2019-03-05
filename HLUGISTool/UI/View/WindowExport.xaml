@@ -3,7 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" ResizeMode="CanResize" SizeToContent="WidthAndHeight"
         Height="194" MinWidth="320" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
-    
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4" Width="Auto">
         <Grid>
             <Grid.RowDefinitions>
@@ -34,7 +42,8 @@
                               IsEditable="True" IsReadOnly="True"
                               ItemsSource="{Binding Path=ExportFormats, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                               DisplayMemberPath="export_name" SelectedValuePath="export_id" 
-                              SelectedValue="{Binding Path=ExportID, ValidatesOnDataErrors=True}" />
+                              SelectedValue="{Binding Path=ExportID, ValidatesOnDataErrors=True}"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
                     <Label Name="LabelSelectedOnly" Grid.Row="2" Grid.Column="0" IsEnabled="{Binding Path=HaveSelection}" 
                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,0,8">Selected Only</Label>
                     <Grid Name="GridSelectedOnly" Grid.Row="2" Grid.Column="1">

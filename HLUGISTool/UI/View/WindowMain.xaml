@@ -5,8 +5,10 @@
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         Title="{Binding WindowTitle}"
-        Width="492"
+        Width="{Binding WindowWidth,
+                         Mode=TwoWay}"
         Height="{Binding WindowHeight,
                          Mode=TwoWay}"
         Icon="..\..\Icons\HLUIcon.png"
@@ -24,6 +26,9 @@
                 <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
+                <!--  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/> -->
+                <!--  <ResourceDictionary Source="Dictionary/ThemeLightGrey.xaml"/>  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />  -->
             </ResourceDictionary.MergedDictionaries>
@@ -40,8 +45,9 @@
             <MenuItem Header="_File">
                 <MenuItem x:Name="MenuItemExport"
                           Command="{Binding ExportCommand}"
-                          Header="Ex_port"
+                          Header="Ex_port..."
                           IsEnabled="{Binding CanExport}" />
+                <Separator />
                 <MenuItem x:Name="MenuItemExit"
                           Command="{Binding CloseCommand}"
                           Header="E_xit" />
@@ -66,14 +72,19 @@
                           Command="{Binding GisWinSideBySideCommand}"
                           Header="Windows _Side By Side"
                           IsEnabled="{Binding CanGisWinSideBySide}" />
-                <MenuItem x:Name="MenuItemAppKeepOnTop"
-                          Header="_Keep Tool Window on Top"
-                          IsCheckable="True" />
+                <MenuItem x:Name="MenuItemResetToolWindow"
+                          Command="{Binding ResetToolWindowCommand}"
+                          Header="Reset Tool Window Size"
+                          IsEnabled="{Binding CanResetToolWindow}" />
                 <MenuItem x:Name="MenuItemGisSwitchTo"
                           Command="{Binding GisWinSwitchToCommand}"
                           Header="S_witch To GIS Window"
                           IsEnabled="{Binding CanGisWinSwitchTo}" />
                 <Separator />
+                <MenuItem x:Name="MenuItemAppKeepOnTop"
+                          Command="{Binding AppKeepOnTopCommand}"
+                          Header="_Keep Tool Window on Top"
+                          IsCheckable="True" />
                 <MenuItem x:Name="MenuItemAutoZoomSelected"
                           Command="{Binding AutoZoomSelectedCommand}"
                           Header="Auto _Zoom To Selection"
@@ -82,8 +93,17 @@
             <MenuItem Header="_Select">
                 <MenuItem x:Name="MenuItemFilterByAttributes"
                           Command="{Binding FilterByAttributesCommand}"
-                          Header="Filter by _Attributes"
+                          Header="Filter by _Attributes..."
                           IsEnabled="{Binding CanFilterByAttributes}" />
+                <MenuItem x:Name="MenuItemFilterByIncid"
+                          Command="{Binding FilterByIncidCommand}"
+                          Header="Filter by _Incid..."
+                          IsEnabled="{Binding CanFilterByIncid}" />
+                <MenuItem x:Name="MenuItemClearFilter"
+                          Command="{Binding ClearFilterCommand}"
+                          Header="_Clear Filter"
+                          IsEnabled="{Binding IsFiltered}" />
+                <Separator />
                 <MenuItem x:Name="MenuItemSelectOnMap"
                           Command="{Binding SelectOnMapCommand}"
                           Header="Select C_urrent INCID on Map"
@@ -91,10 +111,6 @@
                 <MenuItem x:Name="MenuItemSelectAllOnMap"
                           Command="{Binding SelectAllOnMapCommand}"
                           Header="Select _All Filtered INCIDs on Map"
-                          IsEnabled="{Binding IsFiltered}" />
-                <MenuItem x:Name="MenuItemClearFilter"
-                          Command="{Binding ClearFilterCommand}"
-                          Header="_Clear Filter"
                           IsEnabled="{Binding IsFiltered}" />
                 <MenuItem x:Name="MenuItemGetMapSelection"
                           Command="{Binding ReadMapSelectionCommand}"
@@ -134,7 +150,7 @@
             <MenuItem Name="MenuItemTools" Header="_Tools">
                 <MenuItem x:Name="MenuItemOptions"
                           Command="{Binding Path=OptionsCommand}"
-                          Header="_Options" />
+                          Header="_Options..." />
                 <MenuItem x:Name="MenuItemSwitchGisLayer"
                           Command="{Binding Path=SwitchGISLayerCommand}"
                           Header="Switch _GIS Layer" />
@@ -262,6 +278,15 @@
                            Height="16"
                            Source="..\..\Icons\FilterByAttributes.png" />
                 </Button>
+                <Button x:Name="ButtonClearFilter"
+                        Command="{Binding ClearFilterCommand}"
+                        IsEnabled="{Binding IsFiltered}"
+                        ToolTip="Clear Filter"
+                        ToolTipService.ShowOnDisabled="True">
+                    <Image Width="16"
+                           Height="16"
+                           Source="..\..\Icons\ClearFilter.png" />
+                </Button>
                 <Button x:Name="ButtonSelectOnMap"
                         Command="{Binding SelectOnMapCommand}"
                         IsEnabled="{Binding CanSelectOnMap}"
@@ -279,15 +304,6 @@
                     <Image Width="16"
                            Height="16"
                            Source="..\..\Icons\SelectAllOnMap.png" />
-                </Button>
-                <Button x:Name="ButtonClearFilter"
-                        Command="{Binding ClearFilterCommand}"
-                        IsEnabled="{Binding IsFiltered}"
-                        ToolTip="Clear Filter"
-                        ToolTipService.ShowOnDisabled="True">
-                    <Image Width="16"
-                           Height="16"
-                           Source="..\..\Icons\ClearFilter.png" />
                 </Button>
                 <Button x:Name="ButtonGetMapSelection"
                         Command="{Binding ReadMapSelectionCommand}"
@@ -376,9 +392,148 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+
+            <!--  GroupBoxTopControlsBulkUpdate  -->
+            <GroupBox x:Name="GroupBoxTopControlsBulkUpdate"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      Header="Bulk Update"
+                      Visibility="{Binding Path=ShowInBulkUpdateMode}">
+                <Grid x:Name="GridTopControlsBulkUpdate"
+                      Grid.Row="0"
+                      Margin="0,2,0,0"
+                      Panel.ZIndex="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Label x:Name="LabelBulkUpdateStatusDB"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Margin="0,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="DB:" />
+                    <Label x:Name="LabelBulkUpdateStatusIncid"
+                           Grid.Row="0"
+                           Grid.Column="1"
+                           Margin="0,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="INCID" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusIncid"
+                             Grid.Row="0"
+                             Grid.Column="2"
+                             Margin="8,0,8,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumIncidSelected,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+
+                    <Label x:Name="LabelBulkUpdateStatusMap"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           Margin="0,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="Map:" />
+                    <Label x:Name="LabelBulkUpdateStatusIncidMap"
+                           Grid.Row="1"
+                           Grid.Column="1"
+                           Margin="0,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="INCID" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusIncidMap"
+                             Grid.Row="1"
+                             Grid.Column="2"
+                             Margin="8,0,8,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumIncidSelectedMap,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+                    <Label x:Name="LabelBulkUpdateStatusToid"
+                           Grid.Row="0"
+                           Grid.Column="3"
+                           Margin="12,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="TOID" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusToid"
+                             Grid.Row="0"
+                             Grid.Column="4"
+                             Margin="8,0,8,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumToidSelectedMap,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+                    <Label x:Name="LabelBulkUpdateStatusFrag"
+                           Grid.Row="0"
+                           Grid.Column="5"
+                           Margin="12,0,8,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="Fragments" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusFrag"
+                             Grid.Row="0"
+                             Grid.Column="6"
+                             Margin="8,0,4,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumFragmentsSelectedMap,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+
+                    <Grid x:Name="GridCreateHistory"
+                          Grid.Row="1"
+                          Grid.Column="0"
+                          Grid.ColumnSpan="7"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="LabelBulkUpdateCreateHistory"
+                               Grid.Column="0"
+                               Margin="0,0,8,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Content="Create History" />
+                        <CheckBox x:Name="CheckBoxUpdateCreateHistory"
+                                  Grid.Column="1"
+                                  Margin="0,0,0,0"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Bottom"
+                                  IsChecked="{Binding BulkUpdateCreateHistory}" />
+                    </Grid>
+                </Grid>
+            </GroupBox>
 
             <!--  GroupBoxTopControls  -->
             <GroupBox x:Name="GroupBoxTopControls"
@@ -571,157 +726,11 @@
                 </Grid>
             </GroupBox>
 
-            <!--  GroupBoxTopControlsBulkUpdate  -->
-            <GroupBox x:Name="GroupBoxTopControlsBulkUpdate"
-                      Grid.Row="0"
-                      Grid.Column="0"
-                      Header="Bulk Update"
-                      Visibility="{Binding Path=ShowInBulkUpdateMode}">
-                <!--
-                    Converter={StaticResource bool2VisibilityConverter},
-                    Mode=TwoWay}">
-                -->
-                <Grid x:Name="GridTopControlsBulkUpdate"
-                      Grid.Row="0"
-                      Margin="0,2,0,0"
-                      Panel.ZIndex="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <Label x:Name="LabelBulkUpdateStatusDB"
-                           Grid.Row="0"
-                           Grid.Column="0"
-                           Margin="0,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="DB:" />
-                    <Label x:Name="LabelBulkUpdateStatusIncid"
-                           Grid.Row="0"
-                           Grid.Column="1"
-                           Margin="0,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="INCID" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusIncid"
-                             Grid.Row="0"
-                             Grid.Column="2"
-                             Margin="8,0,8,4"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             IsReadOnly="True"
-                             Text="{Binding NumIncidSelected,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-
-                    <Label x:Name="LabelBulkUpdateStatusMap"
-                           Grid.Row="1"
-                           Grid.Column="0"
-                           Margin="0,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="Map:" />
-                    <Label x:Name="LabelBulkUpdateStatusIncidMap"
-                           Grid.Row="1"
-                           Grid.Column="1"
-                           Margin="0,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="INCID" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusIncidMap"
-                             Grid.Row="1"
-                             Grid.Column="2"
-                             Margin="8,0,8,4"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             IsReadOnly="True"
-                             Text="{Binding NumIncidSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-                    <Label x:Name="LabelBulkUpdateStatusToid"
-                           Grid.Row="1"
-                           Grid.Column="3"
-                           Margin="12,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="TOID" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusToid"
-                             Grid.Row="1"
-                             Grid.Column="4"
-                             Margin="8,0,8,4"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             IsReadOnly="True"
-                             Text="{Binding NumToidSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-                    <Label x:Name="LabelBulkUpdateStatusFrag"
-                           Grid.Row="1"
-                           Grid.Column="5"
-                           Margin="12,0,8,4"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Content="Fragments" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusFrag"
-                             Grid.Row="1"
-                             Grid.Column="6"
-                             Margin="8,0,4,4"
-                             VerticalAlignment="Center"
-                             IsEnabled="False"
-                             IsReadOnly="True"
-                             Text="{Binding NumFragmentsSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-
-                    <Grid x:Name="GridCreateHistory"
-                          Grid.Row="2"
-                          Grid.Column="0"
-                          Grid.ColumnSpan="7"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="20" />
-                        </Grid.ColumnDefinitions>
-                        <Label x:Name="LabelBulkUpdateCreateHistory"
-                               Grid.Column="0"
-                               Margin="0,0,8,0"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Content="Create History" />
-                        <CheckBox x:Name="CheckBoxUpdateCreateHistory"
-                                  Grid.Column="1"
-                                  Margin="0,0,0,0"
-                                  HorizontalAlignment="Right"
-                                  VerticalAlignment="Bottom"
-                                  IsChecked="{Binding BulkUpdateCreateHistory}" />
-                    </Grid>
-                </Grid>
-            </GroupBox>
-
             <!--  GroupBoxReasonProcess  -->
             <GroupBox x:Name="GroupBoxReasonProcess"
                       Grid.Row="1"
                       Margin="0,2,0,0"
                       Visibility="{Binding Path=ShowReasonProcessGroup}">
-                <!--
-                    Converter={StaticResource bool2CollapsedConverter},
-                    Mode=TwoWay}">
-                -->
                 <Grid x:Name="GridReasonProcess"
                       Grid.Row="1"
                       Margin="0,4,0,0">
@@ -741,7 +750,7 @@
                     <Label x:Name="LabelReason"
                            Grid.Row="0"
                            Grid.Column="0"
-                           Margin="8,2,8,2"
+                           Margin="6,0,0,2"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Content="Reason" />
@@ -760,6 +769,7 @@
                               SelectedValue="{Binding Reason,
                                                       ValidatesOnDataErrors=True}"
                               SelectedValuePath="code"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                               ToolTipService.ShowOnDisabled="True" />
                     <CheckBox x:Name="CheckBoxCopyReason"
                               Grid.Row="0"
@@ -776,7 +786,7 @@
                     <Label x:Name="LabelProcess"
                            Grid.Row="0"
                            Grid.Column="3"
-                           Margin="8,2,8,2"
+                           Margin="6,0,0,2"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Content="Process" />
@@ -795,6 +805,7 @@
                               SelectedValue="{Binding Process,
                                                       ValidatesOnDataErrors=True}"
                               SelectedValuePath="code"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                               ToolTipService.ShowOnDisabled="True" />
                     <CheckBox x:Name="CheckBoxCopyProcess"
                               Grid.Row="0"
@@ -810,9 +821,130 @@
                 </Grid>
             </GroupBox>
 
+            <!--  GroupBoxOSMMUpdate  -->
+            <GroupBox x:Name="GroupBoxOSMMUpdate"
+            		  Grid.Row="2"
+                      Margin="0,2,0,0"
+            		  IsHitTestVisible="True" Header="OSMM Updates"
+       				  Visibility="{Binding ShowIncidOSMMUpdatesGroup}">
+            	<Grid x:Name="GridOSMMUpdate"
+            		  Grid.Row="0"
+            		  Margin="0,4,0,0">
+            		<Grid.RowDefinitions>
+            			<RowDefinition Height="Auto" />
+            			<RowDefinition Height="Auto" />
+            		</Grid.RowDefinitions>
+            		<Grid Margin="0" Grid.Row="0">
+            			<Grid.ColumnDefinitions>
+            				<ColumnDefinition Width="Auto" MinWidth="75"/>
+            				<ColumnDefinition MinWidth="100"/>
+            			</Grid.ColumnDefinitions>
+            		<Label x:Name="LabelOSMMIhsSummary"
+						Grid.Column="0"
+            			Margin="0,0,0,4"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="IHS Summary">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMIhsSummary"
+						Grid.Column="1"
+            			Margin="8,2,8,4"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMIhsSummary,
+                              Mode=OneWay,
+                              ValidatesOnDataErrors=False}" />
+            		</Grid>
+            		<Grid Margin="0" Grid.Row="1">
+            			<Grid.ColumnDefinitions>
+            				<ColumnDefinition Width="Auto" MinWidth="75"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="90"/>
+            			</Grid.ColumnDefinitions>
+            			<Label x:Name="LabelOSMMProcessFlag"
+						    Grid.Column="0"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Process">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMProcessFlag"
+						    Grid.Column="1"
+            				Margin="8,2,8,4"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Right"
+                            Text="{Binding IncidOSMMProcessFlag,
+                                  Mode=OneWay,
+                                  ValidatesOnDataErrors=False}" />
+            			<Label x:Name="LabelOSMMSpatialFlag"
+						    Grid.Column="2"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Spatial">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMSpatialFlag"
+						    Grid.Column="3"
+            				Margin="8,2,8,4"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Right"
+                            Text="{Binding IncidOSMMSpatialFlag,
+                                  Mode=OneWay,
+                                  ValidatesOnDataErrors=False}" />
+            			<Label x:Name="LabelOSMMChangeFlag"
+						    Grid.Column="4"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Change">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMChangeFlag"
+						    Grid.Column="5"
+            				Margin="8,2,8,4"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Right"
+                            Text="{Binding IncidOSMMChangeFlag,
+                                  Mode=OneWay,
+                                  ValidatesOnDataErrors=False}" />
+            		<Label x:Name="LabelOSMMUpdateFlag"
+						Grid.Column="6"
+            			Margin="0,0,0,4"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="Status">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMUpdateStatus"
+                        Grid.Column="7"
+            			Margin="10,0,6,6"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMUpdateStatus,
+                              Mode=OneWay,
+                              ValidatesOnDataErrors=True}"
+                        Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+						ToolTipService.ShowOnDisabled="True" />
+            		</Grid>
+            	</Grid>
+            </GroupBox>
+
             <!--  TabControlData  -->
             <TabControl x:Name="TabControlData"
-                        Grid.Row="2"
+                        Grid.Row="3"
                         Grid.Column="0"
                         Margin="0,2,0,0"
                         IsEnabled="{Binding TabControlDataEnabled}">
@@ -831,6 +963,7 @@
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
                                    Padding="4,2,4,4"
+                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -839,12 +972,12 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid x:Name="GridTabItemIhs">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="4*" MinHeight="112" />
-                                    <RowDefinition Height="4*" MinHeight="112" />
-                                    <RowDefinition Height="3*" MinHeight="82" />
-                                    <RowDefinition Height="3*" MinHeight="82" />
-                                    <RowDefinition Height="3*" MinHeight="82" />
-                                    <RowDefinition Height="2*" MinHeight="66" />
+                                    <RowDefinition Height="3.5*" MinHeight="11" />
+                                    <RowDefinition Height="4*" MinHeight="11" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="2.5*" MinHeight="6" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="19*" />
@@ -859,7 +992,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-                                          Header="IHS Habitat">
+                                          Header="{Binding IhsHabitatHeader}">
                                     <Grid x:Name="GridCategories" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -922,6 +1055,7 @@
                                                                           Converter={StaticResource codeNameDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
 
                                         <Label x:Name="LabelIhsHabitat"
@@ -951,6 +1085,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsHabitat"
                                                   Grid.Row="2"
@@ -988,7 +1123,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-                                          Header="IHS Matrix">
+                                          Header="{Binding IhsMatrixHeader}">
                                     <Grid x:Name="GridIhsMatrix" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1029,6 +1164,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsMatrix1"
                                                   Grid.Row="0"
@@ -1070,6 +1206,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsMatrix2"
                                                   Grid.Row="1"
@@ -1111,6 +1248,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsMatrix3"
                                                   Grid.Row="2"
@@ -1132,7 +1270,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-                                          Header="IHS Formation">
+                                          Header="{Binding IhsFormationHeader}">
                                     <Grid x:Name="GridIhsFormation" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1172,6 +1310,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsFormation1"
                                                   Grid.Row="0"
@@ -1213,6 +1352,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsFormation2"
                                                   Grid.Row="1"
@@ -1234,7 +1374,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-                                          Header="IHS Management">
+                                          Header="{Binding IhsManagementHeader}">
                                     <Grid x:Name="GridIhsManagement" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1275,6 +1415,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsManagement1"
                                                   Grid.Row="0"
@@ -1316,6 +1457,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsManagement2"
                                                   Grid.Row="1"
@@ -1337,7 +1479,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-                                          Header="IHS Complex">
+                                          Header="{Binding IhsComplexHeader}">
                                     <Grid x:Name="GridIhsComplex" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1377,6 +1519,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsComplex1"
                                                   Grid.Row="0"
@@ -1418,6 +1561,7 @@
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIhsComplex2"
                                                   Grid.Row="1"
@@ -1438,8 +1582,8 @@
                                           Grid.Row="5"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
-                                          Margin="0"
                                           VerticalAlignment="Stretch">
+                                          <!-- Margin="0" -->
                                     <!--  Header="Summary">  -->
                                     <Grid x:Name="GridSummary" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1490,6 +1634,7 @@
                                                   SelectedValue="{Binding IncidLegacyHabitat,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyLegacyHabitat"
                                                   Grid.Row="1"
@@ -1521,6 +1666,7 @@
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
                                    Padding="4,2,4,4"
+                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -1528,14 +1674,13 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid x:Name="GridTabItemDetails">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition MinHeight="150" />
+                                    <RowDefinition Height="4*" MinHeight="150" />
                                     <!--  Height="140"  -->
-                                    <RowDefinition MinHeight="150" />
+                                    <RowDefinition Height="4*" MinHeight="130" />
                                     <!--  Height="140"  -->
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="3*" />
+                                    <RowDefinition Height="1.5*" />
+                                    <RowDefinition Height="2*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -1564,7 +1709,7 @@
                                                        Grid.Row="0"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Margin="8,2,8,2"
+                                                       Margin="4,2,8,2"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
@@ -1598,7 +1743,7 @@
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Priority Habitat"
+                                                                                       Header="Habitat"
                                                                                        IsReadOnly="True"
                                                                                        ItemsSource="{Binding DataContext.BapHabitatCodes,
                                                                                                              IsAsync=true,
@@ -1612,7 +1757,7 @@
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Determination Quality"
+                                                                                       Header="Determ. Quality"
                                                                                        ItemsSource="{Binding DataContext.BapDeterminationQualityCodesAuto,
                                                                                                              IsAsync=true,
                                                                                                              RelativeSource={RelativeSource AncestorType={x:Type Window},
@@ -1642,7 +1787,7 @@
                                                                                            ValidatesOnDataErrors=True}"
                                                                          CanUserResize="True"
                                                                          EditingElementStyle="{DynamicResource TextBoxStyle}"
-                                                                         Header="Interpretation Comments" />
+                                                                         Header="Interp. Comments" />
                                             </tkit:DataGrid.Columns>
                                             <!--
                                                 <tkit:DataGrid.RowDetailsTemplate>
@@ -1680,7 +1825,7 @@
                                                        Grid.Row="0"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Margin="8,2,8,2"
+                                                       Margin="4,2,8,2"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
@@ -1714,7 +1859,7 @@
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Priority Habitat"
+                                                                                       Header="Habitat"
                                                                                        IsReadOnly="False"
                                                                                        ItemsSource="{Binding DataContext.BapHabitatCodes,
                                                                                                              IsAsync=true,
@@ -1729,7 +1874,7 @@
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Determination Quality"
+                                                                                       Header="Determ. Quality"
                                                                                        ItemsSource="{Binding DataContext.BapDeterminationQualityCodesUser,
                                                                                                              IsAsync=true,
                                                                                                              RelativeSource={RelativeSource AncestorType={x:Type Window},
@@ -1759,7 +1904,7 @@
                                                                                            ValidatesOnDataErrors=True}"
                                                                          CanUserResize="True"
                                                                          EditingElementStyle="{DynamicResource TextBoxStyle}"
-                                                                         Header="Interpretation Comments" />
+                                                                         Header="Interp. Comments" />
                                             </tkit:DataGrid.Columns>
                                             <!--
                                                 <tkit:DataGrid.RowDetailsTemplate>
@@ -1811,7 +1956,7 @@
                                                  Grid.Column="0"
                                                  Grid.ColumnSpan="2"
                                                  MinHeight="52"
-                                                 Margin="8,2,8,2"
+                                                 Margin="4,2,8,2"
                                                  BorderThickness="1"
                                                  MaxLength="254"
                                                  Text="{Binding IncidGeneralComments,
@@ -1819,6 +1964,7 @@
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
                                                  TextWrapping="Wrap"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyGeneralComments"
                                                   Grid.Row="0"
@@ -1840,7 +1986,8 @@
                                           Header="Maps">
                                     <Grid x:Name="GridMaps" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
+                                            <!-- <RowDefinition Height="Auto" /> -->
+                                            <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -1855,10 +2002,10 @@
                                               Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" MinWidth="120" />
+                                                <ColumnDefinition Width="*" MinWidth="100" />
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" MinWidth="120" />
+                                                <ColumnDefinition Width="*" MinWidth="100" />
                                             </Grid.ColumnDefinitions>
 
                                             <Label x:Name="LabelBoundaryBaseMap"
@@ -1867,7 +2014,7 @@
                                                    Margin="6,2,4,2"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
-                                                   Content="Boundary Map" />
+                                                   Content="Boundary" />
                                             <ComboBox x:Name="ComboBoxIncidBoundaryBaseMap"
                                                       Grid.Row="0"
                                                       Grid.Column="1"
@@ -1881,6 +2028,7 @@
                                                       SelectedValue="{Binding IncidBoundaryBaseMap,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                             <CheckBox x:Name="CheckBoxCopyBoundaryBaseMap"
                                                       Grid.Row="0"
@@ -1894,10 +2042,10 @@
                                             <Label x:Name="LabelDigitisationBaseMap"
                                                    Grid.Row="0"
                                                    Grid.Column="3"
-                                                   Margin="4,2,4,2"
+                                                   Margin="6,2,4,2"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
-                                                   Content="Digitisation Map" />
+                                                   Content="Digitisation" />
                                             <ComboBox x:Name="ComboBoxIncidDigitisationBaseMap"
                                                       Grid.Row="0"
                                                       Grid.Column="4"
@@ -1911,6 +2059,7 @@
                                                       SelectedValue="{Binding IncidDigitisationBaseMap,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
                                         <CheckBox x:Name="CheckBoxCopyDigitisationBaseMap"
@@ -1930,12 +2079,13 @@
                                           Grid.Row="4"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
-                                          VerticalAlignment="Stretch"
-                                          Header="Site">
+                                          Header="{Binding DetailsSiteHeader}">
+                                          <!-- VerticalAlignment="Stretch" -->
                                     <Grid x:Name="GridSite" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
+                                            <!-- <RowDefinition Height="Auto" /> -->
+                                            <RowDefinition />
+                                            <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" MinWidth="70" />
@@ -1949,7 +2099,7 @@
                                                Grid.Row="0"
                                                Grid.Column="0"
                                                Margin="6,2,4,4"
-                                               HorizontalAlignment="Left"
+                                               HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Site Ref" />
                                         <TextBox x:Name="TextBoxSiteRef"
@@ -1959,12 +2109,14 @@
                                                  Width="180"
                                                  Margin="4,2,8,4"
                                                  HorizontalAlignment="Left"
+                                                 VerticalAlignment="Center"
                                                  BorderThickness="1"
                                                  MaxLength="16"
                                                  Text="{Binding IncidSiteRef,
                                                                 Mode=TwoWay,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSiteRef"
                                                   Grid.Row="0"
@@ -1980,7 +2132,7 @@
                                                Grid.Row="1"
                                                Grid.Column="0"
                                                Margin="6,0,4,2"
-                                               HorizontalAlignment="Left"
+                                               HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Site Name" />
                                         <TextBox x:Name="TextBoxSiteName"
@@ -1990,11 +2142,13 @@
                                                  Margin="4,0,8,2"
                                                  BorderThickness="1"
                                                  MaxLength="100"
+                                                 VerticalAlignment="Center"
                                                  Text="{Binding IncidSiteName,
                                                                 Mode=TwoWay,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
                                                  TextWrapping="Wrap"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSiteName"
                                                   Grid.Row="1"
@@ -2023,6 +2177,7 @@
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
                                    Padding="4,2,4,4"
+                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                    ToolTipService.ShowOnDisabled="True" />
                         </StackPanel>
                     </TabItem.Header>
@@ -2080,6 +2235,7 @@
                                                   SelectedValue="{Binding IncidSource1Id,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource1Name"
                                                   Grid.Row="0"
@@ -2112,6 +2268,7 @@
                                                                 Mode=TwoWay,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource1Date"
                                                   Grid.Row="1"
@@ -2146,6 +2303,7 @@
                                                   SelectedValue="{Binding IncidSource1HabitatClass,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource1HabitatClass"
                                                   Grid.Row="2"
@@ -2185,6 +2343,7 @@
                                                                           Converter={StaticResource codeNameDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource1HabitatType"
                                                   Grid.Row="3"
@@ -2229,6 +2388,7 @@
                                                       SelectedValue="{Binding IncidSource1BoundaryImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                             <CheckBox x:Name="CheckBoxCopySource1BoundaryImportance"
                                                       Grid.Row="0"
@@ -2262,6 +2422,7 @@
                                                       SelectedValue="{Binding IncidSource1HabitatImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
                                         <CheckBox x:Name="CheckBoxCopySource1HabitatImportance"
@@ -2316,6 +2477,7 @@
                                                   SelectedValue="{Binding IncidSource2Id,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource2Name"
                                                   Grid.Row="0"
@@ -2348,6 +2510,7 @@
                                                                 Mode=TwoWay,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource2Date"
                                                   Grid.Row="1"
@@ -2382,6 +2545,7 @@
                                                   SelectedValue="{Binding IncidSource2HabitatClass,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource2HabitatClass"
                                                   Grid.Row="2"
@@ -2420,6 +2584,7 @@
                                                                           Converter={StaticResource codeNameDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource2HabitatType"
                                                   Grid.Row="3"
@@ -2464,6 +2629,7 @@
                                                       SelectedValue="{Binding IncidSource2BoundaryImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                             <CheckBox x:Name="CheckBoxCopySource2BoundaryImportance"
                                                       Grid.Row="0"
@@ -2497,6 +2663,7 @@
                                                       SelectedValue="{Binding IncidSource2HabitatImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
                                         <CheckBox x:Name="CheckBoxCopySource2HabitatImportance"
@@ -2551,6 +2718,7 @@
                                                   SelectedValue="{Binding IncidSource3Id,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource3Name"
                                                   Grid.Row="0"
@@ -2583,6 +2751,7 @@
                                                                 Mode=TwoWay,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"
+                                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource3Date"
                                                   Grid.Row="1"
@@ -2617,6 +2786,7 @@
                                                   SelectedValue="{Binding IncidSource3HabitatClass,
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource3HabitatClass"
                                                   Grid.Row="2"
@@ -2655,6 +2825,7 @@
                                                                           Converter={StaticResource codeNameDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
+                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource3HabitatType"
                                                   Grid.Row="3"
@@ -2699,6 +2870,7 @@
                                                       SelectedValue="{Binding IncidSource3BoundaryImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                             <CheckBox x:Name="CheckBoxCopySource3BoundaryImportance"
                                                       Grid.Row="0"
@@ -2733,6 +2905,7 @@
                                                       SelectedValue="{Binding IncidSource3HabitatImportance,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
                                         <CheckBox x:Name="CheckBoxCopySource3HabitatImportance"
@@ -2792,7 +2965,13 @@
                                                   Foreground="Black"
                                                   ItemsSource="{Binding IncidHistory,
                                                                         Mode=OneWay,
-                                                                        UpdateSourceTrigger=PropertyChanged}" />
+                                                                        UpdateSourceTrigger=PropertyChanged}">
+                                    <!-- <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                                <hlu:UniformGrid2 Orientation="Horizontal" Columns="1" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel> -->
+                                    </ItemsControl>
                                 </ScrollViewer>
                             </GroupBox>
                         </Grid>
@@ -2802,7 +2981,7 @@
 
             <!--  DockPanelGetMapSelection  -->
             <DockPanel x:Name="DockPanelGetMapSelection"
-                       Grid.Row="2"
+                       Grid.Row="3"
                        Grid.Column="0"
                        MaxHeight="30"
                        Margin="0,4,0,0"
@@ -2842,7 +3021,7 @@
 
             <!--  ButtonGetMapSelection2  -->
             <Button x:Name="ButtonGetMapSelection2"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="1"
                     Width="20"
                     MaxHeight="20"
@@ -2863,7 +3042,7 @@
 
             <!--  GridNavigation  -->
             <Grid x:Name="GridStatus"
-                  Grid.Row="3"
+                  Grid.Row="4"
                   Margin="0,4,0,0"
                   IsEnabled="{Binding WindowEnabled}">
                 <Grid.ColumnDefinitions>
@@ -2935,6 +3114,7 @@
                              Text="{Binding IncidCurrentRowIndex,
                                             Mode=TwoWay,
                                             ValidatesOnDataErrors=True}"
+                             Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                              TextAlignment="Center" />
                     <Button x:Name="ButtonNextRecord"
                             Grid.Column="4"

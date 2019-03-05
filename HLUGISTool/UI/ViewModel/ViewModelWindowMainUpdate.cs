@@ -1,6 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013 Thames Valley Environmental Records Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -76,6 +77,20 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
                 _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
 
+                //---------------------------------------------------------------------
+                // FIX: 075 Reset OSMM update flag after manual updates.
+                // 
+                if ((_viewModelMain.IncidOSMMUpdatesRows.Length > 0) &&
+                   (_viewModelMain.ResetUpdatesFlag) &&
+                   (_viewModelMain.IncidOSMMUpdatesRows[0].update_flag > 0))
+                {
+                    // Set the update flag to "Ignored"
+                    _viewModelMain.IncidOSMMUpdatesRows[0].update_flag = -2;
+                    _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_date = nowDtTm;
+                    _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
+                }
+                //---------------------------------------------------------------------
+
                 if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
                     (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
                     throw new Exception(String.Format("Failed to update '{0}' table.",
@@ -128,6 +143,14 @@ namespace HLU.UI.ViewModel
                         (HluDataSet.incid_sourcesDataTable)_viewModelMain.IncidSourcesTable.GetChanges()) == -1)
                         throw new Exception(String.Format("Failed to update {0} table.", 
                             _viewModelMain.HluDataset.incid_sources.TableName));
+                }
+
+                if ((_viewModelMain.IncidOSMMUpdatesRows != null) && _viewModelMain.IsDirtyIncidOSMMUpdates())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(
+                        (HluDataSet.incid_osmm_updatesDataTable)_viewModelMain.HluDataset.incid_osmm_updates.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_osmm_updates.TableName));
                 }
 
                 // update all GIS rows corresponding to this incid

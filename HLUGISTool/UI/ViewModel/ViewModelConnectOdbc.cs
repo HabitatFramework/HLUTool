@@ -406,12 +406,12 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     case "Dsn":
-                        if (String.IsNullOrEmpty(_connStrBuilder.Dsn)) 
-                            error = "Please choose a data source";
+                        if (String.IsNullOrEmpty(_connStrBuilder.Dsn))
+                            error = "Error: You must choose a data source";
                         break;
                     case "DefaultSchema":
                         if ((_backend != Backends.Access) && String.IsNullOrEmpty(_defaultSchema))
-                            error = "Please choose a default schema";
+                            error = "Error: You must choose a default schema";
                         break;
                 }
 
