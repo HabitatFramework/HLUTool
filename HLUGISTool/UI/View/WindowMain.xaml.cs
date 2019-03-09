@@ -101,19 +101,44 @@ namespace HLU
         {
             IInputElement focusedElement = Keyboard.FocusedElement;
             Control focusedControl = focusedElement as Control;
+
+            // Ignore keyup if focus is on a data grid cell
             if ((focusedControl != null) && (focusedControl.Parent is DataGridCell))
                 return;
 
+            // Ignore keyup if any comboboxes are currently open
             foreach (ComboBox cbx in _comboBoxes)
                 if (cbx.IsDropDownOpen) return;
 
+            // Action any "movement" keys
             switch (e.Key)
             {
+                case Key.Tab:
+                    // When the tab key is used in the OSMM Record
+                    // Number text box (which is the last field on
+                    // the form) then tab away from (and back to)
+                    // the text box to trigger the property changed
+                    // event.
+                    if (this.TextBoxOSMMRecordNumber.IsFocused)
+                    {
+                        this.TextBoxIncid.Focus();
+                        this.TextBoxOSMMRecordNumber.Focus();
+                    }
+                    break;
                 case Key.Return:
+                    // When the return key is used in either of the
+                    // Record Number text boxes then tab away from
+                    // (and back to) the text box to trigger the
+                    // relevant property changed event.
                     if (this.TextBoxRecordNumber.IsFocused)
                     {
                         this.ComboBoxProcess.Focus();
                         this.TextBoxRecordNumber.Focus();
+                    }
+                    if (this.TextBoxOSMMRecordNumber.IsFocused)
+                    {
+                        this.TextBoxIncid.Focus();
+                        this.TextBoxOSMMRecordNumber.Focus();
                     }
                     break;
                 case Key.Home:
@@ -138,6 +163,23 @@ namespace HLU
                     if (this.ButtonLastRecord.Command.CanExecute(null))
                         this.ButtonLastRecord.Command.Execute(null);
                     break;
+            }
+
+            // Note if the control key is pressed
+            if (Keyboard.Modifiers != ModifierKeys.Control)
+            {
+                this.ButtonOSMMAccept.Tag = "";
+                this.ButtonOSMMReject.Tag = "";
+            }
+
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                this.ButtonOSMMAccept.Tag = "Ctrl";
+                this.ButtonOSMMReject.Tag = "Ctrl";
             }
         }
 

@@ -457,6 +457,12 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
 
         private HluTableAdapter<HluDataSet.lut_osmm_ihs_xrefDataTable, HluDataSet.lut_osmm_ihs_xrefRow> _lut_osmm_ihs_xrefTableAdapter;
 
+        private HluTableAdapter<HluDataSet.lut_osmm_updates_spatialDataTable, HluDataSet.lut_osmm_updates_spatialRow> _lut_osmm_updates_spatialTableAdapter;
+
+        private HluTableAdapter<HluDataSet.lut_osmm_updates_processDataTable, HluDataSet.lut_osmm_updates_processRow> _lut_osmm_updates_processTableAdapter;
+
+        private HluTableAdapter<HluDataSet.lut_osmm_updates_changeDataTable, HluDataSet.lut_osmm_updates_changeRow> _lut_osmm_updates_changeTableAdapter;
+
         #endregion
 
         private UpdateOrderOption _updateOrder;
@@ -490,7 +496,8 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 typeof(HluDataSet.lut_ihs_managementDataTable), typeof(HluDataSet.lut_ihs_matrixDataTable), 
                 typeof(HluDataSet.lut_importanceDataTable), typeof(HluDataSet.lut_last_incidDataTable),
                 typeof(HluDataSet.lut_legacy_habitatDataTable), typeof(HluDataSet.lut_operationDataTable), 
-                typeof(HluDataSet.lut_osmm_ihs_xrefDataTable), 
+                typeof(HluDataSet.lut_osmm_ihs_xrefDataTable), typeof(HluDataSet.lut_osmm_updates_spatialDataTable),
+                typeof(HluDataSet.lut_osmm_updates_processDataTable), typeof(HluDataSet.lut_osmm_updates_changeDataTable),
                 typeof(HluDataSet.lut_processDataTable), typeof(HluDataSet.lut_reasonDataTable), 
                 typeof(HluDataSet.lut_site_idDataTable), typeof(HluDataSet.lut_sourcesDataTable), 
                 typeof(HluDataSet.lut_userDataTable), typeof(HluDataSet.lut_versionDataTable) };
@@ -885,6 +892,39 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
             }
         }
 
+        public HluTableAdapter<HluDataSet.lut_osmm_updates_spatialDataTable, HluDataSet.lut_osmm_updates_spatialRow> lut_osmm_updates_spatialTableAdapter
+        {
+            get { return this._lut_osmm_updates_spatialTableAdapter; }
+            set
+            {
+                if (!this.MatchTableAdapterConnection(value.Connection))
+                    throw new ArgumentException(_sameConnErrorMsg);
+                this._lut_osmm_updates_spatialTableAdapter = value;
+            }
+        }
+
+        public HluTableAdapter<HluDataSet.lut_osmm_updates_processDataTable, HluDataSet.lut_osmm_updates_processRow> lut_osmm_updates_processTableAdapter
+        {
+            get { return this._lut_osmm_updates_processTableAdapter; }
+            set
+            {
+                if (!this.MatchTableAdapterConnection(value.Connection))
+                    throw new ArgumentException(_sameConnErrorMsg);
+                this._lut_osmm_updates_processTableAdapter = value;
+            }
+        }
+
+        public HluTableAdapter<HluDataSet.lut_osmm_updates_changeDataTable, HluDataSet.lut_osmm_updates_changeRow> lut_osmm_updates_changeTableAdapter
+        {
+            get { return this._lut_osmm_updates_changeTableAdapter; }
+            set
+            {
+                if (!this.MatchTableAdapterConnection(value.Connection))
+                    throw new ArgumentException(_sameConnErrorMsg);
+                this._lut_osmm_updates_changeTableAdapter = value;
+            }
+        }
+
         public HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow> lut_processTableAdapter
         {
             get { return this._lut_processTableAdapter; }
@@ -1029,6 +1069,12 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 if (this._lut_operationTableAdapter != null) count++;
 
                 if (this._lut_osmm_ihs_xrefTableAdapter != null) count++;
+
+                if (this._lut_osmm_updates_spatialTableAdapter != null) count++;
+
+                if (this._lut_osmm_updates_processTableAdapter != null) count++;
+
+                if (this._lut_osmm_updates_changeTableAdapter != null) count++;
 
                 if (this._lut_processTableAdapter != null) count++;
 
@@ -1212,6 +1258,9 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 _lut_legacy_habitatTableAdapter = new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
                 _lut_operationTableAdapter = new HluTableAdapter<HluDataSet.lut_operationDataTable, HluDataSet.lut_operationRow>(_db);
                 _lut_osmm_ihs_xrefTableAdapter = new HluTableAdapter<HluDataSet.lut_osmm_ihs_xrefDataTable, HluDataSet.lut_osmm_ihs_xrefRow>(_db);
+                _lut_osmm_updates_spatialTableAdapter = new HluTableAdapter<HluDataSet.lut_osmm_updates_spatialDataTable, HluDataSet.lut_osmm_updates_spatialRow>(_db);
+                _lut_osmm_updates_processTableAdapter = new HluTableAdapter<HluDataSet.lut_osmm_updates_processDataTable, HluDataSet.lut_osmm_updates_processRow>(_db);
+                _lut_osmm_updates_changeTableAdapter = new HluTableAdapter<HluDataSet.lut_osmm_updates_changeDataTable, HluDataSet.lut_osmm_updates_changeRow>(_db);
                 _lut_processTableAdapter = new HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow>(_db);
                 _lut_reasonTableAdapter = new HluTableAdapter<HluDataSet.lut_reasonDataTable, HluDataSet.lut_reasonRow>(_db);
                 _lut_site_idTableAdapter = new HluTableAdapter<HluDataSet.lut_site_idDataTable, HluDataSet.lut_site_idRow>(_db);
@@ -1607,6 +1656,15 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
             UpdateUpdatedRows(_lut_osmm_ihs_xrefTableAdapter, dataSet.lut_osmm_ihs_xref,
                 allChangedRows, allAddedRows, ref result);
 
+            UpdateUpdatedRows(_lut_osmm_updates_spatialTableAdapter, dataSet.lut_osmm_updates_spatial,
+                allChangedRows, allAddedRows, ref result);
+
+            UpdateUpdatedRows(_lut_osmm_updates_processTableAdapter, dataSet.lut_osmm_updates_process,
+                allChangedRows, allAddedRows, ref result);
+
+            UpdateUpdatedRows(_lut_osmm_updates_changeTableAdapter, dataSet.lut_osmm_updates_change,
+                allChangedRows, allAddedRows, ref result);
+
             return result;
         }
 
@@ -1729,6 +1787,15 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 allAddedRows, ref result);
 
             UpdateInsertedRows(_lut_osmm_ihs_xrefTableAdapter, dataSet.lut_osmm_ihs_xref,
+                allAddedRows, ref result);
+
+            UpdateInsertedRows(_lut_osmm_updates_spatialTableAdapter, dataSet.lut_osmm_updates_spatial,
+                allAddedRows, ref result);
+
+            UpdateInsertedRows(_lut_osmm_updates_processTableAdapter, dataSet.lut_osmm_updates_process,
+                allAddedRows, ref result);
+
+            UpdateInsertedRows(_lut_osmm_updates_changeTableAdapter, dataSet.lut_osmm_updates_change,
                 allAddedRows, ref result);
 
             return result;
@@ -1855,6 +1922,15 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
             UpdateDeletedRows(_lut_osmm_ihs_xrefTableAdapter, dataSet.lut_osmm_ihs_xref,
                 allChangedRows, ref result);
 
+            UpdateDeletedRows(_lut_osmm_updates_spatialTableAdapter, dataSet.lut_osmm_updates_spatial,
+                allChangedRows, ref result);
+
+            UpdateDeletedRows(_lut_osmm_updates_processTableAdapter, dataSet.lut_osmm_updates_process,
+                allChangedRows, ref result);
+
+            UpdateDeletedRows(_lut_osmm_updates_changeTableAdapter, dataSet.lut_osmm_updates_change,
+                allChangedRows, ref result);
+
             return result;
         }
 
@@ -1954,6 +2030,9 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
                 PrepareUpdate(this._lut_last_incidTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
                 PrepareUpdate(this._lut_operationTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
                 PrepareUpdate(this._lut_osmm_ihs_xrefTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
+                PrepareUpdate(this._lut_osmm_updates_spatialTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
+                PrepareUpdate(this._lut_osmm_updates_processTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
+                PrepareUpdate(this._lut_osmm_updates_changeTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
                 PrepareUpdate(this._lut_processTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
                 PrepareUpdate(this._lut_reasonTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);
                 PrepareUpdate(this._lut_site_idTableAdapter, ref adaptersWithAcceptChangesDuringUpdate);

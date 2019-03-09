@@ -13,6 +13,7 @@
                          Mode=TwoWay}"
         Icon="..\..\Icons\HLUIcon.png"
         KeyUp="Window_KeyUp"
+        KeyDown="Window_KeyDown"
         Loaded="Window_Loaded"
         Topmost="{Binding ElementName=MenuItemAppKeepOnTop,
                           Path=IsChecked}"
@@ -27,7 +28,7 @@
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
-                <!--  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/> -->
+                <!--  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/>  -->
                 <!--  <ResourceDictionary Source="Dictionary/ThemeLightGrey.xaml"/>  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />  -->
@@ -66,6 +67,10 @@
                           Command="{Binding BulkUpdateCommandMenu}"
                           Header="{Binding BulkUpdateCommandHeader}"
                           IsEnabled="{Binding CanBulkUpdate}" />
+                <MenuItem x:Name="MenuItemOSMMUpdate"
+                          Command="{Binding OSMMUpdateCommandMenu}"
+                          Header="{Binding OSMMUpdateCommandHeader}"
+                          IsEnabled="{Binding CanOSMMUpdate}" />
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem x:Name="MenuItemGisSideBySide"
@@ -153,6 +158,7 @@
                           Header="_Options..." />
                 <MenuItem x:Name="MenuItemSwitchGisLayer"
                           Command="{Binding Path=SwitchGISLayerCommand}"
+                          IsEnabled="{Binding Path=CanSwitchGISLayer}"
                           Header="Switch _GIS Layer" />
                 <Separator />
                 <MenuItem x:Name="MenuItemStyles" Header="_Styles">
@@ -193,7 +199,7 @@
                            Source="..\..\Icons\FileExit.png" />
                 </Button>
                 <!--
-                    <Button Name="ButtonExport"
+                <Button Name="ButtonExport"
                     Command="{Binding Path=ExportCommand}"
                     IsEnabled="{Binding Path=CanExport}"
                     ToolTip="Export"
@@ -201,7 +207,7 @@
                     <Image Width="16"
                     Height="16"
                     Source="..\..\Icons\FileExport.png" />
-                    </Button>
+                </Button>
                 -->
                 <Button x:Name="ButtonCopy"
                         Command="{Binding CopyCommand}"
@@ -379,6 +385,7 @@
                 </Button>
                 <Button x:Name="ButtonSwitchGISLayer"
                         Command="{Binding Path=SwitchGISLayerCommand}"
+                        IsEnabled="{Binding Path=CanSwitchGISLayer}"
                         ToolTip="Switch GIS Layer"
                         ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
@@ -399,7 +406,7 @@
 
             <!--  GroupBoxTopControlsBulkUpdate  -->
             <GroupBox x:Name="GroupBoxTopControlsBulkUpdate"
-                      Grid.Row="0"
+                      Grid.Row="2"
                       Grid.Column="0"
                       Header="Bulk Update"
                       Visibility="{Binding Path=ShowInBulkUpdateMode}">
@@ -537,14 +544,10 @@
 
             <!--  GroupBoxTopControls  -->
             <GroupBox x:Name="GroupBoxTopControls"
-                      Grid.Row="0"
+                      Grid.Row="2"
                       Grid.Column="0"
                       Header="{Binding Path=TopControlsGroupHeader}"
                       Visibility="{Binding Path=HideInBulkUpdateMode}">
-                <!--
-                    Converter={StaticResource bool2VisibilityConverter},
-                    Mode=TwoWay}">
-                -->
                 <Grid x:Name="GridTopControls"
                       Grid.Row="0"
                       Margin="0,4,0,0"
@@ -634,7 +637,6 @@
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Visibility="{Binding Path=HideInBulkUpdateMode}">
-                        <!--  Converter={StaticResource bool2VisibilityConverter},  -->
                         Created
                     </Label>
                     <TextBox x:Name="TextBoxIncidCreatedDate"
@@ -649,7 +651,6 @@
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
                              Visibility="{Binding Path=HideInBulkUpdateMode}" />
-                    <!--  Converter={StaticResource bool2VisibilityConverter},  -->
 
                     <Label x:Name="LabelIncidCreatedUser"
                            Grid.Row="1"
@@ -658,7 +659,6 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Visibility="{Binding Path=HideInBulkUpdateMode}">
-                        <!--  Converter={StaticResource bool2VisibilityConverter},  -->
                         By
                     </Label>
                     <TextBox x:Name="TextBoxIncidCreatedUser"
@@ -673,7 +673,6 @@
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
                              Visibility="{Binding Path=HideInBulkUpdateMode}" />
-                    <!--  Converter={StaticResource bool2VisibilityConverter},  -->
 
                     <Label x:Name="LabelIncidLastModDate"
                            Grid.Row="2"
@@ -682,7 +681,6 @@
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Visibility="{Binding Path=HideInBulkUpdateMode}">
-                        <!--  Converter={StaticResource bool2VisibilityConverter},  -->
                         Modified
                     </Label>
                     <TextBox x:Name="TextBoxIncidLastModDate"
@@ -697,7 +695,6 @@
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
                              Visibility="{Binding Path=HideInBulkUpdateMode}" />
-                    <!--  Converter={StaticResource bool2VisibilityConverter},  -->
 
                     <Label x:Name="LabelIncidLastModUser"
                            Grid.Row="2"
@@ -706,7 +703,6 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Visibility="{Binding Path=HideInBulkUpdateMode}">
-                        <!--  Converter={StaticResource bool2VisibilityConverter},  -->
                         By
                     </Label>
                     <TextBox x:Name="TextBoxIncidLastModUser"
@@ -721,14 +717,13 @@
                                             ValidatesOnDataErrors=False}"
                              TextAlignment="Right"
                              Visibility="{Binding Path=HideInBulkUpdateMode}" />
-                    <!--  Converter={StaticResource bool2VisibilityConverter},  -->
 
                 </Grid>
             </GroupBox>
 
             <!--  GroupBoxReasonProcess  -->
             <GroupBox x:Name="GroupBoxReasonProcess"
-                      Grid.Row="1"
+                      Grid.Row="0"
                       Margin="0,2,0,0"
                       Visibility="{Binding Path=ShowReasonProcessGroup}">
                 <Grid x:Name="GridReasonProcess"
@@ -822,42 +817,251 @@
             </GroupBox>
 
             <!--  GroupBoxOSMMUpdate  -->
-            <GroupBox x:Name="GroupBoxOSMMUpdate"
-            		  Grid.Row="2"
+            <GroupBox x:Name="GroupBoxOSMMBulkUpdate"
+            		  Grid.Row="0"
+                      Margin="0,2,0,0"
+            		  IsHitTestVisible="True" Header="Filter by OSMM Updates"
+       				  Visibility="{Binding ShowInOSMMUpdateMode}">
+            	<Grid x:Name="GridOSMMBulkUpdate"
+            		  Grid.Row="0"
+            		  Margin="0,4,0,0">
+            		<Grid.RowDefinitions>
+            			<RowDefinition Height="Auto" />
+            			<RowDefinition Height="Auto" />
+            			<RowDefinition Height="Auto" />
+            		</Grid.RowDefinitions>
+
+            		<Grid Margin="0" Grid.Row="0">
+            			<Grid.ColumnDefinitions>
+            				<ColumnDefinition Width="Auto" MinWidth="48"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="90"/>
+            			</Grid.ColumnDefinitions>
+            			<Label x:Name="LabelOSMMBulkProcess"
+						    Grid.Column="0"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Process">
+            			</Label>
+						<ComboBox x:Name="ComboBoxOSMMBulkProcess"
+                              Grid.Column="1"
+                              Margin="8,2,8,4"
+                              VerticalAlignment="Center"
+                              DisplayMemberPath="code"
+                              IsEditable="False"
+                              IsEnabled="True"
+                              IsReadOnly="False"
+                              ItemsSource="{Binding IncidOSMMBulkProcessFlags,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValue="{Binding IncidOSMMBulkProcessFlag,
+                                                      ValidatesOnDataErrors=True}"
+                              SelectedValuePath="code"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                              ToolTipService.ShowOnDisabled="True" />
+            			<Label x:Name="LabelOSMMBulkSpatial"
+						    Grid.Column="2"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Spatial">
+            			</Label>
+						<ComboBox x:Name="ComboBoxOSMMBulkSpatial"
+                              Grid.Column="3"
+                              Margin="8,2,8,4"
+                              VerticalAlignment="Center"
+                              DisplayMemberPath="code"
+                              IsEditable="False"
+                              IsEnabled="True"
+                              IsReadOnly="False"
+                              ItemsSource="{Binding IncidOSMMBulkSpatialFlags,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValue="{Binding IncidOSMMBulkSpatialFlag,
+                                                      ValidatesOnDataErrors=True}"
+                              SelectedValuePath="code"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                              ToolTipService.ShowOnDisabled="True" />
+            			<Label x:Name="LabelOSMMBulkChange"
+						    Grid.Column="4"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Change">
+            			</Label>
+						<ComboBox x:Name="ComboBoxOSMMBulkChange"
+                              Grid.Column="5"
+                              Margin="8,2,4,4"
+                              VerticalAlignment="Center"
+                              DisplayMemberPath="code"
+                              IsEditable="False"
+                              IsEnabled="True"
+                              IsReadOnly="False"
+                              ItemsSource="{Binding IncidOSMMBulkChangeFlags,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValue="{Binding IncidOSMMBulkChangeFlag,
+                                                      ValidatesOnDataErrors=True}"
+                              SelectedValuePath="code"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                              ToolTipService.ShowOnDisabled="True" />
+            			<Label x:Name="LabelOSMMBulkStatus"
+						    Grid.Column="6"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Status">
+            			</Label>
+						<ComboBox x:Name="ComboBoxOSMMBulkStatus"
+                              Grid.Column="7"
+                              Margin="8,2,4,4"
+                              VerticalAlignment="Center"
+                              IsEditable="False"
+                              IsEnabled="True"
+                              IsReadOnly="False"
+                              ItemsSource="{Binding IncidOSMMBulkStatuses,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValue="{Binding IncidOSMMBulkStatus,
+                                                      ValidatesOnDataErrors=True}"
+                              Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                              ToolTipService.ShowOnDisabled="True" />
+            		</Grid>
+
+            		<Grid Margin="0" Grid.Row="1">
+            			<Grid.ColumnDefinitions>
+            				<ColumnDefinition Width="Auto" MinWidth="48"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            				<ColumnDefinition Width="Auto"/>
+            				<ColumnDefinition Width="*" MinWidth="10"/>
+            			</Grid.ColumnDefinitions>
+            		<Label x:Name="LabelOSMMBulkRejectedCount"
+						Grid.Column="0"
+            			Margin="0,0,0,2"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="Rejected">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMBulkRejectedCount"
+						Grid.Column="1"
+            			Margin="8,2,8,2"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMBulkRejectedCount,
+                                            Mode=OneWay,
+                                            ValidatesOnDataErrors=False}" />
+            		<Label x:Name="LabelOSMMBulkPendingCount"
+						Grid.Column="2"
+            			Margin="0,0,0,2"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="Pending">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMBulkPendingCount"
+						Grid.Column="3"
+            			Margin="8,2,8,2"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMBulkPendingCount,
+                                            Mode=OneWay,
+                                            ValidatesOnDataErrors=False}" />
+            		<Label x:Name="LabelOSMMBulkProposedCount"
+						Grid.Column="4"
+            			Margin="0,0,0,2"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="Proposed">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMBulkProposedCount"
+						Grid.Column="5"
+            			Margin="8,2,4,2"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMBulkProposedCount,
+                                            Mode=OneWay,
+                                            ValidatesOnDataErrors=False}" />
+            		<Label x:Name="LabelOSMMBulkAppliedCount"
+						Grid.Column="6"
+            			Margin="0,0,0,2"
+            			HorizontalAlignment="Right"
+            			VerticalAlignment="Center"
+            			Content="Applied">
+            		</Label>
+            		<TextBox x:Name="TextBoxOSMMBulkAppliedCount"
+						Grid.Column="7"
+            			Margin="8,2,4,2"
+            			VerticalAlignment="Center"
+            			IsEnabled="False"
+            			IsReadOnly="True"
+            			TextAlignment="Left"
+                        Text="{Binding IncidOSMMBulkAppliedCount,
+                                            Mode=OneWay,
+                                            ValidatesOnDataErrors=False}" />
+            		</Grid>
+
+					<Grid x:Name="GridOSMMBulkFilterButtons"
+						  Grid.Row="2"
+						  Height="23"
+						  Margin="0,4,4,2"
+						  HorizontalAlignment="Right"
+						  VerticalAlignment="Bottom">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="80" />
+							<ColumnDefinition Width="80" />
+						</Grid.ColumnDefinitions>
+
+						<Button x:Name="ButtonResetOSMMBulkFilter"
+								Grid.Column="1"
+								Margin="0,0,4,0"
+								Background="Gray"
+								Content="_Reset Filter"
+								Command="{Binding Path=ResetOSMMBulkFilterCommand}"
+								IsEnabled="{Binding CanApplyOSMMBulkFilter}" />
+						<Button x:Name="ButtonApplyOSMMBulkFilter"
+								Grid.Column="2"
+								Margin="4,0,0,0"
+								Background="Orange"
+								Content="Apply _Filter"
+								Foreground="White"
+								Command="{Binding ApplyOSMMBulkFilterCommand}"
+								IsEnabled="{Binding CanApplyOSMMBulkFilter}" />
+					</Grid>
+
+            	</Grid>
+            </GroupBox>
+
+            <!--  GroupBoxOSMMUpdate  -->
+            <GroupBox x:Name="GroupBoxOSMMUpdates"
+            		  Grid.Row="1"
                       Margin="0,2,0,0"
             		  IsHitTestVisible="True" Header="OSMM Updates"
        				  Visibility="{Binding ShowIncidOSMMUpdatesGroup}">
-            	<Grid x:Name="GridOSMMUpdate"
+            	<Grid x:Name="GridOSMMUpdates"
             		  Grid.Row="0"
             		  Margin="0,4,0,0">
             		<Grid.RowDefinitions>
             			<RowDefinition Height="Auto" />
             			<RowDefinition Height="Auto" />
             		</Grid.RowDefinitions>
+
             		<Grid Margin="0" Grid.Row="0">
-            			<Grid.ColumnDefinitions>
-            				<ColumnDefinition Width="Auto" MinWidth="75"/>
-            				<ColumnDefinition MinWidth="100"/>
-            			</Grid.ColumnDefinitions>
-            		<Label x:Name="LabelOSMMIhsSummary"
-						Grid.Column="0"
-            			Margin="0,0,0,4"
-            			HorizontalAlignment="Right"
-            			VerticalAlignment="Center"
-            			Content="IHS Summary">
-            		</Label>
-            		<TextBox x:Name="TextBoxOSMMIhsSummary"
-						Grid.Column="1"
-            			Margin="8,2,8,4"
-            			VerticalAlignment="Center"
-            			IsEnabled="False"
-            			IsReadOnly="True"
-            			TextAlignment="Left"
-                        Text="{Binding IncidOSMMIhsSummary,
-                              Mode=OneWay,
-                              ValidatesOnDataErrors=False}" />
-            		</Grid>
-            		<Grid Margin="0" Grid.Row="1">
             			<Grid.ColumnDefinitions>
             				<ColumnDefinition Width="Auto" MinWidth="75"/>
             				<ColumnDefinition Width="*" MinWidth="10"/>
@@ -919,25 +1123,49 @@
                             Text="{Binding IncidOSMMChangeFlag,
                                   Mode=OneWay,
                                   ValidatesOnDataErrors=False}" />
-            		<Label x:Name="LabelOSMMUpdateFlag"
-						Grid.Column="6"
-            			Margin="0,0,0,4"
-            			HorizontalAlignment="Right"
-            			VerticalAlignment="Center"
-            			Content="Status">
-            		</Label>
-            		<TextBox x:Name="TextBoxOSMMUpdateStatus"
-                        Grid.Column="7"
-            			Margin="10,0,6,6"
-            			VerticalAlignment="Center"
-            			IsEnabled="False"
-            			IsReadOnly="True"
-            			TextAlignment="Left"
-                        Text="{Binding IncidOSMMUpdateStatus,
-                              Mode=OneWay,
-                              ValidatesOnDataErrors=True}"
-                        Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-						ToolTipService.ShowOnDisabled="True" />
+            			<Label x:Name="LabelOSMMStatusFlag"
+							Grid.Column="6"
+            				Margin="0,0,0,4"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Status">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMUpdateStatus"
+							Grid.Column="7"
+            				Margin="8,2,4,4"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Left"
+							Text="{Binding IncidOSMMUpdateStatus,
+								  Mode=OneWay,
+								  ValidatesOnDataErrors=True}"
+							Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+							ToolTipService.ShowOnDisabled="True" />
+            		</Grid>
+
+            		<Grid Margin="0" Grid.Row="1">
+            			<Grid.ColumnDefinitions>
+            				<ColumnDefinition Width="Auto" MinWidth="75"/>
+            				<ColumnDefinition MinWidth="100"/>
+            			</Grid.ColumnDefinitions>
+            			<Label x:Name="LabelOSMMIhsSummary"
+							Grid.Column="0"
+            				Margin="0,0,0,2"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="IHS Summary">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMIhsSummary"
+							Grid.Column="1"
+            				Margin="8,2,4,2"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Left"
+							Text="{Binding IncidOSMMIhsSummary,
+								  Mode=OneWay,
+								  ValidatesOnDataErrors=False}" />
             		</Grid>
             	</Grid>
             </GroupBox>
@@ -992,6 +1220,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           Header="{Binding IhsHabitatHeader}">
                                     <Grid x:Name="GridCategories" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1108,7 +1337,7 @@
                                         <TextBox x:Name="TextBoxNvcCodes"
                                                  Grid.Row="3"
                                                  Grid.Column="1"
-                                                 Margin="8,0,8,4"
+                                                 Margin="8,0,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  Text="{Binding NvcCodes,
@@ -1123,6 +1352,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           Header="{Binding IhsMatrixHeader}">
                                     <Grid x:Name="GridIhsMatrix" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1270,6 +1500,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           Header="{Binding IhsFormationHeader}">
                                     <Grid x:Name="GridIhsFormation" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1374,6 +1605,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           Header="{Binding IhsManagementHeader}">
                                     <Grid x:Name="GridIhsManagement" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1479,6 +1711,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           Header="{Binding IhsComplexHeader}">
                                     <Grid x:Name="GridIhsComplex" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
@@ -1582,6 +1815,7 @@
                                           Grid.Row="5"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
                                           VerticalAlignment="Stretch">
                                           <!-- Margin="0" -->
                                     <!--  Header="Summary">  -->
@@ -1694,6 +1928,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
                                           Header="Priority Habitats">
                                     <Grid x:Name="GridBapHabitatsPrimary" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
@@ -1810,6 +2045,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
                                           Header="Potential Priority Habitats">
                                     <Grid x:Name="GridBapHabitatsUser" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
@@ -1938,6 +2174,7 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
                                           Header="General Comments">
                                     <Grid x:Name="GridGeneralComments" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
@@ -1983,6 +2220,7 @@
                                           Grid.Row="3"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
                                           Header="Maps">
                                     <Grid x:Name="GridMaps" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
@@ -2079,6 +2317,7 @@
                                           Grid.Row="4"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
                                           Header="{Binding DetailsSiteHeader}">
                                           <!-- VerticalAlignment="Stretch" -->
                                     <Grid x:Name="GridSite" Margin="0,4,0,0">
@@ -2199,6 +2438,7 @@
                                           Grid.Row="0"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabSourcesControlsEnabled}"
                                           Header="Source 1">
                                     <Grid x:Name="GridSource1" Margin="0,6,0,0">
                                         <Grid.RowDefinitions>
@@ -2441,6 +2681,7 @@
                                           Grid.Row="1"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabSourcesControlsEnabled}"
                                           Header="Source 2">
                                     <Grid x:Name="GridSource2" Margin="0,6,0,0">
                                         <Grid.RowDefinitions>
@@ -2682,6 +2923,7 @@
                                           Grid.Row="2"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabSourcesControlsEnabled}"
                                           Header="Source 3">
                                     <Grid x:Name="GridSource3" Margin="0,6,0,0">
                                         <Grid.RowDefinitions>
@@ -2954,8 +3196,8 @@
                             <GroupBox x:Name="GroupBoxModificationHistory"
                                       Grid.Row="0"
                                       Grid.Column="0"
-                                      Grid.ColumnSpan="3"
-                                      Header="Modification History">
+                                      Grid.ColumnSpan="3">
+                                      <!-- Header="Modification History"> -->
                                 <ScrollViewer Margin="0,0,-4,-4" VerticalScrollBarVisibility="Auto">
                                     <ItemsControl x:Name="ItemsControlModificationHistory"
                                                   Grid.Row="0"
@@ -2988,7 +3230,6 @@
                        VerticalAlignment="Top"
                        Panel.ZIndex="5">
                 <Grid x:Name="GridStatusTop" Visibility="{Binding Path=HideInBulkUpdateMode}">
-                    <!--  Converter={StaticResource bool2VisibilityConverter}}">  -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -3044,7 +3285,8 @@
             <Grid x:Name="GridStatus"
                   Grid.Row="4"
                   Margin="0,4,0,0"
-                  IsEnabled="{Binding WindowEnabled}">
+                  IsEnabled="{Binding WindowEnabled}"
+				  Visibility="{Binding Path=HideInOSMMUpdateMode}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="Auto" />
@@ -3056,10 +3298,6 @@
                       Height="23"
                       VerticalAlignment="Bottom"
                       Visibility="{Binding Path=ShowInBulkUpdateMode}">
-                    <!--
-                        Converter={StaticResource bool2VisibilityConverter},
-                        Mode=TwoWay}">
-                    -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
@@ -3078,10 +3316,6 @@
                       Height="23"
                       VerticalAlignment="Bottom"
                       Visibility="{Binding Path=HideInBulkUpdateMode}">
-                    <!--
-                        Converter={StaticResource bool2VisibilityConverter},
-                        Mode=TwoWay}">
-                    -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40" />
                         <ColumnDefinition Width="25" />
@@ -3163,7 +3397,6 @@
                             Margin="2,0,2,0"
                             Command="{Binding Path=CancelBulkUpdateCommand}"
                             Visibility="{Binding Path=ShowInBulkUpdateMode}">
-                        <!--  Converter={StaticResource bool2VisibilityConverter},  -->
                         _Cancel
                     </Button>
                     <Button x:Name="ButtonUpdate"
@@ -3174,6 +3407,112 @@
                             Content="Appl_y"
                             Foreground="White"
                             IsEnabled="{Binding CanUpdate}" />
+                </Grid>
+            </Grid>
+
+            <!--  GridStatusOSMM  -->
+            <Grid x:Name="GridStatusOSMM"
+                  Grid.Row="4"
+                  Margin="0,4,0,0"
+                  IsEnabled="{Binding WindowEnabled}"
+				  Visibility="{Binding Path=ShowInOSMMUpdateMode}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="GridOSMMNavigation"
+                      Grid.Column="0"
+                      Height="23"
+                      VerticalAlignment="Bottom"
+                      Visibility="{Binding HideInBulkUpdateMode}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="60" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="LabelOSMMNavigation"
+                           Grid.Column="0"
+                           Margin="0,0,4,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="INCID:"
+                           Style="{DynamicResource LabelReverseStyle}" />
+                    <TextBox x:Name="TextBoxOSMMRecordNumber"
+                             Grid.Column="1"
+                             Margin="2,0,0,0"
+                             TextAlignment="Center"
+                             Text="{Binding OSMMIncidCurrentRowIndex,
+                                            Mode=TwoWay,
+                                            ValidatesOnDataErrors=True}"
+							  />
+                </Grid>
+
+                <Grid x:Name="GridOSMMLabelStatusIncid"
+                      Grid.Column="1"
+                      Height="23"
+                      VerticalAlignment="Bottom">
+                    <Label x:Name="LabelOSMMStatusIncid"
+                           Grid.Column="0"
+                           Margin="8,0,4,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Content="{Binding StatusIncid,
+                                             UpdateSourceTrigger=PropertyChanged}"
+                           MouseDoubleClick="LabelStatusIncid_MouseDoubleClick"
+                           Style="{DynamicResource LabelReverseStyle}"
+                           ToolTip="{Binding StatusIncidToolTip,
+                                             UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+
+                <Grid x:Name="GridOSMMCommandButtons"
+                      Grid.Column="2"
+                      Height="23"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="70" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ButtonOSMMSkip"
+                            Grid.Column="0"
+                            Margin="2,0,0,0"
+                            Background="#FF939393"
+                            Command="{Binding OSMMSkipCommand}"
+                            Content="_Skip"
+                            Foreground="White"
+                            IsEnabled="{Binding OSMMCanSkip}" />
+                    <Button x:Name="ButtonOSMMReject"
+                            Grid.Column="1"
+                            Margin="2,0,0,0"
+                            Background="#FF0064C8"
+                            Command="{Binding OSMMRejectCommand}"
+                            Content="{Binding OSMMRejectText}"
+                            Foreground="White"
+                            IsEnabled="{Binding OSMMCanReject}"
+							Tag="{Binding OSMMRejectTag,
+                                          Mode=TwoWay,
+							              UpdateSourceTrigger=PropertyChanged}" />
+                    <Button x:Name="ButtonOSMMAccept"
+                            Grid.Column="2"
+                            Margin="2,0,0,0"
+                            Background="#FF00B400"
+                            Command="{Binding OSMMAcceptCommand}"
+                            Content="{Binding OSMMAcceptText}"
+                            Foreground="White"
+                            IsEnabled="{Binding OSMMCanAccept}"
+							Tag="{Binding OSMMAcceptTag,
+                                          Mode=TwoWay,
+							              UpdateSourceTrigger=PropertyChanged}" />
+<!--                    <Button x:Name="ButtonOSMMAcceptAll"
+                            Grid.Column="2"
+                            Margin="2,0,0,0"
+                            Background="#FFC80000"
+                            Command="{Binding OSMMAcceptAllCommand}"
+                            Content="Accept A_ll"
+                            Foreground="White"
+                            IsEnabled="{Binding OSMMCanAcceptAll}" /> -->
                 </Grid>
             </Grid>
         </Grid>

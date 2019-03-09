@@ -111,6 +111,12 @@ namespace HLU.UI.ViewModel
         private ICommand _bulkUpdateCommand;
         private ICommand _bulkUpdateCommandMenu;
         private ICommand _cancelBulkUpdateCommand;
+        private ICommand _osmmUpdateCommand;
+        private ICommand _osmmUpdateCommandMenu;
+        private ICommand _cancelOSMMUpdateCommand;
+        private ICommand _osmmSkipCommand;
+        private ICommand _osmmAcceptCommand;
+        private ICommand _osmmRejectCommand;
         private ICommand _exportCommand;
         private ICommand _closeCommand;
         private ICommand _copyCommand;
@@ -142,6 +148,7 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowNotifyOnSplitMerge _viewModelWinWarnSplitMerge;
         private ViewModelWindowWarnOnSubsetUpdate _viewModelWinWarnSubsetUpdate;
         private ViewModelWindowMainBulkUpdate _viewModelBulkUpdate;
+        private ViewModelWindowMainOSMMUpdate _viewModelOSMMUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
         private ViewModelWindowSwitchGISLayer _viewModelSwitchGISLayer;
         private WindowCompletePhysicalSplit _windowCompSplit;
@@ -156,6 +163,7 @@ namespace HLU.UI.ViewModel
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _resetUpdatesFlag = Settings.Default.ResetUpdatesFlag;
         private bool? _showingOSMMUpdatesGroup = null;
+        private bool? _showInOSMMUpdateMode = null;
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private string _logoPath = String.Empty;
         private DbBase _db;
@@ -211,6 +219,9 @@ namespace HLU.UI.ViewModel
         private bool _tabItemDetailsEnabled = true;
         private bool _tabItemSourcesEnabled = true;
         private bool _tabItemHistoryEnabled = true;
+        private bool _tabIhsControlsEnabled = true;
+        private bool _tabDetailsControlsEnabled = true;
+        private bool _tabSourcesControlsEnabled = true;
         private bool _windowEnabled = true;
         private bool _editMode;
         private bool _pasting = false;
@@ -241,6 +252,10 @@ namespace HLU.UI.ViewModel
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
         private int _origIncidIhsComplexCount = 0;
+        private int _OSMMUpdatesCountRejected = -1;
+        private int _OSMMUpdatesCountPending = -1;
+        private int _OSMMUpdatesCountApplied = -1;
+        private int _OSMMUpdatesCountProposed = -1;
         private SqlFilterCondition _incidMMPolygonsIncidFilter;
         private DataColumn[] _historyColumns;
         private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
@@ -256,7 +271,9 @@ namespace HLU.UI.ViewModel
         private int _incidOSMMUpdatesProcessFlag;
         private string _incidOSMMUpdatesSpatialFlag;
         private string _incidOSMMUpdatesChangeFlag;
-        private int _incidOSMMUpdatesUpdateFlag;
+        private List<string> _OSMMUpdatesStatuses;
+        private string _osmmUpdatesStatus;
+        private int _incidOSMMUpdatesStatusFlag;
         private Dictionary<Type, List<SqlFilterCondition>> _childRowFilterDict;
         private Dictionary<Type, string> _childRowOrderByDict;
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
@@ -268,10 +285,22 @@ namespace HLU.UI.ViewModel
         private Nullable<bool> _bulkUpdateMode = false;
         private bool _bulkUpdateCreateHistory;
         private bool _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
+        private string _osmmAcceptTag = "A_ccept";
+        private string _osmmRejectTag = "Re_ject";
+        private Nullable<bool> _canOSMMUpdate;
+        private Nullable<bool> _osmmUpdateMode = false;
+        private bool _osmmUpdateCreateHistory;
+        private HluDataSet.lut_osmm_updates_processRow[] _osmmProcessFlags;
+        private HluDataSet.lut_osmm_updates_spatialRow[] _osmmSpatialFlags;
+        private HluDataSet.lut_osmm_updates_changeRow[] _osmmChangeFlags;
+        private string _osmmProcessFlag;
+        private string _osmmSpatialFlag;
+        private string _osmmChangeFlag;
         private VagueDateInstance _incidSource1DateEntered;
         private VagueDateInstance _incidSource2DateEntered;
         private VagueDateInstance _incidSource3DateEntered;
         private string _codeDeleteRow = Settings.Default.CodeDeleteRow;
+        private string _codeAnyRow = Settings.Default.CodeAnyRow;
         private string _processingMsg = "Processing ...";
         private bool _saved = false;
         private bool _savingAttempted;
@@ -686,14 +715,14 @@ namespace HLU.UI.ViewModel
                 if (_windowHeight == 0)
                 {
                     if (_showGroupHeaders)
-                        _windowHeight = 975;
-                    else
                         _windowHeight = 950;
+                    else
+                        _windowHeight = 925;
 
-                    // Adjust the standard height if the NVC codes text is not showing.
-                    if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
-                    if (!(bool)_showingNVCCodesText)
-                        _windowHeight = _windowHeight - 26;
+                    //// Adjust the standard height if the NVC codes text is not showing.
+                    //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
+                    //if (!(bool)_showingNVCCodesText)
+                    //    _windowHeight = _windowHeight - 26;
 
                     // Adjust the standard height if the Reason and Process group is not showing.
                     if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
@@ -730,14 +759,14 @@ namespace HLU.UI.ViewModel
             // Calculate the minimum window height.
             int _defaultWindowHeight;
             if (_showGroupHeaders)
-                _defaultWindowHeight = 975;
-            else
                 _defaultWindowHeight = 950;
+            else
+                _defaultWindowHeight = 925;
 
-            // Adjust the minimum height if the NVC codes text is not showing.
-            if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
-            if (!(bool)_showingNVCCodesText)
-                _defaultWindowHeight -= 26;
+            //// Adjust the minimum height if the NVC codes text is not showing.
+            //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
+            //if (!(bool)_showingNVCCodesText)
+            //    _defaultWindowHeight -= 26;
 
             // Adjust the minimum height if the Reason and Process group is not showing.
             if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
@@ -1174,11 +1203,13 @@ namespace HLU.UI.ViewModel
                 {
                     _isAuthorisedUser = true;
                     _canBulkUpdate = (bool)result;
+                    _canOSMMUpdate = (bool)result;
                 }
                 else
                 {
                     _isAuthorisedUser = false;
                     _canBulkUpdate = false;
+                    _canOSMMUpdate = false;
                 }
 
                 //---------------------------------------------------------------------
@@ -1205,6 +1236,7 @@ namespace HLU.UI.ViewModel
             {
                 _isAuthorisedUser = null;
                 _canBulkUpdate = null;
+                _canOSMMUpdate = null;
             }
         }
 
@@ -1376,8 +1408,6 @@ namespace HLU.UI.ViewModel
 
         private void NavigateFirstClicked(object param)
         {
-            if (_bulkUpdateMode == true) return;
-
             //---------------------------------------------------------------------
             // CHANGED: CR22 (Record selectors)
             // Show the wait cursor and processing message in the status area
@@ -1423,7 +1453,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanNavigateBackward
         {
-            get { return _bulkUpdateMode == false && IncidCurrentRowIndex > 1; }
+            get { return IncidCurrentRowIndex > 1; }
         }
 
         /// <summary>
@@ -1460,7 +1490,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return ((_bulkUpdateMode == false) && (IsFiltered && (IncidCurrentRowIndex < _incidSelection.Rows.Count)) ||
+                return ((IsFiltered && (IncidCurrentRowIndex < _incidSelection.Rows.Count)) ||
                     (!IsFiltered && (IncidCurrentRowIndex < _incidRowCount)));
             }
         }
@@ -1483,8 +1513,6 @@ namespace HLU.UI.ViewModel
 
         private void NavigateLastClicked(object param)
         {
-            if (_bulkUpdateMode == true) return;
-
             //---------------------------------------------------------------------
             // CHANGED: CR22 (Record selectors)
             // Show the wait cursor and processing message in the status area
@@ -1591,7 +1619,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
                     ((_gisSelection.Rows.Count > 0) &&
                     ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
@@ -1613,7 +1641,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return _bulkUpdateMode == false && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1);
             }
@@ -1724,7 +1752,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     (_incidsSelectedMapCount > 1) && (_fragsSelectedMapCount > 1);
             }
@@ -1737,7 +1765,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
@@ -2021,6 +2049,7 @@ namespace HLU.UI.ViewModel
                     _editMode = editMode;
                     OnPropertyChanged("WindowTitle");
                     OnPropertyChanged("CanBulkUpdate");
+                    OnPropertyChanged("CanOSMMUpdate");
                     OnPropertyChanged("ShowReasonProcessGroup");
                 }
                 return _editMode;
@@ -2136,17 +2165,24 @@ namespace HLU.UI.ViewModel
             if (_viewModelBulkUpdate == null)
                 _viewModelBulkUpdate = new ViewModelWindowMainBulkUpdate(this);
 
+            // If already in bulk update mode then perform the bulk update
+            // (only possible when this method was called after the 'Apply'
+            // button was clicked.
             if (_bulkUpdateMode == true)
             {
                 _viewModelBulkUpdate.BulkUpdate();
             }
             else
             {
+                // Check there are no outstanding edits.
                 MessageBoxResult userResponse = CheckDirty();
 
+                // Ask the user if they want to apply the
+                // outstanding edits.
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
+                        // Apply the outstanding edits.
                         if (!_viewModelUpd.Update()) return;
                         break;
                     case MessageBoxResult.No:
@@ -2155,6 +2191,7 @@ namespace HLU.UI.ViewModel
                         return;
                 }
 
+                // Start the bulk update process.
                 _viewModelBulkUpdate.StartBulkUpdate();
             }
         }
@@ -2164,7 +2201,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 if (_canBulkUpdate == null) GetUserInfo();
-                return EditMode && _canBulkUpdate == true;
+                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false;
             }
         }
 
@@ -2210,6 +2247,18 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
+        public Visibility ShowInBulkUpdateMode
+        {
+            get
+            {
+                if (_bulkUpdateMode == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Hidden;
+            }
+            set { }
+        }
+
         public string BulkUpdateCommandHeader
         {
             get { return _bulkUpdateMode == true ? "Cancel _Bulk Update" : "_Bulk Update"; }
@@ -2236,18 +2285,6 @@ namespace HLU.UI.ViewModel
                 BulkUpdateClicked(param);
         }
 
-        public Visibility ShowInBulkUpdateMode
-        {
-            get
-            {
-                if (_bulkUpdateMode == true)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Hidden;
-            }
-            set { }
-        }
-
         public bool BulkUpdateCreateHistory
         {
             get { return _bulkUpdateCreateHistory; }
@@ -2256,7 +2293,680 @@ namespace HLU.UI.ViewModel
 
         public string TopControlsGroupHeader
         {
-            get { return (_bulkUpdateMode == false) ? "INCID" : "Bulk Update"; }
+            get
+            {
+                //if (_bulkUpdateMode == true)
+                //    return "Bulk Update";
+                //else if (_osmmUpdateMode == true)
+                //    return "OSMM Update";
+                //else
+                    return "INCID";
+            }
+        }
+
+        #endregion
+
+        #region OSMM Update
+
+        /// <summary>
+        /// Gets or sets the OSMM Accept button tag (which controls
+        /// the text on the button (and whether the <Ctrl> button is
+        /// pressed or not.
+        /// </summary>
+        /// <value>
+        /// The osmm accept tag.
+        /// </value>
+        public string OSMMAcceptTag
+        {
+            get { return _osmmAcceptTag; }
+            set
+            {
+                _osmmAcceptTag = value;
+                if (_osmmUpdateMode == true)
+                    OnPropertyChanged("OSMMAcceptText");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the OSMM Reject button tag (which controls
+        /// the text on the button (and whether the <Ctrl> button is
+        /// pressed or not.
+        /// </summary>
+        /// <value>
+        /// The osmm reject tag.
+        /// </value>
+        public string OSMMRejectTag
+        {
+            get { return _osmmRejectTag; }
+            set
+            {
+                _osmmRejectTag = value;
+                if (_osmmUpdateMode == true)
+                    OnPropertyChanged("OSMMRejectText");
+            }
+        }
+
+        /// <summary>
+        /// OSMM Update command.
+        /// </summary>
+        public ICommand OSMMUpdateCommand
+        {
+            get
+            {
+                if (_osmmUpdateCommand == null)
+                {
+                    Action<object> osmmUpdateAction = new Action<object>(this.OSMMUpdateClicked);
+                    _osmmUpdateCommand = new RelayCommand(osmmUpdateAction, param => this.CanOSMMUpdate);
+                }
+                return _osmmUpdateCommand;
+            }
+        }
+
+        private void OSMMUpdateClicked(object param)
+        {
+            _saving = false;
+            if (_viewModelOSMMUpdate == null)
+                _viewModelOSMMUpdate = new ViewModelWindowMainOSMMUpdate(this);
+
+            // If the OSMM update mode is not already started
+            if (_osmmUpdateMode == false)
+            {
+                MessageBoxResult userResponse = CheckDirty();
+
+                switch (userResponse)
+                {
+                    case MessageBoxResult.Yes:
+                        if (!_viewModelUpd.Update()) return;
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
+                        return;
+                }
+
+                // Start the OSMM update mode
+                _viewModelOSMMUpdate.StartOSMMUpdate();
+            }
+        }
+
+        public bool CanOSMMUpdate
+        {
+            get
+            {
+                if (_canOSMMUpdate == null) GetUserInfo();
+                return _canBulkUpdate == true && _bulkUpdateMode == false;
+            }
+        }
+
+        public ICommand CancelOSMMUpdateCommand
+        {
+            get
+            {
+                if (_cancelOSMMUpdateCommand == null)
+                {
+                    Action<object> cancelOSMMUpdateAction = new Action<object>(this.CancelOSMMUpdateClicked);
+                    _cancelOSMMUpdateCommand = new RelayCommand(cancelOSMMUpdateAction, param => this.CanCancelOSMMUpdate);
+                }
+                return _cancelOSMMUpdateCommand;
+            }
+        }
+
+        private void CancelOSMMUpdateClicked(object param)
+        {
+            if (_viewModelOSMMUpdate != null)
+            {
+                _viewModelOSMMUpdate.CancelOSMMUpdate();
+                _viewModelOSMMUpdate = null;
+            }
+        }
+
+        public bool CanCancelOSMMUpdate { get { return _osmmUpdateMode == true; } }
+
+        /// <summary>
+        /// OSMM Skip command.
+        /// </summary>
+        public ICommand OSMMSkipCommand
+        {
+            get
+            {
+                if (_osmmSkipCommand == null)
+                {
+                    Action<object> osmmSkipAction = new Action<object>(this.OSMMSkipClicked);
+                    _osmmSkipCommand = new RelayCommand(osmmSkipAction, param => this.CanOSMMUpdate);
+                }
+                return _osmmSkipCommand;
+            }
+        }
+
+        private void OSMMSkipClicked(object param)
+        {
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 OSMM Updates
+            // Mark the OSMM Update as skipped and move to the next Incid.
+            //
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
+            // Mark the OSMM Update row as skipped
+            _viewModelOSMMUpdate.OSMMUpdate(1);
+
+            // Move to the next Incid
+            IncidCurrentRowIndex += 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
+        }
+
+        /// <summary>
+        /// OSMM Skip command.
+        /// </summary>
+        public ICommand OSMMAcceptCommand
+        {
+            get
+            {
+                if (_osmmAcceptCommand == null)
+                {
+                    Action<object> osmmAcceptAction = new Action<object>(this.OSMMAcceptClicked);
+                    _osmmAcceptCommand = new RelayCommand(osmmAcceptAction, param => this.CanOSMMUpdate);
+                }
+                return _osmmAcceptCommand;
+            }
+        }
+
+        private void OSMMAcceptClicked(object param)
+        {
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 OSMM Updates
+            // Mark the OSMM Update as accepted and move to the next Incid.
+            //
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
+            // Mark the OSMM Update row as accepted
+            _viewModelOSMMUpdate.OSMMUpdate(-1);
+
+            // Move to the next Incid
+            IncidCurrentRowIndex += 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
+        }
+
+        /// <summary>
+        /// OSMM Reject command.
+        /// </summary>
+        public ICommand OSMMRejectCommand
+        {
+            get
+            {
+                if (_osmmRejectCommand == null)
+                {
+                    Action<object> osmmRejectAction = new Action<object>(this.OSMMRejectClicked);
+                    _osmmRejectCommand = new RelayCommand(osmmRejectAction, param => this.CanOSMMUpdate);
+                }
+                return _osmmRejectCommand;
+            }
+        }
+
+        private void OSMMRejectClicked(object param)
+        {
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 OSMM Updates
+            // Mark the OSMM Update as skipped and move to the next Incid.
+            //
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
+            // Mark the OSMM Update row as rejected
+            _viewModelOSMMUpdate.OSMMUpdate(-99);
+
+            // Move to the next Incid
+            IncidCurrentRowIndex += 1;
+
+            ChangeCursor(Cursors.Arrow, null);
+            //---------------------------------------------------------------------
+        }
+
+        internal Nullable<bool> OSMMUpdateMode
+        {
+            get { return _osmmUpdateMode; }
+            set { _osmmUpdateMode = value; }
+        }
+
+        public Visibility HideInOSMMUpdateMode
+        {
+            get
+            {
+                if (_osmmUpdateMode == true)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Only show the OSMM Bulk Update options when in OSMM Update mode.
+        /// </summary>
+        public Visibility ShowInOSMMUpdateMode
+        {
+            get
+            {
+                if (!_showInOSMMUpdateMode.HasValue) _showInOSMMUpdateMode = false;
+
+                // Show the group if in osmm update mode
+                if (_osmmUpdateMode == true)
+                {
+                    if (!(bool)_showInOSMMUpdateMode)
+                    {
+                        AdjustWindowHeight(89);
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showInOSMMUpdateMode = true;
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    if ((bool)_showInOSMMUpdateMode)
+                    {
+                        AdjustWindowHeight(-89);
+                        OnPropertyChanged("WindowHeight");
+                    }
+
+                    _showInOSMMUpdateMode = false;
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
+        }
+
+        public string OSMMUpdateCommandHeader
+        {
+            get { return _osmmUpdateMode == true ? "Cancel _OSMM Update" : "_OSMM Update"; }
+        }
+
+        public ICommand OSMMUpdateCommandMenu
+        {
+            get
+            {
+                if (_osmmUpdateCommandMenu == null)
+                {
+                    Action<object> osmmUpdateMenuAction = new Action<object>(this.OSMMUpdateCommandMenuClicked);
+                    _osmmUpdateCommandMenu = new RelayCommand(osmmUpdateMenuAction);
+                }
+                return _osmmUpdateCommandMenu;
+            }
+        }
+
+        private void OSMMUpdateCommandMenuClicked(object param)
+        {
+            // If already in OSMM update mode
+            if (_osmmUpdateMode == true)
+                // Cancel the OSMM update mode
+                CancelOSMMUpdateClicked(param);
+            else
+                // Start the OSMM update mode
+                OSMMUpdateClicked(param);
+        }
+
+        public bool OSMMUpdateCreateHistory
+        {
+            get { return _osmmUpdateCreateHistory; }
+            set { _osmmUpdateCreateHistory = value; }
+        }
+
+        public string OSMMRejectText
+        {
+            get { return OSMMRejectTag == "Ctrl" ? "Re_ject All" : "Re_ject"; }
+        }
+
+        public string OSMMAcceptText
+        {
+            get { return OSMMAcceptTag == "Ctrl" ? "A_ccept All" : "A_ccept"; }
+        }
+
+        public int OSMMIncidCurrentRowIndex
+        {
+            get { return _incidCurrentRowIndex; }
+            set
+            {
+                if (_osmmUpdateMode != false || ((value > 0) &&
+                    (IsFiltered && ((_incidSelection == null) || (value <= _incidSelection.Rows.Count))) ||
+                    (!IsFiltered && ((_incidSelection == null) || (value <= _incidRowCount)))))
+                {
+                    _incidCurrentRowIndex = value;
+                    NewIncidCurrentRow();
+                }
+            }
+        }
+
+        public HluDataSet.lut_osmm_updates_processRow[] IncidOSMMBulkProcessFlags
+        {
+            get
+            {
+                if ((_osmmProcessFlags == null) || (_osmmProcessFlags.Length == 0))
+                {
+                    _osmmProcessFlags = (from m in HluDataset.lut_osmm_updates_process
+                                         select m).OrderBy(m => m.sort_order).ThenBy(m => m.description).ToArray();
+                }
+
+                HluDataSet.lut_osmm_updates_processRow[] osmmProcessFlags;
+                osmmProcessFlags = AnyRowOSMMUpdatesProcess(-3).Concat(_osmmProcessFlags).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                return osmmProcessFlags;
+
+                //if (_osmmProcessFlags == null)
+                //{
+
+
+                //    if (HluDataset.incid_osmm_updates.IsInitialized && (HluDataset.incid_osmm_updates.Rows.Count == 0))
+                //    {
+                //        if (_hluTableAdapterMgr.incid_osmm_updatesTableAdapter == null)
+                //            _hluTableAdapterMgr.incid_osmm_updatesTableAdapter =
+                //                new HluTableAdapter<HluDataSet.incid_osmm_updatesDataTable, HluDataSet.incid_osmm_updatesRow>(_db);
+                //        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.incid_osmm_updatesDataTable) }, false);
+                //    }
+
+
+                //    HluDataSet.incid_osmm_updatesDataTable incidOSMMUpdatesDT = new HluDataSet.incid_osmm_updatesDataTable();
+
+
+
+
+                //    var processFlags = _hluDS.incid_osmm_updates.AsEnumerable().Select(row => new
+                //    {
+                //        process_flag = row.Field<string>("process_flag")
+                //    }).OrderBy(r => r.process_flag).ToString().Distinct();
+
+                //    var processFlags2 = _hluDS.incid_osmm_updates.AsEnumerable().Select(row => new
+                //    {
+                //        process_flag = row.process_flag.ToString()
+                //    }).OrderBy(r => r.process_flag).Distinct();
+
+                //    var processFlags2b = HluDataset.incid_osmm_updates.AsEnumerable().Select(row => new
+                //    {
+                //        process_flag = row.process_flag.ToString()
+                //    }).OrderBy(r => r.process_flag).Distinct();
+
+
+                //    var processFlags3 = from r in incidOSMMUpdatesDT
+                //                        orderby r.process_flag
+                //                        group r by r.Field<string>("process_flag") into f
+                //                        where f.Count() > 1
+                //                        select new
+                //                        {
+                //                            code = f.Key.ToString()
+                //                        };
+
+
+                //    //var processFlags4 = incidOSMMUpdatesDT.Select(r => new { r.process_flag }).Distinct();
+
+
+                //    var processFlags5 = incidOSMMUpdatesDT.AsEnumerable().Select(r => r.Field<string>("process_flag").ToString()).ToList().Distinct();
+
+
+                //    var processFlags6 = (IEnumerable<string>)incidOSMMUpdatesDT.process_flagColumn.ToString().Distinct();
+                //    //var processFlags6 = (IEnumerable<string>)HluDataset.incid_osmm_updates.process_flagColumn.ToString().Distinct();
+
+
+                //    _osmmProcessFlags = (IEnumerable<string>)processFlags;
+                //    _osmmProcessFlags = (IEnumerable<string>)processFlags2;
+                //    _osmmProcessFlags = (IEnumerable<string>)processFlags3;
+                //    //_osmmProcessFlags = (IEnumerable<string>)processFlags4;
+                //    _osmmProcessFlags = (IEnumerable<string>)processFlags5;
+                //    _osmmProcessFlags = processFlags6;
+
+
+                //}
+                //return _osmmProcessFlags;
+            }
+            set { }
+        }
+
+        public string IncidOSMMBulkProcessFlag
+        {
+            get { return _osmmProcessFlag; }
+            set
+            {
+                _osmmProcessFlag = value;
+                // Count the incid_osmm_update rows for the selected flag
+                CountOSMMUpdates();
+            }
+        }
+
+        public HluDataSet.lut_osmm_updates_spatialRow[] IncidOSMMBulkSpatialFlags
+        {
+            get
+            {
+                if ((_osmmSpatialFlags == null) || (_osmmSpatialFlags.Length == 0))
+                {
+                    _osmmSpatialFlags = (from m in HluDataset.lut_osmm_updates_spatial
+                                         select m).OrderBy(m => m.sort_order).ThenBy(m => m.description).ToArray();
+                }
+
+                HluDataSet.lut_osmm_updates_spatialRow[] osmmSpatialFlags;
+                osmmSpatialFlags = AnyRowOSMMUpdatesSpatial(-3).Concat(_osmmSpatialFlags).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                return osmmSpatialFlags;
+            }
+            set { }
+        }
+
+        public string IncidOSMMBulkSpatialFlag
+        {
+            get { return _osmmSpatialFlag; }
+            set
+            {
+                _osmmSpatialFlag = value;
+                // Count the incid_osmm_update rows for the selected flag
+                CountOSMMUpdates();
+            }
+        }
+
+        public HluDataSet.lut_osmm_updates_changeRow[] IncidOSMMBulkChangeFlags
+        {
+            get
+            {
+                if ((_osmmChangeFlags == null) || (_osmmChangeFlags.Length == 0))
+                {
+                    _osmmChangeFlags = (from m in HluDataset.lut_osmm_updates_change
+                                         select m).OrderBy(m => m.sort_order).ThenBy(m => m.description).ToArray();
+                }
+
+                HluDataSet.lut_osmm_updates_changeRow[] osmmChangeFlags;
+                osmmChangeFlags = AnyRowOSMMUpdatesChange(-3).Concat(_osmmChangeFlags).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                return osmmChangeFlags;
+            }
+            set { }
+        }
+
+        public string IncidOSMMBulkChangeFlag
+        {
+            get { return _osmmChangeFlag; }
+            set
+            {
+                _osmmChangeFlag = value;
+                // Count the incid_osmm_update rows for the selected flag
+                CountOSMMUpdates();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the list of available show OSMM Update options from
+        /// the class.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public string[] IncidOSMMBulkStatuses
+        {
+            get
+            {
+                string[] osmmUpdateStatuses = new string[] { _codeAnyRow };
+                osmmUpdateStatuses = osmmUpdateStatuses.Concat(Settings.Default.OSMMUpdatesStatuses.Cast<string>()).ToArray();
+                
+                return osmmUpdateStatuses;
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred show OSMM Update option.
+        /// </summary>
+        /// <value>
+        /// The preferred show OSMM Update option.
+        /// </value>
+        public string IncidOSMMBulkStatus
+        {
+            get { return _osmmUpdatesStatus; }
+            set
+            {
+                _osmmUpdatesStatus = value;
+                // Count the incid_osmm_update rows for the selected status
+                CountOSMMUpdates();
+            }
+        }
+
+        private HluDataSet.lut_osmm_updates_processRow[] AnyRowOSMMUpdatesProcess(int sortOrder)
+        {
+            HluDataSet.lut_osmm_updates_processRow anyRow = _hluDS.lut_osmm_updates_process.Newlut_osmm_updates_processRow();
+            anyRow.code = _codeAnyRow;
+            anyRow.sort_order = sortOrder;
+            anyRow.description = String.Empty;
+            return new HluDataSet.lut_osmm_updates_processRow[] { anyRow };
+        }
+
+        private HluDataSet.lut_osmm_updates_spatialRow[] AnyRowOSMMUpdatesSpatial(int sortOrder)
+        {
+            HluDataSet.lut_osmm_updates_spatialRow anyRow = _hluDS.lut_osmm_updates_spatial.Newlut_osmm_updates_spatialRow();
+            anyRow.code = _codeAnyRow;
+            anyRow.sort_order = sortOrder;
+            anyRow.description = String.Empty;
+            return new HluDataSet.lut_osmm_updates_spatialRow[] { anyRow };
+        }
+
+        private HluDataSet.lut_osmm_updates_changeRow[] AnyRowOSMMUpdatesChange(int sortOrder)
+        {
+            HluDataSet.lut_osmm_updates_changeRow anyRow = _hluDS.lut_osmm_updates_change.Newlut_osmm_updates_changeRow();
+            anyRow.code = _codeAnyRow;
+            anyRow.sort_order = sortOrder;
+            anyRow.description = String.Empty;
+            return new HluDataSet.lut_osmm_updates_changeRow[] { anyRow };
+        }
+
+        public string IncidOSMMBulkRejectedCount
+        {
+            get { return _OSMMUpdatesCountRejected.ToString(); }
+        }
+
+        public string IncidOSMMBulkPendingCount
+        {
+            get { return _OSMMUpdatesCountPending.ToString(); }
+        }
+
+        public string IncidOSMMBulkProposedCount
+        {
+            get { return _OSMMUpdatesCountProposed.ToString(); }
+        }
+
+        public string IncidOSMMBulkAppliedCount
+        {
+            get { return _OSMMUpdatesCountApplied.ToString(); }
+        }
+
+        /// <summary>
+        /// Count the number of OSMM Updates in the database for the selected flags.
+        /// </summary>
+        public void CountOSMMUpdates()
+        {
+            _OSMMUpdatesCountRejected = -1;
+            _OSMMUpdatesCountPending = -1;
+            _OSMMUpdatesCountApplied = -1;
+            _OSMMUpdatesCountProposed = -1;
+
+            StringBuilder whereClause = new StringBuilder();
+
+            if (!String.IsNullOrEmpty(_osmmProcessFlag) && _osmmProcessFlag != _codeAnyRow)
+            {
+                whereClause.Append(String.Format(" AND {0} = {1}",
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.process_flagColumn.ColumnName), _osmmProcessFlag));
+            }
+
+            if (!String.IsNullOrEmpty(_osmmSpatialFlag) && _osmmSpatialFlag != _codeAnyRow)
+            {
+                whereClause.Append(String.Format(" AND {0} = {1}",
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.spatial_flagColumn.ColumnName), _db.QuoteValue(_osmmSpatialFlag)));
+            }
+
+            if (!String.IsNullOrEmpty(_osmmChangeFlag) && _osmmChangeFlag != _codeAnyRow)
+            {
+                whereClause.Append(String.Format(" AND {0} = {1}",
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.change_flagColumn.ColumnName), _db.QuoteValue(_osmmChangeFlag)));
+            }
+
+            if (!String.IsNullOrEmpty(_osmmUpdatesStatus) && _osmmUpdatesStatus != _codeAnyRow)
+            {
+                switch (_osmmUpdatesStatus)
+                {
+                    case "Rejected":
+                        whereClause.Append(String.Format(" AND {0} = {1}",
+                        _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName), -99));
+                        break;
+                    case "Pending":
+                        whereClause.Append(String.Format(" AND {0} = {1}",
+                        _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName), -1));
+                        break;
+                    case "Proposed":
+                        whereClause.Append(String.Format(" AND {0} > {1}",
+                        _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName), 0));
+                        break;
+                }
+            }
+
+            // Count the total number of rejected OSMM updates in the database for
+            // the selected flags.
+            _OSMMUpdatesCountRejected = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM {0} WHERE {1} = {2}{3}",
+                _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName),
+                -99,
+                whereClause),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+
+            // Count the total number of pending OSMM updates in the database for
+            // the selected flags.
+            _OSMMUpdatesCountPending = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM {0} WHERE {1} = {2}{3}",
+                _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName),
+                -1,
+                whereClause),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+
+            // Count the total number of proposed OSMM updates in the database for
+            // the selected flags.
+            _OSMMUpdatesCountApplied = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM {0} WHERE {1} = {2}{3}",
+                _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName),
+                0,
+                whereClause),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+
+            // Count the total number of applied OSMM updates in the database for
+            // the selected flags.
+            _OSMMUpdatesCountProposed = (int)_db.ExecuteScalar(String.Format(
+                "SELECT COUNT(*) FROM {0} WHERE {1} > {2}{3}",
+                _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName),
+                _db.QuoteIdentifier(_hluDS.incid_osmm_updates.status_flagColumn.ColumnName),
+                0,
+                whereClause),
+                _db.Connection.ConnectionTimeout, CommandType.Text);
+
+            OnPropertyChanged("IncidOSMMBulkRejectedCount");
+            OnPropertyChanged("IncidOSMMBulkPendingCount");
+            OnPropertyChanged("IncidOSMMBulkProposedCount");
+            OnPropertyChanged("IncidOSMMBulkAppliedCount");
+
         }
 
         #endregion
@@ -2608,7 +3318,7 @@ namespace HLU.UI.ViewModel
             viewModelExport.InitiateExport();
         }
 
-        public bool CanExport { get { return _bulkUpdateMode == false && _hluDS != null && HaveGisApp; } }
+        public bool CanExport { get { return _bulkUpdateMode == false && _osmmUpdateMode == false && _hluDS != null && HaveGisApp; } }
 
         #endregion
 
@@ -2648,7 +3358,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanFilterByAttributes
         {
-            get { return _bulkUpdateMode == false && IncidCurrentRow != null; }
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && IncidCurrentRow != null; }
         }
 
         private void OpenQueryBuilder()
@@ -3099,7 +3809,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanFilterByIncid
         {
-            get { return _bulkUpdateMode == false && IncidCurrentRow != null; }
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && IncidCurrentRow != null; }
         }
 
         private void OpenQueryIncid()
@@ -3284,7 +3994,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanSelectOnMap
         {
-            get { return _bulkUpdateMode == false && HaveGisApp && IncidCurrentRow != null; }
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && IncidCurrentRow != null; }
         }
 
         /// <summary>
@@ -3472,7 +4182,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanReadMapSelection
         {
-            get { return _bulkUpdateMode == false && HaveGisApp; }
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp; }
         }
 
         internal void ReadMapSelection(bool showMessage)
@@ -3593,7 +4303,7 @@ namespace HLU.UI.ViewModel
 
         private bool CanSelectByIncid
         {
-            get { return _bulkUpdateMode == false && HaveGisApp && _gisSelection != null && _incidsSelectedMapCount == 1; }
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && _gisSelection != null && _incidsSelectedMapCount == 1; }
         }
 
         /// <summary>
@@ -3838,9 +4548,10 @@ namespace HLU.UI.ViewModel
                     ChangeCursor(Cursors.Arrow, null);
                     //---------------------------------------------------------------------
 
-                    OnPropertyChanged("IsFiltered");
-                    OnPropertyChanged("CanBulkUpdate");
-                    OnPropertyChanged("CanZoomSelection");
+                    //OnPropertyChanged("IsFiltered");            // Needed as called in RefreshStatus()?
+                    //OnPropertyChanged("CanBulkUpdate");         // Needed as called in RefreshStatus()?
+                    //OnPropertyChanged("CanOSMMUpdate");         // Needed as called in RefreshStatus()?
+                    //OnPropertyChanged("CanZoomSelection");      // Needed as called in RefreshStatus()?
                     RefreshStatus();
                 }
                 //---------------------------------------------------------------------
@@ -4187,23 +4898,29 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the total number of map layers
-                int mapLayersCount = _gisApp.ListHluLayers();
-
-                // Get the total number of map windows
-                int mapWindowsCount = _gisApp.MapWindowsCount;
-
-                // If the number of map windows has changed
-                if (mapWindowsCount != _mapWindowsCount)
+                if (_bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp)
                 {
-                    _mapWindowsCount = mapWindowsCount;
+                    // Get the total number of map layers
+                    int mapLayersCount = _gisApp.ListHluLayers();
 
-                    // Refresh the window title
-                    OnPropertyChanged("WindowTitle");
+                    // Get the total number of map windows
+                    int mapWindowsCount = _gisApp.MapWindowsCount;
+
+                    // If the number of map windows has changed
+                    if (mapWindowsCount != _mapWindowsCount)
+                    {
+                        _mapWindowsCount = mapWindowsCount;
+
+                        // Refresh the window title
+                        OnPropertyChanged("WindowTitle");
+                    }
+
+                    // Return true if there is more than one map layer
+                    return mapLayersCount > 1;
                 }
+                else
+                    return false;
 
-                // Return true if there is more than one map layer
-                return mapLayersCount > 1;
             }
         }
         //---------------------------------------------------------------------
@@ -4217,7 +4934,7 @@ namespace HLU.UI.ViewModel
             if ((switchGISLayer) && (selectedHLULayer != _gisApp.CurrentHluLayer))
             {
                 // Check if there are unsaved edits
-                if (EditMode && (_bulkUpdateMode == false) && IsDirty)
+                if (EditMode && (_bulkUpdateMode == false && _osmmUpdateMode == false) && IsDirty)
                 {
                     // Inform the user to save the unsaved edits first.
                     MessageBox.Show("The current record has been changed." +
@@ -4379,6 +5096,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Counts the rows in the Incid table.
+        /// </summary>
+        /// <param name="recount">if set to <c>true</c> [recount].</param>
+        /// <returns></returns>
         public int IncidRowCount(bool recount)
         {
             if (recount || (_incidRowCount <= 0))
@@ -4407,13 +5129,16 @@ namespace HLU.UI.ViewModel
                     // in the status area in addition to the currently select toid and
                     // fragment counts.
                     //
-                    //return String.Format("of {0} (filtered){1}{2}", _incidSelection.Rows.Count,
-                    //    String.Format(" [T:{0}]", numToids.ToString()), String.Format(" [F:{0}]", numFrags.ToString()));
-                    return String.Format("of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
-                        _toidsIncidGisCount.ToString(),
-                        _fragsIncidGisCount.ToString(),
-                        _toidsIncidDbCount.ToString(),
-                        _fragsIncidDbCount.ToString());
+                    if (_osmmUpdateMode == true)
+                        return String.Format("of {0} (filtered) [{1}:{2}]", _incidSelection.Rows.Count,
+                            _toidsIncidDbCount.ToString(),
+                            _fragsIncidDbCount.ToString());
+                    else
+                        return String.Format("of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
+                            _toidsIncidGisCount.ToString(),
+                            _fragsIncidGisCount.ToString(),
+                            _toidsIncidDbCount.ToString(),
+                            _fragsIncidDbCount.ToString());
                     //---------------------------------------------------------------------
                 }
                 else if ((_bulkUpdateMode == true) && (_incidSelection != null) && (_incidSelection.Rows.Count > 0))
@@ -4431,11 +5156,16 @@ namespace HLU.UI.ViewModel
                     // in the status area, and the currently select toid and fragment
                     // counts, when auto selecting features on change of incid.
                     //
-                    return String.Format("of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
-                        _toidsIncidGisCount.ToString(),
-                        _fragsIncidGisCount.ToString(),
-                        _toidsIncidDbCount.ToString(),
-                        _fragsIncidDbCount.ToString());
+                    if (_osmmUpdateMode == true)
+                        return String.Format("of {0} (filtered) [{1}:{2}]", _incidRowCount,
+                            _toidsIncidDbCount.ToString(),
+                            _fragsIncidDbCount.ToString());
+                    else
+                        return String.Format("of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
+                            _toidsIncidGisCount.ToString(),
+                            _fragsIncidGisCount.ToString(),
+                            _toidsIncidDbCount.ToString(),
+                            _fragsIncidDbCount.ToString());
                     //---------------------------------------------------------------------
                 }
             }
@@ -4651,7 +5381,7 @@ namespace HLU.UI.ViewModel
                     _incidOSMMUpdatesProcessFlag = _incidOSMMUpdatesRows[0].process_flag;
                     _incidOSMMUpdatesSpatialFlag = _incidOSMMUpdatesRows[0].Isspatial_flagNull() ? null : _incidOSMMUpdatesRows[0].spatial_flag;
                     _incidOSMMUpdatesChangeFlag = _incidOSMMUpdatesRows[0].Ischange_flagNull() ? null : _incidOSMMUpdatesRows[0].change_flag;
-                    _incidOSMMUpdatesUpdateFlag = _incidOSMMUpdatesRows[0].update_flag;
+                    _incidOSMMUpdatesStatusFlag = _incidOSMMUpdatesRows[0].status_flag;
                 }
                 else
                 {
@@ -4659,7 +5389,7 @@ namespace HLU.UI.ViewModel
                     _incidOSMMUpdatesProcessFlag = 0;
                     _incidOSMMUpdatesSpatialFlag = null;
                     _incidOSMMUpdatesChangeFlag = null;
-                    _incidOSMMUpdatesUpdateFlag = 0;
+                    _incidOSMMUpdatesStatusFlag = 0;
                 }
                 //---------------------------------------------------------------------
 
@@ -4696,6 +5426,7 @@ namespace HLU.UI.ViewModel
                 CountToidFrags();
 
                 OnPropertyChanged("IncidCurrentRowIndex");
+                OnPropertyChanged("OSMMIncidCurrentRowIndex");
                 OnPropertyChanged("IncidCurrentRow");
                 IhsMultiplexCodes(_incidIhsHabitat);
                 RefreshStatus();
@@ -5445,6 +6176,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("CanCopy");
             OnPropertyChanged("CanPaste");
             RefreshBulkUpdateControls();
+            RefreshOSMMUpdateControls();
             RefreshStatus();
             RefreshHeader();
             RefreshOSMMUpdate();
@@ -5470,15 +6202,30 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("BapHabitatsUserEnabled");
         }
 
+        private void RefreshOSMMUpdateControls()
+        {
+            OnPropertyChanged("ShowInOSMMUpdateMode");
+            OnPropertyChanged("HideInOSMMUpdateMode");
+            OnPropertyChanged("OSMMUpdateCommandHeader");
+            OnPropertyChanged("TopControlsGroupHeader");
+            OnPropertyChanged("ShowReasonProcessGroup");
+            OnPropertyChanged("IncidOSMMBulkRejectedCount");
+            OnPropertyChanged("IncidOSMMBulkPendingCount");
+            OnPropertyChanged("IncidOSMMBulkProposedCount");
+            OnPropertyChanged("IncidOSMMBulkAppliedCount");
+        }
+
         private void RefreshStatus()
         {
             OnPropertyChanged("EditMode");
             OnPropertyChanged("IncidCurrentRowIndex");
+            OnPropertyChanged("OSMMIncidCurrentRowIndex");
             OnPropertyChanged("StatusIncid");
             OnPropertyChanged("StatusIncidToolTip");
             OnPropertyChanged("StatusTop");
             OnPropertyChanged("CanZoomSelection");
             OnPropertyChanged("CanBulkUpdate");
+            OnPropertyChanged("CanOSMMUpdate");
             OnPropertyChanged("IsFiltered");
         }
 
@@ -5509,6 +6256,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshIhsTab()
         {
+            OnPropertyChanged("TabIhsControlsEnabled");
             OnPropertyChanged("HabitatClassCodes");
             OnPropertyChanged("HabitatTypeCodes");
             OnPropertyChanged("HabitatClass");
@@ -5558,6 +6306,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshDetailsTab()
         {
+            OnPropertyChanged("TabDetailsControlsEnabled");
             OnPropertyChanged("IncidBapHabitatsAuto");
             OnPropertyChanged("IncidBapHabitatsUser");
             OnPropertyChanged("BapHabitatsUserEnabled");
@@ -5573,6 +6322,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshSources()
         {
+            OnPropertyChanged("TabSourcesControlsEnabled");
             RefreshSource1();
             RefreshSource2();
             RefreshSource3();
@@ -5673,7 +6423,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if ((_bulkUpdateMode == false) && IncidCurrentRow == null) _reasonProcessEnabled = false;
+                if ((_bulkUpdateMode == false && _osmmUpdateMode == false) && IncidCurrentRow == null) _reasonProcessEnabled = false;
                 return _reasonProcessEnabled;
             }
             set { _reasonProcessEnabled = value; }
@@ -5711,6 +6461,24 @@ namespace HLU.UI.ViewModel
         {
             get { return _tabItemHistoryEnabled; }
             set { _tabItemHistoryEnabled = value; }
+        }
+
+        public bool TabIhsControlsEnabled
+        {
+            get { return _tabIhsControlsEnabled; }
+            set { _tabIhsControlsEnabled = value; }
+        }
+
+        public bool TabDetailsControlsEnabled
+        {
+            get { return _tabDetailsControlsEnabled; }
+            set { _tabDetailsControlsEnabled = value; }
+        }
+
+        public bool TabSourcesControlsEnabled
+        {
+            get { return _tabSourcesControlsEnabled; }
+            set { _tabSourcesControlsEnabled = value; }
         }
 
         #endregion
@@ -5873,10 +6641,13 @@ namespace HLU.UI.ViewModel
             {
                 if (!_showingOSMMUpdatesGroup.HasValue) _showingOSMMUpdatesGroup = false;
 
-                // Show the group if "Always" required, or "When Outstanding"
-                // i.e. update flag is "Proposed" (> 0) or "Pending" = -1
-                if ((_showOSMMUpdates == "Always") ||
-                    (_showOSMMUpdates == "When Outstanding" && (IncidOSMMUpdateFlag > 0 || IncidOSMMUpdateFlag == -1)))
+                // Show the group if not in osmm update mode and
+                // show updates are "Always" required, or "When Outstanding"
+                // (i.e. update flag is "Proposed" (> 0) or "Pending" = -1)
+                if ((_osmmUpdateMode == true) ||
+                    (_bulkUpdateMode == false &&
+                    (_showOSMMUpdates == "Always" ||
+                    (_showOSMMUpdates == "When Outstanding" && (IncidOSMMStatusFlag > 0 || IncidOSMMStatusFlag == -1)))))
                 {
                     if (!(bool)_showingOSMMUpdatesGroup)
                     {
@@ -5992,19 +6763,19 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets the OSMM update flag that relates to the selected incid.
+        /// Gets the OSMM status flag that relates to the selected incid.
         /// It contains the update status of the latest OSMM translation.
         /// </summary>
         /// <value>
-        /// The integer value of Update Flag related to the current incid.
+        /// The integer value of Status Flag related to the current incid.
         /// </value>
-        public Nullable<int> IncidOSMMUpdateFlag
+        public Nullable<int> IncidOSMMStatusFlag
         {
             get
             {
                 if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.update_flagColumn))
-                    return _incidOSMMUpdatesRows[0].update_flag;
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.status_flagColumn))
+                    return _incidOSMMUpdatesRows[0].status_flag;
                 else
                     return null;
             }
@@ -6024,14 +6795,14 @@ namespace HLU.UI.ViewModel
             get
             {
                 if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.update_flagColumn))
+                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.status_flagColumn))
                 {
                     // Values greater than zero indicate proposed changes
-                    if (_incidOSMMUpdatesRows[0].update_flag > 0)
+                    if (_incidOSMMUpdatesRows[0].status_flag > 0)
                         return "Proposed";
                     else
                     {
-                        switch (_incidOSMMUpdatesRows[0].update_flag)
+                        switch (_incidOSMMUpdatesRows[0].status_flag)
                         {
                             case 0:
                                 return "Applied";
@@ -6077,15 +6848,16 @@ namespace HLU.UI.ViewModel
         // FIX: 057 Adjust window height correctly for optional areas.
         // 
         /// <summary>
-        /// Only show the Reason and Process group if the data is editable, otherwise collapse it.
+        /// Only show the Reason and Process group if the data is editable
+        /// and not in OSMM edit mode, otherwise collapse it.
         /// </summary>
         public Visibility ShowReasonProcessGroup
         {
             get
             {
-                if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
+                if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = (_editMode && _osmmUpdateMode == false);
 
-                if (_editMode == true)
+                if (_editMode == true && _osmmUpdateMode == false)
                 {
                     if (!(bool)_showingReasonProcessGroup)
                     {
@@ -6366,8 +7138,8 @@ namespace HLU.UI.ViewModel
                 {
                     if (!(bool)_showingNVCCodesText)
                     {
-                        AdjustWindowHeight(26);
-                        OnPropertyChanged("WindowHeight");
+                        //AdjustWindowHeight(26);
+                        //OnPropertyChanged("WindowHeight");
                     }
 
                     _showingNVCCodesText = true;
@@ -6377,8 +7149,8 @@ namespace HLU.UI.ViewModel
                 {
                     if ((bool)_showingNVCCodesText)
                     {
-                        AdjustWindowHeight(-26);
-                        OnPropertyChanged("WindowHeight");
+                        //AdjustWindowHeight(-26);
+                        //OnPropertyChanged("WindowHeight");
                     }
 
                     _showingNVCCodesText = false;
@@ -10920,8 +11692,11 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) || 
-                    (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
+                //---------------------------------------------------------------------
+                // FIX: 081 Show process and reason errors in bulk update mode.
+                //
+                if ((_incidCurrentRow == null) || (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
+                //---------------------------------------------------------------------
 
                 StringBuilder error = new StringBuilder();
 
@@ -10930,6 +11705,9 @@ namespace HLU.UI.ViewModel
 
                 if (String.IsNullOrEmpty(Process))
                     error.Append(Environment.NewLine).Append("Process is mandatory for the history trail of every INCID");
+
+                if (_bulkUpdateMode == true) return null;
+                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
@@ -11075,15 +11853,13 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) || 
-                    (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
+                //---------------------------------------------------------------------
+                // FIX: 081 Show process and reason errors in bulk update mode.
+                //
+                if ((_incidCurrentRow == null) || (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
 
                 string error = null;
 
-                //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
-                // Check the individual field errors to see if their parent tab label
-                // should be flagged as also in error.
                 switch (columnName)
                 {
                     case "Reason":
@@ -11094,15 +11870,46 @@ namespace HLU.UI.ViewModel
                         if (String.IsNullOrEmpty(Process))
                             error = "Error: Process is mandatory for the history trail of every INCID";
                         break;
-                    case "Incid":
-                        break;
-                    //---------------------------------------------------------------------
-                    // FIX: 080 Functionality to display warning level messages.
-                    //    
+
+                }
+
+                if (_bulkUpdateMode == true) return null;
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 080 Functionality to display warning level messages.
+                //    
+                switch (columnName)
+                {
                     case "IncidOSMMUpdateStatus":
                         if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
                             error = "Warning: OSMM Update is outstanding";
                         OnPropertyChanged("IhsTabLabel");
+                        break;
+                    case "IncidOSMMBulkProcess":
+                        if (String.IsNullOrEmpty(IncidOSMMBulkProcessFlag))
+                            error = "Error: An OSMM Updates process flag must be selected";
+                        break;
+                    case "IncidOSMMBulkSpatial":
+                        if (String.IsNullOrEmpty(IncidOSMMBulkSpatialFlag))
+                            error = "Error: An OSMM Updates spatial flag must be selected";
+                        break;
+                    case "IncidOSMMBulkChange":
+                        if (String.IsNullOrEmpty(IncidOSMMBulkChangeFlag))
+                            error = "Error: An OSMM Updates change flag must be selected";
+                        break;
+                }
+
+                if (_osmmUpdateMode == true) return null;
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 020 Show field errors on tab labels.
+                // Check the individual field errors to see if their parent tab label
+                // should be flagged as also in error.
+                switch (columnName)
+                {
+                    case "Incid":
                         break;
                     case "IhsTabLabel":
                         if (_ihsWarnings != null && _ihsWarnings.Count > 0)

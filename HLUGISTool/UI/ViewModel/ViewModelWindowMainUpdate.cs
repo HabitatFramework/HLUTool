@@ -82,10 +82,10 @@ namespace HLU.UI.ViewModel
                 // 
                 if ((_viewModelMain.IncidOSMMUpdatesRows.Length > 0) &&
                    (_viewModelMain.ResetUpdatesFlag) &&
-                   (_viewModelMain.IncidOSMMUpdatesRows[0].update_flag > 0))
+                   (_viewModelMain.IncidOSMMUpdatesRows[0].status_flag > 0))
                 {
                     // Set the update flag to "Ignored"
-                    _viewModelMain.IncidOSMMUpdatesRows[0].update_flag = -2;
+                    _viewModelMain.IncidOSMMUpdatesRows[0].status_flag = -2;
                     _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_date = nowDtTm;
                     _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
                 }
