@@ -513,19 +513,19 @@
 
                         </Grid>
 
-                        <Grid x:Name="GridResetUpdateFlag" Grid.Row="5">
+                        <Grid x:Name="GridResetStatusFlag" Grid.Row="5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="25" />
                             </Grid.ColumnDefinitions>
 
-                            <Label x:Name="LabelResetUpdateFlag"
+                            <Label x:Name="LabelResetStatusFlag"
                                    Grid.Row="0"
                                    Grid.Column="0"
                                    Margin="4,4,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Reset OSMM Update Flag On Update?"/>
-                            <CheckBox x:Name="CheckBoxResetUpdateFlag"
+                            <CheckBox x:Name="CheckBoxResetStatusFlag"
                                       Grid.Row="0"
                                       Grid.Column="1"
                                       Margin="4,8,4,8"

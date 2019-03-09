@@ -975,5 +975,32 @@ namespace HLU.Properties {
                 this["AppKeepOnTop"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Rejected</string>
+  <string>Pending</string>
+  <string>Proposed</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection OSMMUpdatesStatuses {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["OSMMUpdatesStatuses"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<all>")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string CodeAnyRow {
+            get {
+                return ((string)(this["CodeAnyRow"]));
+            }
+            set {
+                this["CodeAnyRow"] = value;
+            }
+        }
     }
 }

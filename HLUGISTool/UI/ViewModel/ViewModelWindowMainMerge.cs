@@ -245,7 +245,7 @@ namespace HLU.UI.ViewModel
                             DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
                             //---------------------------------------------------------------------
                             // Set the update flag to "Ignored"
-                            r.update_flag = -2;
+                            r.status_flag = -2;
                             _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_date = nowDtTm;
                             _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
                         }
