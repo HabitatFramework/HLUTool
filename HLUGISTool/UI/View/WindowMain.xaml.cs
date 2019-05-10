@@ -66,7 +66,7 @@ namespace HLU
             CheckMenuItem(_lastStyle, true);
 
             //---------------------------------------------------------------------
-            // FIX: 079 Save option to always keep app window on top.
+            // FIX: 074 Save option to always keep app window on top.
             //
             // Get the app keep on top option default value.
             _keepOnTop = Settings.Default.AppKeepOnTop;
@@ -132,14 +132,14 @@ namespace HLU
                     // relevant property changed event.
                     if (this.TextBoxRecordNumber.IsFocused)
                     {
-                        this.ComboBoxProcess.Focus();
+                        this.TextBoxIncid.Focus();
                         this.TextBoxRecordNumber.Focus();
                     }
-                    if (this.TextBoxOSMMRecordNumber.IsFocused)
-                    {
-                        this.TextBoxIncid.Focus();
-                        this.TextBoxOSMMRecordNumber.Focus();
-                    }
+                    //if (this.TextBoxOSMMRecordNumber.IsFocused)
+                    //{
+                    //    this.TextBoxIncid.Focus();
+                    //    this.TextBoxOSMMRecordNumber.Focus();
+                    //}
                     break;
                 case Key.Home:
                     if ((focusedControl != null) && (focusedControl is TextBox)) return;

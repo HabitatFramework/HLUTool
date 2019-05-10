@@ -39,7 +39,7 @@ using HLU.UI.UserControls;
 
 namespace HLU.UI.ViewModel
 {
-    class ViewModelWindowSelectQuery : ViewModelBase, IDataErrorInfo
+    class ViewModelWindowQueryAdvanced : ViewModelBase, IDataErrorInfo
     {
         public static HluDataSet HluDatasetStatic = null;
 
@@ -90,7 +90,7 @@ namespace HLU.UI.ViewModel
 
         #region Constructor
 
-        public ViewModelWindowSelectQuery(HluDataSet hluDataset, DbBase hluDatabase)
+        public ViewModelWindowQueryAdvanced(HluDataSet hluDataset, DbBase hluDatabase)
         {
             HluDatasetStatic = hluDataset;
             _db = hluDatabase;
@@ -387,11 +387,11 @@ namespace HLU.UI.ViewModel
 
                     // Get a list of all the possible query tables.
                     List<DataTable> tables = new List<DataTable>();
-                    if ((ViewModelWindowSelectQuery.HluDatasetStatic != null))
+                    if ((ViewModelWindowQueryAdvanced.HluDatasetStatic != null))
                     {
-                        tables = ViewModelWindowSelectQuery.HluDatasetStatic.incid.ChildRelations
+                        tables = ViewModelWindowQueryAdvanced.HluDatasetStatic.incid.ChildRelations
                             .Cast<DataRelation>().Select(r => r.ChildTable).ToList();
-                        tables.Add(ViewModelWindowSelectQuery.HluDatasetStatic.incid);
+                        tables.Add(ViewModelWindowQueryAdvanced.HluDatasetStatic.incid);
                     }
 
                     // Split the string of query table names created by the
@@ -438,12 +438,14 @@ namespace HLU.UI.ViewModel
                         }
                     }
                     else
+                    {
                         // Reset the cursor back to normal.
                         ChangeCursor(Cursors.Arrow);
 
                         // Warn the user that the no valid tables were found.
                         MessageBox.Show(App.GetActiveWindow(), "No valid tables were found.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -918,12 +920,16 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void AddTableCommandClick(object param)
         {
-            if (string.IsNullOrEmpty(SqlFromTables) || SqlFromTables.TrimEnd(' ').EndsWith(","))
-                SqlFromTables += Table.TableName;
-            else
-                SqlFromTables += String.Concat(", ", Table.TableName);
+            // Only add the table if it's not already in the list
+            if (SqlFromTables == null || SqlFromTables.Split(',').Contains(Table.TableName) == false)
+            {
+                if (string.IsNullOrEmpty(SqlFromTables) || SqlFromTables.TrimEnd(' ').EndsWith(","))
+                    SqlFromTables += Table.TableName;
+                else
+                    SqlFromTables += String.Concat(", ", Table.TableName);
 
-            OnPropertyChanged("SqlFromTables");
+                OnPropertyChanged("SqlFromTables");
+            }
         }
 
         /// <summary>

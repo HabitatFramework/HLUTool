@@ -69,7 +69,7 @@ namespace HLU.UI.ViewModel
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
-        private bool _resetUpdatesFlag = Settings.Default.ResetUpdatesFlag;
+        private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
 
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
@@ -112,7 +112,7 @@ namespace HLU.UI.ViewModel
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
 
             //---------------------------------------------------------------------
-            // FIX: 072 Add show OSMM update attributes to options.
+            // CHANGED: CR49 Process proposed OSMM Updates
             // A new option to enable the user to determine whether to show
             // the OSMM update attributes for the current incid.
             _showOSMMUpdatesOptions = Settings.Default.ShowOSMMUpdatesOptions.Cast<string>().ToList();
@@ -162,8 +162,6 @@ namespace HLU.UI.ViewModel
         public event RequestCloseEventHandler RequestClose;
 
         #endregion
-
-        public delegate void Test();
 
         #region Save Command
 
@@ -215,7 +213,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
-            Settings.Default.ResetUpdatesFlag = _resetUpdatesFlag;
+            Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
 
             // SQL Query options
             Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
@@ -510,7 +508,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 072 Add show OSMM update attributes to options.
+        // CHANGED: CR49 Process proposed OSMM Updates
         // A new option to enable the user to determine whether to show
         // the OSMM update attributes for the current incid.
         // 
@@ -547,7 +545,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 073 Add reset OSMM update process flag to options.
+        // CHANGED: CR49 Process proposed OSMM Updates
         // A new option to enable the user to determine whether to reset
         // the OSMM update process flag when manually updating the current
         // incid.
@@ -560,10 +558,10 @@ namespace HLU.UI.ViewModel
         /// The preferred option to reset the OSMM Update process flag
         /// when applying manual updates.
         /// </value>
-        public bool ResetUpdatesFlag
+        public bool ResetOSMMUpdatesStatus
         {
-            get { return _resetUpdatesFlag; }
-            set { _resetUpdatesFlag = value; }
+            get { return _resetOSMMUpdatesStatus; }
+            set { _resetOSMMUpdatesStatus = value; }
         }
         //---------------------------------------------------------------------
 
@@ -986,7 +984,7 @@ namespace HLU.UI.ViewModel
                     error.Append("Please select your preferred habitat class.");
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
-                // FIX: 072 Add show OSMM update attributes to options.
+                // CHANGED: CR49 Process proposed OSMM Updates
                 // A new option to enable the user to determine whether to show
                 // the OSMM update attributes for the current incid.
                 if (ShowOSMMUpdatesOption == null)
@@ -1104,7 +1102,7 @@ namespace HLU.UI.ViewModel
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
-                    // FIX: 072 Add show OSMM update attributes to options.
+                    // CHANGED: CR49 Process proposed OSMM Updates
                     // A new option to enable the user to determine whether to show
                     // the OSMM update attributes for the current incid.
                     case "ShowOSMMUpdatesOption":

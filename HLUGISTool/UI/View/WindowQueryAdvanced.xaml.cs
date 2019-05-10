@@ -26,11 +26,11 @@ using System.Collections.Generic;
 namespace HLU.UI.View
 {
     /// <summary>
-    /// Interaction logic for WindowOptions.xaml
+    /// Interaction logic for WindowQueryAdvanced.xaml
     /// </summary>
-    public partial class WindowSelectQuery : Window
+    public partial class WindowQueryAdvanced : Window
     {
-        public WindowSelectQuery()
+        public WindowQueryAdvanced()
         {
             InitializeComponent();
         }

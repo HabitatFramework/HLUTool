@@ -1,7 +1,7 @@
 ﻿<Window x:Class="HLU.UI.View.WindowExport"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" ResizeMode="CanResize" SizeToContent="WidthAndHeight"
+    Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Height="194" MinWidth="320" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
 
     <Window.Resources>

@@ -33,13 +33,13 @@ using HLU.Properties;
 
 namespace HLU.UI.ViewModel
 {
+    //---------------------------------------------------------------------
+    // CHANGED: CR49 Process proposed OSMM Updates
+    // Functionality to process proposed OSMM Updates.
+    //    
     class ViewModelWindowMainOSMMUpdate
     {
         private ViewModelWindowMain _viewModelMain;
-        private HluDataSet.incid_ihs_matrixDataTable _ihsMatrixTable = new HluDataSet.incid_ihs_matrixDataTable();
-        private HluDataSet.incid_ihs_formationDataTable _ihsFormationTable = new HluDataSet.incid_ihs_formationDataTable();
-        private HluDataSet.incid_ihs_managementDataTable _ihsManagementTable = new HluDataSet.incid_ihs_managementDataTable();
-        private HluDataSet.incid_ihs_complexDataTable _ihsComplexTable = new HluDataSet.incid_ihs_complexDataTable();
 
         public ViewModelWindowMainOSMMUpdate(ViewModelWindowMain viewModelMain)
         {
@@ -55,10 +55,7 @@ namespace HLU.UI.ViewModel
 
             // Reset the incid and map selections and move
             // to the first incid in the database.
-            _viewModelMain.ClearFilter(true);
-
-            // Count the incid_osmm_update rows for the selected flag
-            _viewModelMain.CountOSMMUpdates();
+            _viewModelMain.ApplyOSMMUpdatesFilter(null, null, null, null);
 
             _viewModelMain.RefreshAll();
         }
@@ -72,7 +69,7 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                _viewModelMain.ChangeCursor(Cursors.Wait, "Saving ...");
+                _viewModelMain.ChangeCursor(Cursors.Wait, "Updating ...");
 
                 // Only update DateTime fields to whole seconds.
                 // Fractions of a second can cause rounding differences when
@@ -84,22 +81,23 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
 
                 // Determine the status flag as required
-                int newStatus_Flag = _viewModelMain.IncidOSMMUpdatesRows[0].status_flag;
+                int newStatus = _viewModelMain.IncidOSMMUpdatesRows[0].status;
                 switch (updateStatus)
                 {
                     case 1:     // Skip update
-                        newStatus_Flag = newStatus_Flag + 1;
+                        if (newStatus > 0)
+                            newStatus = newStatus + 1;
                         break;
-                    case -1:    // Accept update
-                        newStatus_Flag = -1;
+                    case 0:    // Accept update
+                        newStatus = 0;
                         break;
                     case -99:   // Reject update
-                        newStatus_Flag = -99;
+                        newStatus = -99;
                         break;
                 }
 
                 // Set the status flag
-                _viewModelMain.IncidOSMMUpdatesRows[0].status_flag = newStatus_Flag;
+                _viewModelMain.IncidOSMMUpdatesRows[0].status = newStatus;
 
                 // Update the incid_osmm_updates table
                 if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(
@@ -112,193 +110,112 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.HluDataset.AcceptChanges();
                 _viewModelMain.Saved = true;
 
+                // Move to the next Incid
+                _viewModelMain.IncidCurrentRowIndex += 1;
+
                 return true;
             }
             catch (Exception ex)
             {
                 _viewModelMain.DataBase.RollbackTransaction();
-                if (_viewModelMain.HaveGisApp)
-                {
-                    _viewModelMain.Saved = false;
-                    MessageBox.Show("Your changes could not be saved. The error message returned was:\n\n" +
-                        ex.Message, "HLU: Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                MessageBox.Show("OSMM Update failed. The error message returned was:\n\n" +
+                    ex.Message, "HLU: OSMM Update", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
             finally
             {
-                _viewModelMain.SavingAttempted = true;
-                _viewModelMain.Saving = false;
                 _viewModelMain.ChangeCursor(Cursors.Arrow, null);
             }
         }
 
-        private R[] FilterUpdateRows<T, R>(R[] rows)
-            where T : DataTable
-            where R : DataRow
-        {
-            if ((rows == null) || (rows.Length == 0)) return rows;
-
-            T table = (T)rows[0].Table;
-
-            var q = from rel in table.ParentRelations.Cast<DataRelation>()
-                    where rel.ParentTable.TableName.ToLower().StartsWith("lut_") &&
-                          rel.ParentColumns.Length == 1
-                    select rel;
-
-            var lookup = (from c in table.Columns.Cast<DataColumn>()
-                          let p = from rel in q
-                                  where rel.ChildColumns.Length == 1 && rel.ChildColumns[0].Ordinal == c.Ordinal
-                                  select rel.ParentColumns[0]
-                          select new
-                          {
-                              ChildColumnOrdinal = c.Ordinal,
-                              ParentColumnOrdinal = p.Count() != 0 ? p.ElementAt(0).Ordinal : -1,
-                              ParentTable = p.Count() != 0 ? p.ElementAt(0).Table.TableName : String.Empty
-                          }).ToArray();
-
-            List<R> newRows = new List<R>(rows.Length);
-
-            for (int i = 0; i < rows.Length; i++)
-            {
-                if (rows[i] == null) continue;
-                bool add = true;
-                for (int j = 0; j < table.Columns.Count; j++)
-                {
-                    if ((lookup[j].ParentColumnOrdinal != -1) && (_viewModelMain.HluDataset.Tables[lookup[j].ParentTable]
-                        .AsEnumerable().Count(r => r[lookup[j].ParentColumnOrdinal].Equals(rows[i][j])) == 0))
-                    {
-                        add = false;
-                        break;
-                    }
-                }
-                if (add) newRows.Add(rows[i]);
-            }
-
-            return newRows.ToArray();
-        }
-
-        private T CloneUpdateRows<T, R>(R[] rows, string incid)
-            where T : DataTable, new()
-            where R : DataRow
-        {
-            T newRows = new T();
-            int incidOrdinal = newRows.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
-
-            for (int i = 0; i < rows.Length; i++)
-            {
-                object[] itemArray = new object[rows[i].ItemArray.Length];
-                Array.Copy(rows[i].ItemArray, itemArray, itemArray.Length);
-                itemArray[incidOrdinal] = incid;
-                R rm = (R)newRows.NewRow();
-                rm.ItemArray = itemArray;
-                newRows.Rows.Add(rm);
-            }
-
-            return newRows;
-        }
-
         /// <summary>
-        /// Uses the bap_habitat code to identify existing records and distinguish them from new ones to be inserted.
-        /// Therefore, a bap_habitat must always be entered, even for existing records for which only other attributes
-        /// are meant to be updated. 
+        /// Writes changes made to all the remaining selected incid_osmm_updates
+        /// back to database.
         /// </summary>
-        /// <param name="currIncid"></param>
-        /// <param name="ihsHabitat"></param>
-        /// <param name="incidBapTable"></param>
-        /// <param name="ihsMatrixRows"></param>
-        /// <param name="ihsFormationRows"></param>
-        /// <param name="ihsManagementRows"></param>
-        /// <param name="ihsComplexRows"></param>
-        /// <param name="deleteExtraRows"></param>
-        private void BulkUpdateBap(string currIncid, string ihsHabitat,
-            HluDataSet.incid_bapDataTable incidBapTable,
-            HluDataSet.incid_ihs_matrixRow[] ihsMatrixRows,
-            HluDataSet.incid_ihs_formationRow[] ihsFormationRows,
-            HluDataSet.incid_ihs_managementRow[] ihsManagementRows,
-            HluDataSet.incid_ihs_complexRow[] ihsComplexRows,
-            bool deleteExtraRows)
+        internal void OSMMUpdateAll(int updateStatus)
         {
-            var mx = ihsMatrixRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.matrix);
-            string[] ihsMatrixVals = mx.Concat(new string[3 - mx.Count()]).ToArray();
-            var fo = ihsFormationRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.formation);
-            string[] ihsFormationVals = fo.Concat(new string[2 - fo.Count()]).ToArray();
-            var mg = ihsManagementRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.management);
-            string[] ihsManagementVals = mg.Concat(new string[2 - mg.Count()]).ToArray();
-            var cx = ihsComplexRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.complex);
-            string[] ihsComplexVals = cx.Concat(new string[2 - cx.Count()]).ToArray();
+            _viewModelMain.ChangeCursor(Cursors.Wait, "Updating all ...");
 
-            IEnumerable<string> primaryBap = _viewModelMain.PrimaryBapEnvironments(ihsHabitat, 
-                ihsMatrixVals[0], ihsMatrixVals[1], ihsMatrixVals[2], ihsFormationVals[0], ihsFormationVals[1],
-                ihsManagementVals[0], ihsManagementVals[1], ihsComplexVals[0], ihsComplexVals[1]);
+            _viewModelMain.DataBase.BeginTransaction(true, IsolationLevel.ReadCommitted);
 
-            int[] skipOrdinals = new int[3] { 
-                _viewModelMain.HluDataset.incid_bap.bap_idColumn.Ordinal, 
-                _viewModelMain.HluDataset.incid_bap.incidColumn.Ordinal, 
-                _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.Ordinal };
-
-            List<HluDataSet.incid_bapRow> updateRows = new List<HluDataSet.incid_bapRow>();
-            HluDataSet.incid_bapRow updateRow;
-
-            // BAP environments from UI
-            IEnumerable<BapEnvironment> beUI = from b in _viewModelMain.IncidBapRowsAuto.Concat(_viewModelMain.IncidBapRowsUser)
-                                               group b by b.bap_habitat into habs
-                                               select habs.First();
-
-            foreach (BapEnvironment be in beUI)
+            try
             {
-                // BAP environments from database
-                IEnumerable<HluDataSet.incid_bapRow> dbRows =
-                    incidBapTable.Where(r => r.bap_habitat == be.bap_habitat);
+                // Get the incid number
+                int currIncidNum = RecordIds.IncidNumber(_viewModelMain.IncidOSMMUpdatesRows[0].incid);
+                
+                // Apply the updates to the current incid and all following incids
+                BulkIncidOSMMUpdates(updateStatus, currIncidNum);
 
-                bool isSecondary = !primaryBap.Contains(be.bap_habitat);
-                if (isSecondary) be.MakeSecondary();
+                _viewModelMain.DataBase.CommitTransaction();
+                _viewModelMain.HluDataset.AcceptChanges();
 
-                switch (dbRows.Count())
+                MessageBox.Show("OSMM update succeeded.", "HLU: OSMM Update",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Move beyond the end of the Incids (to show they have
+                // all been processed)
+                _viewModelMain.IncidCurrentRowIndex = _viewModelMain.IncidSelection.Rows.Count + 1;
+            }
+            catch (Exception ex)
+            {
+                _viewModelMain.DataBase.RollbackTransaction();
+                MessageBox.Show("OSMM Update Failed. The error message returned was:\n\n" +
+                    ex.Message, "HLU: OSMM Update", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _viewModelMain.ChangeCursor(Cursors.Arrow, String.Empty);
+            }
+        }
+
+        private void BulkIncidOSMMUpdates(int updateStatus, int fromIncidNum)
+        {
+            // Get the incid column number
+            int incidOrdinal =
+                _viewModelMain.IncidSelection.Columns[_viewModelMain.DataBase.ColumnAlias(_viewModelMain.HluDataset.incid.incidColumn)].Ordinal;
+
+            // Get the column names
+            string incidColumn = _viewModelMain.HluDataset.incid_osmm_updates.incidColumn.ColumnName;
+            string statusColumn = _viewModelMain.HluDataset.incid_osmm_updates.statusColumn.ColumnName;
+            string last_modified_dateColumn = _viewModelMain.HluDataset.incid_osmm_updates.last_modified_dateColumn.ColumnName;
+            string last_modified_user_idColumn = _viewModelMain.HluDataset.incid_osmm_updates.last_modified_user_idColumn.ColumnName;
+
+            // Get the current date/time
+            // Only update DateTime fields to whole seconds.
+            // Fractions of a second can cause rounding differences when
+            // comparing DateTime fields later in some databases.
+            DateTime currDtTm = DateTime.Now;
+            DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+
+            // Get the current userid
+            string user_id = _viewModelMain.UserID;
+
+            // Loop through all rows in the selection
+            foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
+            {
+                // Get the incid of the current row
+                string currIncid = r[incidOrdinal].ToString();
+
+                // Get the incid number
+                int currIncidNum = RecordIds.IncidNumber(currIncid);
+
+                // Check the incid is to be updated
+                if (currIncidNum >= fromIncidNum)
                 {
-                    case 0: // insert newly added BAP environments
-                        HluDataSet.incid_bapRow newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
-                        newRow.ItemArray = be.ToItemArray(_viewModelMain.RecIDs.NextIncidBapId, currIncid);
-                        if (be.IsValid(false, isSecondary, newRow)) // reset bulk update mode for full validation of a new row
-                            _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Insert(newRow);
-                        break;
-                    case 1: // update existing row
-                        updateRow = dbRows.ElementAt(0);
-                        object[] itemArray = be.ToItemArray();
-                        for (int i = 0; i < itemArray.Length; i++)
-                        {
-                            if ((itemArray[i] != null) && (Array.IndexOf(skipOrdinals, i) == -1))
-                                updateRow[i] = itemArray[i];
-                        }
-                        updateRows.Add(updateRow);
-                        break;
-                    default: // impossible if rules properly enforced
-                        break;
+                    // Update the incid for the current row
+                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4}, {5} = {6} WHERE {7} = {8}",
+                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
+                        _viewModelMain.DataBase.QuoteIdentifier(statusColumn),
+                        updateStatus,
+                        _viewModelMain.DataBase.QuoteIdentifier(last_modified_dateColumn),
+                        _viewModelMain.DataBase.QuoteValue(nowDtTm),
+                        _viewModelMain.DataBase.QuoteIdentifier(last_modified_user_idColumn),
+                        _viewModelMain.DataBase.QuoteValue(user_id),
+                        _viewModelMain.DataBase.QuoteIdentifier(incidColumn),
+                        _viewModelMain.DataBase.QuoteValue(currIncid)),
+                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                        throw new Exception("Failed to update incid_osmm_updates table.");
                 }
-            }
-
-            incidBapTable.Where(r => !primaryBap.Contains(r.bap_habitat)).ToList().ForEach(delegate(HluDataSet.incid_bapRow r)
-            {
-                updateRows.Add(BapEnvironment.MakeSecondary(r));
-            });
-
-            if (updateRows.Count > 0)
-            {
-                if (_viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Update(updateRows.ToArray()) == -1)
-                    throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_bap.TableName));
-            }
-
-            // delete non-primary BAP environments from DB that are not in _viewModelMain.IncidBapRowsUser
-            if (deleteExtraRows)
-            {
-                var delRows = incidBapTable.Where(r => !primaryBap.Contains(r.bap_habitat) && 
-                    _viewModelMain.IncidBapRowsUser.Count(be => be.bap_habitat == r.bap_habitat) == 0);
-                foreach (HluDataSet.incid_bapRow r in delRows)
-                    _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Delete(r);
             }
         }
 
@@ -316,9 +233,11 @@ namespace HLU.UI.ViewModel
             _viewModelMain.TabIhsControlsEnabled = true;
             _viewModelMain.TabDetailsControlsEnabled = true;
             _viewModelMain.TabSourcesControlsEnabled = true;
+            _viewModelMain.TabItemHistoryEnabled = true;
 
             _viewModelMain.RefreshAll();
             _viewModelMain.ChangeCursor(Cursors.Arrow, String.Empty);
         }
     }
+    //---------------------------------------------------------------------
 }

@@ -23,7 +23,8 @@ using System.Windows.Data;
 namespace HLU.Converters
 {
     //---------------------------------------------------------------------
-    // FIX: 080 Functionality to display warning level messages.
+    // CHANGED: CR49 Process proposed OSMM Updates
+    // Functionality to display warning level messages.
     //    
     /// <summary>
     /// Converter to split leading text (before first colon)

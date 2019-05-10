@@ -50,65 +50,20 @@ namespace HLU.UI.ViewModel
         public void StartBulkUpdate()
         {
             _viewModelMain.BulkUpdateMode = true;
-            _viewModelMain.TabItemHistoryEnabled = false;
 
-            _viewModelMain.HabitatType = null;
-            _viewModelMain.IncidIhsHabitat = null;
-
-            _viewModelMain.IncidCurrentRow = _viewModelMain.HluDataset.incid.NewincidRow();
-
-            _viewModelMain.IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
-                .Select(r => _viewModelMain.HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
-            for (int i = 0; i < _viewModelMain.IncidIhsMatrixRows.Length; i++)
-            {
-                _viewModelMain.IncidIhsMatrixRows[i].matrix_id = i;
-                _viewModelMain.IncidIhsMatrixRows[i].incid = _viewModelMain.RecIDs.CurrentIncid;
-            }
-
-            _viewModelMain.IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
-                .Select(r => _viewModelMain.HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
-            for (int i = 0; i < _viewModelMain.IncidIhsFormationRows.Length; i++)
-            {
-                _viewModelMain.IncidIhsFormationRows[i].formation_id = i;
-                _viewModelMain.IncidIhsFormationRows[i].incid = _viewModelMain.RecIDs.CurrentIncid;
-            }
-
-            _viewModelMain.IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
-                .Select(r => _viewModelMain.HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
-            for (int i = 0; i < _viewModelMain.IncidIhsManagementRows.Length; i++)
-            {
-                _viewModelMain.IncidIhsManagementRows[i].management_id = i;
-                _viewModelMain.IncidIhsManagementRows[i].incid = _viewModelMain.RecIDs.CurrentIncid;
-            }
-
-            _viewModelMain.IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
-                .Select(r => _viewModelMain.HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
-            for (int i = 0; i < _viewModelMain.IncidIhsComplexRows.Length; i++)
-            {
-                _viewModelMain.IncidIhsComplexRows[i].complex_id = i;
-                _viewModelMain.IncidIhsComplexRows[i].incid = _viewModelMain.RecIDs.CurrentIncid;
-            }
-
-            _viewModelMain.IncidBapRows = new HluDataSet.incid_bapRow[0]
-                .Select(r => _viewModelMain.HluDataset.incid_bap.Newincid_bapRow()).ToArray();
-            _viewModelMain.IncidBapRowsAuto = new ObservableCollection<BapEnvironment>();
-            _viewModelMain.IncidBapRowsUser = new ObservableCollection<BapEnvironment>();
-
-            _viewModelMain.IncidSourcesRows = new HluDataSet.incid_sourcesRow[3]
-                .Select(r => _viewModelMain.HluDataset.incid_sources.Newincid_sourcesRow()).ToArray();
-            for (int i = 0; i < _viewModelMain.IncidSourcesRows.Length; i++)
-            {
-                _viewModelMain.IncidSourcesRows[i].incid_source_id = i;
-                _viewModelMain.IncidSourcesRows[i].source_id = Int32.MinValue;
-                _viewModelMain.IncidSourcesRows[i].incid = _viewModelMain.RecIDs.CurrentIncid;
-            }
-
-            _viewModelMain.RefreshAll();
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 Process proposed OSMM Updates
+            // Functionality to process proposed OSMM Updates.
+            // 
+            // Clear all the form fields (except the habitat class
+            // and habitat type).
+            _viewModelMain.ClearForm();
+            //---------------------------------------------------------------------
         }
 
         public void BulkUpdate()
         {
-            _viewModelMain.ChangeCursor(Cursors.Wait, "Bulk updating...");
+            _viewModelMain.ChangeCursor(Cursors.Wait, "Bulk updating ...");
 
             _viewModelMain.DataBase.BeginTransaction(true, IsolationLevel.ReadCommitted);
 
