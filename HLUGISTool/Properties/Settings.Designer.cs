@@ -661,7 +661,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("E")]
+        [global::System.Configuration.DefaultSettingValueAttribute("F")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -941,12 +941,12 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool ResetUpdatesFlag {
+        public bool ResetOSMMUpdatesStatus {
             get {
-                return ((bool)(this["ResetUpdatesFlag"]));
+                return ((bool)(this["ResetOSMMUpdatesStatus"]));
             }
             set {
-                this["ResetUpdatesFlag"] = value;
+                this["ResetOSMMUpdatesStatus"] = value;
             }
         }
         
@@ -981,7 +981,7 @@ namespace HLU.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>Rejected</string>
-  <string>Pending</string>
+  <string>Ignored</string>
   <string>Proposed</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection OSMMUpdatesStatuses {

@@ -947,6 +947,9 @@ namespace HLU.Data.Connection
                 sbCommandText.Append(fromList);
                 sbCommandText.Append(WhereClause(true, true, qualifyColumns, whereConds));
 
+                // Append an order by clause based on the primary key columns.
+                sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
+
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
 
                 return resultTable;
@@ -983,6 +986,9 @@ namespace HLU.Data.Connection
                 sbCommandText.Append(TargetList(targetTables, true, ref qualifyColumns, out resultTable));
                 sbCommandText.Append(fromList);
                 sbCommandText.Append(WhereClause(true, true, qualifyColumns, whereConds));
+
+                // Append an order by clause based on the primary key columns.
+                //sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
 
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
 
@@ -1050,6 +1056,9 @@ namespace HLU.Data.Connection
                     sbCommandText.Append(" WHERE (").Append(sqlWhereClause).Append(")");
                 else
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
+
+                // Append an order by clause based on the primary key columns.
+                sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
 
                 // Fill the result table using the sql command.
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);

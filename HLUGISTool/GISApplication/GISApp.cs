@@ -96,7 +96,16 @@ namespace HLU.GISApplication
 
         public abstract string IncidFieldName { get; }
 
+        /// <summary>
+        /// Reads the map selection.
+        /// </summary>
+        /// <param name="resultTable">The result table.</param>
         public abstract void ReadMapSelection(ref DataTable resultTable);
+
+        /// <summary>
+        /// Clears the map selection.
+        /// </summary>
+        public abstract void ClearMapSelection();
 
         public abstract bool SelectedRowsUnique();
 

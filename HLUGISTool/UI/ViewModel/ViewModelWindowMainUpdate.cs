@@ -78,14 +78,18 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
 
                 //---------------------------------------------------------------------
-                // FIX: 075 Reset OSMM update flag after manual updates.
+                // CHANGED: CR49 Process proposed OSMM Updates
                 // 
+                // If there are OSMM update rows for this incid, and
+                // if the OSMM update status is to be reset after manual
+                // updates, and if the OSMM update status > 0 (proposed)
+                // or status = 0 (pending) ...
                 if ((_viewModelMain.IncidOSMMUpdatesRows.Length > 0) &&
-                   (_viewModelMain.ResetUpdatesFlag) &&
-                   (_viewModelMain.IncidOSMMUpdatesRows[0].status_flag > 0))
+                   (_viewModelMain.ResetOSMMUpdatesStatus) &&
+                   (_viewModelMain.IncidOSMMUpdatesRows[0].status >= 0))
                 {
                     // Set the update flag to "Ignored"
-                    _viewModelMain.IncidOSMMUpdatesRows[0].status_flag = -2;
+                    _viewModelMain.IncidOSMMUpdatesRows[0].status = -2;
                     _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_date = nowDtTm;
                     _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
                 }

@@ -215,6 +215,11 @@ namespace HLU.UI.ViewModel
                     ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                     vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge);
 
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR49 Process proposed OSMM Updates
+                    // Update proposed OSMM Updates status for source incid
+                    // to -2 (ignored).
+                    //    
                     // Get all the incid osmm updates rows for the selected incids
                     HluDataSet.incid_osmm_updatesDataTable osmmUpdates = new HluDataSet.incid_osmm_updatesDataTable();
                     int[] incidColumnOrds = new int[1];
@@ -224,7 +229,7 @@ namespace HLU.UI.ViewModel
                         ViewModelWindowMain.IncidPageSize, osmmUpdates), ref osmmUpdates);
 
                     // Count the distinct osmm_ref_id values
-                    int osmmXrefCount = osmmUpdates.AsDataView().ToTable(true, _viewModelMain.HluDataset.incid_osmm_updates.osmm_xref_idColumn.ColumnName).Rows.Count;
+                    int osmmXrefCount = osmmUpdates.AsDataView().ToTable(true, _viewModelMain.HluDataset.incid_osmm_updates.osmm_xref_idColumn.ColumnName).Select().Count();
 
                     // If the merged features reference more than osmm_xref_id
                     if (osmmXrefCount > 0)
@@ -245,14 +250,15 @@ namespace HLU.UI.ViewModel
                             DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
                             //---------------------------------------------------------------------
                             // Set the update flag to "Ignored"
-                            r.status_flag = -2;
-                            _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_date = nowDtTm;
-                            _viewModelMain.IncidOSMMUpdatesRows[0].last_modified_user_id = _viewModelMain.UserID;
+                            r.status = -2;
+                            r.last_modified_date = nowDtTm;
+                            r.last_modified_user_id = _viewModelMain.UserID;
                         }
 
                         if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(osmmUpdates) == -1)
                             throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_osmm_updates.TableName));
                     }
+                    //---------------------------------------------------------------------
 
                     // count incid records no longer in use
                     List<string> deleteIncids = new List<string>();

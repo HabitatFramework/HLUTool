@@ -93,12 +93,12 @@ namespace HLU.Data
         {
             get
             {
-                if ((_tables == null) && ((ViewModelQueryBuilder.HluDatasetStatic != null) &&
-                    (ViewModelQueryBuilder.HluDatasetStatic.incid != null)))
+                if ((_tables == null) && ((ViewModelWindowQueryBuilder.HluDatasetStatic != null) &&
+                    (ViewModelWindowQueryBuilder.HluDatasetStatic.incid != null)))
                 {
-                    _tables = ViewModelQueryBuilder.HluDatasetStatic.incid.ChildRelations
+                    _tables = ViewModelWindowQueryBuilder.HluDatasetStatic.incid.ChildRelations
                         .Cast<DataRelation>().ToDictionary(r => r.ChildTable.TableName, r => r.ChildTable);
-                    _tables.Add("incid", ViewModelQueryBuilder.HluDatasetStatic.incid);
+                    _tables.Add("incid", ViewModelWindowQueryBuilder.HluDatasetStatic.incid);
                 }
                 return _tables;
             }
@@ -201,8 +201,8 @@ namespace HLU.Data
             set
             {
                 _sqlCond.Table = value;
-                if ((_sqlCond.Table != null) && (ViewModelQueryBuilder.HluDatasetStatic != null) && 
-                    ViewModelQueryBuilder.HluDatasetStatic.Tables.Contains(_sqlCond.Table.TableName))
+                if ((_sqlCond.Table != null) && (ViewModelWindowQueryBuilder.HluDatasetStatic != null) && 
+                    ViewModelWindowQueryBuilder.HluDatasetStatic.Tables.Contains(_sqlCond.Table.TableName))
                 {
                     _table = _sqlCond.Table;
                     OnPropertyChanged("Table");

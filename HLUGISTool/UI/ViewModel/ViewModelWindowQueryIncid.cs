@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2011 Hampshire Biodiversity Information Centre
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -22,32 +22,23 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Text.RegularExpressions;
 using HLU.Data;
 using HLU.Data.Model;
 
 namespace HLU.UI.ViewModel
 {
-    class ViewModelQueryBuilder : ViewModelBase, IDataErrorInfo
+    //---------------------------------------------------------------------
+    // FIX: 072 Add option to filter by single INCID.
+    // 
+    class ViewModelWindowQueryIncid : ViewModelBase, IDataErrorInfo
     {
-        public static HluDataSet HluDatasetStatic = null;
-
         #region Fields
 
         private ICommand _okCommand;
         private ICommand _cancelCommand;
-        private string _displayName = "Query Builder";
-        private HluDataSet _hluDataset;
-        private ObservableCollection<QueryItem> _queryItems;
-
-        #endregion
-
-        #region Constructor
-
-        public ViewModelQueryBuilder(HluDataSet hluDataset)
-        {
-            HluDatasetStatic = hluDataset;
-            _hluDataset = hluDataset;
-        }
+        private string _displayName = "Query Incid";
+        private String _queryIncid;
 
         #endregion
 
@@ -69,7 +60,7 @@ namespace HLU.UI.ViewModel
         #region RequestClose
 
         // declare the delegate since using non-generic pattern
-        public delegate void RequestCloseEventHandler(ObservableCollection<QueryItem> queryItems);
+        public delegate void RequestCloseEventHandler(String queryIncid);
 
         // declare the event
         public event RequestCloseEventHandler RequestClose;
@@ -105,8 +96,7 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
-            HluDatasetStatic = null;
-            this.RequestClose(_queryItems);
+            this.RequestClose(QueryIncid);
         }
 
         /// <summary>
@@ -118,9 +108,8 @@ namespace HLU.UI.ViewModel
         private bool CanOk
         { 
             get 
-            { 
-                return _queryItems != null && _queryItems.Count > 0 &&
-                    _queryItems.Count(q => q.IsComplete) == _queryItems.Count; 
+            {
+                return (String.IsNullOrEmpty(Error) && (_queryIncid != null));
             } 
         }
 
@@ -154,28 +143,17 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void CancelCommandClick(object param)
         {
-            HluDatasetStatic = null;
             this.RequestClose(null);
         }
 
         #endregion
 
-        #region Query Items
+        #region Query Incid
 
-        public ObservableCollection<QueryItem> QueryItems
+        public string QueryIncid
         {
-            get
-            {
-                if (_queryItems == null)
-                {
-                    QueryItem qryItem = new QueryItem();
-                    List<QueryItem> qryItems = new List<QueryItem>();
-                    qryItems.Add(qryItem);
-                    _queryItems = new ObservableCollection<QueryItem>(qryItems);
-                }
-                return _queryItems;
-            }
-            set { _queryItems = value; }
+            get { return _queryIncid; }
+            set { _queryIncid = value; }
         }
 
         #endregion
@@ -186,16 +164,25 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                string error = null;
-                return error;
+                if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
+                    return "Please enter a valid incid with format {nnnn:nnnnnnn}.";
+                else return null;
             }
         }
 
         public string this[string columnName]
         {
-            get 
+            get
             {
                 string error = null;
+
+                switch (columnName)
+                {
+                    case "QueryIncid":
+                        if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
+                            error = "Error: You must enter a valid incid with format {nnnn:nnnnnnn}.";
+                        break;
+                }
 
                 // dirty commands registered with CommandManager so they are queried to see if they can execute now
                 CommandManager.InvalidateRequerySuggested();
@@ -206,4 +193,5 @@ namespace HLU.UI.ViewModel
 
         #endregion
     }
+    //---------------------------------------------------------------------
 }

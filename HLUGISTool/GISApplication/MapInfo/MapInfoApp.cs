@@ -381,6 +381,25 @@ namespace HLU.GISApplication.MapInfo
             catch { }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        //
+        /// <summary>
+        /// Clears the currently selected map features.
+        /// </summary>
+        public override void ClearMapSelection()
+        {
+            if (_mapInfoApp == null) return;
+
+            try
+            {
+                _mapInfoApp.Do(String.Format("Run Menu Command 304"));
+                return;
+            }
+            catch { }
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// Flashes a single list of selected features whose UIDs are passed in.
         /// </summary>

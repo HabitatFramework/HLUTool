@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2011 Hampshire Biodiversity Information Centre
 // 
 // This file is part of HLUTool.
 // 
@@ -24,13 +24,14 @@ using System.Windows.Input;
 namespace HLU.UI.View
 {
     /// <summary>
-    /// Interaction logic for WindowQueryIncid.xaml
+    /// Interaction logic for WindowQueryOSMM.xaml
     /// </summary>
-    public partial class WindowQueryIncid : Window
+    public partial class WindowQueryOSMM : Window
     {
-        public WindowQueryIncid()
+        public WindowQueryOSMM()
         {
             InitializeComponent();
         }
     }
+
 }
