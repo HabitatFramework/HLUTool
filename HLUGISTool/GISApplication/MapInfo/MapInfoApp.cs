@@ -3552,7 +3552,7 @@ namespace HLU.GISApplication.MapInfo
                     {
                         hluFieldMap[hluColumn.Ordinal] = i;
 
-                        // Check the field type and length
+                        // Check the field type matches
                         Type colSysType;
                         if (!_typeMapSQLToSystem.TryGetValue(Int32.Parse(_mapInfoApp.Eval(String.Format(
                             "ColumnInfo({0}, {1}, {2})", hluLayer, QuoteValue(String.Format("Col{0}", i)),
@@ -3560,6 +3560,7 @@ namespace HLU.GISApplication.MapInfo
                             (hluColumn.DataType != colSysType))
                             throw new Exception("Field type does not match the HLU GIS layer structure.");
 
+                        // Check the field length (it must be at least as long)
                         if ((colSysType == typeof(string)) && (Int32.Parse(_mapInfoApp.Eval(
                             String.Format("ColumnInfo({0}, {1}, {2})", hluLayer, QuoteValue(String.Format("Col{0}", i)),
                             (int)MapInfoConstants.ColumnInfo.COL_INFO_WIDTH))) > hluColumn.MaxLength))

@@ -67,6 +67,7 @@ namespace HLU.UI.ViewModel
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
@@ -211,6 +212,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
             Settings.Default.ShowNVCCodes = _showNVCCodes;
+            Settings.Default.ShowGroupHeaders = _showGroupHeaders;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
@@ -492,7 +494,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 056 A new options to enable NVC Codes to be shown or hidden.
+        // FIX: 056 A new option to enable NVC Codes to be shown or hidden.
         // 
         /// <summary>
         /// Gets or sets the preferred option to show or hide NVC Codes.
@@ -504,6 +506,22 @@ namespace HLU.UI.ViewModel
         {
             get { return _showNVCCodes; }
             set { _showNVCCodes = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 076 A new option to hide group headers to reduce window height.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide group headers.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding group headers.
+        /// </value>
+        public bool ShowGroupHeaders
+        {
+            get { return _showGroupHeaders; }
+            set { _showGroupHeaders = value; }
         }
         //---------------------------------------------------------------------
 

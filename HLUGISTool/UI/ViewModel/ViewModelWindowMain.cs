@@ -163,9 +163,9 @@ namespace HLU.UI.ViewModel
         private bool? _showingReasonProcessGroup = null;
         private bool? _showingNVCCodesText = null;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
         private bool? _showingOSMMPendingGroup = null;
-        private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private string _logoPath = String.Empty;
         private DbBase _db;
         private GISApp _gisApp;
@@ -430,7 +430,10 @@ namespace HLU.UI.ViewModel
                 // Check the assembly version is not earlier than the
                 // minimum required dataset application version.
                 if (!CheckVersion())
-                    return false;
+                    //---------------------------------------------------------------------
+                    // FIX: 077 Trap error if database requires later application version.
+                    throw new Exception("Database requires later application version.");
+                    //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
 
                 // wire up event handler for copy switches
@@ -706,9 +709,9 @@ namespace HLU.UI.ViewModel
                 if (_windowHeight == 0)
                 {
                     if (_showGroupHeaders)
-                        _windowHeight = 950;
+                        _windowHeight = 975;
                     else
-                        _windowHeight = 925;
+                        _windowHeight = 880;
 
                     //// Adjust the standard height if the NVC codes text is not showing.
                     //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
@@ -746,9 +749,9 @@ namespace HLU.UI.ViewModel
             // Calculate the minimum window height.
             int _defaultWindowHeight;
             if (_showGroupHeaders)
-                _defaultWindowHeight = 950;
+                _defaultWindowHeight = 975;
             else
-                _defaultWindowHeight = 925;
+                _defaultWindowHeight = 880;
 
             //// Adjust the minimum height if the NVC codes text is not showing.
             //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
@@ -2288,7 +2291,10 @@ namespace HLU.UI.ViewModel
                 //else if (_osmmUpdateMode == true)
                 //    return "OSMM Update";
                 //else
+                if ((bool)_showGroupHeaders)
                     return "INCID";
+                else
+                    return null;
             }
         }
 
@@ -2892,6 +2898,11 @@ namespace HLU.UI.ViewModel
                 _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
                 _showNVCCodes = Settings.Default.ShowNVCCodes;
                 OnPropertyChanged("ShowNVCCodesText");
+                //---------------------------------------------------------------------
+                // FIX: 076 A new option to hide group headers to reduce window height.
+                _showGroupHeaders = Settings.Default.ShowGroupHeaders;
+                RefreshGroupHeaders();
+                //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
                 // CHANGED: CR49 Process proposed OSMM Updates
                 _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
@@ -6257,6 +6268,26 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidLastModifiedDate");
             OnPropertyChanged("IncidCreatedUser");
             OnPropertyChanged("IncidLastModifiedUser");
+        }
+
+        private void RefreshGroupHeaders()
+        {
+            OnPropertyChanged("TopControlsGroupHeader");
+            OnPropertyChanged("IhsHabitatHeader");
+            OnPropertyChanged("IhsMatrixHeader");
+            OnPropertyChanged("IhsFormationHeader");
+            OnPropertyChanged("IhsManagementHeader");
+            OnPropertyChanged("IhsComplexHeader");
+            OnPropertyChanged("DetailsSiteHeader");
+            OnPropertyChanged("DetailsMapsHeader");
+            OnPropertyChanged("ShowSource1Number");
+            OnPropertyChanged("Source1Header");
+            OnPropertyChanged("ShowSource2Number");
+            OnPropertyChanged("Source2Header");
+            OnPropertyChanged("ShowSource3Number");
+            OnPropertyChanged("Source3Header");
+            WindowHeight = 0;
+            OnPropertyChanged("WindowHeight");
         }
 
         private void RefreshOSMMUpdate()
@@ -9831,6 +9862,21 @@ namespace HLU.UI.ViewModel
 
         #region Maps
 
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string DetailsMapsHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Maps";
+                else
+                    return null;
+            }
+        }
+        //---------------------------------------------------------------------
+
         public DataView BoundaryMapCodes
         {
             get
@@ -10159,6 +10205,32 @@ namespace HLU.UI.ViewModel
 
         #region Source1
 
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string Source1Header
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Source 1";
+                else
+                    return null;
+            }
+        }
+
+        public Visibility ShowSource1Number
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
+        }
+        //---------------------------------------------------------------------
+
         public HluDataSet.lut_sourcesRow[] Source1Names
         {
             get
@@ -10430,6 +10502,32 @@ namespace HLU.UI.ViewModel
 
         #region Source2
 
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string Source2Header
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Source 2";
+                else
+                    return null;
+            }
+        }
+
+        public Visibility ShowSource2Number
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
+        }
+        //---------------------------------------------------------------------
+
         public HluDataSet.lut_sourcesRow[] Source2Names
         {
             get
@@ -10699,6 +10797,32 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region Source3
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Hide some group headers to reduce window height.
+        // 
+        public string Source3Header
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Source 3";
+                else
+                    return null;
+            }
+        }
+
+        public Visibility ShowSource3Number
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
+        }
+        //---------------------------------------------------------------------
 
         public HluDataSet.lut_sourcesRow[] Source3Names
         {
