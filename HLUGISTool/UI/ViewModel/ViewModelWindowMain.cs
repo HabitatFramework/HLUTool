@@ -363,17 +363,7 @@ namespace HLU.UI.ViewModel
                     string errorMessage;
                     if (!_db.ContainsDataSet(_hluDS, out errorMessage))
                     {
-                        // Check if the database contains the old lut_version
-                        // table structure.
-                        HluDataSetOld _hluDSOld = new HluDataSetOld();
-                        if (_db.ContainsDataSet(_hluDSOld, out errorMessage))
-                        {
-                            MessageBox.Show("The application has been upgraded to a later version than the database.\n\n" +
-                                "The database must be updated before the application can be run.",
-                                "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                            return false;
-                        }
-
+                        // Clear the current database settings as they are clearly not valid.
                         DbFactory.ClearSettings();
 
                         if (String.IsNullOrEmpty(errorMessage))
@@ -389,7 +379,7 @@ namespace HLU.UI.ViewModel
                             errorMessage = String.Empty;
                         }
                         if (MessageBox.Show("There were errors loading data from the database." +
-                            errorMessage + "\n\nWould like to connect to another database?", "HLU Dataset",
+                            errorMessage + "\n\nWould you like to connect to another database?", "HLU Dataset",
                             MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.No)
                             throw new Exception("cancelled");
                     }
