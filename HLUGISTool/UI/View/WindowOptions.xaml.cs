@@ -36,14 +36,14 @@ namespace HLU.UI.View
 
         //---------------------------------------------------------------------
         // FIX: 071 Add minimum auto zoom scale to options.
-        // Initialise selected history column list items when GIS tab has focus.
+        // Initialise selected history column list items when History tab has focus.
         //
         /// <summary>
         /// Fakes a click on each history column list item so that their checkboxes are properly initialised.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TabGIS_GotFocus(object sender, RoutedEventArgs e)
+        private void TabHistory_GotFocus(object sender, RoutedEventArgs e)
         {
             List<DependencyObject> listBoxes = new List<DependencyObject>();
             FindControls.GetChildren(this, typeof(ListBox), ref listBoxes);

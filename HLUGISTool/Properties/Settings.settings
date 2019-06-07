@@ -141,8 +141,8 @@
     <Setting Name="HistoryDisplayLastN" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="BulkUpdateBlankRowMeansDelete" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="BulkUpdateDeleteMultiplexCodes" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="CodeDeleteRow" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;clear&gt;</Value>
@@ -288,6 +288,12 @@
     </Setting>
     <Setting Name="CodeAnyRow" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;all&gt;</Value>
+    </Setting>
+    <Setting Name="BulkUpdateDeleteBapHabitats" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BulkUpdateCreateHistoryRecords" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

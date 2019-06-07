@@ -42,7 +42,7 @@ namespace HLU.Data
         int _nextIncidIhsManagementId = -1;
         int _nextIncidIhsComplexId = -1;
         int _nextIncidBapId = -1;
-        int _nextIncidSourceId = -1;
+        int _nextIncidSourcesId = -1;
 
         #endregion
 
@@ -107,7 +107,7 @@ namespace HLU.Data
                 _db.QuoteIdentifier(_hluDataset.incid_sources.incid_source_idColumn.ColumnName),
                 _db.QualifyTableName(_hluDataset.incid_sources.TableName)),
                 _db.Connection.ConnectionTimeout, CommandType.Text);
-            _nextIncidSourceId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
+            _nextIncidSourcesId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
         }
 
         #endregion
@@ -247,13 +247,13 @@ namespace HLU.Data
             }
         }
 
-        public int NextIncidSourceId
+        public int NextIncidSourcesId
         {
             get
             {
-                _nextIncidSourceId = NextID(_nextIncidSourceId, _hluDataset.incid_sources, 
+                _nextIncidSourcesId = NextID(_nextIncidSourcesId, _hluDataset.incid_sources, 
                     _hluDataset.incid_sources.incid_source_idColumn.Ordinal);
-                return _nextIncidSourceId;
+                return _nextIncidSourcesId;
             }
         }
 

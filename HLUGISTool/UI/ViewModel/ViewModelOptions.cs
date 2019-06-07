@@ -42,27 +42,30 @@ namespace HLU.UI.ViewModel
     {
         #region Fields
 
+        private ViewModelWindowMain _viewModelMain;
+
         private ICommand _saveCommand;
         private ICommand _cancelCommand;
         private ICommand _browseMapPathCommand;
         private ICommand _browseExportPathCommand;
         private ICommand _browseSqlPathCommand;
         private string _displayName = "HLU Options";
-        private SelectionList<string> _historyColumns;
+
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
             new HluDataSet.incid_mm_polygonsDataTable();
         private List<int> _gisIDColumnOrdinals;
-        private List<string> _showOSMMUpdatesOptions;
+        private string[] _showOSMMUpdatesOptions;
 
         private int? _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
         private int? _incidTablePageSize = Settings.Default.IncidTablePageSize;
-        private int? _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
-        private bool _bulkUpdateBlankRowMeansDelete = Settings.Default.BulkUpdateBlankRowMeansDelete;
 
         private int _preferredGis = Settings.Default.PreferredGis;
         private string _mapPath = Settings.Default.MapPath;
-        private string _exportPath = Settings.Default.ExportPath;
         private int? _minAutoZoom = Settings.Default.MinimumAutoZoom;
+        private string _exportPath = Settings.Default.ExportPath;
+
+        private SelectionList<string> _historyColumns;
+        private int? _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
 
         private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
@@ -72,9 +75,9 @@ namespace HLU.UI.ViewModel
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
 
-        private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
         private int? _getValueRows = Settings.Default.GetValueRows;
+        private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private string _sqlPath = Settings.Default.SqlPath;
 
         private string _seasonSpring = Settings.Default.SeasonNames[0];
@@ -82,6 +85,10 @@ namespace HLU.UI.ViewModel
         private string _seasonAutumn = Settings.Default.SeasonNames[2];
         private string _seasonWinter = Settings.Default.SeasonNames[3];
         private string _vagueDateDelimiter = Settings.Default.VagueDateDelimiter;
+
+        private bool _deleteMutiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
+        private bool _deleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
+        private bool _createHistoryRecords = Settings.Default.BulkUpdateCreateHistoryRecords;
 
         private string _bakMapPath;
         private string _bakExportPath;
@@ -95,8 +102,10 @@ namespace HLU.UI.ViewModel
         /// Get the default values from settings.
         /// </summary>
         /// <remarks></remarks>
-        public ViewModelOptions()
+        public ViewModelOptions(ViewModelWindowMain viewModelMain)
         {
+            _viewModelMain = viewModelMain;
+
             _gisIDColumnOrdinals = Settings.Default.GisIDColumnOrdinals.Cast<string>()
                 .Select(s => Int32.Parse(s)).ToList();
             
@@ -111,13 +120,6 @@ namespace HLU.UI.ViewModel
             foreach (SelectionItem<string> si in _historyColumns)
                 si.IsSelected = historyColumnOrdinals.Contains(
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
-
-            //---------------------------------------------------------------------
-            // CHANGED: CR49 Process proposed OSMM Updates
-            // A new option to enable the user to determine whether to show
-            // the OSMM update attributes for the current incid.
-            _showOSMMUpdatesOptions = Settings.Default.ShowOSMMUpdatesOptions.Cast<string>().ToList();
-            //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
             // FIX: 010 Don't clear the map path when cancelling option updates
@@ -196,39 +198,49 @@ namespace HLU.UI.ViewModel
             // Database options
             Settings.Default.DbConnectionTimeout = (int)_dbConnectionTimeout;
             Settings.Default.IncidTablePageSize = (int)_incidTablePageSize;
-            Settings.Default.HistoryDisplayLastN = (int)_historyDisplayLastN;
-            Settings.Default.BulkUpdateBlankRowMeansDelete = _bulkUpdateBlankRowMeansDelete;
 
-            // GIS options
+            // GIS/Export options
+            Settings.Default.PreferredGis = _preferredGis;
+            Settings.Default.MapPath = _mapPath;
+            Settings.Default.MinimumAutoZoom = (int)_minAutoZoom;
+            Settings.Default.ExportPath = _exportPath;
+
+            // History options
             Settings.Default.HistoryColumnOrdinals = new StringCollection();
             Settings.Default.HistoryColumnOrdinals.AddRange(_historyColumns.Where(c => c.IsSelected)
                 .Select(c => _incidMMPolygonsTable.Columns[UnescapeAccessKey(c.Item)].Ordinal.ToString()).ToArray());
-            Settings.Default.PreferredGis = _preferredGis;
-            Settings.Default.MapPath = _mapPath;
-            Settings.Default.ExportPath = _exportPath;
-            Settings.Default.MinimumAutoZoom = (int)_minAutoZoom;
+            Settings.Default.HistoryDisplayLastN = (int)_historyDisplayLastN;
 
             // Interface options
-            Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
+            Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.ShowGroupHeaders = _showGroupHeaders;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
 
-            // SQL Query options
-            Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
+            // Filter options
             Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
-            Settings.Default.SqlPath = _sqlPath;
             Settings.Default.GetValueRows = (int)_getValueRows;
+            Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
+            Settings.Default.SqlPath = _sqlPath;
 
-            // Vague Dates options
+            // Dates options
             Settings.Default.SeasonNames[0] = _seasonSpring;
             Settings.Default.SeasonNames[1] = _seasonSummer;
             Settings.Default.SeasonNames[2] = _seasonAutumn;
             Settings.Default.SeasonNames[3] = _seasonWinter;
             Settings.Default.VagueDateDelimiter = _vagueDateDelimiter;
+
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            // Bulk Update Options
+            Settings.Default.BulkUpdateDeleteMultiplexCodes = _deleteMutiplexCodes;
+            Settings.Default.BulkUpdateDeleteBapHabitats = _deleteBapHabitats;
+            Settings.Default.BulkUpdateCreateHistoryRecords = _createHistoryRecords;
+            //---------------------------------------------------------------------
 
             Settings.Default.Save();
 
@@ -296,21 +308,36 @@ namespace HLU.UI.ViewModel
             set { _incidTablePageSize = value; }
         }
 
-        public int? HistoryDisplayLastN
-        {
-            get { return _historyDisplayLastN; }
-            set { _historyDisplayLastN = value; }
-        }
-
-        public bool BulkUpdateBlankRowMeansDelete
-        {
-            get { return _bulkUpdateBlankRowMeansDelete; }
-            set { _bulkUpdateBlankRowMeansDelete = value; }
-        }
-
         #endregion
 
-        #region GIS
+        #region GIS/Export
+
+        public GISApplications PreferredGis
+        {
+            get { return (GISApplications)_preferredGis; }
+            set
+            {
+                _preferredGis = (int)value;
+                OnPropertyChanged("CanBrowseMapPath");
+                OnPropertyChanged("MapDocument");
+                OnPropertyChanged("CanBrowseExportPath");
+            }
+        }
+
+        public GISApplications[] GisApps
+        {
+            get
+            {
+                return Enum.GetValues(typeof(GISApplications)).Cast<GISApplications>()
+                    .Where(t => t != GISApplications.None).ToArray();
+            }
+            set { }
+        }
+
+        public bool GisAppsEnabled
+        {
+            get { return GISAppFactory.ArcGisInstalled && GISAppFactory.MapInfoInstalled; }
+        }
 
         public ICommand BrowseMapPathCommand
         {
@@ -357,287 +384,35 @@ namespace HLU.UI.ViewModel
             set { _mapPath = value; }
         }
 
-        public GISApplications[] GisApps
-        {
-            get 
-            {
-                return Enum.GetValues(typeof(GISApplications)).Cast<GISApplications>()
-                    .Where(t => t != GISApplications.None).ToArray();
-            }
-            set { }
-        }
-
-        public bool GisAppsEnabled
-        {
-            get { return GISAppFactory.ArcGisInstalled && GISAppFactory.MapInfoInstalled; }
-        }
-
-        public GISApplications PreferredGis
-        {
-            get { return (GISApplications)_preferredGis; }
-            set
-            {
-                _preferredGis = (int)value;
-                OnPropertyChanged("CanBrowseMapPath");
-                OnPropertyChanged("MapDocument");
-                OnPropertyChanged("CanBrowseExportPath");
-            }
-        }
-
-        public string HistoryColumnsLabel
-        {
-            get { return "History\nDisplay\nColumns"; }
-            set { }
-        }
-
-        public SelectionList<string> HistoryColumns
-        {
-            get { return _historyColumns; }
-            set { _historyColumns = value; }
-        }
-
-        #endregion
-
-        #region Interface
-
         //---------------------------------------------------------------------
-        // CHANGED: CR10 (Attribute updates for incid subsets)
-        // A new option to enable the user to determine what to do
-        // if they try to update a subset of features for the current
-        // incid.
-        // 
-        /// <summary>
-        /// Gets or sets the list of available subset update actions from
-        /// the enum.
-        /// </summary>
-        /// <value>
-        /// The list of subset update actions.
-        /// </value>
-        public SubsetUpdateActions[] SubsetUpdateActions
-        {
-            get
-            {
-                return Enum.GetValues(typeof(SubsetUpdateActions)).Cast<SubsetUpdateActions>()
-                    .ToArray();
-            }
-            set { }
-        }
-
-        /// <summary>
-        /// Gets or sets the preferred subset update action.
-        /// </summary>
-        /// <value>
-        /// The preferred subset update action.
-        /// </value>
-        public SubsetUpdateActions? SubsetUpdateAction
-        {
-            get { return (SubsetUpdateActions)_subsetUpdateAction; }
-            set
-            {
-                _subsetUpdateAction = (int)value;
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR29 (Habitat classification and conversion to IHS)
-        // Add an option for the user to select their preferred
-        // habitat class which will be automatically selected when
-        // the tool first starts.
+        // FIX: 071 Add minimum auto zoom scale to options.
+        // Validate the minimum auto zoom scale.
         //
         /// <summary>
-        /// Gets or sets the list of possible habitat class codes.
+        /// Gets the default minimum auto zoom scale text.
         /// </summary>
         /// <value>
-        /// The list of possible habitat class codes.
+        /// The Minimum auto zoom scale text.
         /// </value>
-        public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
-        {
-            get { return ViewModelWindowMain.HabitatClasses; }
-            set { }
-        }
-
-        public string PreferredHabitatClass
+        public string MinAutoZoomText
         {
             get
             {
-                var q = HabitatClassCodes.Where(h => h.code == _preferredHabitatClass);
-                if (q.Count() > 0)
-                    return _preferredHabitatClass;
-                else
-                    return null;
-            }
-            set
-            {
-                _preferredHabitatClass = value;
+                string distUnits = Settings.Default.MapDistanceUnits;
+                return string.Format("Minimum auto zoom size [{0}]:", distUnits);
             }
         }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by attributes interface)
-        // A new option to enable the user to select how many rows
-        // to retrieve when getting values for a data column when
-        // building a sql query.
-        // 
-        /// <summary>
-        /// Gets or sets the maximum number of value rows to retrieve.
-        /// </summary>
-        /// <value>
-        /// The maximum get value rows.
-        /// </value>
-        public int? GetValueRows
-        {
-            get { return _getValueRows; }
-            set { _getValueRows = value; }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // FIX: 056 A new option to enable NVC Codes to be shown or hidden.
-        // 
-        /// <summary>
-        /// Gets or sets the preferred option to show or hide NVC Codes.
-        /// </summary>
-        /// <value>
-        /// The preferred option for showing or hidding NVC Codes.
-        /// </value>
-        public bool ShowNVCCodes
-        {
-            get { return _showNVCCodes; }
-            set { _showNVCCodes = value; }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // FIX: 076 A new option to hide group headers to reduce window height.
-        // 
-        /// <summary>
-        /// Gets or sets the preferred option to show or hide group headers.
-        /// </summary>
-        /// <value>
-        /// The preferred option for showing or hidding group headers.
-        /// </value>
-        public bool ShowGroupHeaders
-        {
-            get { return _showGroupHeaders; }
-            set { _showGroupHeaders = value; }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR49 Process proposed OSMM Updates
-        // A new option to enable the user to determine whether to show
-        // the OSMM update attributes for the current incid.
-        // 
-        /// <summary>
-        /// Gets or sets the list of available show OSMM Update options from
-        /// the class.
-        /// </summary>
-        /// <value>
-        /// The list of subset update actions.
-        /// </value>
-        public string[] ShowOSMMUpdatesOptions
-        {
-            get
-            {
-                return _showOSMMUpdatesOptions.Cast<string>().ToArray();
-            }
-            set { }
-        }
 
         /// <summary>
-        /// Gets or sets the preferred show OSMM Update option.
+        /// Gets or sets the default minimum auto zoom scale.
         /// </summary>
         /// <value>
-        /// The preferred show OSMM Update option.
+        /// The Minimum auto zoom scale.
         /// </value>
-        public string ShowOSMMUpdatesOption
+        public int? MinAutoZoom
         {
-            get { return _showOSMMUpdatesOption; }
-            set
-            {
-                _showOSMMUpdatesOption = value;
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR49 Process proposed OSMM Updates
-        // A new option to enable the user to determine whether to reset
-        // the OSMM update process flag when manually updating the current
-        // incid.
-        // 
-        /// <summary>
-        /// Gets or sets the preferred option to reset the OSMM Update
-        /// process flag when applying manual updates.
-        /// </summary>
-        /// <value>
-        /// The preferred option to reset the OSMM Update process flag
-        /// when applying manual updates.
-        /// </value>
-        public bool ResetOSMMUpdatesStatus
-        {
-            get { return _resetOSMMUpdatesStatus; }
-            set { _resetOSMMUpdatesStatus = value; }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by attributes interface)
-        // A new option to enable the user to determine when to warn
-        // the user before performing a GIS selection.
-        // 
-        /// <summary>
-        /// Gets or sets the list of available warn before GIS selection
-        /// options from the enum.
-        /// </summary>
-        /// <value>
-        /// The list of options for warning before any GIS selection.
-        /// </value>
-        public WarnBeforeGISSelect[] WarnBeforeGISSelectOptions
-        {
-            get
-            {
-                return Enum.GetValues(typeof(WarnBeforeGISSelect)).Cast<WarnBeforeGISSelect>()
-                    .ToArray();
-            }
-            set { }
-        }
-
-        /// <summary>
-        /// Gets or sets the preferred warning before any GIS selection option.
-        /// </summary>
-        /// <value>
-        /// The preferred option for warning before any GIS selection.
-        /// </value>
-        public WarnBeforeGISSelect? WarnBeforeGISSelect
-        {
-            get { return (WarnBeforeGISSelect)_warnBeforeGISSelect; }
-            set
-            {
-                _warnBeforeGISSelect = (int)value;
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR39 (Split and merge complete messages)
-        // A new option to enable the user to determine if they
-        // want to be notified following the completion of a
-        // split or merge.
-        //
-        /// <summary>
-        /// Gets or sets the choice of whether the user will
-        /// be notified when a split or merge has completed.
-        /// </summary>
-        /// <value>
-        /// If the user will be notified after a split or merge.
-        /// </value>
-        public bool NotifyOnSplitMerge
-        {
-            get { return _notifyOnSplitMerge; }
-            set { _notifyOnSplitMerge = value; }
+            get { return _minAutoZoom; }
+            set { _minAutoZoom = value; }
         }
         //---------------------------------------------------------------------
 
@@ -733,41 +508,218 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        #endregion
+
+        #region History
+
+        public SelectionList<string> HistoryColumns
+        {
+            get { return _historyColumns; }
+            set { _historyColumns = value; }
+        }
+
+        public int? HistoryDisplayLastN
+        {
+            get { return _historyDisplayLastN; }
+            set { _historyDisplayLastN = value; }
+        }
+
+        #endregion
+
+        #region Interface
+
         //---------------------------------------------------------------------
-        // FIX: 071 Add minimum auto zoom scale to options.
-        // Validate the minimum auto zoom scale.
+        // CHANGED: CR29 (Habitat classification and conversion to IHS)
+        // Add an option for the user to select their preferred
+        // habitat class which will be automatically selected when
+        // the tool first starts.
         //
         /// <summary>
-        /// Gets the default minimum auto zoom scale text.
+        /// Gets or sets the list of possible habitat class codes.
         /// </summary>
         /// <value>
-        /// The Minimum auto zoom scale text.
+        /// The list of possible habitat class codes.
         /// </value>
-        public string MinAutoZoomText
+        public HluDataSet.lut_habitat_classRow[] HabitatClassCodes
+        {
+            get { return ViewModelWindowMain.HabitatClasses; }
+            set { }
+        }
+
+        public string PreferredHabitatClass
         {
             get
             {
-                string distUnits = Settings.Default.MapDistanceUnits;
-                return string.Format("Minimum auto zoom size ({0}):", distUnits);
+                var q = HabitatClassCodes.Where(h => h.code == _preferredHabitatClass);
+                if (q.Count() > 0)
+                    return _preferredHabitatClass;
+                else
+                    return null;
             }
+            set
+            {
+                _preferredHabitatClass = value;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR10 (Attribute updates for incid subsets)
+        // A new option to enable the user to determine what to do
+        // if they try to update a subset of features for the current
+        // incid.
+        // 
+        /// <summary>
+        /// Gets or sets the list of available subset update actions from
+        /// the enum.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public SubsetUpdateActions[] SubsetUpdateActions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SubsetUpdateActions)).Cast<SubsetUpdateActions>()
+                    .ToArray();
+            }
+            set { }
         }
 
         /// <summary>
-        /// Gets or sets the default minimum auto zoom scale.
+        /// Gets or sets the preferred subset update action.
         /// </summary>
         /// <value>
-        /// The Minimum auto zoom scale.
+        /// The preferred subset update action.
         /// </value>
-        public int? MinAutoZoom
+        public SubsetUpdateActions? SubsetUpdateAction
         {
-            get { return _minAutoZoom; }
-            set { _minAutoZoom = value; }
+            get { return (SubsetUpdateActions)_subsetUpdateAction; }
+            set
+            {
+                _subsetUpdateAction = (int)value;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 056 A new option to enable NVC Codes to be shown or hidden.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide NVC Codes.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding NVC Codes.
+        /// </value>
+        public bool ShowNVCCodes
+        {
+            get { return _showNVCCodes; }
+            set { _showNVCCodes = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 076 New option to hide group headers to reduce window height.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide group headers.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding group headers.
+        /// </value>
+        public bool ShowGroupHeaders
+        {
+            get { return _showGroupHeaders; }
+            set { _showGroupHeaders = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // A new option to enable the user to determine if they
+        // want to be notified following the completion of a
+        // split or merge.
+        //
+        /// <summary>
+        /// Gets or sets the choice of whether the user will
+        /// be notified when a split or merge has completed.
+        /// </summary>
+        /// <value>
+        /// If the user will be notified after a split or merge.
+        /// </value>
+        public bool NotifyOnSplitMerge
+        {
+            get { return _notifyOnSplitMerge; }
+            set { _notifyOnSplitMerge = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        // A new option to enable the user to determine whether to show
+        // the OSMM update attributes for the current incid.
+        // 
+        /// <summary>
+        /// Gets or sets the list of available show OSMM Update options from
+        /// the class.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public string[] ShowOSMMUpdatesOptions
+        {
+            get
+            {
+                if (_showOSMMUpdatesOptions == null)
+                {
+                    _showOSMMUpdatesOptions = Settings.Default.ShowOSMMUpdatesOptions.Cast<string>().ToArray();
+                }
+
+                return _showOSMMUpdatesOptions;
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred show OSMM Update option.
+        /// </summary>
+        /// <value>
+        /// The preferred show OSMM Update option.
+        /// </value>
+        public string ShowOSMMUpdatesOption
+        {
+            get { return _showOSMMUpdatesOption; }
+            set
+            {
+                _showOSMMUpdatesOption = value;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        // A new option to enable the user to determine whether to reset
+        // the OSMM update process flag when manually updating the current
+        // incid.
+        // 
+        /// <summary>
+        /// Gets or sets the preferred option to reset the OSMM Update
+        /// process flag when applying manual updates.
+        /// </summary>
+        /// <value>
+        /// The preferred option to reset the OSMM Update process flag
+        /// when applying manual updates.
+        /// </value>
+        public bool ResetOSMMUpdatesStatus
+        {
+            get { return _resetOSMMUpdatesStatus; }
+            set { _resetOSMMUpdatesStatus = value; }
         }
         //---------------------------------------------------------------------
 
         #endregion
 
-        #region Sql Query
+        #region Filter
 
         //---------------------------------------------------------------------
         // CHANGED: CR5 (Select by Attributes Interface)
@@ -790,6 +742,63 @@ namespace HLU.UI.ViewModel
             {
                 _useAdvancedSQL = value;
                 OnPropertyChanged("CanBrowseSqlPath");
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // A new option to enable the user to select how many rows
+        // to retrieve when getting values for a data column when
+        // building a sql query.
+        // 
+        /// <summary>
+        /// Gets or sets the maximum number of value rows to retrieve.
+        /// </summary>
+        /// <value>
+        /// The maximum get value rows.
+        /// </value>
+        public int? GetValueRows
+        {
+            get { return _getValueRows; }
+            set { _getValueRows = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR5 (Select by attributes interface)
+        // A new option to enable the user to determine when to warn
+        // the user before performing a GIS selection.
+        // 
+        /// <summary>
+        /// Gets or sets the list of available warn before GIS selection
+        /// options from the enum.
+        /// </summary>
+        /// <value>
+        /// The list of options for warning before any GIS selection.
+        /// </value>
+        public WarnBeforeGISSelect[] WarnBeforeGISSelectOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(WarnBeforeGISSelect)).Cast<WarnBeforeGISSelect>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred warning before any GIS selection option.
+        /// </summary>
+        /// <value>
+        /// The preferred option for warning before any GIS selection.
+        /// </value>
+        public WarnBeforeGISSelect? WarnBeforeGISSelect
+        {
+            get { return (WarnBeforeGISSelect)_warnBeforeGISSelect; }
+            set
+            {
+                _warnBeforeGISSelect = (int)value;
             }
         }
         //---------------------------------------------------------------------
@@ -924,6 +933,64 @@ namespace HLU.UI.ViewModel
                     _vagueDateDelimiter = value;
             }
         }
+
+        #endregion
+
+        #region Bulk Update
+
+        //---------------------------------------------------------------------
+        // FIX: 078 Bulk update overhaul/improvements.
+        // 
+        /// <summary>
+        /// Checks if the user has bulk update authority.
+        /// </summary>
+        public bool CanBulkUpdate
+        {
+            get
+            {
+                return _viewModelMain.CanBulkUpdate;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option to delete invalid multiplex
+        /// codes when applying bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for deleting invalid multiplex codes.
+        /// </value>
+        public bool DeleteMultiplexCodes
+        {
+            get { return _deleteMutiplexCodes; }
+            set { _deleteMutiplexCodes = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option to delete orphan bap habitats
+        /// when applying bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for deleting orphan bap habitats.
+        /// </value>
+        public bool DeleteBapHabitats
+        {
+            get { return _deleteBapHabitats; }
+            set { _deleteBapHabitats = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option to create history records
+        /// when applying bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for creating history records.
+        /// </value>
+        public bool CreateHistoryRecords
+        {
+            get { return _createHistoryRecords; }
+            set { _createHistoryRecords = value; }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -1067,6 +1134,8 @@ namespace HLU.UI.ViewModel
                     case "IncidTablePageSize":
                         if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
                             error = "Error: Enter a database page size greater than 0 rows.";
+                        if (Convert.ToInt32(IncidTablePageSize) > 1000 || IncidTablePageSize == null)
+                            error = "Error: Enter a database page size no more than 1000 rows.";
                         break;
                     case "HistoryDisplayLastN":
                         if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)

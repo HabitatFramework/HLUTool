@@ -253,6 +253,7 @@ namespace HLU.UI.ViewModel
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
         private int _origIncidIhsComplexCount = 0;
+        private int _origIncidSourcesCount = 0;
         private SqlFilterCondition _incidMMPolygonsIncidFilter;
         private DataColumn[] _historyColumns;
         private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
@@ -278,7 +279,9 @@ namespace HLU.UI.ViewModel
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
-        private bool _bulkUpdateCreateHistory;
+        private bool _bulkUpdateCreateHistory = Settings.Default.BulkUpdateCreateHistoryRecords;
+        private bool _bulkUpdateDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
+        private bool _bulkUpdateDeleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
         private bool _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
         private string _osmmAcceptTag = "A_ccept";
         private string _osmmRejectTag = "Re_ject";
@@ -287,6 +290,16 @@ namespace HLU.UI.ViewModel
         private bool _osmmUpdatesEmpty = false;
         private bool _osmmUpdateCreateHistory;
         private string _codeAnyRow = Settings.Default.CodeAnyRow;
+
+        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix1Codes;
+        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix2Codes;
+        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix3Codes;
+        private HluDataSet.lut_ihs_formationRow[] _ihsFormation1Codes;
+        private HluDataSet.lut_ihs_formationRow[] _ihsFormation2Codes;
+        private HluDataSet.lut_ihs_managementRow[] _ihsManagement1Codes;
+        private HluDataSet.lut_ihs_managementRow[] _ihsManagement2Codes;
+        private HluDataSet.lut_ihs_complexRow[] _ihsComplex1Codes;
+        private HluDataSet.lut_ihs_complexRow[] _ihsComplex2Codes;
 
         private VagueDateInstance _incidSource1DateEntered;
         private VagueDateInstance _incidSource2DateEntered;
@@ -297,14 +310,14 @@ namespace HLU.UI.ViewModel
         private bool _savingAttempted;
         private List<string> _ihsWarnings = new List<string>();
         private List<string> _detailsWarnings = new List<string>();
-        private List<string[]> _source1Warnings;
-        private List<string[]> _source2Warnings;
-        private List<string[]> _source3Warnings;
+        private List<string[]> _source1Warnings = null;
+        private List<string[]> _source2Warnings = null;
+        private List<string[]> _source3Warnings = null;
         private List<string> _ihsErrors = new List<string>();
         private List<string> _detailsErrors = new List<string>();
-        private List<string[]> _source1Errors;
-        private List<string[]> _source2Errors;
-        private List<string[]> _source3Errors;
+        private List<string[]> _source1Errors = null;
+        private List<string[]> _source2Errors = null;
+        private List<string[]> _source3Errors = null;
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
@@ -1026,6 +1039,18 @@ namespace HLU.UI.ViewModel
             get { return _viewModelUpd; }
         }
 
+        internal List<string> IhsWarnings
+        {
+            get { return _ihsWarnings; }
+            set { _ihsWarnings = value; }
+        }
+
+        internal List<string> DetailsWarnings
+        {
+            get { return _detailsWarnings; }
+            set { _detailsWarnings = value; }
+        }
+
         internal List<string[]> Source1Warnings
         {
             get { return _source1Warnings; }
@@ -1042,6 +1067,18 @@ namespace HLU.UI.ViewModel
         {
             get { return _source3Warnings; }
             set { _source3Warnings = value; }
+        }
+
+        internal List<string> IhsErrors
+        {
+            get { return _ihsErrors; }
+            set { _ihsErrors = value; }
+        }
+
+        internal List<string> DetailsErrors
+        {
+            get { return _detailsErrors; }
+            set { _detailsErrors = value; }
         }
 
         internal List<string[]> Source1Errors
@@ -2151,7 +2188,7 @@ namespace HLU.UI.ViewModel
             // button was clicked.
             if (_bulkUpdateMode == true)
             {
-                _viewModelBulkUpdate.BulkUpdate();
+                _viewModelBulkUpdate.ApplyBulkUpdate();
             }
             else
             {
@@ -2266,6 +2303,22 @@ namespace HLU.UI.ViewModel
                 BulkUpdateClicked(param);
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 078 Bulk update overhaul/improvements.
+        // 
+        public bool BulkUpdateDeleteMultiplexCodes
+        {
+            get { return _bulkUpdateDeleteMultiplexCodes; }
+            set { _bulkUpdateDeleteMultiplexCodes = value; }
+        }
+
+        public bool BulkUpdateDeleteBapHabitats
+        {
+            get { return _bulkUpdateDeleteBapHabitats; }
+            set { _bulkUpdateDeleteBapHabitats = value; }
+        }
+        //---------------------------------------------------------------------
+
         public bool BulkUpdateCreateHistory
         {
             get { return _bulkUpdateCreateHistory; }
@@ -2276,13 +2329,19 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //if (_bulkUpdateMode == true)
-                //    return "Bulk Update";
-                //else if (_osmmUpdateMode == true)
-                //    return "OSMM Update";
-                //else
                 if ((bool)_showGroupHeaders)
                     return "INCID";
+                else
+                    return null;
+            }
+        }
+
+        public string TopControlsBulkUpdateGroupHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Bulk Update";
                 else
                     return null;
             }
@@ -2858,7 +2917,7 @@ namespace HLU.UI.ViewModel
             _windowOptions.Owner = App.Current.MainWindow;
             _windowOptions.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            _viewModelOptions = new ViewModelOptions();
+            _viewModelOptions = new ViewModelOptions(this);
             _viewModelOptions.RequestClose += 
                 new ViewModelOptions.RequestCloseEventHandler(_viewModelOptions_RequestClose);
 
@@ -2889,7 +2948,7 @@ namespace HLU.UI.ViewModel
                 _showNVCCodes = Settings.Default.ShowNVCCodes;
                 OnPropertyChanged("ShowNVCCodesText");
                 //---------------------------------------------------------------------
-                // FIX: 076 A new option to hide group headers to reduce window height.
+                // FIX: 076 New option to hide group headers to reduce window height.
                 _showGroupHeaders = Settings.Default.ShowGroupHeaders;
                 RefreshGroupHeaders();
                 //---------------------------------------------------------------------
@@ -2898,6 +2957,13 @@ namespace HLU.UI.ViewModel
                 _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIX: 078 Bulk update overhaul/improvements.
+                _bulkUpdateDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
+                _bulkUpdateDeleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
+                _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
                 //---------------------------------------------------------------------
             }
         }
@@ -3228,7 +3294,7 @@ namespace HLU.UI.ViewModel
                 {
                     _incidSelection = null;
                     ChangeCursor(Cursors.Arrow, null);
-                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU", 
+                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query", 
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally { RefreshStatus(); }
@@ -3838,9 +3904,9 @@ namespace HLU.UI.ViewModel
         {
             TabItemHistoryEnabled = false;
 
+            IncidIhsHabitat = null;
             HabitatClass = null;
             HabitatType = null;
-            IncidIhsHabitat = null;
 
             IncidCurrentRow = HluDataset.incid.NewincidRow();
 
@@ -4562,12 +4628,22 @@ namespace HLU.UI.ViewModel
                         break;
                 }
 
-                if (_incidSelectionWhereClause == null)
-                    _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
-                        IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
-
+                //---------------------------------------------------------------------
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
                 // Update the database Incid selection only if required.
-                if ((updateIncidSelection) && (_incidsSelectedMapCount > 0)) GisToDbSelection();
+                if ((updateIncidSelection) && (_incidsSelectedMapCount > 0))
+                {
+                    // Set the Incid selection where clause to match the list of
+                    // selected incids (for possible use later).
+                    if (_incidSelectionWhereClause == null)
+                        _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
+                            IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
+
+                    // Update the database Incid selection to the Incids selected in the map.
+                    GisToDbSelection();
+                    //---------------------------------------------------------------------
+                }
             }
             else
             {
@@ -4575,6 +4651,9 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Set the database Incid selection based on the Incids selected in the map.
+        /// </summary>
         private void GisToDbSelection()
         {
             _incidSelection = NewIncidSelectionTable();
@@ -5137,7 +5216,7 @@ namespace HLU.UI.ViewModel
             get { return _windowCursor == Cursors.Wait ? _processingMsg : String.Empty; }
         }
 
-        public int NumIncidSelected
+        public int NumIncidSelectedDB
         {
             get { return _incidSelection != null ? _incidSelection.Rows.Count : 0; }
             set { }
@@ -5167,6 +5246,12 @@ namespace HLU.UI.ViewModel
             set { _incidCurrentRow = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the index of the incid current row.
+        /// </summary>
+        /// <value>
+        /// The index of the incid current row.
+        /// </value>
         public int IncidCurrentRowIndex
         {
             get { return _incidCurrentRowIndex; }
@@ -5175,9 +5260,14 @@ namespace HLU.UI.ViewModel
                 // Check there are no outstanding edits.
                 MessageBoxResult userResponse = CheckDirty();
 
+                // Process based on the response ...
+                // Yes = update the current record first then move to the new incid
+                // No = move to the new incid
+                // Cancel = don't move to the new incid
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
+                        // Update the current incid
                         if (_viewModelUpd.Update())
                             goto case MessageBoxResult.No;
                         break;
@@ -5937,6 +6027,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_sourcesDataTable incidSourcesTable = _hluDS.incid_sources;
             _incidSourcesRows = GetIncidChildRowsDb(relValues, 
                 _hluTableAdapterMgr.incid_sourcesTableAdapter, ref incidSourcesTable);
+            _origIncidSourcesCount = _incidSourcesRows.Length;
 
             HluDataSet.historyDataTable historyTable = _hluDS.history;
             _incidHistoryRows = GetIncidChildRowsDb(relValues,
@@ -6125,10 +6216,14 @@ namespace HLU.UI.ViewModel
         {
             if (_incidSourcesRows != null)
             {
+                if (_incidSourcesRows.Count(r => r != null) != _origIncidSourcesCount) return true;
+
                 foreach (DataRow r in _incidSourcesRows)
                     if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+
+                return false;
             }
-            return false;
+            return _origIncidSourcesCount != 0;
         }
 
         internal bool IsDirtyIncidOSMMUpdates()
@@ -6204,10 +6299,13 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("BulkUpdateCommandHeader");
             OnPropertyChanged("TopControlsGroupHeader");
             OnPropertyChanged("TabItemHistoryEnabled");
-            OnPropertyChanged("NumIncidSelected");
+            OnPropertyChanged("NumIncidSelectedDB");
             OnPropertyChanged("NumIncidSelectedMap");
             OnPropertyChanged("NumToidSelectedMap");
             OnPropertyChanged("NumFragmentsSelectedMap");
+            OnPropertyChanged("BulkUpdateDeleteMultiplexCodes");
+            OnPropertyChanged("BulkUpdateDeleteBapHabitats");
+            OnPropertyChanged("BulkUpdateCreateHistory");
             OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
         }
@@ -6293,8 +6391,10 @@ namespace HLU.UI.ViewModel
         private void RefreshIhsTab()
         {
             OnPropertyChanged("TabIhsControlsEnabled");
+            OnPropertyChanged("IhsTabLabel");
             OnPropertyChanged("HabitatClassCodes");
             OnPropertyChanged("HabitatTypeCodes");
+            OnPropertyChanged("HabitatType");
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             OnPropertyChanged("NvcCodes");
@@ -6305,6 +6405,11 @@ namespace HLU.UI.ViewModel
 
         private void RefreshIhsMultiplexValues()
         {
+            _comingFromIncidIhsMatrix2 = false;
+            _comingFromIncidIhsMatrix3 = false;
+            _comingFromIncidIhsFormation2 = false;
+            _comingFromIncidIhsManagement2 = false;
+            _comingFromIncidIhsComplex2 = false;
             OnPropertyChanged("IncidIhsMatrix1");
             OnPropertyChanged("IncidIhsMatrix2");
             OnPropertyChanged("IncidIhsMatrix3");
@@ -6343,6 +6448,7 @@ namespace HLU.UI.ViewModel
         private void RefreshDetailsTab()
         {
             OnPropertyChanged("TabDetailsControlsEnabled");
+            OnPropertyChanged("DetailsTabLabel");
             OnPropertyChanged("IncidBapHabitatsAuto");
             OnPropertyChanged("IncidBapHabitatsUser");
             OnPropertyChanged("BapHabitatsUserEnabled");
@@ -6359,6 +6465,7 @@ namespace HLU.UI.ViewModel
         private void RefreshSources()
         {
             OnPropertyChanged("TabSourcesControlsEnabled");
+            OnPropertyChanged("SourcesTabLabel");
             RefreshSource1();
             RefreshSource2();
             RefreshSource3();
@@ -7256,7 +7363,7 @@ namespace HLU.UI.ViewModel
         #region IHS Habitat
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsHabitatHeader
         {
@@ -7418,7 +7525,7 @@ namespace HLU.UI.ViewModel
         #region IHS Matrix
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsMatrixHeader
         {
@@ -7437,11 +7544,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
-                HluDataSet.lut_ihs_matrixRow[] ihsMatrix1Codes;
 
                 if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
                 {
-                    ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                    _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -7465,19 +7571,19 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix1);
 
                         if (q == null)
-                            ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                            _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
-                        ihsMatrix1Codes = _lutIhsMatrixCodes;
+                        _ihsMatrix1Codes = _lutIhsMatrixCodes;
                     }
                 }
-                return ihsMatrix1Codes;
+                return _ihsMatrix1Codes;
             }
             set { }
         }
@@ -7487,11 +7593,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
-                HluDataSet.lut_ihs_matrixRow[] ihsMatrix2Codes;
 
                 if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
                 {
-                    ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                    _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -7517,20 +7622,20 @@ namespace HLU.UI.ViewModel
                         if (q != null)
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                         else
-                            ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                            _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
                     }
                     else
                     {
                         if (_lutIhsMatrixCodes != null)
-                            ihsMatrix2Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3).ToArray();
+                            _ihsMatrix2Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3).ToArray();
                         else
-                            ihsMatrix2Codes = _lutIhsMatrixCodes;
+                            _ihsMatrix2Codes = _lutIhsMatrixCodes;
                     }
                 }
-                return ihsMatrix2Codes;
+                return _ihsMatrix2Codes;
             }
             set { }
         }
@@ -7540,11 +7645,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
-                HluDataSet.lut_ihs_matrixRow[] ihsMatrix3Codes;
 
                 if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
                 {
-                    ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                    _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -7571,20 +7675,20 @@ namespace HLU.UI.ViewModel
                         if (q != null)
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                         else
-                            ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
+                            _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
                     }
                     else
                     {
                         if (_lutIhsMatrixCodes != null)
-                            ihsMatrix3Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2).ToArray();
+                            _ihsMatrix3Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2).ToArray();
                         else
-                            ihsMatrix3Codes = _lutIhsMatrixCodes;
+                            _ihsMatrix3Codes = _lutIhsMatrixCodes;
                     }
                 }
-                return ihsMatrix3Codes;
+                return _ihsMatrix3Codes;
             }
             set { }
         }
@@ -7596,16 +7700,14 @@ namespace HLU.UI.ViewModel
 
         public bool IhsMatrix2Enabled
         {
-            get { return !String.IsNullOrEmpty(IncidIhsMatrix1) && IhsMatrix2Codes.Count() > 0; }
+            get { return (!String.IsNullOrEmpty(IncidIhsMatrix1) || IncidIhsMatrix2 != null) &&
+                IhsMatrix2Codes.Count() > 0; }
         }
 
         public bool IhsMatrix3Enabled
         {
-            get
-            {
-                return !String.IsNullOrEmpty(IncidIhsMatrix1) && 
-                    !String.IsNullOrEmpty(IncidIhsMatrix2) && IhsMatrix3Codes.Count() > 0;
-            }
+            get { return (!String.IsNullOrEmpty(IncidIhsMatrix2) || IncidIhsMatrix3 != null) &&
+                    IhsMatrix3Codes.Count() > 0; }
         }
 
         public string IncidIhsMatrix1
@@ -7627,13 +7729,42 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
-                        RemoveIncidIhsMatrixRow(0);
+                    {
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsMatrixRows[0].matrix = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsMatrix1Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsMatrixRow(0);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else
                 {
                     if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
                     {
                         _incidIhsMatrixRows[0].matrix = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsMatrix1Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -7695,7 +7826,26 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
-                        RemoveIncidIhsMatrixRow(1);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsMatrixRows[1].matrix = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsMatrix2Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsMatrixRow(1);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else if ((_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
                 {
@@ -7706,6 +7856,15 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
                     {
                         _incidIhsMatrixRows[1].matrix = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsMatrix2Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -7770,7 +7929,26 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
-                        RemoveIncidIhsMatrixRow(2);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsMatrixRows[2].matrix = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsMatrix1Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsMatrixRow(2);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else if (((_incidIhsMatrixRows[1] != null) && (_incidIhsMatrixRows[1].matrix == value)) ||
                     (_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
@@ -7782,6 +7960,15 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
                     {
                         _incidIhsMatrixRows[2].matrix = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsMatrix3Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -7881,7 +8068,7 @@ namespace HLU.UI.ViewModel
         #region IHS Formation
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsFormationHeader
         {
@@ -7900,11 +8087,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_formationRow> q = null;
-                HluDataSet.lut_ihs_formationRow[] ihsFormation1Codes;
 
                 if ((_lutIhsFormationCodes == null) || (_lutIhsFormationCodes.Length == 0))
                 {
-                    ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
+                    _ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -7928,19 +8114,19 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_formation.Where(r => r.code == IncidIhsFormation1);
 
                         if (q == null)
-                            ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
+                            _ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsFormation1Codes = ClearRowIhsFormation(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsFormation1Codes = ClearRowIhsFormation(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
-                        ihsFormation1Codes = _lutIhsFormationCodes;
+                        _ihsFormation1Codes = _lutIhsFormationCodes;
                     }
                 }
-                return ihsFormation1Codes;
+                return _ihsFormation1Codes;
             }
             set { }
         }
@@ -7950,11 +8136,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_formationRow> q = null;
-                HluDataSet.lut_ihs_formationRow[] ihsFormation2Codes;
 
                 if ((_lutIhsFormationCodes == null) || (_lutIhsFormationCodes.Length == 0))
                 {
-                    ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
+                    _ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -7978,22 +8163,22 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_formation.Where(r => r.code == IncidIhsFormation2);
 
                         if (q == null)
-                            ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
+                            _ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsFormation2Codes = ClearRowIhsFormation(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsFormation2Codes = ClearRowIhsFormation(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
                         if (_lutIhsFormationCodes != null)
-                            ihsFormation2Codes = _lutIhsFormationCodes.Where(r => r.code != IncidIhsFormation1).ToArray();
+                            _ihsFormation2Codes = _lutIhsFormationCodes.Where(r => r.code != IncidIhsFormation1).ToArray();
                         else
-                            ihsFormation2Codes = _lutIhsFormationCodes;
+                            _ihsFormation2Codes = _lutIhsFormationCodes;
                     }
                 }
-                return ihsFormation2Codes;
+                return _ihsFormation2Codes;
             }
             set { }
         }
@@ -8005,7 +8190,8 @@ namespace HLU.UI.ViewModel
 
         public bool IhsFormation2Enabled
         {
-            get { return !String.IsNullOrEmpty(IncidIhsFormation1) && IhsFormation2Codes.Count() > 0; }
+            get { return (!String.IsNullOrEmpty(IncidIhsFormation1) || IncidIhsFormation2 != null) &&
+                IhsFormation2Codes.Count() > 0; }
         }
 
         public string IncidIhsFormation1
@@ -8027,13 +8213,41 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
-                        RemoveIncidIhsFormationRow(0);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsFormationRows[0].formation = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsFormation1Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsFormationRow(0);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else
                 {
                     if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
                     {
                         _incidIhsFormationRows[0].formation = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsFormation1Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -8095,7 +8309,26 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
-                        RemoveIncidIhsFormationRow(1);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsFormationRows[1].formation = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsFormation2Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsFormationRow(1);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else if ((_incidIhsFormationRows[0] != null) && (_incidIhsFormationRows[0].formation == value))
                 {
@@ -8106,6 +8339,15 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
                     {
                         _incidIhsFormationRows[1].formation = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsFormation2Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -8204,7 +8446,7 @@ namespace HLU.UI.ViewModel
         #region IHS Management
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsManagementHeader
         {
@@ -8223,11 +8465,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_managementRow> q = null;
-                HluDataSet.lut_ihs_managementRow[] ihsManagement1Codes;
 
                 if ((_lutIhsManagementCodes == null) || (_lutIhsManagementCodes.Length == 0))
                 {
-                    ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
+                    _ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -8251,19 +8492,19 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_management.Where(r => r.code == IncidIhsManagement1);
 
                         if (q == null)
-                            ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
+                            _ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsManagement1Codes = ClearRowIhsManagement(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsManagement1Codes = ClearRowIhsManagement(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
-                        ihsManagement1Codes = _lutIhsManagementCodes;
+                        _ihsManagement1Codes = _lutIhsManagementCodes;
                     }
                 }
-                return ihsManagement1Codes;
+                return _ihsManagement1Codes;
             }
             set { }
         }
@@ -8273,11 +8514,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_managementRow> q = null;
-                HluDataSet.lut_ihs_managementRow[] ihsManagement2Codes;
 
                 if ((_lutIhsManagementCodes == null) || (_lutIhsManagementCodes.Length == 0))
                 {
-                    ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
+                    _ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -8301,22 +8541,22 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_management.Where(r => r.code == IncidIhsManagement2);
 
                         if (q == null)
-                            ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
+                            _ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsManagement2Codes = ClearRowIhsManagement(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsManagement2Codes = ClearRowIhsManagement(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
                         if (_lutIhsManagementCodes != null)
-                            ihsManagement2Codes = _lutIhsManagementCodes.Where(r => r.code != IncidIhsManagement1).ToArray();
+                            _ihsManagement2Codes = _lutIhsManagementCodes.Where(r => r.code != IncidIhsManagement1).ToArray();
                         else
-                            ihsManagement2Codes = _lutIhsManagementCodes;
+                            _ihsManagement2Codes = _lutIhsManagementCodes;
                     }
                 }
-                return ihsManagement2Codes;
+                return _ihsManagement2Codes;
             }
             set { }
         }
@@ -8328,7 +8568,8 @@ namespace HLU.UI.ViewModel
 
         public bool IhsManagement2Enabled
         {
-            get { return !String.IsNullOrEmpty(IncidIhsManagement1) && IhsManagement2Codes.Count() > 0; }
+            get { return (!String.IsNullOrEmpty(IncidIhsManagement1) || IncidIhsManagement2 != null) &&
+                IhsManagement2Codes.Count() > 0; }
         }
 
         public string IncidIhsManagement1
@@ -8350,13 +8591,41 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsManagementRows.Length > 0) && (_incidIhsManagementRows[0] != null))
-                        RemoveIncidIhsManagementRow(0);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsManagementRows[0].management = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsManagement1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsManagement1Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsManagementRow(0);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else
                 {
                     if ((_incidIhsManagementRows.Length > 0) && (_incidIhsManagementRows[0] != null))
                     {
                         _incidIhsManagementRows[0].management = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsManagement1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsManagement1Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -8419,7 +8688,26 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
-                        RemoveIncidIhsManagementRow(1);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsManagementRows[1].management = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsManagement2Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsManagementRow(1);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else if ((_incidIhsManagementRows[0] != null) && (_incidIhsManagementRows[0].management == value))
                 {
@@ -8430,6 +8718,15 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
                     {
                         _incidIhsManagementRows[1].management = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsManagement2Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -8529,7 +8826,7 @@ namespace HLU.UI.ViewModel
         #region IHS Complex
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsComplexHeader
         {
@@ -8548,11 +8845,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_complexRow> q = null;
-                HluDataSet.lut_ihs_complexRow[] ihsComplex1Codes;
 
                 if ((_lutIhsComplexCodes == null) || (_lutIhsComplexCodes.Length == 0))
                 {
-                    ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
+                    _ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -8576,19 +8872,19 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_complex.Where(r => r.code == IncidIhsComplex1);
 
                         if (q == null)
-                            ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
+                            _ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsComplex1Codes = ClearRowIhsComplex(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsComplex1Codes = ClearRowIhsComplex(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
-                        ihsComplex1Codes = _lutIhsComplexCodes;
+                        _ihsComplex1Codes = _lutIhsComplexCodes;
                     }
                 }
-                return ihsComplex1Codes;
+                return _ihsComplex1Codes;
             }
             set { }
         }
@@ -8598,11 +8894,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 IEnumerable<HluDataSet.lut_ihs_complexRow> q = null;
-                HluDataSet.lut_ihs_complexRow[] ihsComplex2Codes;
 
                 if ((_lutIhsComplexCodes == null) || (_lutIhsComplexCodes.Length == 0))
                 {
-                    ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
+                    _ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
                 }
                 //---------------------------------------------------------------------
                 // FIXED: KI105 (Mandatory multiplex codes)
@@ -8626,22 +8921,22 @@ namespace HLU.UI.ViewModel
                             q = _hluDS.lut_ihs_complex.Where(r => r.code == IncidIhsComplex2);
 
                         if (q == null)
-                            ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
+                            _ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
                             //---------------------------------------------------------------------
                             // FIX: 025 Add default sort order to all lookup tables
-                            ihsComplex2Codes = ClearRowIhsComplex(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            _ihsComplex2Codes = ClearRowIhsComplex(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                             //---------------------------------------------------------------------
                     }
                     else
                     {
                         if (_lutIhsComplexCodes != null)
-                            ihsComplex2Codes = _lutIhsComplexCodes.Where(r => r.code != IncidIhsComplex1).ToArray();
+                            _ihsComplex2Codes = _lutIhsComplexCodes.Where(r => r.code != IncidIhsComplex1).ToArray();
                         else
-                            ihsComplex2Codes = _lutIhsComplexCodes;
+                            _ihsComplex2Codes = _lutIhsComplexCodes;
                     }
                 }
-                return ihsComplex2Codes;
+                return _ihsComplex2Codes;
             }
             set { }
         }
@@ -8653,7 +8948,8 @@ namespace HLU.UI.ViewModel
 
         public bool IhsComplex2Enabled
         {
-            get { return !String.IsNullOrEmpty(IncidIhsComplex1) && IhsComplex2Codes.Count() > 0; }
+            get { return (!String.IsNullOrEmpty(IncidIhsComplex1) || IncidIhsComplex2 != null) &&
+                IhsComplex2Codes.Count() > 0; }
         }
 
         public string IncidIhsComplex1
@@ -8675,13 +8971,41 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
-                        RemoveIncidIhsComplexRow(0);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsComplexRows[0].complex = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsComplex1Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsComplexRow(0);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else
                 {
                     if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
                     {
                         _incidIhsComplexRows[0].complex = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsComplex1Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -8745,7 +9069,26 @@ namespace HLU.UI.ViewModel
                 if (value == null)
                 {
                     if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
-                        RemoveIncidIhsComplexRow(1);
+                    {
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Allow codes to be cleared (but not deleted) in bulk update mode
+                        if (_bulkUpdateMode == true)
+                        {
+                            _incidIhsComplexRows[1].complex = value;
+                            // Remove <clear> from the combobox list if it is present
+                            if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                OnPropertyChanged("IhsComplex2Codes");
+                        }
+                        else
+                        {
+                            RemoveIncidIhsComplexRow(1);
+                        }
+
+                        OnPropertyChanged("IncidIhsSummary");
+                        //---------------------------------------------------------------------
+                    }
                 }
                 else if ((_incidIhsComplexRows[0] != null) && (_incidIhsComplexRows[0].complex == value))
                 {
@@ -8756,6 +9099,15 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
                     {
                         _incidIhsComplexRows[1].complex = value;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 078 Bulk update overhaul/improvements.
+                        // 
+                        // Add <clear> to the combobox list if it isn't already present
+                        if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                            OnPropertyChanged("IhsComplex2Codes");
+                        //---------------------------------------------------------------------
+
                         OnPropertyChanged("IncidIhsSummary");
                     }
                     else
@@ -9376,12 +9728,12 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                    AddErrorList(ref _detailsErrors, "BapAuto");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+                    DelErrorList(ref _detailsErrors, "BapAuto");
             }
             else
-                UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+                DelErrorList(ref _detailsErrors, "BapAuto");
 
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
@@ -9503,9 +9855,9 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    AddErrorList(ref _detailsErrors, "BapUser");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                    DelErrorList(ref _detailsErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -9516,13 +9868,13 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
+                        AddErrorList(ref _detailsErrors, "BapUserDup");
                     else
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
+                        DelErrorList(ref _detailsErrors, "BapUserDup");
                 }
             }
             else
-                UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                DelErrorList(ref _detailsErrors, "BapUser");
 
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
@@ -9545,9 +9897,9 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                    AddErrorList(ref _detailsErrors, "BapAuto");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+                    DelErrorList(ref _detailsErrors, "BapAuto");
             }
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
@@ -9570,9 +9922,9 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    AddErrorList(ref _detailsErrors, "BapUser");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                    DelErrorList(ref _detailsErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -9583,9 +9935,9 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
+                        AddErrorList(ref _detailsErrors, "BapUserDup");
                     else
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
+                        DelErrorList(ref _detailsErrors, "BapUserDup");
                 }
             }
             OnPropertyChanged("DetailsTabLabel");
@@ -9593,6 +9945,21 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Build a enumerable of the primary (mandatory) bap habitats
+        /// based on the habitat and all the multiplex codes.
+        /// </summary>
+        /// <param name="ihsHabitat">The ihs habitat.</param>
+        /// <param name="ihsMatrix1">The ihs matrix1.</param>
+        /// <param name="ihsMatrix2">The ihs matrix2.</param>
+        /// <param name="ihsMatrix3">The ihs matrix3.</param>
+        /// <param name="ihsFormation1">The ihs formation1.</param>
+        /// <param name="ihsFormation2">The ihs formation2.</param>
+        /// <param name="ihsManagement1">The ihs management1.</param>
+        /// <param name="ihsManagement2">The ihs management2.</param>
+        /// <param name="ihsComplex1">The ihs complex1.</param>
+        /// <param name="ihsComplex2">The ihs complex2.</param>
+        /// <returns></returns>
         internal IEnumerable<string> PrimaryBapEnvironments(string ihsHabitat, string ihsMatrix1,
             string ihsMatrix2, string ihsMatrix3, string ihsFormation1, string ihsFormation2,
             string ihsManagement1, string ihsManagement2, string ihsComplex1, string ihsComplex2)
@@ -9742,9 +10109,9 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", true);
+                    AddErrorList(ref _detailsErrors, "BapAuto");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapAuto", false);
+                    DelErrorList(ref _detailsErrors, "BapAuto");
             }
             OnPropertyChanged("DetailsTabLabel");
             //---------------------------------------------------------------------
@@ -9790,9 +10157,9 @@ namespace HLU.UI.ViewModel
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    UpdateErrorList(ref _detailsErrors, "BapUser", true);
+                    AddErrorList(ref _detailsErrors, "BapUser");
                 else
-                    UpdateErrorList(ref _detailsErrors, "BapUser", false);
+                    DelErrorList(ref _detailsErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -9803,9 +10170,9 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", true);
+                        AddErrorList(ref _detailsErrors, "BapUserDup");
                     else
-                        UpdateErrorList(ref _detailsErrors, "BapUserDup", false);
+                        DelErrorList(ref _detailsErrors, "BapUserDup");
                 }
             }
             OnPropertyChanged("DetailsTabLabel");
@@ -9853,7 +10220,7 @@ namespace HLU.UI.ViewModel
         #region Maps
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string DetailsMapsHeader
         {
@@ -9941,7 +10308,7 @@ namespace HLU.UI.ViewModel
         #region Site
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string DetailsSiteHeader
         {
@@ -10071,7 +10438,7 @@ namespace HLU.UI.ViewModel
                     if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
                     {
                         HluDataSet.incid_sourcesRow newRow = IncidSourcesTable.Newincid_sourcesRow();
-                        newRow.incid_source_id = NextIncidSourceId;
+                        newRow.incid_source_id = NextIncidSourcesId;
                         newRow.incid = IncidCurrentRow.incid;
                         newRow.sort_order = rowNumber + 1;
                         _incidSourcesRows[rowNumber] = newRow;
@@ -10083,9 +10450,23 @@ namespace HLU.UI.ViewModel
                 }
                 else if ((columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal) && (newValue == null))
                 {
-                    if (_incidSourcesRows[rowNumber].RowState != DataRowState.Detached)
-                        _incidSourcesRows[rowNumber].Delete();
-                    _incidSourcesRows[rowNumber] = null;
+                    //---------------------------------------------------------------------
+                    // FIX: 078 Bulk update overhaul/improvements.
+                    // 
+                    if (_bulkUpdateMode == false)
+                    {
+                        if (_incidSourcesRows[rowNumber].RowState != DataRowState.Detached)
+                            _incidSourcesRows[rowNumber].Delete();
+                        _incidSourcesRows[rowNumber] = null;
+                    }
+                    else
+                    {
+                        _incidSourcesRows[rowNumber] = IncidSourcesTable.Newincid_sourcesRow();
+                        IncidSourcesRows[rowNumber].incid_source_id = rowNumber;
+                        IncidSourcesRows[rowNumber].source_id = Int32.MinValue;
+                        IncidSourcesRows[rowNumber].incid = RecIDs.CurrentIncid;
+                    }
+                    //---------------------------------------------------------------------
                     return;
                 }
 
@@ -10196,7 +10577,7 @@ namespace HLU.UI.ViewModel
         #region Source1
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string Source1Header
         {
@@ -10235,7 +10616,12 @@ namespace HLU.UI.ViewModel
                         new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
                 }
 
-                if (IncidSource1Id != null)
+                //---------------------------------------------------------------------
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
+                // Exclude clear option from source names in bulk update mode
+                if ((IncidSource1Id != null) && (IncidSource1Id != Int32.MinValue))
+                //---------------------------------------------------------------------
                 {
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
@@ -10290,7 +10676,12 @@ namespace HLU.UI.ViewModel
                 }
                 else if (value != null)
                 {
-                    bool wasNull = _incidSourcesRows[0] == null;
+                    //---------------------------------------------------------------------
+                    // FIX: 078 Bulk update overhaul/improvements.
+                    // 
+                    // Check for equivalent null value when in bulk update mode
+                    bool wasNull = (_incidSourcesRows[0] == null || (int)_incidSourcesRows[0]["source_id"] == Int32.MinValue);
+                    //---------------------------------------------------------------------
                     UpdateIncidSourcesRow(0, IncidSourcesTable.source_idColumn.Ordinal, value);
                     IncidSource1Date = DefaultSourceDate(IncidSource1Date, IncidSource1Id);
                     // if row added refresh source names list
@@ -10493,7 +10884,7 @@ namespace HLU.UI.ViewModel
         #region Source2
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string Source2Header
         {
@@ -10532,7 +10923,12 @@ namespace HLU.UI.ViewModel
                         new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
                 }
 
-                if (IncidSource2Id != null)
+                //---------------------------------------------------------------------
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
+                // Exclude clear option from source names in bulk update mode
+                if ((IncidSource2Id != null) && (IncidSource2Id != Int32.MinValue))
+                //---------------------------------------------------------------------
                 {
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
@@ -10586,7 +10982,12 @@ namespace HLU.UI.ViewModel
                 }
                 else if (value != null)
                 {
-                    bool wasNull = _incidSourcesRows[1] == null;
+                    //---------------------------------------------------------------------
+                    // FIX: 078 Bulk update overhaul/improvements.
+                    // 
+                    // Check for equivalent null value when in bulk update mode
+                    bool wasNull = (_incidSourcesRows[1] == null || (int)_incidSourcesRows[1]["source_id"] == Int32.MinValue);
+                    //---------------------------------------------------------------------
                     UpdateIncidSourcesRow(1, IncidSourcesTable.source_idColumn.Ordinal, value);
                     IncidSource2Date = DefaultSourceDate(IncidSource2Date, IncidSource2Id);
                     // if row added refresh source names list
@@ -10789,7 +11190,7 @@ namespace HLU.UI.ViewModel
         #region Source3
 
         //---------------------------------------------------------------------
-        // FIX: 078 Hide some group headers to reduce window height.
+        // FIX: 076 New option to hide group headers to reduce window height.
         // 
         public string Source3Header
         {
@@ -10828,7 +11229,12 @@ namespace HLU.UI.ViewModel
                         new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
                 }
 
-                if (IncidSource3Id != null)
+                //---------------------------------------------------------------------
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
+                // Exclude clear option from source names in bulk update mode
+                if ((IncidSource3Id != null) && (IncidSource3Id != Int32.MinValue))
+                //---------------------------------------------------------------------
                 {
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
@@ -10882,7 +11288,12 @@ namespace HLU.UI.ViewModel
                 }
                 else if (value != null)
                 {
-                    bool wasNull = _incidSourcesRows[2] == null;
+                    //---------------------------------------------------------------------
+                    // FIX: 078 Bulk update overhaul/improvements.
+                    // 
+                    // Check for equivalent null value when in bulk update mode
+                    bool wasNull = (_incidSourcesRows[2] == null || (int)_incidSourcesRows[2]["source_id"] == Int32.MinValue);
+                    //---------------------------------------------------------------------
                     UpdateIncidSourcesRow(2, IncidSourcesTable.source_idColumn.Ordinal, value);
                     IncidSource3Date = DefaultSourceDate(IncidSource3Date, IncidSource3Id);
                     // if row added refresh source names lists (all three)
@@ -11188,7 +11599,7 @@ namespace HLU.UI.ViewModel
 
         private int NextIncidBapId { get { return _recIDs.NextIncidBapId; } }
 
-        private int NextIncidSourceId { get { return _recIDs.NextIncidSourceId; } }
+        private int NextIncidSourcesId { get { return _recIDs.NextIncidSourcesId; } }
 
         #endregion
 
@@ -11343,9 +11754,17 @@ namespace HLU.UI.ViewModel
             return true;
         }
 
-        private void FixIhsMatrixCodes()
+        /// <summary>
+        /// Shuffle the ihs matrix codes up if there are gaps.
+        /// </summary>
+         private void FixIhsMatrixCodes()
         {
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            // Don't move the matrix codes in bulk update mode
             if (_bulkUpdateMode == true) return;
+            //---------------------------------------------------------------------
 
             // check for null values
             if (String.IsNullOrEmpty(IncidIhsMatrix1))
@@ -11405,8 +11824,18 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+         /// Shuffle the ihs formation codes up if there are gaps.
+        /// </summary>
         private void FixIhsFormationCodes()
         {
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            // Don't move the formation codes in bulk update mode
+            if (_bulkUpdateMode == true) return;
+            //---------------------------------------------------------------------
+
             // check for null values
             if (String.IsNullOrEmpty(IncidIhsFormation1) && !String.IsNullOrEmpty(IncidIhsFormation2))
             {
@@ -11420,8 +11849,18 @@ namespace HLU.UI.ViewModel
                 IncidIhsFormation2 = null;
         }
 
+        /// <summary>
+        /// Shuffle the ihs management codes up if there are gaps.
+        /// </summary>
         private void FixIhsManagementCodes()
         {
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            // Don't move the management codes in bulk update mode
+            if (_bulkUpdateMode == true) return;
+            //---------------------------------------------------------------------
+
             // check for null values
             if (String.IsNullOrEmpty(IncidIhsManagement1) && !String.IsNullOrEmpty(IncidIhsManagement2))
             {
@@ -11435,8 +11874,18 @@ namespace HLU.UI.ViewModel
                 IncidIhsManagement2 = null;
         }
 
+        /// <summary>
+        /// Shuffle the ihs complex codes up if there are gaps.
+        /// </summary>
         private void FixIhsComplexCodes()
         {
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            // Don't move the complex codes in bulk update mode
+            if (_bulkUpdateMode == true) return;
+            //---------------------------------------------------------------------
+
             // check for null values
             if (String.IsNullOrEmpty(IncidIhsComplex1) && !String.IsNullOrEmpty(IncidIhsComplex2))
             {
@@ -11452,9 +11901,15 @@ namespace HLU.UI.ViewModel
 
         private string ValidateIhsFormation1Code()
         {
-            if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) ||
-                String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null)) 
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            //if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) ||
+            //    String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null))
+            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+                (IhsHabitatCodes == null))
                 return null;
+            //---------------------------------------------------------------------
 
             var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
                 !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
@@ -11468,9 +11923,15 @@ namespace HLU.UI.ViewModel
 
         private string ValidateIhsManagement1Code()
         {
-            if ((_bulkUpdateMode == true)|| (_incidCurrentRow == null) ||
-                String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null))
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            //if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) ||
+            //    String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null))
+            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) || 
+                (IhsHabitatCodes == null))
                 return null;
+            //---------------------------------------------------------------------
 
             var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
                 !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
@@ -11486,7 +11947,11 @@ namespace HLU.UI.ViewModel
         {
             List<string[]> errors = new List<string[]>();
 
-            if (IncidSource1Id != null)
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            if (IncidSource1Id != null && IncidSource1Id != Int32.MinValue)
+            //---------------------------------------------------------------------
             {
                 if (IncidSource1Date == null)
                     errors.Add(new string[] { "IncidSource1Date", "Error: Date is mandatory for each source" });
@@ -11557,7 +12022,11 @@ namespace HLU.UI.ViewModel
         {
             List<string[]> errors = new List<string[]>();
 
-            if (IncidSource2Id != null)
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            if (IncidSource2Id != null && IncidSource2Id != Int32.MinValue)
+            //---------------------------------------------------------------------
             {
                 if (IncidSource2Date == null)
                     errors.Add(new string[] { "IncidSource2Date", "Error: Date is mandatory for each source" });
@@ -11628,7 +12097,11 @@ namespace HLU.UI.ViewModel
         {
             List<string[]> errors = new List<string[]>();
 
-            if (IncidSource3Id != null)
+            //---------------------------------------------------------------------
+            // FIX: 078 Bulk update overhaul/improvements.
+            // 
+            if (IncidSource3Id != null && IncidSource3Id != Int32.MinValue)
+            //---------------------------------------------------------------------
             {
                 if (IncidSource3Date == null)
                     errors.Add(new string[] { "IncidSource3Date", "Error: Date is mandatory for each source" });
@@ -11847,127 +12320,35 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 081 Show process and reason errors in bulk update mode.
-                //
-                if ((_incidCurrentRow == null) || (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
+                // Show errors in bulk update mode.
+                if ((_incidCurrentRow == null) ||
+                    (_incidCurrentRow.RowState == DataRowState.Detached && _bulkUpdateMode == false)) return null;
                 //---------------------------------------------------------------------
 
                 StringBuilder error = new StringBuilder();
 
                 if (String.IsNullOrEmpty(Reason))
-                    error.Append(Environment.NewLine).Append("Reason is mandatory for the history trail of every INCID");
+                    error.Append(Environment.NewLine).Append("Reason is mandatory for the history trail of every update");
 
                 if (String.IsNullOrEmpty(Process))
-                    error.Append(Environment.NewLine).Append("Process is mandatory for the history trail of every INCID");
-
-                if (_bulkUpdateMode == true) return null;
+                    error.Append(Environment.NewLine).Append("Process is mandatory for the history trail of every update");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
                 // If there are any IHS field errors then show an error on the tab label.
-                if (_ihsErrors != null && _ihsErrors.Count > 0)
+                if (IhsErrors != null && IhsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Habitats are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
-                // No need to check errors again here as they are already being checked
-                // whenever the IHS codes are changed.
-                //
-                //if (String.IsNullOrEmpty(IncidIhsHabitat))
-                //    error.Append(Environment.NewLine).Append("IHS Habitat is mandatory for every INCID");
-
-                //if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
-                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
-                //    error.Append(Environment.NewLine).Append("Matrix code 1 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
-                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
-                //    error.Append(Environment.NewLine).Append("Matrix code 2 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) && 
-                //    (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
-                //    error.Append(Environment.NewLine).Append("Matrix code 3 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) && 
-                //    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
-                //    error.Append(Environment.NewLine).Append("Formation code 1 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) && 
-                //    (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
-                //    error.Append(Environment.NewLine).Append("Formation code 2 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) && 
-                //    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
-                //    error.Append(Environment.NewLine).Append("Management code 1 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
-                //    (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
-                //    error.Append(Environment.NewLine).Append("Management code 2 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) && 
-                //    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
-                //    error.Append(Environment.NewLine).Append("Complex code 1 does not correspond to chosen IHS habitat");
-
-                //if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
-                //    (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
-                //    error.Append(Environment.NewLine).Append("Complex code 2 does not correspond to chosen IHS habitat");
-
-                //string s = ValidateIhsFormation1Code();
-                //if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
-
-                //s = ValidateIhsManagement1Code();
-                //if (!String.IsNullOrEmpty(s)) error.Append(Environment.NewLine).Append(s);
-                //---------------------------------------------------------------------
-
-                //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
-                if (_detailsErrors != null && _detailsErrors.Count > 0)
+                if (DetailsErrors != null && DetailsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Details are in error");
                 //---------------------------------------------------------------------
-
-                //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
-                // No need to check errors again here as they are already being checked
-                // when the BAP fields are changed.
-                //
-                //if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                //{
-                //    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
-                //    if (countInvalid > 0)
-                //        error.Append(Environment.NewLine).Append(String.Format(
-                //            "Invalid primary priority habitat{0} in row{0} {1}.",
-                //            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsAuto
-                //            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
-                //}
-
-                //if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
-                //{
-                //    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
-                //    if (countInvalid > 0)
-                //        error.Append(Environment.NewLine).Append(String.Format(
-                //            "Invalid secondary priority habitat{0} in row{0} {1}.",
-                //            countInvalid > 1 ? "s" : String.Empty, String.Join(", ", _incidBapRowsUser
-                //            .Where(be => !be.IsValid()).Select((be, index) => (index + 1).ToString()).ToArray())));
-
-                //    if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
-                //    {
-                //        StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
-                //                                group be by be.bap_habitat into g
-                //                                where g.Count() > 1
-                //                                select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
-                //        if (beDups.Length > 2) error.Append(beDups.Remove(0, 2));
-                //    }
-                //}
-                //---------------------------------------------------------------------
-
-                if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
-                    error.Append(Environment.NewLine).Append("Boundary basemap is mandatory for every INCID");
-
-                if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
-                    error.Append(Environment.NewLine).Append("Digitisation basemap is mandatory for every INCID");
 
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
@@ -11977,6 +12358,15 @@ namespace HLU.UI.ViewModel
                     ((Source3Errors != null) && (Source3Errors.Count > 0)))
                     error.Append(Environment.NewLine).Append("One or more Sources are in error");
                 //---------------------------------------------------------------------
+
+                if (_bulkUpdateMode == false)
+                {
+                    if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
+                        error.Append(Environment.NewLine).Append("Boundary basemap is mandatory for every INCID");
+
+                    if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
+                        error.Append(Environment.NewLine).Append("Digitisation basemap is mandatory for every INCID");
+                }
 
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
@@ -12008,9 +12398,12 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 081 Show process and reason errors in bulk update mode.
-                //
-                if ((_incidCurrentRow == null) || (_incidCurrentRow.RowState == DataRowState.Detached)) return null;
+                // FIX: 078 Bulk update overhaul/improvements.
+                // 
+                // Show errors in bulk update mode.
+                if ((_incidCurrentRow == null) ||
+                    (_incidCurrentRow.RowState == DataRowState.Detached && _bulkUpdateMode == false)) return null;
+                //---------------------------------------------------------------------
 
                 string error = null;
 
@@ -12027,24 +12420,6 @@ namespace HLU.UI.ViewModel
 
                 }
 
-                if (_bulkUpdateMode == true) return null;
-                //---------------------------------------------------------------------
-
-                //---------------------------------------------------------------------
-                // FIX: 080 Functionality to display warning level messages.
-                //    
-                switch (columnName)
-                {
-                    case "IncidOSMMUpdateStatus":
-                        if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
-                            error = "Warning: OSMM Update is outstanding";
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                }
-
-                if (_osmmUpdateMode == true) return null;
-                //---------------------------------------------------------------------
-
                 //---------------------------------------------------------------------
                 // FIX: 020 Show field errors on tab labels.
                 // Check the individual field errors to see if their parent tab label
@@ -12054,23 +12429,23 @@ namespace HLU.UI.ViewModel
                     case "Incid":
                         break;
                     case "IhsTabLabel":
-                        if (_ihsWarnings != null && _ihsWarnings.Count > 0)
+                        if (IhsWarnings != null && IhsWarnings.Count > 0)
                             error = "Warning: One or more Habitat fields have a warning";
-                    //---------------------------------------------------------------------
-                        if (_ihsErrors != null && _ihsErrors.Count > 0)
+                        //---------------------------------------------------------------------
+                        if (IhsErrors != null && IhsErrors.Count > 0)
                             error = "Error: One or more Habitat fields are in error";
                         break;
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidIhsHabitat))
+                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false)
                         {
                             error = "Error: IHS Habitat is mandatory for every INCID";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12078,15 +12453,15 @@ namespace HLU.UI.ViewModel
                         FixIhsMatrixCodes();
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) && 
+                        if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) &&
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
                         {
                             error = "Error: Matrix code 1 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12094,15 +12469,15 @@ namespace HLU.UI.ViewModel
                         FixIhsMatrixCodes();
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) && 
+                        if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) &&
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
                         {
                             error = "Error: Matrix code 2 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12114,11 +12489,11 @@ namespace HLU.UI.ViewModel
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
                         {
                             error = "Error: Matrix code 3 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12130,18 +12505,18 @@ namespace HLU.UI.ViewModel
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
                         {
                             error = "Error: Formation code 1 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                             error = ValidateIhsFormation1Code();
-                            if (error != null)
-                            {
-                                UpdateErrorList(ref _ihsErrors, columnName, true);
-                            }
-                            else
-                            {
-                                UpdateErrorList(ref _ihsErrors, columnName, false);
-                            }
+                        if (error != null)
+                        {
+                            AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        else
+                        {
+                            DelErrorList(ref _ihsErrors, columnName);
+                        }
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsFormation2":
@@ -12152,11 +12527,11 @@ namespace HLU.UI.ViewModel
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
                         {
                             error = "Error: Formation code 2 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12168,33 +12543,33 @@ namespace HLU.UI.ViewModel
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
                         {
                             error = "Error: Management code 1 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                             error = ValidateIhsManagement1Code();
-                            if (error != null)
-                            {
-                                UpdateErrorList(ref _ihsErrors, columnName, true);
-                            }
-                            else
-                            {
-                                UpdateErrorList(ref _ihsErrors, columnName, false);
-                            }
+                        if (error != null)
+                        {
+                            AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        else
+                        {
+                            DelErrorList(ref _ihsErrors, columnName);
+                        }
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsManagement2":
                         FixIhsManagementCodes();
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) && 
+                        if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) &&
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
                         {
                             error = "Error: Management code 2 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12206,11 +12581,11 @@ namespace HLU.UI.ViewModel
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
                         {
                             error = "Error: Complex code 1 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12218,15 +12593,15 @@ namespace HLU.UI.ViewModel
                         FixIhsComplexCodes();
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) && 
+                        if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) &&
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
                         {
                             error = "Error: Complex code 2 does not correspond to chosen IHS habitat";
-                            UpdateErrorList(ref _ihsErrors, columnName, true);
+                            AddErrorList(ref _ihsErrors, columnName);
                         }
                         else
                         {
-                            UpdateErrorList(ref _ihsErrors, columnName, false);
+                            DelErrorList(ref _ihsErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
@@ -12234,39 +12609,11 @@ namespace HLU.UI.ViewModel
                         //---------------------------------------------------------------------
                         // FIX: 080 Functionality to display warning level messages.
                         //    
-                        if (_detailsWarnings != null && _detailsWarnings.Count > 0)
+                        if (DetailsWarnings != null && DetailsWarnings.Count > 0)
                             error = "Warning: One or more Details have a warning";
                         //---------------------------------------------------------------------
-                        if (_detailsErrors != null && _detailsErrors.Count > 0)
+                        if (DetailsErrors != null && DetailsErrors.Count > 0)
                             error = "Error: One or more Details are in error";
-                        break;
-                    case "IncidBoundaryBaseMap":
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
-                        {
-                            error = "Error: Boundary basemap is mandatory for every INCID";
-                            UpdateErrorList(ref _detailsErrors, columnName, true);
-                        }
-                        else
-                        {
-                            UpdateErrorList(ref _detailsErrors, columnName, false);
-                        }
-                        OnPropertyChanged("DetailsTabLabel");
-                        break;
-                    case "IncidDigitisationBaseMap":
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
-                        {
-                            error = "Error: Digitisation basemap is mandatory for every INCID";
-                            UpdateErrorList(ref _detailsErrors, columnName, true);
-                        }
-                        else
-                        {
-                            UpdateErrorList(ref _detailsErrors, columnName, false);
-                        }
-                        OnPropertyChanged("DetailsTabLabel");
                         break;
                     case "SourcesTabLabel":
                         //---------------------------------------------------------------------
@@ -12328,6 +12675,56 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                //---------------------------------------------------------------------
+                // FIX: 080 Functionality to display warning level messages.
+                //    
+                switch (columnName)
+                {
+                    case "IncidOSMMUpdateStatus":
+                        if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
+                            error = "Warning: OSMM Update is outstanding";
+                        OnPropertyChanged("IhsTabLabel");
+                        break;
+                }
+
+                if (_osmmUpdateMode == true) return null;
+                //---------------------------------------------------------------------
+
+                if (_bulkUpdateMode == false)
+                {
+                    switch (columnName)
+                    {
+                        case "IncidBoundaryBaseMap":
+                            // If the field is in error add the field name to the list of errors
+                            // for the parent tab. Otherwise remove the field from the list.
+                            if (String.IsNullOrEmpty(IncidBoundaryBaseMap))
+                            {
+                                error = "Error: Boundary basemap is mandatory for every INCID";
+                                AddErrorList(ref _detailsErrors, columnName);
+                            }
+                            else
+                            {
+                                DelErrorList(ref _detailsErrors, columnName);
+                            }
+                            OnPropertyChanged("DetailsTabLabel");
+                            break;
+                        case "IncidDigitisationBaseMap":
+                            // If the field is in error add the field name to the list of errors
+                            // for the parent tab. Otherwise remove the field from the list.
+                            if (String.IsNullOrEmpty(IncidDigitisationBaseMap))
+                            {
+                                error = "Error: Digitisation basemap is mandatory for every INCID";
+                                AddErrorList(ref _detailsErrors, columnName);
+                            }
+                            else
+                            {
+                                DelErrorList(ref _detailsErrors, columnName);
+                            }
+                            OnPropertyChanged("DetailsTabLabel");
+                            break;
+                    }
+                }
+
                 // dirty commands registered with CommandManager so they are queried to see if they can execute now
                 CommandManager.InvalidateRequerySuggested();
 
@@ -12338,18 +12735,30 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public void UpdateErrorList(ref List<string> errorList, string columnName, bool addError)
+        public void AddErrorList(ref List<string> errorList, string columnName)
         {
-            if (addError == true)
-            {
-                if (!errorList.Contains(columnName))
-                    errorList.Add(columnName);
-            }
-            else
-            {
-                if (errorList.Contains(columnName))
-                    errorList.Remove(columnName);
-            }
+            if (!errorList.Contains(columnName))
+                errorList.Add(columnName);
+        }
+
+        public void DelErrorList(ref List<string> errorList, string columnName)
+        {
+            if (errorList.Contains(columnName))
+                errorList.Remove(columnName);
+        }
+
+        public void ResetWarningsErrors()
+        {
+            _ihsWarnings = new List<string>();
+            _ihsErrors = new List<string>();
+            _detailsWarnings = new List<string>();
+            _detailsErrors = new List<string>();
+            _source1Warnings = null;
+            _source2Warnings = null;
+            _source3Warnings = null;
+            _source1Errors = null;
+            _source2Errors = null;
+            _source3Errors = null;
         }
 
         #endregion
