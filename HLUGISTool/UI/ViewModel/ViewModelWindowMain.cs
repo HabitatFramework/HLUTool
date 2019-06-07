@@ -1938,7 +1938,7 @@ namespace HLU.UI.ViewModel
             // current incid have been selected in GIS then update them all and exit.
             if ((!IsFiltered) || (_fragsIncidGisCount == _fragsIncidDbCount))
             {
-                // If saving has already been attempted, when the features for
+                // If saving hasn't already been attempted, when the features for
                 // the current incid were selected in the map (above), then
                 // do the update now.
                 if (!_savingAttempted)
@@ -2037,6 +2037,15 @@ namespace HLU.UI.ViewModel
                 {
                     MessageBox.Show("The changes have not been applied - the update was cancelled.",
                         "HLU: Save Cancelled", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    //---------------------------------------------------------------------
+                    // FIXED: KI116 (Cancelled attribute updates)
+                    // 
+                    // Clear the saving in progress flags so that the (still) pending
+                    // changes aren't automatically applied when moving to another
+                    // incid (ore refreshing the current incid).
+                    _saving = false;
+                    _savingAttempted = true;
+                    //---------------------------------------------------------------------
                     return;
                 }
             }
