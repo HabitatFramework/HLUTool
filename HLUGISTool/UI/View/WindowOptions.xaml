@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="480"
+        Width="580"
         Height="Auto"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -43,7 +43,7 @@
                 <TabItem x:Name="TabDatabase"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabDatabaseEnabled}">
+                         IsEnabled="True">
 
                     <TabItem.Header>
                         <StackPanel>
@@ -69,14 +69,12 @@
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="4*" />
                             <ColumnDefinition Width="70" />
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="70" />
                         </Grid.ColumnDefinitions>
                         <Label x:Name="LabelConnectionTimeout"
                                Grid.Row="0"
@@ -95,14 +93,14 @@
                                  TextAlignment="Right" />
 
                         <Label x:Name="LabelIncidPageSize"
-                               Grid.Row="1"
-                               Grid.Column="0"
+                               Grid.Row="0"
+                               Grid.Column="2"
                                Margin="0,4,8,8"
                                HorizontalAlignment="Right"
-                               VerticalAlignment="Center" Content="Page Size"/>
+                               VerticalAlignment="Center" Content="Incid Table Page Size [rows]"/>
                         <TextBox x:Name="TextBoxIncidPageSize"
-                                 Grid.Row="1"
-                                 Grid.Column="1"
+                                 Grid.Row="0"
+                                 Grid.Column="3"
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
@@ -110,37 +108,6 @@
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                  TextAlignment="Right" />
 
-                        <Label x:Name="LabelHistoryDisplayLastN"
-                               Grid.Row="0"
-                               Grid.Column="2"
-                               Margin="8,4,8,8"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center" Content="Display History Rows"/>
-                        <TextBox x:Name="TextBoxHistoryDisplayLastN"
-                                 Grid.Row="0"
-                                 Grid.Column="3"
-                                 Grid.ColumnSpan="2"
-                                 Margin="4,8,4,8"
-                                 VerticalAlignment="Center"
-                                 BorderThickness="1"
-                                 Text="{Binding HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
-                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
-                                 TextAlignment="Right" />
-
-                        <Label x:Name="LabelBulkUpdateBlankRowMeansDelete"
-                               Grid.Row="1"
-                               Grid.Column="2"
-                               Grid.ColumnSpan="2"
-                               Margin="8,4,8,8"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center" Content="Delete Empty Bulk Update Rows?"/>
-                        <CheckBox x:Name="CheckBoxBulkUpdateBlankRowMeansDelete"
-                                  Grid.Row="1"
-                                  Grid.Column="4"
-                                  Margin="4,8,4,8"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding BulkUpdateBlankRowMeansDelete}" />
                     </Grid>
                 </GroupBox>
 
@@ -151,15 +118,14 @@
                 <TabItem x:Name="TabGIS"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         GotFocus="TabGIS_GotFocus"
-                         IsEnabled="{Binding TabGISEnabled}">
+                         IsEnabled="True">
 
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="GISTabLabel"
                                    Margin="2,0,2,0"
                                    VerticalAlignment="Bottom"
-                                   Content="GIS"
+                                   Content="GIS/Export"
                                    FontSize="13"
                                    Padding="4,2,4,4"
                                    ToolTipService.ShowOnDisabled="True" />
@@ -169,30 +135,193 @@
                     <AdornerDecorator>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <GroupBox x:Name="GroupBoxGis"
+                    <Grid x:Name="GridTabGIS">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+						<GroupBox x:Name="GroupBoxGis"
+								  HorizontalAlignment="Stretch"
+								  VerticalAlignment="Stretch"
+								  Header="GIS Options">
+							<Grid Margin="2,4,2,2">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+
+								<Grid x:Name="GridGisApp"
+									  Grid.Row="0"
+									  Grid.Column="0"
+									  Margin="8,0,0,0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="80" />
+									</Grid.ColumnDefinitions>
+									<Label x:Name="LabelPreferredGis"
+										   Grid.Row="0"
+										   Grid.Column="0"
+										   Margin="4,8,4,8"
+										   HorizontalAlignment="Right"
+										   VerticalAlignment="Center" Content="Preferred GIS Application"/>
+									<ComboBox x:Name="ComboBoxPreferredGis"
+											  Grid.Row="0"
+											  Grid.Column="1"
+											  Margin="4,8,4,8"
+											  BorderThickness="1"
+											  IsEnabled="{Binding GisAppsEnabled}"
+											  ItemsSource="{Binding GisApps}"
+											  SelectedValue="{Binding PreferredGis, ValidatesOnDataErrors=True}"
+											  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+								</Grid>
+
+								<Grid x:Name="GridMapPath"
+									  Grid.Row="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="170" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="30" />
+									</Grid.ColumnDefinitions>
+
+										<Label x:Name="LabelMapPath"
+											   Grid.Column="0"
+											   Margin="4,8,4,0"
+											   HorizontalAlignment="Left"
+											   VerticalAlignment="Center" Content="Map Document/Workspace:"/>
+										<TextBox x:Name="TextBoxMapPath"
+													Grid.Column="1"
+													Margin="4,8,1,8"
+													BorderThickness="1"
+													IsEnabled="False"
+													Text="{Binding MapDocument, ValidatesOnDataErrors=True}"
+													Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+													TextAlignment="Left"
+													ToolTip="{Binding MapPath}"
+													ToolTipService.ShowOnDisabled="True" />
+										<Button x:Name="ButtonBrowseMap"
+												Grid.Column="2"
+												Margin="1,8,4,8"
+												Command="{Binding BrowseMapPathCommand}"
+												Content="..."
+												IsEnabled="{Binding CanBrowseMapPath}" />
+
+								</Grid>
+
+								<Grid x:Name="GridMinAutoZoom"
+									  Grid.Row="2">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="80" />
+									</Grid.ColumnDefinitions>
+
+									<Label x:Name="LabelMinAutoZoom"
+										   Grid.Column="0"
+										   Margin="4,4,4,4"
+										   HorizontalAlignment="Right"
+										   VerticalAlignment="Center" Content="{Binding MinAutoZoomText}"/>
+									<TextBox x:Name="TextBoxMinAutoZoom"
+											 Grid.Column="1"
+											 Margin="4,8,1,8"
+											 BorderThickness="1"
+											 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+											 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+											 TextAlignment="Right" />
+								</Grid>
+
+							</Grid>
+						</GroupBox>
+
+						<GroupBox x:Name="GroupBoxExport"
+								  HorizontalAlignment="Stretch"
+								  VerticalAlignment="Stretch"
+								  Header="Export Options"
+								  Grid.Row="2">
+							<Grid Margin="2,4,2,2">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+
+								<Grid x:Name="GridExportPath"
+									  Grid.Row="2">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="170" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="30" />
+									</Grid.ColumnDefinitions>
+
+									<Label x:Name="LabelExportPath"
+										   Grid.Column="0"
+										   Margin="4,4,4,4"
+										   HorizontalAlignment="Right"
+										   VerticalAlignment="Center" Content="Export Default Directory:"/>
+									<TextBox x:Name="TextBoxExportPath"
+											 Grid.Column="1"
+											 Margin="4,8,1,8"
+											 BorderThickness="1"
+											 IsEnabled="False"
+											 Text="{Binding ExportPath, ValidatesOnDataErrors=True}"
+											 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+											 TextAlignment="Left"
+											 ToolTip="{Binding ExportPath}"
+											 ToolTipService.ShowOnDisabled="True" />
+									<Button x:Name="ButtonBrowseExportPath"
+											Grid.Column="2"
+											Margin="1,8,4,8"
+											Command="{Binding BrowseExportPathCommand}"
+											Content="..."
+											IsEnabled="{Binding CanBrowseExportPath}" />
+								</Grid>
+
+								</Grid>
+						</GroupBox>
+
+                        </Grid>
+
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+                <TabItem x:Name="TabHistory"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         GotFocus="TabHistory_GotFocus"
+                         IsEnabled="True">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="HistoryTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="History"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxHistory"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
-                          Header="GIS Options">
+                          Header="History Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" MinHeight="120" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="9*" MinWidth="170" />
-                            <ColumnDefinition Width="10*" />
-                        </Grid.ColumnDefinitions>
 
                         <Grid x:Name="GridHistoryColumns"
                               Grid.Row="0"
                               Grid.Column="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" MinWidth="55" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="180"/>
                             </Grid.ColumnDefinitions>
                             <Label x:Name="LabelHistoryColumns1"
                                    Grid.Row="0"
@@ -201,8 +330,7 @@
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top">
                                 <TextBlock HorizontalAlignment="Right"
-                                           Text="{Binding HistoryColumnsLabel}"
-                                           TextWrapping="Wrap" />
+                                           Text="History Display Columns" />
                             </Label>
 
                             <ListBox x:Name="ListBoxHistoryColumns"
@@ -249,122 +377,31 @@
                             </ListBox>
                         </Grid>
 
-                        <Grid x:Name="GridGisApp"
-                              Grid.Row="0"
-                              Grid.Column="1"
-                              Margin="8,0,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Label x:Name="LabelPreferredGis"
-                                   Grid.Row="0"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Preferred GIS Application"/>
-                            <ComboBox x:Name="ComboBoxPreferredGis"
-                                      Grid.Row="0"
-                                      Grid.Column="1"
-                                      Margin="4,8,4,8"
-                                      BorderThickness="1"
-                                      IsEnabled="{Binding GisAppsEnabled}"
-                                      ItemsSource="{Binding GisApps}"
-                                      SelectedValue="{Binding PreferredGis, ValidatesOnDataErrors=True}"
-                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
-
-                            <Label x:Name="LabelMapPath"
-                                   Grid.Row="1"
-                                   Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Margin="4,8,4,0"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Bottom" Content="Map Document/Workspace:"/>
-                            <Grid x:Name="GridMapPath"
-                                  Grid.Row="2"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="30" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox x:Name="TextBoxMapPath"
-                                         Grid.Column="0"
-                                         Margin="4,8,1,8"
-                                         BorderThickness="1"
-                                         IsEnabled="False"
-                                         Text="{Binding MapDocument, ValidatesOnDataErrors=True}"
-                                         Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
-                                         TextAlignment="Left"
-                                         ToolTip="{Binding MapPath}"
-                                         ToolTipService.ShowOnDisabled="True" />
-                                <Button x:Name="ButtonBrowseMap"
-                                        Grid.Column="1"
-                                        Margin="1,8,4,8"
-                                        Command="{Binding BrowseMapPathCommand}"
-                                        Content="..."
-                                        IsEnabled="{Binding CanBrowseMapPath}" />
-                            </Grid>
-
-                        </Grid>
-
-                        <Grid x:Name="GridExportPath"
+                        <Grid x:Name="GridHistoryRows"
                               Grid.Row="1"
-                              Grid.ColumnSpan="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="170" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="30" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label x:Name="LabelExportPath"
-                                   Grid.Column="0"
-                                   Margin="4,4,4,4"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Export Default Directory:"/>
-                            <TextBox x:Name="TextBoxExportPath"
-                                     Grid.Column="1"
-                                     Margin="4,8,1,8"
-                                     BorderThickness="1"
-                                     IsEnabled="False"
-                                     Text="{Binding ExportPath, ValidatesOnDataErrors=True}"
-                                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
-                                     TextAlignment="Left"
-                                     ToolTip="{Binding ExportPath}"
-                                     ToolTipService.ShowOnDisabled="True" />
-                            <Button x:Name="ButtonBrowseExportPath"
-                                    Grid.Column="2"
-                                    Margin="1,8,4,8"
-                                    Command="{Binding BrowseExportPathCommand}"
-                                    Content="..."
-                                    IsEnabled="{Binding CanBrowseExportPath}" />
-                        </Grid>
-
-                        <Grid x:Name="GridMinAutoZoom"
-                              Grid.Row="2"
-                              Grid.ColumnSpan="2">
+                              Grid.Column="0"
+							  Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
 
-                            <Label x:Name="LabelMinAutoZoom"
-                                   Grid.Column="0"
-                                   Margin="4,4,4,4"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="{Binding MinAutoZoomText}"/>
-                            <TextBox x:Name="TextBoxMinAutoZoom"
-                                     Grid.Column="1"
-                                     Margin="4,8,1,8"
-                                     BorderThickness="1"
-	                                 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
-                                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
-		                             TextAlignment="Right" />
+                        <Label x:Name="LabelHistoryDisplayLastN"
+                               Grid.Row="0"
+                               Grid.Column="0"
+                               Margin="8,4,8,8"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center" Content="Display History Rows"/>
+                        <TextBox x:Name="TextBoxHistoryDisplayLastN"
+                                 Grid.Row="0"
+                                 Grid.Column="1"
+                                 Grid.ColumnSpan="2"
+                                 Margin="4,8,4,8"
+                                 VerticalAlignment="Center"
+                                 BorderThickness="1"
+                                 Text="{Binding HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+                                 TextAlignment="Right" />
                         </Grid>
 
                     </Grid>
@@ -378,7 +415,7 @@
                 <TabItem x:Name="TabInterface"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabGISEnabled}">
+                         IsEnabled="True">
 
                     <TabItem.Header>
                         <StackPanel>
@@ -545,7 +582,7 @@
                                    Grid.Column="0"
                                    Margin="4,4,4,0"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Reset OSMM Update Status On Manual Update?"/>
+                                   VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update?"/>
                             <CheckBox x:Name="CheckBoxResetOSMMUpdatesStatus"
                                       Grid.Row="0"
                                       Grid.Column="1"
@@ -566,14 +603,14 @@
                 <TabItem x:Name="TabSQL"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabSQLEnabled}">
+                         IsEnabled="True">
 
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="SQLTabLabel"
                                    Margin="2,0,2,0"
                                    VerticalAlignment="Bottom"
-                                   Content="SQL Query"
+                                   Content="Filter"
                                    FontSize="13"
                                    Padding="4,2,4,4"
                                    ToolTipService.ShowOnDisabled="True" />
@@ -587,7 +624,7 @@
                           Grid.Row="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
-                          Header="SQL Query Options">
+                          Header="Filter Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -595,28 +632,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid x:Name="GridWarnBeforeGISSelect" Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="120" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label x:Name="LabelWarnBeforeGISSelect"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Warn Before GIS Select?"/>
-                            <ComboBox x:Name="ComboBoxWarnBeforeGISSelect"
-                                      Grid.Column="1"
-                                      Margin="4,8,4,8"
-                                      BorderThickness="1"
-                                      ItemsSource="{Binding WarnBeforeGISSelectOptions}"
-                                      SelectedValue="{Binding WarnBeforeGISSelect, ValidatesOnDataErrors=True}"
-                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
-
-                        </Grid>
-
-                        <Grid x:Name="GridSQLSelect" Grid.Row="1">
+                        <Grid x:Name="GridSQLSelect" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="30" />
@@ -651,6 +667,27 @@
 
                         </Grid>
 
+                        <Grid x:Name="GridWarnBeforeGISSelect" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelWarnBeforeGISSelect"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Warn Before GIS Select?"/>
+                            <ComboBox x:Name="ComboBoxWarnBeforeGISSelect"
+                                      Grid.Column="1"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding WarnBeforeGISSelectOptions}"
+                                      SelectedValue="{Binding WarnBeforeGISSelect, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+                        </Grid>
+
                         <Grid x:Name="GridSqlPath" Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="170" />
@@ -663,7 +700,7 @@
                                    Grid.Column="0"
                                    Margin="4,4,4,4"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Sql Query Default Directory:"/>
+                                   VerticalAlignment="Center" Content="Default Query Directory:"/>
                             <TextBox x:Name="TextBoxSqlPath"
                                      Grid.Column="1"
                                      Margin="4,8,1,8"
@@ -694,14 +731,14 @@
                 <TabItem x:Name="TabDates"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabDatesEnabled}">
+                         IsEnabled="True">
 
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="DatesTabLabel"
                                    Margin="2,0,2,0"
                                    VerticalAlignment="Bottom"
-                                   Content="Vague Dates"
+                                   Content="Dates"
                                    FontSize="13"
                                    Padding="4,2,4,4"
                                    ToolTipService.ShowOnDisabled="True" />
@@ -714,7 +751,7 @@
                 <GroupBox x:Name="GroupBoxDates"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
-                          Header="Vague Date Season Names">
+                          Header="Date Options">
                     <Grid Margin="2,4,2,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -817,6 +854,91 @@
 
         		</TabItem>
 
+                <TabItem x:Name="TabBulkUpdate"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding CanBulkUpdate}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="BulkUpdateTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="Bulk Update"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxBulkUpdate"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="Bulk Update Options">
+                    <Grid Margin="2,4,2,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid x:Name="GridBulkUpdateDefaults" Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="25" />
+                            </Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+
+                            <Label x:Name="LabelDeleteMultiplexCodes"
+                                   Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Default Delete Invalid Multiplex Rows?"/>
+                            <CheckBox x:Name="CheckBoxDeleteMultiplexCodes"
+                                      Grid.Row="0"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding DeleteMultiplexCodes}" />
+                            <Label x:Name="LabelDeleteBapHabitats"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Default Delete Orphan Priority Habitats?"/>
+                            <CheckBox x:Name="CheckBoxDeleteBapHabitats"
+                                      Grid.Row="1"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding DeleteBapHabitats}" />
+                            <Label x:Name="LabelCreateHistory"
+                                   Grid.Row="2"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Default Create History Records?"/>
+                            <CheckBox x:Name="CheckBoxCreateHistory"
+                                      Grid.Row="2"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding CreateHistoryRecords}" />
+                        </Grid>
+
+                    </Grid>
+                </GroupBox>
+
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
 
         	</TabControl>
 

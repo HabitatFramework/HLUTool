@@ -473,14 +473,14 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool BulkUpdateBlankRowMeansDelete {
+        public bool BulkUpdateDeleteMultiplexCodes {
             get {
-                return ((bool)(this["BulkUpdateBlankRowMeansDelete"]));
+                return ((bool)(this["BulkUpdateDeleteMultiplexCodes"]));
             }
             set {
-                this["BulkUpdateBlankRowMeansDelete"] = value;
+                this["BulkUpdateDeleteMultiplexCodes"] = value;
             }
         }
         
@@ -1000,6 +1000,32 @@ namespace HLU.Properties {
             }
             set {
                 this["CodeAnyRow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool BulkUpdateDeleteBapHabitats {
+            get {
+                return ((bool)(this["BulkUpdateDeleteBapHabitats"]));
+            }
+            set {
+                this["BulkUpdateDeleteBapHabitats"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool BulkUpdateCreateHistoryRecords {
+            get {
+                return ((bool)(this["BulkUpdateCreateHistoryRecords"]));
+            }
+            set {
+                this["BulkUpdateCreateHistoryRecords"] = value;
             }
         }
     }
