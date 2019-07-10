@@ -1,0 +1,265 @@
+﻿<Window x:Class="HLU.UI.View.WindowBulkUpdate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{Binding Path=WindowTitle}" WindowStyle="SingleBorderWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        Height="Auto" MinWidth="480" ShowInTaskbar="False" Icon="..\..\Icons\HLUIcon.png">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
+                <!--  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/>  -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,4,4,4" Width="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="23" />
+            </Grid.RowDefinitions>
+            <GroupBox Name="GroupBoxWindowBulkUpdate" Header="Bulk Update Options">
+
+                <Grid Name="GridWindowBulkUpdate" Margin="2,8,2,2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid x:Name="GridDeleteOrphanBapHabitats"
+                          Grid.Row="0"
+						  Grid.Column="0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelDeleteOrphanBapHabitats"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Delete Orphan Priority Habitats?">
+                        </Label>
+                        <CheckBox Name="CheckBoxDeleteOrphanBapHabitats"
+                                  Grid.Column="1"
+                                  Margin="0,8,0,4"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Path=DeleteOrphanBapHabitats}" />
+                    </Grid>
+
+                    <Grid x:Name="GridDeletePotentialBapHabitats"
+                          Grid.Row="0"
+						  Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelDeletePotentialBapHabitats"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Delete Potential Priority Habitats?">
+                        </Label>
+                        <CheckBox Name="CheckBoxDeletePotentialBapHabitats"
+                                  Grid.Column="1"
+                                  Margin="0,8,0,4"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Path=DeletePotentialBapHabitats}" />
+                    </Grid>
+
+                    <Grid x:Name="GridDeleteMultiplexCodes"
+                          Grid.Row="1"
+						  Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="90" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelDeleteMultiplexCodes"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Delete Existing Multiplex Rows?"
+							   IsEnabled="{Binding DisableInOSMMBulkUpdateMode}"/>
+                        <ComboBox Name="ComboBoxDeleteMultiplexCodes"
+                                  Grid.Column="1"
+                                  Margin="4,6,4,2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  IsEditable="False"
+                                  IsReadOnly="False"
+                                  ItemsSource="{Binding DeleteMultiplexCodesActions,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValue="{Binding DeleteMultiplexCodes,
+                                                        ValidatesOnDataErrors=True}"
+                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                  ToolTipService.ShowOnDisabled="True"
+								  IsEnabled="{Binding Path=DisableInOSMMBulkUpdateMode}" />
+                    </Grid>
+
+                    <Grid x:Name="GridDeleteSources"
+                          Grid.Row="2"
+						  Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelDeleteSources"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Delete Existing Source Rows?"
+							   IsEnabled="false" />
+                        <CheckBox Name="CheckBoxDeleteSources"
+                                  Grid.Column="1"
+                                  Margin="0,8,0,4"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Path=DeleteSources, Mode=OneWay}"
+								  IsEnabled="false" />
+                    </Grid>
+
+                    <Grid x:Name="GridCreateHistory"
+                          Grid.Row="3"
+						  Grid.Column="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label x:Name="LabelCreateHistory"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Content="Create History Records?"
+							   IsEnabled="{Binding DisableInOSMMBulkUpdateMode}"/>
+                        <CheckBox x:Name="CheckBoxCreateHistory"
+                                  Grid.Column="1"
+                                  Margin="0,8,0,4"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding CreateHistory}"
+								  IsEnabled="{Binding DisableInOSMMBulkUpdateMode}" />
+
+                    </Grid>
+
+                    <Grid x:Name="GridDeterminationQuality"
+                          Grid.Row="4"
+						  Grid.ColumnSpan="2"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="260" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelOSMMDeterminationQuality"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Habitat Determination Quality?"
+							   Visibility="{Binding Path=ShowInOSMMBulkUpdateMode}">
+                        </Label>
+                        <ComboBox Name="ComboBoxDeterminationQuality"
+                                  Grid.Column="1"
+							      Grid.ColumnSpan="2"
+                                  Margin="4,6,4,2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  DisplayMemberPath="description"
+                                  IsEditable="False"
+                                  IsReadOnly="False"
+                                  ItemsSource="{Binding DeterminationQualityCodes,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValue="{Binding DeterminationQuality,
+                                                        ValidatesOnDataErrors=True}"
+                                  SelectedValuePath="code"
+                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                  ToolTipService.ShowOnDisabled="True"
+								  Visibility="{Binding Path=ShowInOSMMBulkUpdateMode}" />
+                    </Grid>
+
+                    <Grid x:Name="GridInterpretationQuality"
+                          Grid.Row="5"
+						  Grid.ColumnSpan="2"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Name="LabelInterpretationQuality"
+                               Grid.Column="0"
+                               Margin="8,8,8,4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+							   Content="Habitat Interpretation Quality?"
+							   Visibility="{Binding Path=ShowInOSMMBulkUpdateMode}">
+                        </Label>
+                        <ComboBox Name="ComboBoxInterpretationQuality"
+                                  Grid.Column="1"
+							      Grid.ColumnSpan="2"
+                                  Margin="4,6,4,2"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Center"
+                                  DisplayMemberPath="description"
+                                  IsEditable="False"
+                                  IsReadOnly="False"
+                                  ItemsSource="{Binding InterpretationQualityCodes,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValue="{Binding InterpretationQuality,
+                                                        ValidatesOnDataErrors=True}"
+                                  SelectedValuePath="code"
+                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                  ToolTipService.ShowOnDisabled="True"
+								  Visibility="{Binding Path=ShowInOSMMBulkUpdateMode}" />
+                    </Grid>
+
+				</Grid>
+
+            </GroupBox>
+            <Grid Name="GridButtons" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="82" />
+                    <ColumnDefinition Width="82" />
+                </Grid.ColumnDefinitions>
+                <Button Name="ButtonOk" Grid.Column="1" IsDefault="True" Margin="0,0,2,0"
+                        Command="{Binding Path=OkCommand}" >_OK</Button>
+                <Button Name="ButtonCancel" Grid.Column="2" IsCancel="True" Margin="2,0,0,0"
+                        Command="{Binding Path=CancelCommand}" >_Cancel</Button>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

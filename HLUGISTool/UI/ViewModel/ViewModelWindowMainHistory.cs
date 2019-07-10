@@ -42,7 +42,9 @@ namespace HLU.UI.ViewModel
         /// <param name="operation">One of the members of the Operations enum describing the operation 
         /// that created the new history records.</param>
         internal void HistoryWrite(Dictionary<int, string> fixedValues,
-            DataTable newHistoryRecords, ViewModelWindowMain.Operations operation)
+            DataTable newHistoryRecords,
+            ViewModelWindowMain.Operations operation,
+            DateTime nowDtTm)
         {
             if ((newHistoryRecords == null) || (newHistoryRecords.Rows.Count == 0)) return;
 
@@ -68,13 +70,6 @@ namespace HLU.UI.ViewModel
                 // and avoid separate updates with identical details (except the time) being merged together
                 // when displayed by the tool.
                 {
-                    //---------------------------------------------------------------------
-                    // FIX: 028 Only update DateTime fields to whole seconds
-                    // Fractions of a second can cause rounding differences when
-                    // comparing DateTime fields later in some databases.
-                    DateTime currDtTm = DateTime.Now;
-                    DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                    //---------------------------------------------------------------------
                     fixedValueDict.Add(_viewModelMain.HluDataset.history.modified_dateColumn.Ordinal, nowDtTm);
                 }
                 //---------------------------------------------------------------------

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="HLU.UI.View.WindowSplash"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="HLU GIS Tool" Height="300" Width="300" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="/HluGisTool;component/Icons/HLUIcon.png"> 
+    Title="HLU Tool" Height="300" Width="300" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="/HluGisTool;component/Icons/HLUIcon.png"> 
     <Window.Background>
         <ImageBrush ImageSource="..\..\Icons\HluSplashBg.png" />
     </Window.Background>

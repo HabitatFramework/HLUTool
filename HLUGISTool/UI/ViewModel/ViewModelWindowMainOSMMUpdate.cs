@@ -48,16 +48,19 @@ namespace HLU.UI.ViewModel
 
         public void StartOSMMUpdate()
         {
+            // Start the OSMM Update mode
             _viewModelMain.OSMMUpdateMode = true;
+
+            // Disable all the tabs
             _viewModelMain.TabIhsControlsEnabled = false;
             _viewModelMain.TabDetailsControlsEnabled = false;
             _viewModelMain.TabSourcesControlsEnabled = false;
 
-            // Reset the incid and map selections and move
-            // to the first incid in the database.
-            _viewModelMain.ApplyOSMMUpdatesFilter(null, null, null, null);
-
+            // Refresh all the controls
             _viewModelMain.RefreshAll();
+
+            // Open the OSMM Update filter
+            _viewModelMain.OpenWindowQueryOSMM(true);
         }
 
         /// <summary>
@@ -172,7 +175,7 @@ namespace HLU.UI.ViewModel
         {
             // Get the incid column number
             int incidOrdinal =
-                _viewModelMain.IncidSelection.Columns[_viewModelMain.DataBase.ColumnAlias(_viewModelMain.HluDataset.incid.incidColumn)].Ordinal;
+                _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
 
             // Get the column names
             string incidColumn = _viewModelMain.HluDataset.incid_osmm_updates.incidColumn.ColumnName;
@@ -226,16 +229,23 @@ namespace HLU.UI.ViewModel
 
         private void OSMMUpdateResetControls()
         {
+            // Reset the incid filter
             _viewModelMain.OSMMUpdateMode = null;
             _viewModelMain.IncidCurrentRowIndex = 1;
+
+            // Stop the bulk update mode
             _viewModelMain.OSMMUpdateMode = false;
-            
+
+            // Enable all the tabs
             _viewModelMain.TabIhsControlsEnabled = true;
             _viewModelMain.TabDetailsControlsEnabled = true;
             _viewModelMain.TabSourcesControlsEnabled = true;
             _viewModelMain.TabItemHistoryEnabled = true;
 
+            // Refresh all the controls
             _viewModelMain.RefreshAll();
+
+            // Reset the cursor
             _viewModelMain.ChangeCursor(Cursors.Arrow, String.Empty);
         }
     }

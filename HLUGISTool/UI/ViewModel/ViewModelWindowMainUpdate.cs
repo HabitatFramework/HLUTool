@@ -36,6 +36,10 @@ namespace HLU.UI.ViewModel
     {
         ViewModelWindowMain _viewModelMain;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewModelWindowMainUpdate"/> class.
+        /// </summary>
+        /// <param name="viewModelMain">The view model main.</param>
         public ViewModelWindowMainUpdate(ViewModelWindowMain viewModelMain)
         {
             _viewModelMain = viewModelMain;
@@ -194,7 +198,7 @@ namespace HLU.UI.ViewModel
                 Dictionary<int, string> fixedValues = new Dictionary<int, string>();
                 fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, _viewModelMain.Incid);
                 ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
-                vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.AttributeUpdate);
+                vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.AttributeUpdate, nowDtTm);
 
                 _viewModelMain.DataBase.CommitTransaction();
                 _viewModelMain.HluDataset.AcceptChanges();
@@ -330,15 +334,8 @@ namespace HLU.UI.ViewModel
             viewModelMain.IncidCurrentRow.last_modified_date = viewModelMain.IncidLastModifiedDateVal;
         }
 
-        internal void UpdateIncidModifiedColumns(string incid)
+        internal void UpdateIncidModifiedColumns(string incid, DateTime nowDtTm)
         {
-            //---------------------------------------------------------------------
-            // FIX: 028 Only update DateTime fields to whole seconds
-            // Fractions of a second can cause rounding differences when
-            // comparing DateTime fields later in some databases.
-            DateTime currDtTm = DateTime.Now;
-            DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-            //---------------------------------------------------------------------
             if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
                 _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_dateColumn.ColumnName),

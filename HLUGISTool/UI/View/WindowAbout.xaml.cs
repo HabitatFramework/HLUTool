@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2019 LaSER
 // 
 // This file is part of HLUTool.
 // 
@@ -17,37 +17,28 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
-using System.Reflection;
-using System.Windows.Controls;
-using HLU.UI.ViewModel;
+using System.Diagnostics;
+using System.Windows.Navigation;
 
 namespace HLU.UI.View
 {
     //---------------------------------------------------------------------
-    // CHANGED: CR49 Process proposed OSMM Updates
-    // Functionality to process proposed OSMM Updates.
-    //    
+    // FIX: 079 Display links to online guides in new 'About' window.
+    //
     /// <summary>
-    /// Interaction logic for WindowQueryOSMM.xaml
+    /// Interaction logic for WindowAbout.xaml
     /// </summary>
-    public partial class WindowQueryOSMM : Window
+    public partial class WindowAbout : Window
     {
-        public WindowQueryOSMM()
+        public WindowAbout()
         {
             InitializeComponent();
-
         }
 
-        void OSMMUpdates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            if (sender != null)
-            {
-                ViewModelWindowQueryOSMM _viewModel = (ViewModelWindowQueryOSMM)this.DataContext;
-
-                OSMMUpdates selectedRow = (OSMMUpdates)DataGridOSMMUpdatesSummary.SelectedItem;
-
-                _viewModel.OSMMUpdatesSelectedRow(selectedRow);
-            }
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
     //---------------------------------------------------------------------

@@ -16,10 +16,18 @@
 // You should have received a copy of the GNU General Public License
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Windows;
-using System.Reflection;
 using System.Windows.Controls;
-using HLU.UI.ViewModel;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace HLU.UI.View
 {
@@ -28,26 +36,13 @@ namespace HLU.UI.View
     // Functionality to process proposed OSMM Updates.
     //    
     /// <summary>
-    /// Interaction logic for WindowQueryOSMM.xaml
+    /// Interaction logic for WindowBulkUpdate.xaml
     /// </summary>
-    public partial class WindowQueryOSMM : Window
+    public partial class WindowBulkUpdate : Window
     {
-        public WindowQueryOSMM()
+        public WindowBulkUpdate()
         {
             InitializeComponent();
-
-        }
-
-        void OSMMUpdates_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender != null)
-            {
-                ViewModelWindowQueryOSMM _viewModel = (ViewModelWindowQueryOSMM)this.DataContext;
-
-                OSMMUpdates selectedRow = (OSMMUpdates)DataGridOSMMUpdatesSummary.SelectedItem;
-
-                _viewModel.OSMMUpdatesSelectedRow(selectedRow);
-            }
         }
     }
     //---------------------------------------------------------------------

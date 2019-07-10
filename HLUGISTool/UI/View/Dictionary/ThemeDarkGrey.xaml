@@ -74,7 +74,6 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{StaticResource DarkColor}" />
-    <SolidColorBrush x:Key="NormalBackgroundBrush" Color="#FF4A4A4A" />
 
     <LinearGradientBrush x:Key="SelectedBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Offset="0" Color="{StaticResource TopGradientSelectColor}" />
@@ -4548,6 +4547,16 @@
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
 
+	<Style TargetType="{x:Type Hyperlink}">
+		<Style.Triggers>
+			<Trigger Property="IsMouseOver" Value="True">
+				<Setter Property="Foreground" Value="Red" />
+			</Trigger>
+		</Style.Triggers>
+		<Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+		<Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
+	</Style>
+
     <Style TargetType="{x:Type Label}">
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -4560,7 +4569,9 @@
                                           RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false" />
+                        <Trigger Property="IsEnabled" Value="false">
+					        <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />
@@ -4617,7 +4628,7 @@
     </Style>
 
     <Style TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{DynamicResource NormalBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource DarkBorderBrush}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">

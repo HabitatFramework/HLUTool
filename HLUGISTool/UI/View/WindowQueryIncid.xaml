@@ -32,9 +32,6 @@
 
             <GroupBox Name="GroupQueryIncid">
 
-            <AdornerDecorator>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-
             <Grid Name="GridQueryIncid" Margin="2,8,2,2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -50,9 +47,6 @@
                          Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                          IsEnabled="True" Margin="8,0,13,8"></TextBox>
             </Grid>
-
-                </ScrollViewer>
-            </AdornerDecorator>
 
             </GroupBox>
 

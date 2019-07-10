@@ -86,9 +86,13 @@ namespace HLU.UI.ViewModel
         private string _seasonWinter = Settings.Default.SeasonNames[3];
         private string _vagueDateDelimiter = Settings.Default.VagueDateDelimiter;
 
-        private bool _deleteMutiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
-        private bool _deleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
-        private bool _createHistoryRecords = Settings.Default.BulkUpdateCreateHistoryRecords;
+        private bool _bulkDeleteOrphanBapHabitats = Settings.Default.BulkUpdateDeleteOrphanBapHabitats;
+        private bool _bulkDeletePotentialBapHabitats = Settings.Default.BulkUpdateDeletePotentialBapHabitats;
+        private int _bulkDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
+        private bool _bulkCreateHistoryRecords = Settings.Default.BulkUpdateCreateHistoryRecords;
+        private string _bulkDeterminationQuality = Settings.Default.BulkUpdateDeterminationQuality;
+        private string _bulkInterpretationQuality = Settings.Default.BulkUpdateInterpretationQuality;
+        private Nullable<int> _bulkOSMMSourceId = Settings.Default.BulkOSMMSourceId;
 
         private string _bakMapPath;
         private string _bakExportPath;
@@ -236,10 +240,18 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
             // 
-            // Bulk Update Options
-            Settings.Default.BulkUpdateDeleteMultiplexCodes = _deleteMutiplexCodes;
-            Settings.Default.BulkUpdateDeleteBapHabitats = _deleteBapHabitats;
-            Settings.Default.BulkUpdateCreateHistoryRecords = _createHistoryRecords;
+            // Bulk update options
+            Settings.Default.BulkUpdateDeleteOrphanBapHabitats = _bulkDeleteOrphanBapHabitats;
+            Settings.Default.BulkUpdateDeletePotentialBapHabitats = _bulkDeletePotentialBapHabitats;
+            Settings.Default.BulkUpdateDeleteMultiplexCodes = _bulkDeleteMultiplexCodes;
+            Settings.Default.BulkUpdateCreateHistoryRecords = _bulkCreateHistoryRecords;
+            //---------------------------------------------------------------------
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 Process bulk OSMM Updates
+            // OSMM bulk update options
+            Settings.Default.BulkUpdateDeterminationQuality = _bulkDeterminationQuality;
+            Settings.Default.BulkUpdateInterpretationQuality = _bulkInterpretationQuality;
+            Settings.Default.BulkOSMMSourceId = (int)_bulkOSMMSourceId;
             //---------------------------------------------------------------------
 
             Settings.Default.Save();
@@ -399,7 +411,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 string distUnits = Settings.Default.MapDistanceUnits;
-                return string.Format("Minimum auto zoom size [{0}]:", distUnits);
+                return string.Format("Minimum auto zoom size [{0}]", distUnits);
             }
         }
 
@@ -953,16 +965,35 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
+        /// Gets or sets whether existing multiplex codes should be deleted.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if existing multiplex codes should be deleted; otherwise, <c>false</c>.
+        /// </value>
+        public DeleteMultiplexCodesAction[] BulkDeleteMultiplexCodesActions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(DeleteMultiplexCodesAction)).Cast<DeleteMultiplexCodesAction>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
         /// Gets or sets the default option to delete invalid multiplex
         /// codes when applying bulk updates.
         /// </summary>
         /// <value>
         /// The default option for deleting invalid multiplex codes.
         /// </value>
-        public bool DeleteMultiplexCodes
+        public DeleteMultiplexCodesAction? BulkDeleteMultiplexCodes
         {
-            get { return _deleteMutiplexCodes; }
-            set { _deleteMutiplexCodes = value; }
+            get { return (DeleteMultiplexCodesAction)_bulkDeleteMultiplexCodes; }
+            set
+            {
+                _bulkDeleteMultiplexCodes = (int)value;
+            }
         }
 
         /// <summary>
@@ -972,10 +1003,23 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The default option for deleting orphan bap habitats.
         /// </value>
-        public bool DeleteBapHabitats
+        public bool BulkDeleteOrphanBapHabitats
         {
-            get { return _deleteBapHabitats; }
-            set { _deleteBapHabitats = value; }
+            get { return _bulkDeleteOrphanBapHabitats; }
+            set { _bulkDeleteOrphanBapHabitats = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option to delete potential bap habitats
+        /// when applying bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for deleting potential bap habitats.
+        /// </value>
+        public bool BulkDeletePotentialBapHabitats
+        {
+            get { return _bulkDeletePotentialBapHabitats; }
+            set { _bulkDeletePotentialBapHabitats = value; }
         }
 
         /// <summary>
@@ -985,10 +1029,86 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The default option for creating history records.
         /// </value>
-        public bool CreateHistoryRecords
+        public bool BulkCreateHistoryRecords
         {
-            get { return _createHistoryRecords; }
-            set { _createHistoryRecords = value; }
+            get { return _bulkCreateHistoryRecords; }
+            set { _bulkCreateHistoryRecords = value; }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process bulk OSMM Updates
+        //
+        /// <summary>
+        /// Gets or sets the list of determination qualities that
+        /// can be used when adding BAP habitats during an OSMM bulk
+        /// update.
+        /// </summary>
+        /// <value>
+        /// The list of determination qualities.
+        /// </value>
+        public HluDataSet.lut_bap_quality_determinationRow[] BulkDeterminationQualityCodes
+        {
+            get { return _viewModelMain.BapDeterminationQualityCodesAuto; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option for the determination
+        /// quality when adding BAP habitats during an OSMM bulk
+        /// update.
+        /// </summary>
+        /// <value>
+        /// The default option for determination quality.
+        /// </value>
+        public string BulkDeterminationQuality
+        {
+            get { return _bulkDeterminationQuality; }
+            set { _bulkDeterminationQuality = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the list of interpretation qualities that
+        /// can be used when adding BAP habitats during an OSMM bulk
+        /// update.
+        /// </summary>
+        /// <value>
+        /// The list of interpretation qualities.
+        /// </value>
+        public HluDataSet.lut_bap_quality_interpretationRow[] BulkInterpretationQualityCodes
+        {
+            get { return _viewModelMain.BapInterpretationQualityCodes; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option for the interpretation
+        /// quality when adding BAP habitats during an OSMM bulk
+        /// update.
+        /// </summary>
+        /// <value>
+        /// The default option for interpretation quality.
+        /// </value>
+        public string BulkInterpretationQuality
+        {
+            get { return _bulkInterpretationQuality; }
+            set { _bulkInterpretationQuality = value; }
+        }
+
+        public HluDataSet.lut_sourcesRow[] SourceNames
+        {
+            get { return _viewModelMain.SourceNames; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default option for the OSMM
+        /// source name when performing OSMM bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for the OSMM source name.
+        /// </value>
+        public Nullable<int> OSMMSourceId
+        {
+            get { return _bulkOSMMSourceId; }
+            set { _bulkOSMMSourceId = value; }
         }
         //---------------------------------------------------------------------
 
@@ -1106,6 +1226,22 @@ namespace HLU.UI.ViewModel
                     error.Append("\n" + "Please enter a vague date delimiter character.");
                 else if (VagueDateDelimiter.Length > 1)
                     error.Append("\n" + "Vague date delimiter must be a single character.");
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process bulk OSMM Updates
+                // Validate the users default determination quality when adding
+                // a BAP habitat during an OSMM bulk update.
+                if (BulkDeterminationQuality == null)
+                    error.Append("Please select the default determination quality for new priority habitats.");
+                // Validate the users default interpration quality when adding
+                // a BAP habitat during an OSMM bulk update.
+                if (BulkInterpretationQuality == null)
+                    error.Append("Please select the default interpration quality for new priority habitats.");
+                //---------------------------------------------------------------------
+                // Validate the default OSMM source name to be applied
+                // during an OSMM bulk update.
+                if (OSMMSourceId == null)
+                    error.Append("Please select the default source name for OS MasterMap.");
 
                 if (error.Length > 0)
                     return error.ToString();
@@ -1231,6 +1367,28 @@ namespace HLU.UI.ViewModel
                         else if (VagueDateDelimiter.Length > 1)
                             error = "Error: Vague date delimiter must be a single character.";
                         break;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR49 Process bulk OSMM Updates
+                    // Validate the default determination quality when adding
+                    // a BAP habitat during an OSMM bulk update.
+                    case "BulkDeterminationQuality":
+                        if (BulkDeterminationQuality == null)
+                            error = "Please select the default determination quality for new priority habitats.";
+                        break;
+                    // Validate the default interpration quality when adding
+                    // a BAP habitat during an OSMM bulk update.
+                    case "BulkInterpretationQuality":
+                        if (BulkInterpretationQuality == null)
+                            error = "Please select the default interpration quality for new priority habitats.";
+                        break;
+                    // Validate the default OSMM source name to be applied
+                    // during an OSMM bulk update.
+                    case "OSMMSourceId":
+                        if (OSMMSourceId == null)
+                            error = "Please select the default source name for OS MasterMap.";
+                        break;
+                    //---------------------------------------------------------------------
+
                 }
 
                 CommandManager.InvalidateRequerySuggested();
