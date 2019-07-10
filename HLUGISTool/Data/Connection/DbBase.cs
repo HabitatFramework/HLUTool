@@ -399,14 +399,18 @@ namespace HLU.Data.Connection
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process bulk OSMM Updates
+        //
         /// <summary>
         /// Count the number database rows that match the list of
         /// WHERE conditions.
         /// </summary>
         /// <param name="targetTables">The target database tables.</param>
+        /// <param name="countColumns">The columns to count unique values for.</param>
         /// <param name="whereConds">The list of where conds.</param>
         /// <returns>An integer of the number of rows matching the SQL.</returns>
-        public int SqlCount(DataTable[] targetTables, List<SqlFilterCondition> whereConds)
+        public int SqlCount(DataTable[] targetTables, string countColumns, List<SqlFilterCondition> whereConds)
         {
             if ((targetTables == null) || (targetTables.Length == 0) ||
                 (targetTables[0].Columns.Count == 0)) return 0;
@@ -417,7 +421,7 @@ namespace HLU.Data.Connection
                 bool additionalTables;
                 string fromList = FromList(true, true, targetTables, ref whereConds, out additionalTables);
                 qualifyColumns |= additionalTables;
-                StringBuilder sbCommandText = new StringBuilder("SELECT COUNT(*) AS N");
+                StringBuilder sbCommandText = new StringBuilder(String.Format("SELECT COUNT({0}) AS N", countColumns));
                 sbCommandText.Append(fromList);
                 sbCommandText.Append(WhereClause(true, true, qualifyColumns, whereConds));
 
@@ -434,7 +438,11 @@ namespace HLU.Data.Connection
                 return 0;
             }
         }
+        //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process bulk OSMM Updates
+        //
         //---------------------------------------------------------------------
         // CHANGED: CR5 (Select by attributes interface)
         // Count the number of database rows using a WHERE statement
@@ -445,10 +453,11 @@ namespace HLU.Data.Connection
         /// WHERE conditions and string of WHERE clauses.
         /// </summary>
         /// <param name="targetTables">The target database tables.</param>
+        /// <param name="countColumns">The columns to count unique values for.</param>
         /// <param name="whereConds">The list of where conds.</param>
         /// <param name="sqlWhereClause">The string of where clauses.</param>
         /// <returns>An integer of the number of rows matching the SQL.</returns>
-        public int SqlCount(DataTable[] targetTables, List<SqlFilterCondition> whereConds, string sqlWhereClause)
+        public int SqlCount(DataTable[] targetTables, string countColumns, List<SqlFilterCondition> whereConds, string sqlWhereClause)
         {
             if ((targetTables == null) || (targetTables.Length == 0)) return 0;
 
@@ -469,7 +478,7 @@ namespace HLU.Data.Connection
                 qualifyColumns |= additionalTables;
 
                 // Build a sql command.
-                StringBuilder sbCommandText = new StringBuilder("SELECT COUNT(*) AS N");
+                StringBuilder sbCommandText = new StringBuilder(String.Format("SELECT COUNT({0}) AS N", countColumns));
 
                 // Append the tables to select from.
                 sbCommandText.Append(fromList);
@@ -498,6 +507,7 @@ namespace HLU.Data.Connection
                 return 0;
             }
         }
+        //---------------------------------------------------------------------
         //---------------------------------------------------------------------
 
         #endregion
@@ -896,6 +906,7 @@ namespace HLU.Data.Connection
                 string columnAlias;
                 foreach (DataColumn c in targetColumns)
                 {
+                    // Qualify column names with the table name and name using the column alias
                     if (qualifyColumns)
                     {
                         columnAlias = ColumnAlias(c);
@@ -908,10 +919,17 @@ namespace HLU.Data.Connection
                     }
                     else
                     {
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR49 Process bulk OSMM Updates
+                        //
+                        // Qualify column names with the table name and name using the column name
                         if (quoteIdentifiers)
-                            sbTargetList.Append(String.Format(",{0}", QuoteIdentifier(c.ColumnName)));
+                            sbTargetList.Append(String.Format(",{0}.{1} AS {2}", QuoteIdentifier(c.Table.TableName),
+                                QuoteIdentifier(c.ColumnName), QuoteIdentifier(c.ColumnName)));
                         else
-                            sbTargetList.Append(String.Format(",{0}", c.ColumnName));
+                            sbTargetList.Append(String.Format(",{0}.{1} AS {2}", c.Table.TableName,
+                                c.ColumnName, c.ColumnName));
+                        //---------------------------------------------------------------------
                         resultTable.Columns.Add(new DataColumn(c.ColumnName, c.DataType));
                     }
                 }
@@ -1035,9 +1053,14 @@ namespace HLU.Data.Connection
                 List<SqlFilterCondition> fromConds = new List<SqlFilterCondition>();
                 string fromList = FromList(true, true, targetColumns, sqlFromTables, ref fromConds, out additionalTables);
 
-                // Force the column names to be qualified if there are any
-                // additional tables.
-                qualifyColumns |= additionalTables;
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process bulk OSMM Updates
+                //
+                // Force the column names to be qualified only if there are any
+                // additional tables and there are multiple columns.
+                if (targetColumns.Length > 1)
+                    qualifyColumns |= additionalTables;
+                //---------------------------------------------------------------------
 
                 // Build a sql command.
                 StringBuilder sbCommandText = new StringBuilder(selectDistinct ? "SELECT DISTINCT " : "SELECT ");
@@ -1047,6 +1070,14 @@ namespace HLU.Data.Connection
 
                 // Append the tables to select from.
                 sbCommandText.Append(fromList);
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process bulk OSMM Updates
+                //
+                // Force the column names to be qualified if there are any
+                // additional tables.
+                qualifyColumns |= additionalTables;
+                //---------------------------------------------------------------------
 
                 // Append the where clauses relating to the from table joins.
                 string fromClause = WhereClause(true, true, qualifyColumns, fromConds);
@@ -1062,7 +1093,10 @@ namespace HLU.Data.Connection
                 // FIX: 075 Ensure that filtered records are sorted by INCID.
                 //
                 // Append an order by clause based on the primary key columns.
-                sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
+                if (targetColumns.Length > 1)
+                    sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
+                else
+                    sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => x.ColumnName)));
                 //---------------------------------------------------------------------
 
                 // Fill the result table using the sql command.

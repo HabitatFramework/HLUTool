@@ -54,6 +54,7 @@
 
     <Color x:Key="BlackColor">#FF003D99</Color>
     <Color x:Key="DarkColor">#FF3385FF</Color>
+    <Color x:Key="LightColor">#FF666666</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
     <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />
@@ -79,6 +80,7 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="{StaticResource LightColor}" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FF99C2FF" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#FF4D79FF" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
@@ -4533,7 +4535,9 @@
                                           RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false" />
+                        <Trigger Property="IsEnabled" Value="false">
+					        <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+                        </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />

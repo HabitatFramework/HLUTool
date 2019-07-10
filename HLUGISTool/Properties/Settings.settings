@@ -141,8 +141,8 @@
     <Setting Name="HistoryDisplayLastN" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="BulkUpdateDeleteMultiplexCodes" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="BulkUpdateDeleteMultiplexCodes" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="CodeDeleteRow" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;clear&gt;</Value>
@@ -165,7 +165,7 @@
     <Setting Name="HistoryAdditionalFieldsDelimiter" Type="System.String" Scope="Application">
       <Value Profile="(Default)">~~~</Value>
     </Setting>
-    <Setting Name="BAPDeterminationQualiltyUserAdded" Type="System.String" Scope="Application">
+    <Setting Name="BAPDeterminationQualityUserAdded" Type="System.String" Scope="Application">
       <Value Profile="(Default)">NP</Value>
     </Setting>
     <Setting Name="CallUpgrade" Roaming="true" Type="System.Boolean" Scope="User">
@@ -190,7 +190,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MinimumDbVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">F</Value>
+      <Value Profile="(Default)">G</Value>
     </Setting>
     <Setting Name="PreferredHabitatClass" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">ICAT</Value>
@@ -289,11 +289,32 @@
     <Setting Name="CodeAnyRow" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;all&gt;</Value>
     </Setting>
-    <Setting Name="BulkUpdateDeleteBapHabitats" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="BulkUpdateDeleteOrphanBapHabitats" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="BulkUpdateCreateHistoryRecords" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BAPDeterminationQualityPrevious" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PP</Value>
+    </Setting>
+    <Setting Name="BAPDeterminationQualityUserAddedDesc" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Not present but close to definition</Value>
+    </Setting>
+    <Setting Name="BAPDeterminationQualityPreviousDesc" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Previously present, but may no longer exist</Value>
+    </Setting>
+    <Setting Name="BulkUpdateDeterminationQuality" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PI</Value>
+    </Setting>
+    <Setting Name="BulkUpdateInterpretationQuality" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">M2</Value>
+    </Setting>
+    <Setting Name="BulkUpdateDeletePotentialBapHabitats" Roaming="true" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="BulkOSMMSourceId" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

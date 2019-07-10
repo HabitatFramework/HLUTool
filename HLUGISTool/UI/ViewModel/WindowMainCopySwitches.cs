@@ -35,8 +35,6 @@ namespace HLU.UI.ViewModel
 
         #region Switches
 
-        private bool _copyReason;
-        private bool _copyProcess;
         private bool _copyIncidIhsHabitat;
         private bool _copyIncidIhsMatrix1;
         private bool _copyIncidIhsMatrix2;
@@ -122,26 +120,6 @@ namespace HLU.UI.ViewModel
         #region Properties
 
         #region Switches
-
-        public bool CopyReason
-        {
-            get { return _copyReason; }
-            set
-            {
-                _copyReason = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyReason"));
-            }
-        }
-
-        public bool CopyProcess
-        {
-            get { return _copyProcess; }
-            set
-            {
-                _copyProcess = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyProcess"));
-            }
-        }
 
         public bool CopyIncidIhsHabitat
         {
@@ -504,26 +482,6 @@ namespace HLU.UI.ViewModel
         #endregion
 
         #region Values
-
-        public string Reason
-        {
-            get { return _copyReason ? _reason : null; }
-            set
-            {
-                _reason = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Reason"));
-            }
-        }
-
-        public string Process
-        {
-            get { return _copyProcess ? _process : null; }
-            set
-            {
-                _process = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Process"));
-            }
-        }
 
         public string IncidIhsHabitat
         {
@@ -966,7 +924,9 @@ namespace HLU.UI.ViewModel
                     String.Join(", ", errorProps.ToArray())), "HLU: Paste Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
+            // Refresh all the controls
             vmMain.RefreshAll();
+
         }
 
         private object GetDefault(Type targetType)

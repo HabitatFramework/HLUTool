@@ -77,10 +77,15 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public enum GeometryTypes { Point, Line, Polygon, Unknown };
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        // Functionality to process proposed OSMM Updates.
+        //    
         /// <summary>
         /// Update operations.
         /// </summary>
-        public enum Operations { PhysicalMerge, PhysicalSplit, LogicalMerge, LogicalSplit, AttributeUpdate, BulkUpdate };
+        public enum Operations { PhysicalMerge, PhysicalSplit, LogicalMerge, LogicalSplit, AttributeUpdate, BulkUpdate, OSMMUpdate };
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// User Interface control visibility values.
@@ -108,15 +113,13 @@ namespace HLU.UI.ViewModel
         private ICommand _logicalMergeCommand;
         private ICommand _physicalMergeCommand;
         private ICommand _updateCommand;
-        private ICommand _bulkUpdateCommand;
         private ICommand _bulkUpdateCommandMenu;
         private ICommand _cancelBulkUpdateCommand;
-        private ICommand _osmmUpdateCommand;
         private ICommand _osmmUpdateCommandMenu;
-        private ICommand _cancelOSMMUpdateCommand;
         private ICommand _osmmSkipCommand;
         private ICommand _osmmAcceptCommand;
         private ICommand _osmmRejectCommand;
+        private ICommand _osmmBulkUpdateCommandMenu;
         private ICommand _exportCommand;
         private ICommand _closeCommand;
         private ICommand _copyCommand;
@@ -132,6 +135,8 @@ namespace HLU.UI.ViewModel
         private ICommand _aboutCommand;
 
         private WindowMainCopySwitches _copySwitches = new WindowMainCopySwitches();
+        private WindowAbout _windowAbout;
+        private ViewModelWindowAbout _viewModelAbout;
         private WindowOptions _windowOptions;
         private ViewModelOptions _viewModelOptions;
         private WindowQueryBuilder _windowQueryBuilder;
@@ -156,7 +161,7 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowMainOSMMUpdate _viewModelOSMMUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
 
-        private string _displayName = "HLU GIS Tool";
+        private string _displayName = "HLU Tool";
         private int _windowHeight;
         private int _windowWidth;
         private int _mapWindowsCount;
@@ -196,6 +201,7 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_ihs_complexRow[] _lutIhsComplexCodes;
         private HluDataSet.lut_bap_quality_determinationRow[] _bapDeterminationQualityCodes;
         private HluDataSet.lut_bap_quality_interpretationRow[] _bapInterpretationQualityCodes;
+        private HluDataSet.lut_sourcesRow[] _sourceNames;
         private HluDataSet.lut_habitat_classRow[] _sourceHabitatClassCodes;
         private HluDataSet.lut_importanceRow[] _sourceImportanceCodes;
         private HluDataSet.lut_habitat_typeRow[] _bapHabitatCodes;
@@ -216,6 +222,7 @@ namespace HLU.UI.ViewModel
         private string _habitatType;
         private bool _reasonProcessEnabled = true;
         private bool _tabControlDataEnabled = true;
+        private int _tabItemSelected = 0;
         private bool _tabItemIhsEnabled = true;
         private bool _tabItemDetailsEnabled = true;
         private bool _tabItemSourcesEnabled = true;
@@ -242,13 +249,16 @@ namespace HLU.UI.ViewModel
         private IEnumerable<string> _incidsSelectedMap;
         private IEnumerable<string> _toidsSelectedMap;
         private IEnumerable<string> _fragsSelectedMap;
-        private int _incidsSelectedMapCount = -1;
-        private int _toidsSelectedMapCount = -1;
-        private int _fragsSelectedMapCount = -1;
-        private int _toidsIncidGisCount = -1;
-        private int _fragsIncidGisCount = -1;
-        private int _toidsIncidDbCount = -1;
-        private int _fragsIncidDbCount = -1;
+        private int _incidsSelectedDBCount = 0;
+        private int _toidsSelectedDBCount = 0;
+        private int _fragsSelectedDBCount = 0;
+        private int _incidsSelectedMapCount = 0;
+        private int _toidsSelectedMapCount = 0;
+        private int _fragsSelectedMapCount = 0;
+        private int _toidsIncidGisCount = 0;
+        private int _fragsIncidGisCount = 0;
+        private int _toidsIncidDbCount = 0;
+        private int _fragsIncidDbCount = 0;
         private int _origIncidIhsMatrixCount = 0;
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
@@ -279,14 +289,12 @@ namespace HLU.UI.ViewModel
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
-        private bool _bulkUpdateCreateHistory = Settings.Default.BulkUpdateCreateHistoryRecords;
-        private bool _bulkUpdateDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
-        private bool _bulkUpdateDeleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
         private bool _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
         private string _osmmAcceptTag = "A_ccept";
         private string _osmmRejectTag = "Re_ject";
         private Nullable<bool> _canOSMMUpdate;
         private Nullable<bool> _osmmUpdateMode = false;
+        private Nullable<bool> _osmmBulkUpdateMode = false;
         private bool _osmmUpdatesEmpty = false;
         private bool _osmmUpdateCreateHistory;
         private string _codeAnyRow = Settings.Default.CodeAnyRow;
@@ -473,7 +481,7 @@ namespace HLU.UI.ViewModel
                     DispatcherHelper.DoEvents();
                 }
 
-                // ?
+                // start the GIS application
                 _gisApp = GISAppFactory.CreateGisApp();
                 if (_gisApp == null)
                 {
@@ -493,7 +501,11 @@ namespace HLU.UI.ViewModel
                     return false;
                 }
 
+                // Initialise the main update view model
                 _viewModelUpd = new ViewModelWindowMainUpdate(this);
+
+                // Get the BAP determination quality defaults
+                GetBapDefaults();
 
                 // Read the selected features from the map
                 if (haveSplashWin)
@@ -507,9 +519,9 @@ namespace HLU.UI.ViewModel
                 // FIX: 068 Enable auto zoom when selecting features on map.
                 //
                 // If there are no selected features in the map
-                // zoom to the GIS selection if auto zoom is on.
-                if (((_gisSelection == null) || (_gisSelection.Rows.Count == 0)) && _autoZoomSelection)
+                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
                 {
+                    // Select the first incid in the map.
                     SelectOnMap(false);
 
                     // Count the number of toids and fragments for the current incid
@@ -1150,7 +1162,52 @@ namespace HLU.UI.ViewModel
         }
 
         #endregion
- 
+
+        #region Defaults
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process bulk OSMM Updates
+        //
+        /// <summary>
+        /// Get the BAP determination quality default descriptions
+        /// from the lookup table and update them in the settings.
+        /// </summary>
+        private void GetBapDefaults()
+        {
+            try
+            {
+                // Get the user added ('NP' = not present) description
+                object result = _db.ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2} = {3}",
+                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.descriptionColumn.ColumnName),
+                    _db.QualifyTableName(_hluDS.lut_bap_quality_determination.TableName),
+                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.codeColumn.ColumnName),
+                    _db.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded)), _db.Connection.ConnectionTimeout, CommandType.Text);
+                if (result != null)
+                {
+                    Settings.Default.BAPDeterminationQualityUserAddedDesc = (string)result;
+                    Settings.Default.Save();
+                }
+
+                // Get the previous ('PP' = previously present) description
+                result = _db.ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2} = {3}",
+                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.descriptionColumn.ColumnName),
+                    _db.QualifyTableName(_hluDS.lut_bap_quality_determination.TableName),
+                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.codeColumn.ColumnName),
+                    _db.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious)), _db.Connection.ConnectionTimeout, CommandType.Text);
+                if (result != null)
+                {
+                    Settings.Default.BAPDeterminationQualityPreviousDesc = (string)result;
+                    Settings.Default.Save();
+                }
+            }
+            catch
+            {
+            }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
         #region Cursor
 
         public Cursor WindowCursor { get { return _windowCursor; } }
@@ -1637,7 +1694,8 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
+                    HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
                     ((_gisSelection.Rows.Count > 0) &&
                     ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
@@ -1659,7 +1717,8 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
+                    HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1);
             }
@@ -1770,7 +1829,8 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
+                    HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     (_incidsSelectedMapCount > 1) && (_fragsSelectedMapCount > 1);
             }
@@ -1783,7 +1843,8 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false) && HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
+                return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
+                    HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
@@ -2053,12 +2114,16 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Update is disabled if not currently in edit mode, if no changes have been made by
-        /// the user, or if the current record is in error.
+        /// Update is disabled if not currently in edit mode, if no changes have been
+        /// made by the user, if we're not currently in bulk update mode with no records
+        /// selected, or if the current record is in error.
         /// </summary>
         private bool CanUpdate
         {
-            get { return EditMode && (Changed == true) && String.IsNullOrEmpty(this.Error); }
+            get { return EditMode &&
+                (Changed == true) &&
+                (_bulkUpdateMode == false || _incidSelection != null) &&
+                String.IsNullOrEmpty(this.Error); }
         }
 
         /// <summary>
@@ -2076,7 +2141,9 @@ namespace HLU.UI.ViewModel
                     _editMode = editMode;
                     OnPropertyChanged("WindowTitle");
                     OnPropertyChanged("CanBulkUpdate");
-                    OnPropertyChanged("CanOSMMUpdate");
+                    OnPropertyChanged("CanBulkUpdateMode");
+                    OnPropertyChanged("CanOSMMUpdateMode");
+                    OnPropertyChanged("CanOSMMBulkUpdateMode");
                     OnPropertyChanged("ShowReasonProcessGroup");
                 }
                 return _editMode;
@@ -2170,22 +2237,6 @@ namespace HLU.UI.ViewModel
 
         #region Bulk Update
 
-        /// <summary>
-        /// Bulk Update command.
-        /// </summary>
-        public ICommand BulkUpdateCommand
-        {
-            get
-            {
-                if (_bulkUpdateCommand == null)
-                {
-                    Action<object> bulkUpdateAction = new Action<object>(this.BulkUpdateClicked);
-                    _bulkUpdateCommand = new RelayCommand(bulkUpdateAction, param => this.CanBulkUpdate);
-                }
-                return _bulkUpdateCommand;
-            }
-        }
-
         private void BulkUpdateClicked(object param)
         {
             _saving = false;
@@ -2197,7 +2248,7 @@ namespace HLU.UI.ViewModel
             // button was clicked.
             if (_bulkUpdateMode == true)
             {
-                _viewModelBulkUpdate.ApplyBulkUpdate();
+                _viewModelBulkUpdate.BulkUpdate();
             }
             else
             {
@@ -2218,8 +2269,13 @@ namespace HLU.UI.ViewModel
                         return;
                 }
 
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process proposed OSMM Updates
+                // Functionality to process proposed OSMM Updates.
+                //    
                 // Start the bulk update process.
-                _viewModelBulkUpdate.StartBulkUpdate();
+                _viewModelBulkUpdate.StartBulkUpdate(false);
+                //---------------------------------------------------------------------
             }
         }
 
@@ -2228,7 +2284,16 @@ namespace HLU.UI.ViewModel
             get
             {
                 if (_canBulkUpdate == null) GetUserInfo();
-                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false;
+                return _canBulkUpdate == true;
+            }
+        }
+
+        public bool CanBulkUpdateMode
+        {
+            get
+            {
+                if (_canBulkUpdate == null) GetUserInfo();
+                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false && _osmmBulkUpdateMode == false;
             }
         }
 
@@ -2249,7 +2314,19 @@ namespace HLU.UI.ViewModel
         {
             if (_viewModelBulkUpdate != null)
             {
-                _viewModelBulkUpdate.CancelBulkUpdate();
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process proposed OSMM Updates
+                // Functionality to process proposed OSMM Updates.
+                //    
+                // If the Cancel button has been clicked then we need
+                // to work out which mode was active and cancel the
+                // right one
+                if (_osmmBulkUpdateMode == true)
+                    _viewModelBulkUpdate.CancelOSMMBulkUpdate();
+                else
+                    _viewModelBulkUpdate.CancelBulkUpdate();
+                //---------------------------------------------------------------------
+
                 _viewModelBulkUpdate = null;
             }
         }
@@ -2288,7 +2365,7 @@ namespace HLU.UI.ViewModel
 
         public string BulkUpdateCommandHeader
         {
-            get { return _bulkUpdateMode == true ? "Cancel _Bulk Update" : "_Bulk Update"; }
+            get { return (_bulkUpdateMode == true && _osmmBulkUpdateMode == false) ? "Cancel _Bulk Apply Updates" : "_Bulk Apply Updates"; }
         }
 
         public ICommand BulkUpdateCommandMenu
@@ -2310,28 +2387,6 @@ namespace HLU.UI.ViewModel
                 CancelBulkUpdateClicked(param);
             else
                 BulkUpdateClicked(param);
-        }
-
-        //---------------------------------------------------------------------
-        // FIX: 078 Bulk update overhaul/improvements.
-        // 
-        public bool BulkUpdateDeleteMultiplexCodes
-        {
-            get { return _bulkUpdateDeleteMultiplexCodes; }
-            set { _bulkUpdateDeleteMultiplexCodes = value; }
-        }
-
-        public bool BulkUpdateDeleteBapHabitats
-        {
-            get { return _bulkUpdateDeleteBapHabitats; }
-            set { _bulkUpdateDeleteBapHabitats = value; }
-        }
-        //---------------------------------------------------------------------
-
-        public bool BulkUpdateCreateHistory
-        {
-            get { return _bulkUpdateCreateHistory; }
-            set { _bulkUpdateCreateHistory = value; }
         }
 
         public string TopControlsGroupHeader
@@ -2403,22 +2458,6 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// OSMM Update command.
-        /// </summary>
-        public ICommand OSMMUpdateCommandOld
-        {
-            get
-            {
-                if (_osmmUpdateCommand == null)
-                {
-                    Action<object> osmmUpdateAction = new Action<object>(this.OSMMUpdateClicked);
-                    _osmmUpdateCommand = new RelayCommand(osmmUpdateAction, param => this.CanOSMMUpdate);
-                }
-                return _osmmUpdateCommand;
-            }
-        }
-
-        /// <summary>
         /// Start the OSMM Update mode.
         /// </summary>
         /// <param name="param"></param>
@@ -2453,31 +2492,16 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Can OSMM Update mode be started?
         /// </summary>
-        public bool CanOSMMUpdate
+        public bool CanOSMMUpdateMode
         {
             get
             {
                 // Check if the user can process OSMM Updates.
                 if (_canOSMMUpdate == null) GetUserInfo();
 
-                // Can start OSMM Update mode if user is authorised.
-                return _canBulkUpdate == true && _bulkUpdateMode == false;
-            }
-        }
-
-        /// <summary>
-        /// OSMM Cancel command.
-        /// </summary>
-        public ICommand CancelOSMMUpdateCommandOld
-        {
-            get
-            {
-                if (_cancelOSMMUpdateCommand == null)
-                {
-                    Action<object> cancelOSMMUpdateAction = new Action<object>(this.CancelOSMMUpdateClicked);
-                    _cancelOSMMUpdateCommand = new RelayCommand(cancelOSMMUpdateAction, param => this.CanCancelOSMMUpdate);
-                }
-                return _cancelOSMMUpdateCommand;
+                // Can start OSMM Update mode if user is authorised
+                // and not currently in bulk update mode.
+                return _canOSMMUpdate == true && _bulkUpdateMode == false;
             }
         }
 
@@ -2653,7 +2677,7 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public string OSMMUpdateCommandHeader
         {
-            get { return _osmmUpdateMode == true ? "Cancel Proposed OSMM Updates" : "Review Proposed OSMM Updates"; }
+            get { return _osmmUpdateMode == true ? "Cancel Review OSMM Updates" : "Review OSMM Updates"; }
         }
 
         /// <summary>
@@ -2720,6 +2744,128 @@ namespace HLU.UI.ViewModel
         public int OSMMIncidCurrentRowIndex
         {
             get { return _osmmUpdatesEmpty ? 0 : _incidCurrentRowIndex; }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
+        #region OSMM Bulk Update
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        // Bulk apply pending OSMM Updates.
+        //
+        /// <summary>
+        /// Start the OSMM Bulk Update mode.
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMBulkUpdateClicked(object param)
+        {
+            _saving = false;
+            if (_viewModelBulkUpdate == null)
+                _viewModelBulkUpdate = new ViewModelWindowMainBulkUpdate(this);
+
+            // If the OSMM Bulk update mode is not already started.
+            if (_osmmBulkUpdateMode == false)
+            {
+                // Check there are no outstanding edits.
+                MessageBoxResult userResponse = CheckDirty();
+
+                switch (userResponse)
+                {
+                    case MessageBoxResult.Yes:
+                        if (!_viewModelUpd.Update()) return;
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
+                        return;
+                }
+
+                // Start the OSMM update mode
+                _viewModelBulkUpdate.StartBulkUpdate(true);
+            }
+        }
+
+        /// <summary>
+        /// Can OSMM Bulk Update mode be started?
+        /// </summary>
+        public bool CanOSMMBulkUpdateMode
+        {
+            get
+            {
+                // Check if the user can process OSMM Updates.
+                if (_canBulkUpdate == null) GetUserInfo();
+
+                // Can start OSMM Bulk Update mode if user is authorised
+                // and not currently in bulk update mode or osmm update mode.
+                return _canBulkUpdate == true
+                    && (_bulkUpdateMode == false || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true))
+                    && _osmmUpdateMode == false;
+            }
+        }
+
+        /// <summary>
+        /// Cancel the OSMM Bulk Update mode.
+        /// </summary>
+        /// <param name="param"></param>
+        private void CancelOSMMBulkUpdateClicked(object param)
+        {
+            if (_viewModelBulkUpdate != null)
+            {
+                _viewModelBulkUpdate.CancelOSMMBulkUpdate();
+                _viewModelBulkUpdate = null;
+            }
+        }
+
+        public bool CanCancelOSMMBulkUpdate { get { return _osmmBulkUpdateMode == true; } }
+
+        /// <summary>
+        /// If the OSMM Bulk Update mode active?
+        /// </summary>
+        internal Nullable<bool> OSMMBulkUpdateMode
+        {
+            get { return _osmmBulkUpdateMode; }
+            set { _osmmBulkUpdateMode = value; }
+        }
+
+        /// <summary>
+        /// Set the menu item text depending on whether in OSMM Bulk Update mode.
+        /// </summary>
+        public string OSMMBulkUpdateCommandHeader
+        {
+            get { return _osmmBulkUpdateMode == true ? "Cancel Bulk Apply OSMM Updates" : "Bulk Apply OSMM Updates"; }
+        }
+
+        /// <summary>
+        /// OSMM Bulk Update menu command.
+        /// </summary>
+        public ICommand OSMMBulkUpdateCommandMenu
+        {
+            get
+            {
+                if (_osmmBulkUpdateCommandMenu == null)
+                {
+                    Action<object> osmmBulkUpdateMenuAction = new Action<object>(this.OSMMBulkUpdateCommandMenuClicked);
+                    _osmmBulkUpdateCommandMenu = new RelayCommand(osmmBulkUpdateMenuAction);
+                }
+                return _osmmBulkUpdateCommandMenu;
+            }
+        }
+
+        /// <summary>
+        /// Start or cancel the OSMM Bulk Update mode (as appropriate).
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMBulkUpdateCommandMenuClicked(object param)
+        {
+            // If already in OSMM Bulk update mode
+            if (_osmmBulkUpdateMode == true)
+                // Cancel the OSMM Bulk update mode
+                CancelOSMMBulkUpdateClicked(param);
+            else
+                // Start the OSMM Bulk update mode
+                OSMMBulkUpdateClicked(param);
         }
         //---------------------------------------------------------------------
 
@@ -2967,13 +3113,6 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
                 //---------------------------------------------------------------------
-
-                //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
-                _bulkUpdateDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
-                _bulkUpdateDeleteBapHabitats = Settings.Default.BulkUpdateDeleteBapHabitats;
-                _bulkUpdatePrimaryBap = Settings.Default.BulkUpdatePotentialBap;
-                //---------------------------------------------------------------------
             }
         }
 
@@ -3041,18 +3180,61 @@ namespace HLU.UI.ViewModel
                 String.IsNullOrEmpty(_db.DefaultSchema) ? null : ")");
             string dbSettings;
             dbSettings = _db.ConnectionString.Replace(";", "\n");
-
-            MessageBox.Show(App.Current.MainWindow,
-                String.Format("App Version : {0}\nDb Version   : {1}\n\nDb Type      : {2}\nDb Settings :\n{3}\n\nUserid        : {4}\nUsername : {5}\n\n{6}",
-                Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                _dbVersion,
-                dbBackend,
-                dbSettings,
-                UserID,
-                UserName,
-                AssemblyCopyright), 
-                String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
             //---------------------------------------------------------------------
+
+            //---------------------------------------------------------------------
+            // FIX: 079 Display links to online guides in new 'About' window.
+            //
+            //MessageBox.Show(App.Current.MainWindow,
+            //    String.Format("App Version : {0}\nDb Version   : {1}\n\nDb Type      : {2}\nDb Settings :\n{3}\n\nUserid        : {4}\nUsername : {5}\n\n{6}",
+            //    Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+            //    _dbVersion,
+            //    dbBackend,
+            //    dbSettings,
+            //    UserID,
+            //    UserName,
+            //    AssemblyCopyright), 
+            //    String.Format("About {0}", _displayName), MessageBoxButton.OK, MessageBoxImage.Information);
+
+            _windowAbout = new WindowAbout();
+            _windowAbout.Owner = App.Current.MainWindow;
+            _windowAbout.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            // Create ViewModel to which main window binds
+            _viewModelAbout = new ViewModelWindowAbout();
+            _viewModelAbout.AppVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            _viewModelAbout.DbVersion = _dbVersion;
+            _viewModelAbout.ConnectionType = dbBackend;
+            _viewModelAbout.ConnectionSettings = dbSettings;
+            _viewModelAbout.UserId = UserID;
+            _viewModelAbout.UserName = UserName;
+            _viewModelAbout.Copyright = AssemblyCopyright;
+            _viewModelAbout.UserGuideURL = "https://readthedocs.org/projects/hlugistool-userguide/";
+            _viewModelAbout.UserGuideText = "https://readthedocs.org/projects/hlugistool-userguide/";
+            _viewModelAbout.TechnicalGuideURL = "https://readthedocs.org/projects/hlutool-technicalguide/";
+            _viewModelAbout.TechnicalGuideText = "https://readthedocs.org/projects/hlutool-technicalguide/";
+
+            // When ViewModel asks to be closed, close window
+            _viewModelAbout.RequestClose += new ViewModelWindowAbout.RequestCloseEventHandler(_viewModelAbout_RequestClose);
+
+            // Allow all controls in window to bind to ViewModel by setting DataContext
+            _windowAbout.DataContext = _viewModelAbout;
+
+            // Show window
+            _windowAbout.ShowDialog();
+            //---------------------------------------------------------------------
+        }
+
+        /// <summary>
+        /// Closes help window and removes close window handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks></remarks>
+        internal void _viewModelAbout_RequestClose()
+        {
+            _viewModelAbout.RequestClose -= _viewModelAbout_RequestClose;
+            _windowAbout.Close();
         }
 
         #endregion
@@ -3075,6 +3257,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Initiates the exports process.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void ExportClicked(object param)
         {
             ViewModelWindowMainExport viewModelExport = new ViewModelWindowMainExport(this);
@@ -3105,14 +3291,18 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Opens the relevant query window based on the mode/options.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void FilterByAttributesClicked(object param)
         {
             //---------------------------------------------------------------------
             // CHANGED: CR49 Process proposed OSMM Updates
             // Open the OSMM Updates query window if in OSMM Update mode.
             //
-            if (_osmmUpdateMode == true)
-                OpenWindowQueryOSMM();
+            if (_osmmUpdateMode == true || _osmmBulkUpdateMode == true)
+                OpenWindowQueryOSMM(false);
             else
             {
                 //---------------------------------------------------------------------
@@ -3129,11 +3319,30 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the filter by attributes command can
+        /// be executed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance can filter by attributes; otherwise, <c>false</c>.
+        /// </value>
         private bool CanFilterByAttributes
         {
-            get { return _bulkUpdateMode == false && IncidCurrentRow != null; }
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 Process proposed OSMM Updates
+            // Enable filter when in OSMM bulk update mode
+            // 
+            get
+            {
+                return (_bulkUpdateMode == false || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true))
+                && IncidCurrentRow != null; }
+            //---------------------------------------------------------------------
         }
 
+        /// <summary>
+        /// Opens the standard query builder window.
+        /// </summary>
+        /// <exception cref="Exception">No parent window loaded</exception>
         private void OpenWindowQueryBuilder()
         {
             try
@@ -3164,6 +3373,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Process the sql when the standard query builder window is closed.
+        /// </summary>
+        /// <param name="queryItems">The query items.</param>
         protected void _viewModelWinQueryBuilder_RequestClose(ObservableCollection<QueryItem> queryItems)
         {
             _viewModelWinQueryBuilder.RequestClose -= _viewModelWinQueryBuilder_RequestClose;
@@ -3239,17 +3452,18 @@ namespace HLU.UI.ViewModel
                     if (IsFiltered)
                     {
                         // Find the expected number of features to be selected in GIS.
-                        int expectedNumFeatures = ExpectedSelectionFeatures(_incidSelectionWhereClause);
+                        _toidsSelectedDBCount = 0;
+                        _fragsSelectedDBCount = 0;
+                        ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
-                        // Find the expected number of incids to be selected in GIS.
-                        //int expectedNumIncids = ExpectedSelectionIncids(_incidSelectionWhereClause);
-                        int expectedNumIncids = _incidSelection.Rows.Count;
+                        // Store the number of incids found in the database
+                        _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
                         // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
+                        if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
                             //---------------------------------------------------------------------
                             // CHANGED: CR21 (Select current incid in map)
@@ -3273,7 +3487,7 @@ namespace HLU.UI.ViewModel
 
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
@@ -3315,7 +3529,7 @@ namespace HLU.UI.ViewModel
         // Open the new advanced query interface.
         //
         /// <summary>
-        /// Opens the new advanced select query window.
+        /// Opens the new advanced query window.
         /// </summary>
         /// <exception cref="System.Exception">No parent window loaded</exception>
         private void OpenWindowQueryAdvanced()
@@ -3354,7 +3568,7 @@ namespace HLU.UI.ViewModel
         // Process the new advanced query.
         //
         /// <summary>
-        /// Process the sql when the window is closed.
+        /// Process the sql when the advanced query window is closed.
         /// </summary>
         /// <param name="sqlFromTables">The tables to query.</param>
         /// <param name="sqlWhereClause">The where clause to apply in the query.</param>
@@ -3426,17 +3640,18 @@ namespace HLU.UI.ViewModel
                     if (IsFiltered)
                     {
                         // Find the expected number of features to be selected in GIS.
-                        int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
+                        _toidsSelectedDBCount = 0;
+                        _fragsSelectedDBCount = 0;
+                        ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
-                        // Find the expected number of incids to be selected in GIS.
-                        //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
-                        int expectedNumIncids = _incidSelection.Rows.Count;
+                        // Store the number of incids found in the database
+                        _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
                         // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
+                        if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
                             //---------------------------------------------------------------------
                             // CHANGED: CR21 (Select current incid in map)
@@ -3498,6 +3713,15 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Opens the warning on gis selection window to prompt the user
+        /// for confirmation before proceeding.
+        /// </summary>
+        /// <param name="selectByjoin">if set to <c>true</c> [select byjoin].</param>
+        /// <param name="expectedNumFeatures">The expected number features.</param>
+        /// <param name="expectedNumIncids">The expected number incids.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">No parent window loaded</exception>
         private bool ConfirmGISSelect(bool selectByjoin, int expectedNumFeatures, int expectedNumIncids)
         {
             //---------------------------------------------------------------------
@@ -3537,6 +3761,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Closes the warning gis on selection window.
+        /// </summary>
+        /// <param name="proceed">if set to <c>true</c> [proceed].</param>
         void _viewModelWinWarnGISSelect_RequestClose(bool proceed)
         {
             _viewModelWinWarnGISSelect.RequestClose -= _viewModelWinWarnGISSelect_RequestClose;
@@ -3574,17 +3802,32 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Opens the by filter by incid window.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void FilterByIncidClicked(object param)
         {
             OpenQueryIncid();
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Gets a value indicating whether the filter by incid command can
+        /// be clicked.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance can filter by incid; otherwise, <c>false</c>.
+        /// </value>
         private bool CanFilterByIncid
         {
             get { return _bulkUpdateMode == false && _osmmUpdateMode == false && IncidCurrentRow != null; }
         }
 
+        /// <summary>
+        /// Opens the query by incid window.
+        /// </summary>
+        /// <exception cref="Exception">No parent window loaded</exception>
         private void OpenQueryIncid()
         {
             try
@@ -3615,6 +3858,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Closes the query incid window and select the required incid.
+        /// </summary>
+        /// <param name="queryIncid">The query incid.</param>
         protected void _viewModelWinQueryIncid_RequestClose(String queryIncid)
         {
             _viewModelWinQueryIncid.RequestClose -= _viewModelWinQueryIncid_RequestClose;
@@ -3655,17 +3902,18 @@ namespace HLU.UI.ViewModel
                     if (IsFiltered)
                     {
                         // Find the expected number of features to be selected in GIS.
-                        int expectedNumFeatures = ExpectedSelectionFeatures(whereTables, sqlWhereClause);
+                        _toidsSelectedDBCount = 0;
+                        _fragsSelectedDBCount = 0;
+                        ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
-                        // Find the expected number of incids to be selected in GIS.
-                        //int expectedNumIncids = ExpectedSelectionIncids(whereTables, sqlWhereClause);
-                        int expectedNumIncids = _incidSelection.Rows.Count;
+                        // Store the number of incids found in the database
+                        _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
                         // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, expectedNumFeatures, expectedNumIncids))
+                        if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
                             //---------------------------------------------------------------------
                             // CHANGED: CR21 (Select current incid in map)
@@ -3735,8 +3983,38 @@ namespace HLU.UI.ViewModel
         // CHANGED: CR49 Process proposed OSMM Updates
         // Open the OSMM Updates query window when in OSMM Update mode.
         //
-        private void OpenWindowQueryOSMM()
+        public void OpenWindowQueryOSMM(bool initialise)
         {
+            if (initialise)
+            {
+                // Clear the selection (filter).
+                _incidSelection = null;
+
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+
+                // Indicate there are no more OSMM updates to review.
+                if (_osmmBulkUpdateMode == false)
+                    _osmmUpdatesEmpty = true;
+
+                // Clear all the form fields (except the habitat class
+                // and habitat type).
+                ClearForm();
+
+                // Clear the map selection.
+                _gisApp.ClearMapSelection();
+
+                // Reset the map counters
+                _incidsSelectedMapCount = 0;
+                _toidsSelectedMapCount = 0;
+                _fragsSelectedMapCount = 0;
+
+                // Refresh all the controls
+                RefreshAll();
+
+                DispatcherHelper.DoEvents();
+            }
+
             try
             {
                 _windowQueryOSMM = new WindowQueryOSMM();
@@ -3745,7 +4023,7 @@ namespace HLU.UI.ViewModel
                 _windowQueryOSMM.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 // create ViewModel to which main window binds
-                _viewModelWinQueryOSMM = new ViewModelWindowQueryOSMM(HluDataset, _db);
+                _viewModelWinQueryOSMM = new ViewModelWindowQueryOSMM(HluDataset, _db, this);
                 _viewModelWinQueryOSMM.DisplayName = "HLU OSMM Updates Filter";
 
                 // when ViewModel asks to be closed, close window
@@ -3770,13 +4048,27 @@ namespace HLU.UI.ViewModel
         /// </summary>
         /// <param name="sqlFromTables">The tables to query.</param>
         /// <param name="sqlWhereClause">The where clause to apply in the query.</param>
-        protected void _viewModelWinQueryOSMM_RequestClose(string processFlag, string spatialFlag, string changeFlag, string status)
+        protected void _viewModelWinQueryOSMM_RequestClose(string processFlag, string spatialFlag, string changeFlag, string status, bool apply)
         {
             _viewModelWinQueryOSMM.RequestClose -= _viewModelWinQueryOSMM_RequestClose;
             _windowQueryOSMM.Close();
 
+            // Set the default source details
+            IncidSourcesRows[0].source_id = Settings.Default.BulkOSMMSourceId;
+
+            IncidSourcesRows[0].source_habitat_class = "N/A";
+            //_viewModelMain.IncidSourcesRows[0].source_habitat_type = "N/A";
+
+            Date.VagueDateInstance defaultSourceDate = DefaultSourceDate(IncidSource1Date, Settings.Default.BulkOSMMSourceId);
+            IncidSourcesRows[0].source_date_start = defaultSourceDate.StartDate;
+            IncidSourcesRows[0].source_date_end = defaultSourceDate.EndDate;
+            IncidSourcesRows[0].source_date_type = defaultSourceDate.DateType;
+
+            IncidSourcesRows[0].source_boundary_importance = Settings.Default.SourceImportanceApply1;
+            IncidSourcesRows[0].source_habitat_importance = Settings.Default.SourceImportanceApply1;
+
             // Apply the OSMM Updates filter
-            if (processFlag != null && spatialFlag != null && changeFlag != null && status != null)
+            if (processFlag != null || spatialFlag != null || changeFlag != null || status != null)
                 ApplyOSMMUpdatesFilter(processFlag, spatialFlag, changeFlag, status);
         }
 
@@ -3825,6 +4117,9 @@ namespace HLU.UI.ViewModel
                         case "Proposed":
                             newStatus = 1;
                             break;
+                        default:
+                            newStatus = -999;
+                            break;
                     }
 
                     if (newStatus == 1)
@@ -3860,42 +4155,132 @@ namespace HLU.UI.ViewModel
                 // not currently in bulk update mode).
                 if (IsFiltered)
                 {
-                    // Indicate the selection didn't come from the map.
-                    _filterByMap = false;
+                    // Find the expected number of features to be selected in GIS.
+                    _toidsSelectedDBCount = 0;
+                    _fragsSelectedDBCount = 0;
+                    ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
-                    _osmmUpdatesEmpty = false;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR12 (Select by attribute performance)
+                    // Store the number of incids found in the database
+                    _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
+                    //---------------------------------------------------------------------
 
-                    TabItemHistoryEnabled = true;
+                    // Select the required incid(s) in GIS.
+                    if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
+                    {
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR21 (Select current incid in map)
+                        // Analyse the results, set the filter and reset the cursor AFTER
+                        // returning from performing the GIS selection so that other calls
+                        // to the PerformGisSelection method can control if/when these things
+                        // are done.
+                        //
+                        // Analyse the results of the GIS selection by counting the number of
+                        // incids, toids and fragments selected.
+                        AnalyzeGisSelectionSet(true);
 
-                    // Set the filter to the first incid.
-                    SetFilter();
+                        // Indicate the selection didn't come from the map.
+                        _filterByMap = false;
 
-                    // Reset the cursor back to normal.
-                    ChangeCursor(Cursors.Arrow, null);
+                        if (_osmmBulkUpdateMode == false)
+                        {
+                            // Indicate there are more OSMM updates to review.
+                            _osmmUpdatesEmpty = false;
+
+                            // Set the filter to the first incid.
+                            SetFilter();
+                        }
+
+                        // Refresh all the controls
+                        RefreshAll();
+
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found.
+                        if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                        //---------------------------------------------------------------------
+                    }
+                    else
+                    {
+                        if (_osmmBulkUpdateMode == false)
+                        {
+                            // Clear the selection (filter).
+                            _incidSelection = null;
+
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
+                            // Indicate there are no more OSMM updates to review.
+                            if (_osmmBulkUpdateMode == false)
+                                _osmmUpdatesEmpty = true;
+
+                            // Clear all the form fields (except the habitat class
+                            // and habitat type).
+                            ClearForm();
+
+                            // Clear the map selection.
+                            _gisApp.ClearMapSelection();
+
+                            // Reset the map counters
+                            _incidsSelectedMapCount = 0;
+                            _toidsSelectedMapCount = 0;
+                            _fragsSelectedMapCount = 0;
+
+                            // Refresh all the controls
+                            RefreshAll();
+                        }
+
+                        // Reset the cursor back to normal.
+                        ChangeCursor(Cursors.Arrow, null);
+
+                        // Warn the user that no records were found.
+                        MessageBox.Show(App.Current.MainWindow, "No records found.", "OSMM Updates",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
                 else
                 {
-                    // Clear the selection (filter).
-                    _incidSelection = null;
+                    if (_osmmBulkUpdateMode == false)
+                    {
+                        // Clear the selection (filter).
+                        _incidSelection = null;
 
-                    // Indicate the selection didn't come from the map.
-                    _filterByMap = false;
+                        // Indicate the selection didn't come from the map.
+                        _filterByMap = false;
 
-                    // Indicate there are no more OSMM updates to review.
-                    _osmmUpdatesEmpty = true;
+                        // Indicate there are no more OSMM updates to review.
+                        _osmmUpdatesEmpty = true;
 
-                    // Clear all the form fields (except the habitat class
-                    // and habitat type).
-                    ClearForm();
+                        // Clear all the form fields (except the habitat class
+                        // and habitat type).
+                        ClearForm();
 
-                    // Clear the map selection.
-                    _gisApp.ClearMapSelection();
-                    
+                        // Clear the map selection.
+                        _gisApp.ClearMapSelection();
+
+                        // Reset the map counters
+                        _incidsSelectedMapCount = 0;
+                        _toidsSelectedMapCount = 0;
+                        _fragsSelectedMapCount = 0;
+
+                        // Refresh all the controls
+                        RefreshAll();
+                    }
+                    else
+                    {
+                        // Restore the previous selection (filter).
+                        _incidSelection = incidSelectionBackup;
+                    }
+
                     // Reset the cursor back to normal.
                     ChangeCursor(Cursors.Arrow, null);
 
                     // Warn the user that no records were found.
-                    MessageBox.Show(App.Current.MainWindow, "No records found.", "OSMM Updates",
+                    MessageBox.Show(App.Current.MainWindow, "No records selected.", "OSMM Updates",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -3909,8 +4294,12 @@ namespace HLU.UI.ViewModel
             finally { RefreshStatus(); }
         }
 
+        /// <summary>
+        /// Clears the current record for the form.
+        /// </summary>
         public void ClearForm()
         {
+            // Disable the History tab
             TabItemHistoryEnabled = false;
 
             IncidIhsHabitat = null;
@@ -3965,7 +4354,6 @@ namespace HLU.UI.ViewModel
                 IncidSourcesRows[i].incid = RecIDs.CurrentIncid;
             }
 
-            RefreshAll();
         }
         //---------------------------------------------------------------------
 
@@ -4015,7 +4403,7 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Select current DB record on map when button pressed.
         /// </summary>
-        private void SelectOnMap(bool updateIncidSelection)
+        public void SelectOnMap(bool updateIncidSelection)
         {
             if (IncidCurrentRow == null) return;
 
@@ -4214,6 +4602,14 @@ namespace HLU.UI.ViewModel
                 _incidSelectionWhereClause = null;
                 AnalyzeGisSelectionSet(true);
 
+                // Store the number of incids found in the database
+                _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
+
+                // Update the number of features found in the database.
+                _toidsSelectedDBCount = 0;
+                _fragsSelectedDBCount = 0;
+                ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+
                 // Indicate the selection came from the map.
                 if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
                     _filterByMap = true;
@@ -4354,19 +4750,23 @@ namespace HLU.UI.ViewModel
                 // Select all the features for the current incid in GIS.
                 PerformGisSelection(false, -1, -1);
 
+                // Store the number of incids found in the database
+                _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
+
                 // Analyse the results of the GIS selection by counting the number of
                 // incids, toids and fragments selected.
                 AnalyzeGisSelectionSet(true);
+
+                // Update the number of features found in the database.
+                _toidsSelectedDBCount = 0;
+                _fragsSelectedDBCount = 0;
+                ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                 // Indicate the selection didn't come from the map.
                 _filterByMap = false;
 
                 // Set the filter back to the first incid.
                 SetFilter();
-
-                //// Count the number of toids and fragments for the current incid
-                //// selected in the GIS and in the database.
-                //CountToidFrags();
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
@@ -4424,7 +4824,7 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Select all the incids in the active filter in GIS.
         /// </summary>
-        protected void SelectAllOnMap()
+        public void SelectAllOnMap()
         {
             // If there are any records in the selection (and the tool is
             // not currently in bulk update mode).
@@ -4443,7 +4843,9 @@ namespace HLU.UI.ViewModel
                     whereClause.Add(ScratchDb.GisWhereClause(_incidSelection, null, false));
 
                     // Find the expected number of features to be selected in GIS.
-                    int expectedNumFeatures = ExpectedSelectionFeatures(whereClause);
+                    int expectedNumToids = -1;
+                    int expectedNumFeatures = -1;
+                    ExpectedSelectionFeatures(whereClause, ref expectedNumToids, ref expectedNumFeatures);
 
                     // Find the expected number of incids to be selected in GIS.
                     int expectedNumIncids = _incidSelection.Rows.Count;
@@ -4531,9 +4933,12 @@ namespace HLU.UI.ViewModel
         {
             //---------------------------------------------------------------------
             // CHANGED: CR49 Process proposed OSMM Updates
-            // Always allow filter to be cleared when in OSMM Update mode.
+            // Don't allow filter to be cleared when in OSMM Update mode or
+            // OSMM Bulk Update mode.
             //
-            get { return IsFiltered == true || _osmmUpdatesEmpty == true; }
+            get { return IsFiltered == true &&
+                _osmmUpdateMode == false &&
+                _osmmBulkUpdateMode == false; }
             //---------------------------------------------------------------------
         }
 
@@ -4549,6 +4954,8 @@ namespace HLU.UI.ViewModel
             //
             if (_osmmUpdateMode == true)
                 ApplyOSMMUpdatesFilter(null, null, null, null);
+            else if (_osmmBulkUpdateMode == true)
+                ApplyOSMMUpdatesFilter(null, null, null, "Pending");
             else
             //---------------------------------------------------------------------
             {
@@ -4557,8 +4964,12 @@ namespace HLU.UI.ViewModel
                     _incidSelection = null;
                     _incidSelectionWhereClause = null;
                     _gisSelection = null;
-                    _toidsSelectedMapCount = -1;
-                    _fragsSelectedMapCount = -1;
+                    _incidsSelectedDBCount = 0;
+                    _toidsSelectedDBCount = 0;
+                    _fragsSelectedDBCount = 0;
+                    _incidsSelectedMapCount = 0;
+                    _toidsSelectedMapCount = 0;
+                    _fragsSelectedMapCount = 0;
                     _incidPageRowNoMax = -1;
 
                     // Indicate the selection didn't come from the map.
@@ -4581,11 +4992,20 @@ namespace HLU.UI.ViewModel
 
                         ChangeCursor(Cursors.Arrow, null);
                         //---------------------------------------------------------------------
-
-                        RefreshStatus();
                     }
                     //---------------------------------------------------------------------
                 }
+
+                // Re-retrieve the current record
+                if (resetRowIndex)
+                    IncidCurrentRowIndex = _incidCurrentRowIndex;
+
+                // Count the number of toids and fragments for the current incid
+                // selected in the GIS and in the database.
+                CountToidFrags();
+
+                // Refresh all the status type fields.
+                RefreshStatus();
             }
         }
 
@@ -4598,9 +5018,9 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void AnalyzeGisSelectionSet(bool updateIncidSelection)
         {
-            _incidsSelectedMapCount = -1;
-            _toidsSelectedMapCount = -1;
-            _fragsSelectedMapCount = -1;
+            _incidsSelectedMapCount = 0;
+            _toidsSelectedMapCount = 0;
+            _fragsSelectedMapCount = 0;
             if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
             {
                 switch (_gisSelection.Columns.Count)
@@ -4656,7 +5076,11 @@ namespace HLU.UI.ViewModel
             }
             else
             {
-                _incidSelectionWhereClause = null;
+                if (updateIncidSelection)
+                {
+                    _incidSelection = null;
+                    _incidSelectionWhereClause = null;
+                }
             }
         }
 
@@ -4697,7 +5121,7 @@ namespace HLU.UI.ViewModel
         /// </summary>
         /// <param name="whereClause">The list of where clause conditions.</param>
         /// <returns>An integer of the number of GIS features to be selected.</returns>
-        private int ExpectedSelectionFeatures(List<List<SqlFilterCondition>> whereClause)
+        private void ExpectedSelectionFeatures(List<List<SqlFilterCondition>> whereClause, ref int numToids, ref int numFragments)
         {
             if (HaveGisApp && (_incidSelection != null) && (_incidSelection.Rows.Count > 0) &&
                 (whereClause != null) && (whereClause.Count > 0))
@@ -4733,7 +5157,8 @@ namespace HLU.UI.ViewModel
                         catch { }
                     }
 
-                    int numFeatures = 0;
+                    numToids = 0;
+                    numFragments = 0;
                     for (int i = 0; i < whereClause.Count; i++)
                     {
                         // If the where conditions are going to be appended
@@ -4755,14 +5180,12 @@ namespace HLU.UI.ViewModel
                             cond.CloseParentheses = "))";
                         }
 
-                        numFeatures += _db.SqlCount(selTables, joinCond.Concat(whereClause[i]).ToList());
+                        numToids += _db.SqlCount(selTables, String.Format("Distinct {0}", _hluDS.incid_mm_polygons.toidColumn.ColumnName), joinCond.Concat(whereClause[i]).ToList());
+                        numFragments += _db.SqlCount(selTables, "*", joinCond.Concat(whereClause[i]).ToList());
                     }
-
-                    return numFeatures;
                 }
                 catch { }
             }
-            return -1;
         }
         //---------------------------------------------------------------------
 
@@ -4779,7 +5202,7 @@ namespace HLU.UI.ViewModel
         /// <param name="sqlFromTables">The list of data tables.</param>
         /// <param name="sqlWhereClause">The where clause string.</param>
         /// <returns>An integer of the number of GIS features to be selected.</returns>
-        private int ExpectedSelectionFeatures(List<DataTable> sqlFromTables, string sqlWhereClause)
+        private void ExpectedSelectionFeatures(List<DataTable> sqlFromTables, string sqlWhereClause, ref int numToids, ref int numFragments)
         {
             if (HaveGisApp && (_incidSelection != null) && (_incidSelection.Rows.Count > 0) &&
                 sqlFromTables.Count() > 0)
@@ -4799,14 +5222,11 @@ namespace HLU.UI.ViewModel
                         (rel = GetRelation(_hluDS.incid, st)) != null ?
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", rel.ChildColumns[0]) : null).Where(c => c != null);
 
-                    int numFeatures = 0;
-                    numFeatures += _db.SqlCount(whereTables, joinCond.ToList(), sqlWhereClause);
-
-                    return numFeatures;
+                    numToids = _db.SqlCount(whereTables, String.Format("Distinct {0}", _hluDS.incid_mm_polygons.toidColumn.ColumnName), joinCond.ToList(), sqlWhereClause);
+                    numFragments = _db.SqlCount(whereTables, "*", joinCond.ToList(), sqlWhereClause);
                 }
                 catch { }
             }
-            return -1;
         }
         //---------------------------------------------------------------------
 
@@ -4886,6 +5306,11 @@ namespace HLU.UI.ViewModel
             }
             finally
             {
+                // Count the number of toids and fragments for the current incid
+                // selected in the GIS and in the database.
+                CountToidFrags();
+
+                // Refresh all the status type fields.
                 RefreshStatus();
             }
         }
@@ -5136,7 +5561,9 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return _bulkUpdateMode != true && _incidSelection != null && _incidSelection.Rows.Count > 0;
+                return (_bulkUpdateMode != true || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true))
+                    && _incidSelection != null
+                    && _incidSelection.Rows.Count > 0;
             }
         }
 
@@ -5180,6 +5607,10 @@ namespace HLU.UI.ViewModel
                         return String.Format("of {0} (filtered) [{1}:{2}]", _incidSelection.Rows.Count,
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
+                    else if (_osmmBulkUpdateMode == true)
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidSelection.Rows.Count,
+                            _toidsSelectedMapCount.ToString(),
+                            _fragsSelectedMapCount.ToString());
                     else
                         return String.Format("of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
                             _toidsIncidGisCount.ToString(),
@@ -5188,11 +5619,20 @@ namespace HLU.UI.ViewModel
                             _fragsIncidDbCount.ToString());
                     //---------------------------------------------------------------------
                 }
-                else if ((_bulkUpdateMode == true) && (_incidSelection != null) && (_incidSelection.Rows.Count > 0))
+                else if (_bulkUpdateMode == true)
                 {
-                    return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
-                        _toidsSelectedMapCount.ToString(),
-                        _fragsSelectedMapCount.ToString());
+                    if ((_incidSelection != null) && (_incidSelection.Rows.Count > 0))
+                    {
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
+                            _toidsSelectedMapCount.ToString(),
+                            _fragsSelectedMapCount.ToString());
+                    }
+                    else
+                    {
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
+                            _toidsSelectedMapCount.ToString(),
+                            _fragsSelectedMapCount.ToString());
+                    }
                 }
                 else
                 {
@@ -5227,8 +5667,20 @@ namespace HLU.UI.ViewModel
 
         public int NumIncidSelectedDB
         {
-            get { return _incidSelection != null ? _incidSelection.Rows.Count : 0; }
-            set { }
+            get { return _incidsSelectedDBCount; }
+            set { _incidsSelectedDBCount = value; }
+        }
+
+        public int NumToidSelectedDB
+        {
+            get { return _toidsSelectedDBCount; }
+            set { _toidsSelectedDBCount = value; }
+        }
+
+        public int NumFragmentsSelectedDB
+        {
+            get { return _fragsSelectedDBCount; }
+            set { _fragsSelectedDBCount = value; }
         }
 
         public int NumIncidSelectedMap
@@ -5370,7 +5822,11 @@ namespace HLU.UI.ViewModel
             // Don't check for edits when in OSMM Update mode (because the data
             // can't be edited by the user).
             //
-            if (EditMode && (_bulkUpdateMode == false) && (_splitting == false) && (_osmmUpdateMode == false) && IsDirty)
+            if (EditMode
+                && (_splitting == false)
+                && (_bulkUpdateMode == false)
+                && (_osmmUpdateMode == false)
+                && IsDirty)
             //---------------------------------------------------------------------
             {
                 if (CanUpdate)
@@ -5522,7 +5978,7 @@ namespace HLU.UI.ViewModel
                 // FIX: 069 Enable auto select of features on change of incid.
                 //
                 // Select the current DB record on the Map.
-                if (_gisApp != null && _autoSelectOnGis && !_filterByMap)
+                if (_gisApp != null && _autoSelectOnGis && _bulkUpdateMode == false && !_filterByMap)
                     SelectOnMap(false);
                 //---------------------------------------------------------------------
 
@@ -5552,7 +6008,7 @@ namespace HLU.UI.ViewModel
         /// Count the number of toids and fragments for the current incid
         /// selected in the GIS and in the database.
         /// </summary>
-        private void CountToidFrags()
+        public void CountToidFrags()
         {
             //---------------------------------------------------------------------
             // CHANGED: CR10 (Attribute updates for incid subsets)
@@ -5574,8 +6030,8 @@ namespace HLU.UI.ViewModel
             // CHANGED: CR22 (Record selectors)
             // Count the total number of toids and fragments in the database
             // for this incid so that they can be included in the status area.
-            _fragsIncidDbCount = -1;
-            _toidsIncidDbCount = -1;
+            _fragsIncidDbCount = 0;
+            _toidsIncidDbCount = 0;
 
             //---------------------------------------------------------------------
             // FIX: 069 Enable auto select of features on change of incid.
@@ -6289,6 +6745,7 @@ namespace HLU.UI.ViewModel
         {
             OnPropertyChanged("CanCopy");
             OnPropertyChanged("CanPaste");
+            OnPropertyChanged("TabItemSelected");
             RefreshBulkUpdateControls();
             RefreshOSMMUpdateControls();
             RefreshStatus();
@@ -6306,15 +6763,18 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("ShowInBulkUpdateMode");
             OnPropertyChanged("HideInBulkUpdateMode");
             OnPropertyChanged("BulkUpdateCommandHeader");
+            OnPropertyChanged("OSMMBulkUpdateCommandHeader");
             OnPropertyChanged("TopControlsGroupHeader");
             OnPropertyChanged("TabItemHistoryEnabled");
+
             OnPropertyChanged("NumIncidSelectedDB");
+            OnPropertyChanged("NumToidSelectedDB");
+            OnPropertyChanged("NumFragmentsSelectedDB");
+
             OnPropertyChanged("NumIncidSelectedMap");
             OnPropertyChanged("NumToidSelectedMap");
             OnPropertyChanged("NumFragmentsSelectedMap");
-            OnPropertyChanged("BulkUpdateDeleteMultiplexCodes");
-            OnPropertyChanged("BulkUpdateDeleteBapHabitats");
-            OnPropertyChanged("BulkUpdateCreateHistory");
+
             OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
         }
@@ -6326,15 +6786,6 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("OSMMUpdateCommandHeader");
             OnPropertyChanged("TopControlsGroupHeader");
             OnPropertyChanged("ShowReasonProcessGroup");
-            //OnPropertyChanged("IncidOSMMUpdatesProcessFlag");
-            //OnPropertyChanged("IncidOSMMUpdatesSpatialFlag");
-            //OnPropertyChanged("IncidOSMMUpdatesChangeFlag");
-            //OnPropertyChanged("IncidOSMMUpdatesStatus");
-            //OnPropertyChanged("IncidOSMMUpdatesRejectedCount");
-            //OnPropertyChanged("IncidOSMMUpdatesIgnoredCount");
-            //OnPropertyChanged("IncidOSMMUpdatesPendingCount");
-            //OnPropertyChanged("IncidOSMMUpdatesProposedCount");
-            //OnPropertyChanged("IncidOSMMUpdatesAppliedCount");
         }
 
         private void RefreshStatus()
@@ -6347,7 +6798,9 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("StatusTop");
             OnPropertyChanged("CanZoomSelection");
             OnPropertyChanged("CanBulkUpdate");
-            OnPropertyChanged("CanOSMMUpdate");
+            OnPropertyChanged("CanBulkUpdateMode");
+            OnPropertyChanged("CanOSMMUpdateMode");
+            OnPropertyChanged("CanOSMMBulkUpdateMode");
             OnPropertyChanged("IsFiltered");
             OnPropertyChanged("CanClearFilter");
         }
@@ -6399,6 +6852,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshIhsTab()
         {
+            OnPropertyChanged("TabItemIhsEnabled");
             OnPropertyChanged("TabIhsControlsEnabled");
             OnPropertyChanged("IhsTabLabel");
             OnPropertyChanged("HabitatClassCodes");
@@ -6456,6 +6910,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshDetailsTab()
         {
+            OnPropertyChanged("TabItemDetailsEnabled");
             OnPropertyChanged("TabDetailsControlsEnabled");
             OnPropertyChanged("DetailsTabLabel");
             OnPropertyChanged("IncidBapHabitatsAuto");
@@ -6473,6 +6928,7 @@ namespace HLU.UI.ViewModel
 
         private void RefreshSources()
         {
+            OnPropertyChanged("TabItemSourcesEnabled");
             OnPropertyChanged("TabSourcesControlsEnabled");
             OnPropertyChanged("SourcesTabLabel");
             RefreshSource1();
@@ -6590,6 +7046,12 @@ namespace HLU.UI.ViewModel
                 return _windowEnabled && _tabControlDataEnabled;
             }
             set { _tabControlDataEnabled = value; }
+        }
+
+        public int TabItemSelected
+        {
+            get { return _tabItemSelected; }
+            set { _tabItemSelected = value; }
         }
 
         public bool TabItemIhsEnabled
@@ -9448,7 +9910,9 @@ namespace HLU.UI.ViewModel
                 if (BapDeterminationQualityCodes != null)
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
-                    return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded
+                        && r.code != BapEnvironment.BAPDetQltyPrevious)
+                        .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 else
                     return null;
@@ -10416,7 +10880,7 @@ namespace HLU.UI.ViewModel
             return _incidSourcesRows != null;
         }
 
-        private Date.VagueDateInstance DefaultSourceDate(Date.VagueDateInstance currentDate, Nullable<int> sourceID)
+        public Date.VagueDateInstance DefaultSourceDate(Date.VagueDateInstance currentDate, Nullable<int> sourceID)
         {
             if ((HluDataset == null) || (HluDataset.lut_sources == null)) return currentDate;
 
@@ -10534,6 +10998,32 @@ namespace HLU.UI.ViewModel
             catch { }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        // Return list of source names.
+        // 
+        public HluDataSet.lut_sourcesRow[] SourceNames
+        {
+            get
+            {
+                if (_sourceNames == null)
+                {
+                    if (HluDataset.lut_sources.IsInitialized &&
+                        HluDataset.lut_sources.Count == 0)
+                    {
+                        if (_hluTableAdapterMgr.lut_sourcesTableAdapter == null)
+                            _hluTableAdapterMgr.lut_sourcesTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_sourcesDataTable, HluDataSet.lut_sourcesRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset,
+                            new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
+                    }
+                    _sourceNames = HluDataset.lut_sources.OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+                }
+                return _sourceNames;
+            }
+        }
+        //---------------------------------------------------------------------
+
         public HluDataSet.lut_habitat_classRow[] SourceHabitatClassCodes
         {
             get
@@ -10638,13 +11128,13 @@ namespace HLU.UI.ViewModel
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
-                    return HluDataset.lut_sources.AsEnumerable().Concat(
+                    return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
                 }
                 else
                 {
-                    return HluDataset.lut_sources.AsEnumerable().ToArray();
+                    return SourceNames;
                 }
             }
         }
@@ -10945,13 +11435,13 @@ namespace HLU.UI.ViewModel
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
-                    return HluDataset.lut_sources.AsEnumerable().Concat(
+                    return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
                 }
                 else
                 {
-                    return HluDataset.lut_sources.AsEnumerable().ToArray();
+                    return SourceNames;
                 }
             }
         }
@@ -11251,13 +11741,13 @@ namespace HLU.UI.ViewModel
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
                     // FIX: 025 Add default sort order to all lookup tables
-                    return HluDataset.lut_sources.AsEnumerable().Concat(
+                    return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
                 }
                 else
                 {
-                    return HluDataset.lut_sources.AsEnumerable().ToArray();
+                    return SourceNames;
                 }
             }
         }
@@ -12007,6 +12497,15 @@ namespace HLU.UI.ViewModel
             }
             else
             {
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process proposed OSMM Updates
+                // Validation for OSMM Bulk Update mode.
+                //    
+                if ((OSMMBulkUpdateMode == true) &&
+                    (IncidSource2Id == null || IncidSource2Id == Int32.MinValue) &&
+                    (IncidSource3Id == null || IncidSource3Id == Int32.MinValue))
+                    errors.Add(new string[] { "IncidSource1Id", 
+                        "Error: At least one source must be specified" });
                 if (IncidSource1Date != null)
                     errors.Add(new string[] { "IncidSource1Date", 
                         "Error: Date cannot be filled in if no source has been specified" });
@@ -12022,6 +12521,7 @@ namespace HLU.UI.ViewModel
                 if (!String.IsNullOrEmpty(IncidSource1HabitatImportance))
                     errors.Add(new string[] { "IncidSource1HabitatImportance", 
                         "Error: Habitat importance cannot be filled in if no source has been specified" });
+                //---------------------------------------------------------------------
             }
 
             return errors;
@@ -12689,11 +13189,27 @@ namespace HLU.UI.ViewModel
                 //    
                 switch (columnName)
                 {
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR49 Process proposed OSMM Updates
+                    // Warnings with in Bulk Update mode.
+                    //    
+                    case "NumIncidSelectedMap":
+                        if (_incidsSelectedMapCount < _incidsSelectedDBCount)
+                        error = "Warning: Not all database incids are selected in map";
+                        break;
+                    case "NumToidSelectedMap":
+                        if (_toidsSelectedMapCount < _toidsSelectedDBCount)
+                            error = "Warning: Not all database toids are selected in map";
+                        break;
+                    case "NumFragmentsSelectedMap":
+                        if (_fragsSelectedMapCount < _fragsSelectedDBCount)
+                            error = "Warning: Not all database fragments are selected in map";
+                        break;
                     case "IncidOSMMUpdateStatus":
                         if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
                             error = "Warning: OSMM Update is outstanding";
-                        OnPropertyChanged("IhsTabLabel");
                         break;
+                    //---------------------------------------------------------------------
                 }
 
                 if (_osmmUpdateMode == true) return null;

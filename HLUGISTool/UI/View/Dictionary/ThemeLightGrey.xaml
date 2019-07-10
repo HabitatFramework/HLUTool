@@ -55,6 +55,7 @@
 
     <Color x:Key="BlackColor">#FF000000</Color>
     <Color x:Key="DarkColor">#FF555555</Color>
+    <Color x:Key="LightColor">#FF666666</Color>
     <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
     <SolidColorBrush x:Key="TextBrush" Color="#FF000000" />
@@ -62,7 +63,7 @@
     <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF9B9999" />
     <SolidColorBrush x:Key="DarkBorderBrush" Color="{StaticResource DarkColor}" />
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
-    <SolidColorBrush x:Key="GlyphBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="GlyphBrush" Color="{StaticResource WhiteColor}" />
 
     <LinearGradientBrush x:Key="PressedBrush" StartPoint="0.5,0.042" EndPoint="0.5,0.971">
         <GradientStop Offset="0" Color="#4C000000" />
@@ -79,6 +80,7 @@
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="{StaticResource LightColor}" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFAFAFAF" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFFFF" />
@@ -369,7 +371,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type tkit:DataGridCell}">
@@ -4533,7 +4535,9 @@
                                           RecognizesAccessKey="True" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false" />
+                        <Trigger Property="IsEnabled" Value="false">
+					        <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
+                        </Trigger>
                         <!--  AM Start  -->
                         <Trigger Property="Validation.HasError" Value="true">
                             <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent}" />

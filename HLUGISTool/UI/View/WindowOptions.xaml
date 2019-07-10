@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="580"
+        Width="550"
         Height="Auto"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -66,7 +66,7 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Database Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid Margin="2,4,4,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -145,7 +145,7 @@
 								  HorizontalAlignment="Stretch"
 								  VerticalAlignment="Stretch"
 								  Header="GIS Options">
-							<Grid Margin="2,4,2,2">
+							<Grid Margin="2,4,4,2">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
@@ -158,7 +158,7 @@
 									  Margin="8,0,0,0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="80" />
+										<ColumnDefinition Width="100" />
 									</Grid.ColumnDefinitions>
 									<Label x:Name="LabelPreferredGis"
 										   Grid.Row="0"
@@ -188,8 +188,8 @@
 
 										<Label x:Name="LabelMapPath"
 											   Grid.Column="0"
-											   Margin="4,8,4,0"
-											   HorizontalAlignment="Left"
+											   Margin="4,4,4,4"
+											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Map Document/Workspace:"/>
 										<TextBox x:Name="TextBoxMapPath"
 													Grid.Column="1"
@@ -239,7 +239,7 @@
 								  VerticalAlignment="Stretch"
 								  Header="Export Options"
 								  Grid.Row="2">
-							<Grid Margin="2,4,2,2">
+							<Grid Margin="2,4,4,2">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
@@ -247,7 +247,7 @@
 								<Grid x:Name="GridExportPath"
 									  Grid.Row="2">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="170" />
+										<ColumnDefinition Width="160" />
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="30" />
 									</Grid.ColumnDefinitions>
@@ -310,7 +310,7 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="History Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid Margin="2,4,4,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" MinHeight="120" />
                             <RowDefinition Height="Auto" />
@@ -326,7 +326,7 @@
                             <Label x:Name="LabelHistoryColumns1"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="8,8,8,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top">
                                 <TextBlock HorizontalAlignment="Right"
@@ -436,7 +436,7 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Interface Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid Margin="2,4,4,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -449,7 +449,7 @@
                         <Grid x:Name="GridPreferredHabitatClass" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" MinWidth="260" />
+                                <ColumnDefinition Width="Auto" MinWidth="360" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelPreferredHabitatClass"
@@ -474,7 +474,7 @@
                         <Grid x:Name="GridSubsetUpdateAction" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="110" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelSubsetUpdateAction"
@@ -496,9 +496,9 @@
 
                         <Grid x:Name="GridShowNVCandHeaders" Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="20" />
-                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="4*" />
                                 <ColumnDefinition Width="25" />
                             </Grid.ColumnDefinitions>
 
@@ -537,7 +537,7 @@
                             <Label x:Name="LabelNotifyOnSplitMerge"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="14,8,4,8"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Notify After Completing Split/Merge?"/>
                             <CheckBox x:Name="CheckBoxNotifyOnSplitMerge"
@@ -580,7 +580,7 @@
                             <Label x:Name="LabelResetOSMMUpdatesStatus"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,4,4,0"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update?"/>
                             <CheckBox x:Name="CheckBoxResetOSMMUpdatesStatus"
@@ -625,7 +625,7 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Filter Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid Margin="2,4,4,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -634,15 +634,15 @@
 
                         <Grid x:Name="GridSQLSelect" Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="3*" />
                                 <ColumnDefinition Width="90" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelUseAdvancedSQL"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Use Advanced Query Builder?"/>
                             <CheckBox x:Name="CheckBoxUseAdvancedSQL"
@@ -653,7 +653,7 @@
 
                             <Label x:Name="LabelMaxGetValues"
                                    Grid.Column="2"
-                                   Margin="0,8,4,8"
+                                   Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Get Values Count"/>
                             <TextBox x:Name="TextBoxMaxGetValues"
@@ -670,7 +670,7 @@
                         <Grid x:Name="GridWarnBeforeGISSelect" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelWarnBeforeGISSelect"
@@ -690,7 +690,7 @@
 
                         <Grid x:Name="GridSqlPath" Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="160" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
@@ -752,16 +752,16 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Header="Date Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid Margin="2,4,4,2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="55" />
+                            <ColumnDefinition Width="Auto" MinWidth="70" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" MinWidth="55" />
+                            <ColumnDefinition Width="Auto" MinWidth="70" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Label x:Name="LabelSeasonSpring"
@@ -874,66 +874,184 @@
                     <AdornerDecorator>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-                <GroupBox x:Name="GroupBoxBulkUpdate"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Header="Bulk Update Options">
-                    <Grid Margin="2,4,2,2">
+                    <Grid x:Name="GridTabBulkUpdate">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Grid x:Name="GridBulkUpdateDefaults" Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="25" />
-                            </Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
+						<GroupBox x:Name="GroupBoxBulkUpdate"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Stretch"
+									Header="Bulk Update Defaults">
+							<Grid Margin="2,4,4,2">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
 
-                            <Label x:Name="LabelDeleteMultiplexCodes"
-                                   Grid.Row="0"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Default Delete Invalid Multiplex Rows?"/>
-                            <CheckBox x:Name="CheckBoxDeleteMultiplexCodes"
-                                      Grid.Row="0"
-                                      Grid.Column="1"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding DeleteMultiplexCodes}" />
-                            <Label x:Name="LabelDeleteBapHabitats"
-                                   Grid.Row="1"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Default Delete Orphan Priority Habitats?"/>
-                            <CheckBox x:Name="CheckBoxDeleteBapHabitats"
-                                      Grid.Row="1"
-                                      Grid.Column="1"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding DeleteBapHabitats}" />
-                            <Label x:Name="LabelCreateHistory"
-                                   Grid.Row="2"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Default Create History Records?"/>
-                            <CheckBox x:Name="CheckBoxCreateHistory"
-                                      Grid.Row="2"
-                                      Grid.Column="1"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding CreateHistoryRecords}" />
-                        </Grid>
+								<Grid x:Name="GridBulkUpdateDefaults" Grid.Row="0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="2*" />
+										<ColumnDefinition Width="80" />
+										<ColumnDefinition Width="25" />
+										<ColumnDefinition Width="10" />
+										<ColumnDefinition Width="2*" />
+										<ColumnDefinition Width="25" />
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
 
-                    </Grid>
-                </GroupBox>
+									<Label x:Name="LabelBulkDeleteOrphanBapHabitats"
+											Grid.Row="0"
+											Grid.Column="0"
+											Margin="4,8,4,8"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Center" Content="Delete Orphan Priority Habitats?"/>
+									<CheckBox x:Name="CheckBoxBulkDeleteOrphanBapHabitats"
+												Grid.Row="0"
+												Grid.Column="2"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding BulkDeleteOrphanBapHabitats}" />
+
+									<Label x:Name="LabelBulkDeletePotentialBapHabitats"
+											Grid.Row="0"
+											Grid.Column="3"
+											Grid.ColumnSpan="2"
+											Margin="4,8,4,8"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Center" Content="Delete Potential Priority Habitats?"/>
+									<CheckBox x:Name="CheckBoxBulkDeletePotentialBapHabitats"
+												Grid.Row="0"
+												Grid.Column="5"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding BulkDeletePotentialBapHabitats}" />
+
+									<Label x:Name="LabelBulkDeleteMultiplexCodes"
+											Grid.Row="1"
+											Grid.Column="0"
+											Margin="4,8,4,8"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Center" Content="Delete Existing Multiplex Rows?"/>
+									<ComboBox Name="ComboBoxDeleteMultiplexCodes"
+											  Grid.Row="1"
+											  Grid.Column="1"
+											  Grid.ColumnSpan="2"
+											  Margin="4,8,4,8"
+											  BorderThickness="1"
+											  ItemsSource="{Binding BulkDeleteMultiplexCodesActions}"
+											  SelectedValue="{Binding BulkDeleteMultiplexCodes, ValidatesOnDataErrors=True}"
+											  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+									<Label x:Name="LabelBulkCreateHistory"
+											Grid.Row="1"
+											Grid.Column="4"
+											Margin="4,8,4,8"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Center" Content="Create History Records?"/>
+									<CheckBox x:Name="CheckBoxBulkCreateHistory"
+												Grid.Row="1"
+												Grid.Column="5"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding BulkCreateHistoryRecords}" />
+
+								</Grid>
+
+							</Grid>
+						</GroupBox>
+
+							<GroupBox x:Name="GroupBoxOSMMBulkUpdate"
+									  HorizontalAlignment="Stretch"
+									  VerticalAlignment="Stretch"
+									  Header="OSMM Bulk Update Defaults"
+									  Grid.Row="1">
+								<Grid Margin="2,4,4,2">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+
+										<Grid x:Name="GridDeterminationQuality"
+											  Grid.Row="0">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="370" />
+											</Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelDeterminationQuality"
+												   Grid.Column="0"
+												   Margin="4,8,4,8"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center" Content="Determination Quality"/>
+											<ComboBox x:Name="ComboBoxDeterminationQuality"
+													  Grid.Column="1"
+													  Margin="4,8,4,8"
+													  BorderThickness="1"
+					                                  DisplayMemberPath="description"
+													  ItemsSource="{Binding BulkDeterminationQualityCodes}"
+													  SelectedValue="{Binding BulkDeterminationQuality, ValidatesOnDataErrors=True}"
+													  SelectedValuePath="code"
+													  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+										</Grid>
+
+										<Grid x:Name="GridInterpretationQuality"
+											  Grid.Row="1">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="120" />
+											</Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelInterpretationQuality"
+												   Grid.Column="0"
+												   Margin="4,8,4,8"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center" Content="Interpretation Quality"/>
+											<ComboBox x:Name="ComboBoxInterpretationQuality"
+													  Grid.Column="1"
+													  Margin="4,8,4,8"
+													  BorderThickness="1"
+					                                  DisplayMemberPath="description"
+													  ItemsSource="{Binding BulkInterpretationQualityCodes}"
+													  SelectedValue="{Binding BulkInterpretationQuality, ValidatesOnDataErrors=True}"
+													  SelectedValuePath="code"
+													  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+										</Grid>
+
+										<Grid x:Name="GridOSMMSource"
+											  Grid.Row="2">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="380" />
+											</Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelOSMMSource"
+												   Grid.Column="0"
+												   Margin="4,8,4,8"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center" Content="OSMM Source Name"/>
+											<ComboBox x:Name="ComboBoxOSMMSource"
+													  Grid.Column="1"
+													  Margin="4,8,4,8"
+													  BorderThickness="1"
+					                                  DisplayMemberPath="source_name"
+													  ItemsSource="{Binding SourceNames,
+                                                                        UpdateSourceTrigger=PropertyChanged}"
+													  SelectedValue="{Binding OSMMSourceId,
+                                                                          ValidatesOnDataErrors=True}"
+													  SelectedValuePath="source_id"
+													  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+										</Grid>
+
+									</Grid>
+
+							</GroupBox>
+
+						</Grid>
 
                         </ScrollViewer>
                     </AdornerDecorator>
@@ -949,18 +1067,16 @@
                     <ColumnDefinition Width="82" />
                     <ColumnDefinition Width="82" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ButtonCancel"
+                <Button x:Name="ButtonSave"
                         Grid.Column="1"
+                        Margin="2,0,0,0"
+                        Command="{Binding SaveCommand}"
+                        IsDefault="True" Content="_Save"/>
+                <Button x:Name="ButtonCancel"
+                        Grid.Column="2"
                         Margin="0,0,2,0"
                         Command="{Binding CancelCommand}"
                         IsCancel="True" Content="_Cancel"/>
-                <Button x:Name="ButtonSave"
-                        Grid.Column="2"
-                            Margin="2,0,0,0"
-                            Background="Red"
-                            Foreground="White"
-                        Command="{Binding SaveCommand}"
-                        IsDefault="True" Content="_Save"/>
             </Grid>
         </Grid>
     </DockPanel>

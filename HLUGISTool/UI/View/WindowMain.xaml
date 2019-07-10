@@ -63,14 +63,19 @@
                           Header="Paste"
                           IsEnabled="{Binding CanPaste}" />
                 <Separator />
-                <MenuItem x:Name="MenuItemBulkUpdate"
-                          Command="{Binding BulkUpdateCommandMenu}"
-                          Header="{Binding BulkUpdateCommandHeader}"
-                          IsEnabled="{Binding CanBulkUpdate}" />
                 <MenuItem x:Name="MenuItemOSMMUpdate"
                           Command="{Binding OSMMUpdateCommandMenu}"
                           Header="{Binding OSMMUpdateCommandHeader}"
-                          IsEnabled="{Binding CanOSMMUpdate}" />
+                          IsEnabled="{Binding CanOSMMUpdateMode}" />
+                <MenuItem x:Name="MenuItemOSMMBulkUpdate"
+                          Command="{Binding OSMMBulkUpdateCommandMenu}"
+                          Header="{Binding OSMMBulkUpdateCommandHeader}"
+                          IsEnabled="{Binding CanOSMMBulkUpdateMode}" />
+                <Separator />
+                <MenuItem x:Name="MenuItemBulkUpdate"
+                          Command="{Binding BulkUpdateCommandMenu}"
+                          Header="{Binding BulkUpdateCommandHeader}"
+                          IsEnabled="{Binding CanBulkUpdateMode}" />
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem x:Name="MenuItemGisSideBySide"
@@ -230,7 +235,7 @@
                 <!--
                     <Button Name="ButtonBulkUpdate"
                     Command="{Binding Path=BulkUpdateCommand}"
-                    IsEnabled="{Binding Path=CanBulkUpdate}"
+                    IsEnabled="{Binding Path=CanBulkUpdateMode}"
                     ToolTip="Bulk Update"
                     ToolTipService.ShowOnDisabled="True">
                     <Image Width="16"
@@ -414,10 +419,6 @@
                       Grid.Row="0"
                       Margin="0,4,0,0"
                       Panel.ZIndex="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -426,29 +427,29 @@
 
                     <Grid x:Name="GridBulkRecordCounts"
                           Grid.Row="0"
-						  Grid.Column="0"
-						  Grid.ColumnSpan="7"
+						  Grid.RowSpan="2"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label x:Name="LabelBulkUpdateStatusIncid"
+                    <Label x:Name="LabelBulkUpdateStatusIncidDB"
                            Grid.Row="0"
                            Grid.Column="0"
                            Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="DB INCID" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusIncid"
+                           Content="DataBase INCIDs" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusIncidDB"
                              Grid.Row="0"
                              Grid.Column="1"
                              Margin="8,0,8,4"
@@ -458,13 +459,48 @@
                              Text="{Binding NumIncidSelectedDB,
                                             Mode=OneWay}"
                              TextAlignment="Left" />
+                    <Label x:Name="LabelBulkUpdateStatusToidDB"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           Margin="8,0,0,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="Database TOIDs" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusToidDB"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             Margin="8,0,8,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumToidSelectedDB,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+                    <Label x:Name="LabelBulkUpdateStatusFragDB"
+                           Grid.Row="2"
+                           Grid.Column="0"
+                           Margin="8,0,0,4"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Content="Database Fragments" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusFragDB"
+                             Grid.Row="2"
+                             Grid.Column="1"
+                             Margin="8,0,8,4"
+                             VerticalAlignment="Center"
+                             IsEnabled="False"
+                             IsReadOnly="True"
+                             Text="{Binding NumFragmentsSelectedDB,
+                                            Mode=OneWay}"
+                             TextAlignment="Left" />
+
                     <Label x:Name="LabelBulkUpdateStatusMap"
                            Grid.Row="0"
                            Grid.Column="2"
-                           Margin="0,0,0,4"
+                           Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="Map INCID" />
+                           Content="Map INCIDs" />
                     <TextBox x:Name="TextBoxBulkUpdateStatusIncidMap"
                              Grid.Row="0"
                              Grid.Column="3"
@@ -473,118 +509,51 @@
                              IsEnabled="False"
                              IsReadOnly="True"
                              Text="{Binding NumIncidSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-                    <Label x:Name="LabelBulkUpdateStatusToid"
-                           Grid.Row="0"
-                           Grid.Column="4"
-                           Margin="0,0,0,4"
+                                            Mode=OneWay,
+											ValidatesOnDataErrors=True}"
+							 TextAlignment="Left"
+							 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+							 ToolTipService.ShowOnDisabled="True" />
+                    <Label x:Name="LabelBulkUpdateStatusToidMap"
+                           Grid.Row="1"
+                           Grid.Column="2"
+                           Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="TOID" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusToid"
-                             Grid.Row="0"
-                             Grid.Column="5"
+                           Content="Map TOIDs" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusToidMap"
+                             Grid.Row="1"
+                             Grid.Column="3"
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
                              IsReadOnly="True"
                              Text="{Binding NumToidSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-                    <Label x:Name="LabelBulkUpdateStatusFrag"
-                           Grid.Row="0"
-                           Grid.Column="6"
-                           Margin="0,0,0,4"
+                                            Mode=OneWay,
+											ValidatesOnDataErrors=True}"
+                             TextAlignment="Left"
+							 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+							 ToolTipService.ShowOnDisabled="True" />
+                    <Label x:Name="LabelBulkUpdateStatusFragMap"
+                           Grid.Row="2"
+                           Grid.Column="2"
+                           Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="Fragment" />
-                    <TextBox x:Name="TextBoxBulkUpdateStatusFrag"
-                             Grid.Row="0"
-                             Grid.Column="7"
-                             Margin="8,0,4,4"
+                           Content="Map Fragments" />
+                    <TextBox x:Name="TextBoxBulkUpdateStatusFragMap"
+                             Grid.Row="2"
+                             Grid.Column="3"
+                             Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
                              IsReadOnly="True"
                              Text="{Binding NumFragmentsSelectedMap,
-                                            Mode=OneWay}"
-                             TextAlignment="Left" />
-                    </Grid>
-
-                    <Grid x:Name="GridBulkDeleteMultiplexCodes"
-                          Grid.Row="1"
-						  Grid.Column="0"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="20" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Name="LabelBulkUpdateDeleteMultiplexCodes"
-                               Grid.Column="0"
-                               Margin="8,4,8,4"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-							   Content="Delete Invalid Multiplex Rows?">
-                        </Label>
-                        <CheckBox Name="CheckBoxBulkUpdateDeleteMultiplexCodes"
-                                  Grid.Column="1"
-                                  Margin="0,4,0,4"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding Path=BulkUpdateDeleteMultiplexCodes}" />
-                    </Grid>
-
-                    <Grid x:Name="GridBulkDeleteBapHabitats"
-                          Grid.Row="1"
-						  Grid.Column="1"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="20" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Name="LabelBulkUpdateDeleteBapHabitats"
-                               Grid.Column="0"
-                               Margin="8,4,8,4"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-							   Content="Delete Orphan Priority Habitats?">
-                        </Label>
-                        <CheckBox Name="CheckBoxBulkUpdateDeleteBapHabitats"
-                                  Grid.Column="1"
-                                  Margin="0,4,0,4"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding Path=BulkUpdateDeleteBapHabitats}" />
-
-                    </Grid>
-
-                    <Grid x:Name="GridCreateHistory"
-                          Grid.Row="2"
-                          Grid.Column="0"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="20" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label x:Name="LabelBulkUpdateCreateHistory"
-                               Grid.Column="0"
-                               Margin="8,4,8,4"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Content="Create History Records?" />
-                        <CheckBox x:Name="CheckBoxUpdateCreateHistory"
-                                  Grid.Column="1"
-                                  Margin="0,4,0,4"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  IsChecked="{Binding BulkUpdateCreateHistory}" />
-
+                                            Mode=OneWay,
+											ValidatesOnDataErrors=True}"
+                             TextAlignment="Left"
+							 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+							 ToolTipService.ShowOnDisabled="True" />
                     </Grid>
                 </Grid>
             </GroupBox>
@@ -667,7 +636,7 @@
                         <TextBox x:Name="TextBoxIncidLength"
                                  Grid.Row="0"
                                  Grid.Column="3"
-                                 Margin="8,0,4,4"
+                                 Margin="8,0,8,4"
                                  VerticalAlignment="Center"
                                  IsEnabled="False"
                                  IsReadOnly="True"
@@ -682,8 +651,7 @@
                            Grid.Column="0"
                            Margin="8,0,0,4"
                            HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                           VerticalAlignment="Center">
                         Created
                     </Label>
                     <TextBox x:Name="TextBoxIncidCreatedDate"
@@ -696,38 +664,34 @@
                              Text="{Binding IncidCreatedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right"
-                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                             TextAlignment="Right" />
 
                     <Label x:Name="LabelIncidCreatedUser"
                            Grid.Row="1"
                            Grid.Column="2"
                            Margin="12,0,0,4"
                            HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                           VerticalAlignment="Center">
                         By
                     </Label>
                     <TextBox x:Name="TextBoxIncidCreatedUser"
                              Grid.Row="1"
                              Grid.Column="3"
-                             Margin="8,0,4,4"
+                             Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
                              IsReadOnly="True"
                              Text="{Binding IncidCreatedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right"
-                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                             TextAlignment="Right" />
 
                     <Label x:Name="LabelIncidLastModDate"
                            Grid.Row="2"
                            Grid.Column="0"
                            Margin="8,0,0,2"
                            HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                           VerticalAlignment="Center">
                         Modified
                     </Label>
                     <TextBox x:Name="TextBoxIncidLastModDate"
@@ -740,30 +704,27 @@
                              Text="{Binding IncidLastModifiedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right"
-                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                             TextAlignment="Right" />
 
                     <Label x:Name="LabelIncidLastModUser"
                            Grid.Row="2"
                            Grid.Column="2"
                            Margin="12,0,0,2"
                            HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           Visibility="{Binding Path=HideInBulkUpdateMode}">
+                           VerticalAlignment="Center">
                         By
                     </Label>
                     <TextBox x:Name="TextBoxIncidLastModUser"
                              Grid.Row="2"
                              Grid.Column="3"
-                             Margin="8,0,4,2"
+                             Margin="8,0,8,2"
                              VerticalAlignment="Center"
                              IsEnabled="False"
                              IsReadOnly="True"
                              Text="{Binding IncidLastModifiedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right"
-                             Visibility="{Binding Path=HideInBulkUpdateMode}" />
+                             TextAlignment="Right" />
 
                 </Grid>
             </GroupBox>
@@ -783,10 +744,8 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
-                        <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
-                        <ColumnDefinition Width="20" />
                     </Grid.ColumnDefinitions>
 
                     <Label x:Name="LabelReason"
@@ -813,28 +772,17 @@
                               SelectedValuePath="code"
                               Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                               ToolTipService.ShowOnDisabled="True" />
-                    <CheckBox x:Name="CheckBoxCopyReason"
-                              Grid.Row="0"
-                              Grid.Column="2"
-                              Margin="0,2,0,2"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Center"
-                              IsChecked="{Binding CopySwitches.CopyReason,
-                                                  Mode=TwoWay,
-                                                  UpdateSourceTrigger=PropertyChanged}"
-                              IsEnabled="{Binding ProcessEnabled,
-                                                  Mode=OneWay}" />
 
                     <Label x:Name="LabelProcess"
                            Grid.Row="0"
-                           Grid.Column="3"
+                           Grid.Column="2"
                            Margin="6,0,0,2"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Content="Process" />
                     <ComboBox x:Name="ComboBoxProcess"
                               Grid.Row="0"
-                              Grid.Column="4"
+                              Grid.Column="3"
                               Margin="8,2,8,2"
                               VerticalAlignment="Center"
                               DisplayMemberPath="description"
@@ -849,17 +797,6 @@
                               SelectedValuePath="code"
                               Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                               ToolTipService.ShowOnDisabled="True" />
-                    <CheckBox x:Name="CheckBoxCopyProcess"
-                              Grid.Row="0"
-                              Grid.Column="5"
-                              Margin="0,2,0,2"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Center"
-                              IsChecked="{Binding CopySwitches.CopyProcess,
-                                                  Mode=TwoWay,
-                                                  UpdateSourceTrigger=PropertyChanged}"
-                              IsEnabled="{Binding ProcessEnabled,
-                                                  Mode=OneWay}" />
                 </Grid>
             </GroupBox>
 
@@ -948,7 +885,7 @@
             			</Label>
             			<TextBox x:Name="TextBoxOSMMStatus"
 							Grid.Column="7"
-            				Margin="8,0,4,4"
+            				Margin="8,0,8,4"
             				VerticalAlignment="Center"
             				IsEnabled="False"
             				IsReadOnly="True"
@@ -974,7 +911,7 @@
             			</Label>
             			<TextBox x:Name="TextBoxOSMMIhsSummary"
 							Grid.Column="1"
-            				Margin="8,0,4,2"
+            				Margin="8,0,8,2"
             				VerticalAlignment="Center"
             				IsEnabled="False"
             				IsReadOnly="True"
@@ -991,13 +928,15 @@
                         Grid.Row="3"
                         Grid.Column="0"
                         Margin="0,2,0,0"
-                        IsEnabled="{Binding TabControlDataEnabled}">
+                        IsEnabled="{Binding TabControlDataEnabled}"
+						SelectedIndex="{Binding TabItemSelected, Mode=TwoWay}">
                 <!--  TabItemIhs  -->
 
                 <TabItem x:Name="TabItemIhs"
                          Height="29.29"
                          VerticalAlignment="Bottom"
                          IsEnabled="{Binding TabItemIhsEnabled}">
+
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="IhsTabLabel"
@@ -1706,7 +1645,9 @@
                 </TabItem>
 
                 <!--  TabItemDetails  -->
-                <TabItem x:Name="TabItemDetails" IsEnabled="{Binding TabItemDetailsEnabled}">
+                <TabItem x:Name="TabItemDetails"
+				         IsEnabled="{Binding TabItemDetailsEnabled}">
+					
                     <TabItem.Header>
                         <StackPanel>
                             <Label x:Name="DetailsTabLabel"
@@ -3101,7 +3042,7 @@
                        Margin="0,4,0,0"
                        VerticalAlignment="Top"
                        Panel.ZIndex="5">
-                <Grid x:Name="GridStatusTop" Visibility="{Binding Path=HideInBulkUpdateMode}">
+                <Grid x:Name="GridStatusTop">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />

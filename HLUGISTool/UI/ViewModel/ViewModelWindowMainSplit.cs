@@ -103,6 +103,14 @@ namespace HLU.UI.ViewModel
 
             try
             {
+                //---------------------------------------------------------------------
+                // FIX: 028 Only update DateTime fields to whole seconds
+                // Fractions of a second can cause rounding differences when
+                // comparing DateTime fields later in some databases.
+                DateTime currDtTm = DateTime.Now;
+                DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                //---------------------------------------------------------------------
+
                 // find the last used toid_fragment_id for the selected toid
                 string lastToidFragmentID = _viewModelMain.RecIDs.MaxToidFragmentId(_viewModelMain.ToidsSelectedMap.ElementAt(0));
 
@@ -163,7 +171,7 @@ namespace HLU.UI.ViewModel
                 foreach (DataColumn c in delCols)
                     history.Columns.Remove(c);
 
-                vmHist.HistoryWrite(null, history, ViewModelWindowMain.Operations.PhysicalSplit);
+                vmHist.HistoryWrite(null, history, ViewModelWindowMain.Operations.PhysicalSplit, nowDtTm);
 
                 // update the original row
                 if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} WHERE {2}",
@@ -202,7 +210,7 @@ namespace HLU.UI.ViewModel
                         throw new Exception("Failed to insert new rows into database copy of GIS layer.");
                 }
 
-                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0));
+                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0), nowDtTm);
 
                 _viewModelMain.DataBase.CommitTransaction();
                 _viewModelMain.HluDataset.AcceptChanges();
@@ -275,13 +283,21 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
+                // FIX: 028 Only update DateTime fields to whole seconds
+                // Fractions of a second can cause rounding differences when
+                // comparing DateTime fields later in some databases.
+                DateTime currDtTm = DateTime.Now;
+                DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
                 // FIX: 008 Update the incid modified columns for the current incid
                 // The incid modified columns (i.e. last modified user and date)
                 // should be updated for the active incid not the 'highest' incid
                 // which is what "_viewModelMain.CurrentIncid" represents.
                 //
                 //_viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.CurrentIncid);
-                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.Incid);
+                _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.Incid, nowDtTm);
                 //---------------------------------------------------------------------
 
                 // create new incid by cloning the current one
@@ -350,7 +366,7 @@ namespace HLU.UI.ViewModel
                 historyTable.Columns[_viewModelMain.HluDataset.history.incidColumn.ColumnName].ColumnName =
                     _viewModelMain.HluDataset.history.modified_incidColumn.ColumnName;
                 ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
-                vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalSplit);
+                vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalSplit, nowDtTm);
 
                 _viewModelMain.DataBase.CommitTransaction();
                 _viewModelMain.HluDataset.AcceptChanges();

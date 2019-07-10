@@ -1004,15 +1004,19 @@ namespace HLU.UI.ViewModel
                 // are listed after 'present' habitats.
                 if ((DbFactory.ConnectionType.ToString().ToLower() == "access") ||
                     (DbFactory.Backend.ToString().ToLower() == "access"))
-                    targetList.Append(String.Format(", IIF({0}.{1} = {2}, 1, 0) AS {3}",
+                    targetList.Append(String.Format(", IIF({0}.{1} = {2}, 2, IIF({0}.{1} = {3}, 1, 0)) AS {4}",
                         _viewModelMain.HluDataset.incid_bap.TableName,
                         _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualiltyUserAdded), "bap_habitat_quality"));
+                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
+                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
+                        "bap_habitat_quality"));
                 else
-                    targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 1 ELSE 0 END AS {3}",
+                    targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 2 WHEN {3} THEN 1 ELSE 0 END AS {4}",
                         _viewModelMain.HluDataset.incid_bap.TableName,
                         _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualiltyUserAdded), "bap_habitat_quality"));
+                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
+                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
+                        "bap_habitat_quality"));
 
                 // Store the input field ordinal for use later.
                 int bapQualityOrdinal = lastFieldOrdinal += 1;

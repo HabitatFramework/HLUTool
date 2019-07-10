@@ -4,7 +4,7 @@
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
         Title="{Binding WindowTitle}"
-        Width="640"
+        Width="650"
         Height="450"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="CanResize"
@@ -54,22 +54,26 @@
 										CanUserAddRows="False"
 										CanUserDeleteRows="False"
 										CanUserReorderColumns="False"
-										CanUserResizeColumns="True"
+										CanUserResizeColumns="False"
 										CanUserSortColumns="False"
 										HeadersVisibility="All"
 										VerticalContentAlignment="Center"
 										ScrollViewer.CanContentScroll="True"
 										ScrollViewer.VerticalScrollBarVisibility="Auto"
 										IsEnabled="True"
+										IsReadOnly="True"
 										ItemsSource="{Binding OSMMUpdatesSummary,
 													Mode=OneWay,
 													UpdateSourceTrigger=PropertyChanged}"
-										MinRowHeight="24"
+										SelectionMode="Single"
+									    SelectionChanged="OSMMUpdates_SelectionChanged"
 										Padding="2,0"
 										RowDetailsVisibilityMode="Visible"
 										RowHeaderWidth="20"
 										RowHeight="24">
-						</tkit:DataGrid>
+										<!--  SelectedItem="{Binding OSMMUpdatesSelected, Mode=TwoWay}"  -->
+										<!--  SelectionChanged="{Binding OSMMUpdates_SelectionChanged}"  -->
+                        </tkit:DataGrid>
 					</GroupBox>
 
 					<!--  GroupBoxOSMMUpdate  -->
@@ -212,11 +216,9 @@
 									Grid.Column="1"
             						Margin="8,2,4,2"
             						VerticalAlignment="Center"
-            						IsEnabled="False"
+            						IsEnabled="True"
             						IsReadOnly="True"
             						TextAlignment="Left"
-									Foreground="{Binding IncidOSMMUpdatesRejectedColour}"
-									Background="{Binding IncidOSMMUpdatesRejectedColour}"
 									Text="{Binding IncidOSMMUpdatesRejectedCount,
 														Mode=OneWay,
 														ValidatesOnDataErrors=False}" />
@@ -232,9 +234,8 @@
             						Margin="8,2,4,2"
             						VerticalAlignment="Center"
             						IsEnabled="False"
-            						IsReadOnly="True"
+            						IsReadOnly="False"
             						TextAlignment="Left"
-									Foreground="{Binding IncidOSMMUpdatesIgnoredColour}"
 									Text="{Binding IncidOSMMUpdatesIgnoredCount,
 														Mode=OneWay,
 														ValidatesOnDataErrors=False}" />
@@ -252,7 +253,6 @@
             						IsEnabled="False"
             						IsReadOnly="True"
             						TextAlignment="Left"
-									Foreground="{Binding IncidOSMMUpdatesProposedColour}"
 									Text="{Binding IncidOSMMUpdatesProposedCount,
 														Mode=OneWay,
 														ValidatesOnDataErrors=False}" />
@@ -270,7 +270,6 @@
             						IsEnabled="False"
             						IsReadOnly="True"
             						TextAlignment="Left"
-									Foreground="Red"
 									Text="{Binding IncidOSMMUpdatesPendingCount,
 														Mode=OneWay,
 														ValidatesOnDataErrors=False}" />
@@ -288,7 +287,6 @@
             						IsEnabled="False"
             						IsReadOnly="True"
             						TextAlignment="Left"
-									Foreground="Red"
 									Text="{Binding IncidOSMMUpdatesAppliedCount,
 														Mode=OneWay,
 														ValidatesOnDataErrors=False}" />

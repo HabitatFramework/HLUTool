@@ -53,8 +53,10 @@
                            Grid.Column="0"
                            Margin="0,4,0,4"
                            HorizontalAlignment="Right"
-                           VerticalAlignment="Center">
-                        Don't ask again
+                           VerticalAlignment="Center"
+						   Content="Don't ask again"
+						   IsEnabled="{Binding Path=DoNotAskAgainEnabled,
+												  Mode=OneWay}">
                     </Label>
                     <CheckBox Name="CheckBoxDontAsk"
                               Grid.Row="2"
@@ -64,7 +66,9 @@
                               VerticalAlignment="Center"
                               IsChecked="{Binding Path=DoNotAskAgain,
                                                   Mode=TwoWay,
-                                                  UpdateSourceTrigger=PropertyChanged}" />
+                                                  UpdateSourceTrigger=PropertyChanged}"
+						      IsEnabled="{Binding Path=DoNotAskAgainEnabled,
+												  Mode=OneWay}" />
                 </Grid>
             </GroupBox>
             <Grid Name="GridButtons" Grid.Row="2">

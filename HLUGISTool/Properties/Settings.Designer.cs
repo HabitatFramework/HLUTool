@@ -473,11 +473,11 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool BulkUpdateDeleteMultiplexCodes {
+        public int BulkUpdateDeleteMultiplexCodes {
             get {
-                return ((bool)(this["BulkUpdateDeleteMultiplexCodes"]));
+                return ((int)(this["BulkUpdateDeleteMultiplexCodes"]));
             }
             set {
                 this["BulkUpdateDeleteMultiplexCodes"] = value;
@@ -562,9 +562,9 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("NP")]
-        public string BAPDeterminationQualiltyUserAdded {
+        public string BAPDeterminationQualityUserAdded {
             get {
-                return ((string)(this["BAPDeterminationQualiltyUserAdded"]));
+                return ((string)(this["BAPDeterminationQualityUserAdded"]));
             }
         }
         
@@ -661,7 +661,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("F")]
+        [global::System.Configuration.DefaultSettingValueAttribute("G")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -1005,14 +1005,14 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool BulkUpdateDeleteBapHabitats {
+        public bool BulkUpdateDeleteOrphanBapHabitats {
             get {
-                return ((bool)(this["BulkUpdateDeleteBapHabitats"]));
+                return ((bool)(this["BulkUpdateDeleteOrphanBapHabitats"]));
             }
             set {
-                this["BulkUpdateDeleteBapHabitats"] = value;
+                this["BulkUpdateDeleteOrphanBapHabitats"] = value;
             }
         }
         
@@ -1026,6 +1026,93 @@ namespace HLU.Properties {
             }
             set {
                 this["BulkUpdateCreateHistoryRecords"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("PP")]
+        public string BAPDeterminationQualityPrevious {
+            get {
+                return ((string)(this["BAPDeterminationQualityPrevious"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Not present but close to definition")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string BAPDeterminationQualityUserAddedDesc {
+            get {
+                return ((string)(this["BAPDeterminationQualityUserAddedDesc"]));
+            }
+            set {
+                this["BAPDeterminationQualityUserAddedDesc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Previously present, but may no longer exist")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string BAPDeterminationQualityPreviousDesc {
+            get {
+                return ((string)(this["BAPDeterminationQualityPreviousDesc"]));
+            }
+            set {
+                this["BAPDeterminationQualityPreviousDesc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("PI")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string BulkUpdateDeterminationQuality {
+            get {
+                return ((string)(this["BulkUpdateDeterminationQuality"]));
+            }
+            set {
+                this["BulkUpdateDeterminationQuality"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("M2")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string BulkUpdateInterpretationQuality {
+            get {
+                return ((string)(this["BulkUpdateInterpretationQuality"]));
+            }
+            set {
+                this["BulkUpdateInterpretationQuality"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool BulkUpdateDeletePotentialBapHabitats {
+            get {
+                return ((bool)(this["BulkUpdateDeletePotentialBapHabitats"]));
+            }
+            set {
+                this["BulkUpdateDeletePotentialBapHabitats"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int BulkOSMMSourceId {
+            get {
+                return ((int)(this["BulkOSMMSourceId"]));
+            }
+            set {
+                this["BulkOSMMSourceId"] = value;
             }
         }
     }

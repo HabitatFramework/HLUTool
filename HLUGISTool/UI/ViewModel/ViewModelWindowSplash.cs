@@ -25,7 +25,7 @@ namespace HLU.UI.ViewModel
 {
     public class ViewModelWindowSplash : ViewModelBase
     {
-        private string _displayName = "HLU GIS Tool";
+        private string _displayName = "HLU Tool";
         private string _progressText;
 
         public override string DisplayName

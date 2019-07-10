@@ -169,6 +169,14 @@ namespace HLU.UI.ViewModel
                 {
                     string keepIncid = selectTable[_mergeResultFeatureIndex].incid;
 
+                    //---------------------------------------------------------------------
+                    // FIX: 028 Only update DateTime fields to whole seconds
+                    // Fractions of a second can cause rounding differences when
+                    // comparing DateTime fields later in some databases.
+                    DateTime currDtTm = DateTime.Now;
+                    DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                    //---------------------------------------------------------------------
+
                     // assign selected incid to selected features except keepIncid
                     DataTable historyTable = _viewModelMain.GISApplication.MergeFeaturesLogically(
                         keepIncid, _viewModelMain.HistoryColumns);
@@ -213,7 +221,7 @@ namespace HLU.UI.ViewModel
                     Dictionary<int, string> fixedValues = new Dictionary<int, string>();
                     fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, keepIncid);
                     ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
-                    vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge);
+                    vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge, nowDtTm);
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR49 Process proposed OSMM Updates
@@ -242,13 +250,6 @@ namespace HLU.UI.ViewModel
                         // Reset the osmm updates flag for the selected incid
                         foreach (HluDataSet.incid_osmm_updatesRow r in updateOSMMXRef)
                         {
-                            //---------------------------------------------------------------------
-                            // FIX: 028 Only update DateTime fields to whole seconds
-                            // Fractions of a second can cause rounding differences when
-                            // comparing DateTime fields later in some databases.
-                            DateTime currDtTm = DateTime.Now;
-                            DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                            //---------------------------------------------------------------------
                             // Set the update flag to "Ignored"
                             r.status = -2;
                             r.last_modified_date = nowDtTm;
@@ -290,7 +291,7 @@ namespace HLU.UI.ViewModel
                         if (numAffected > 0) _viewModelMain.IncidRowCount(true);
                     }
 
-                    _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid);
+                    _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid, nowDtTm);
 
                     if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Physical Merge",
                         MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes))
@@ -417,7 +418,15 @@ namespace HLU.UI.ViewModel
 
                     try
                     {
-                        _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0));
+                        //---------------------------------------------------------------------
+                        // FIX: 028 Only update DateTime fields to whole seconds
+                        // Fractions of a second can cause rounding differences when
+                        // comparing DateTime fields later in some databases.
+                        DateTime currDtTm = DateTime.Now;
+                        DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
+                        //---------------------------------------------------------------------
+
+                        _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0), nowDtTm);
 
                         List<List<SqlFilterCondition>> resultFeatureWhereClause =
                             ViewModelWindowMainHelpers.GisSelectionToWhereClause(
@@ -461,7 +470,7 @@ namespace HLU.UI.ViewModel
                         fixedValues.Add(_viewModelMain.HluDataset.history.toidColumn.Ordinal, selectTable[0].toid);
                         fixedValues.Add(_viewModelMain.HluDataset.history.toid_fragment_idColumn.Ordinal, newToidFragmentID);
                         ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
-                        vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.PhysicalMerge);
+                        vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.PhysicalMerge, nowDtTm);
 
                         if (startTransaction)
                         {

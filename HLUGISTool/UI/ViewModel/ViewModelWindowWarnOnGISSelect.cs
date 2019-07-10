@@ -217,7 +217,13 @@ namespace HLU.UI.ViewModel
 
         public bool DoNotAskAgain
         {
-            get { return false; }
+            get
+            {
+                if (Settings.Default.WarnBeforeGISSelect == 0)
+                    return false;
+                else
+                    return true;
+            }
             set
             {
                 //---------------------------------------------------------------------
@@ -229,6 +235,18 @@ namespace HLU.UI.ViewModel
                 else if ((_selectByjoin) & (Settings.Default.WarnBeforeGISSelect == 1))
                     Settings.Default.WarnBeforeGISSelect = 2;
                 //---------------------------------------------------------------------
+            }
+        }
+
+        public bool DoNotAskAgainEnabled
+        {
+            get
+            {
+                // Only enable when the current warning level is 'Always'.
+                if (Settings.Default.WarnBeforeGISSelect == 0)
+                    return true;
+                else
+                    return false;
             }
         }
     }
