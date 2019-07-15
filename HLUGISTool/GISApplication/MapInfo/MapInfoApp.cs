@@ -905,7 +905,7 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
-        public override void ZoomSelected()
+        public override void ZoomSelected(int minZoom, string distUnits)
         {
             //---------------------------------------------------------------------
             // FIX: 070 Improve zoom to selected features scaling.
@@ -983,10 +983,6 @@ namespace HLU.GISApplication.MapInfo
 
                 // Get the zoom value of the new map window position.
                 float winZoom = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_ZOOM)));
-
-                // Get the minimum auto zoom value and map distance units.
-                float minZoom = Settings.Default.MinimumAutoZoom;
-                string distUnits = Settings.Default.MapDistanceUnits;
 
                 // Check if the map window has zoomed in beyond the minimum
                 // auto zoom size.
