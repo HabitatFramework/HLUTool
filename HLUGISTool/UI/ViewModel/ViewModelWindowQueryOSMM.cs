@@ -85,11 +85,6 @@ namespace HLU.UI.ViewModel
         private int _osmmUpdatesCountApplied = -1;
         private int _osmmUpdatesCountProposed = -1;
 
-        private string _incidOSMMUpdatesRejectedColour = "Red";
-        private string _incidOSMMUpdatesIgnoredColour = "Red";
-        private string _incidOSMMUpdatesProposedColour = "Red";
-        private string _incidOSMMUpdatesPendingColour = "Red";
-
         private int _filterCount = -1;
 
         private string _osmmUpdatesStatus;
@@ -135,38 +130,8 @@ namespace HLU.UI.ViewModel
 
             // Count the incid_osmm_update rows for the initial values.
             CountOSMMUpdates();
-
-            //SelectionChanged += new SelectionChangedEventHandler(OSMMUpdates_SelectionChanged);
             
         }
-
-        //public static readonly DependencyProperty OSMMUpdatesSelectedItem =
-        //            DependencyProperty.Register("OSMMUpdatesSelected", typeof(Object), typeof(UserControl), new PropertyMetadata(null));
-
-        //public void OSMMUpdates_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-
-        //    //OSMMUpdatesSelected = ;
-        //    //string Test = OSMMUpdatesSelectedItem.Name;
-        //}
-
-        //public DataRow OSMMUpdatesSelected
-        //{
-        //    get
-        //    {
-        //        return _osmmUpdatesSelected;
-        //    }
-        //    set
-        //    {
-        //        _osmmUpdatesSelected = value;
-        //        OnPropertyChanged("OSMMUpdatesSelected");
-
-        //        if (_osmmUpdatesSelected != null)
-        //        {
-        //            string test = (string)_osmmUpdatesSelected["ProcessFlag"];
-        //        }
-        //    }
-        //}
 
         public void OSMMUpdatesSelectedRow(OSMMUpdates selectedRow)
         {
@@ -520,26 +485,6 @@ namespace HLU.UI.ViewModel
             get { return String.Format("{0:n0}", _osmmUpdatesCountApplied); }
         }
 
-        public string IncidOSMMUpdatesRejectedColour
-        {
-            get { return _incidOSMMUpdatesRejectedColour; }
-        }
-
-        public string IncidOSMMUpdatesIgnoredColour
-        {
-            get { return _incidOSMMUpdatesIgnoredColour; }
-        }
-
-        public string IncidOSMMUpdatesProposedColour
-        {
-            get { return _incidOSMMUpdatesProposedColour; }
-        }
-
-        public string IncidOSMMUpdatesPendingColour
-        {
-            get { return _incidOSMMUpdatesPendingColour; }
-        }
-
         /// <summary>
         /// Count the number of OSMM Updates in the database for the selected flags.
         /// </summary>
@@ -624,29 +569,20 @@ namespace HLU.UI.ViewModel
                 whereClause),
                 _db.Connection.ConnectionTimeout, CommandType.Text);
 
-            _incidOSMMUpdatesRejectedColour = "Red";
-            _incidOSMMUpdatesIgnoredColour = "Red";
-            _incidOSMMUpdatesProposedColour = "Red";
-            _incidOSMMUpdatesPendingColour = "Red";
-
             if (!String.IsNullOrEmpty(_osmmUpdatesStatus) && _osmmUpdatesStatus != _codeAnyRow)
             {
                 switch (_osmmUpdatesStatus)
                 {
                     case "Rejected":
-                        if (_osmmUpdatesCountRejected > 0) _incidOSMMUpdatesRejectedColour = "Green";
                         _filterCount = _osmmUpdatesCountRejected;
                         break;
                     case "Ignored":
-                        if (_osmmUpdatesCountIgnored > 0) _incidOSMMUpdatesIgnoredColour = "Green";
                         _filterCount = _osmmUpdatesCountIgnored;
                         break;
                     case "Proposed":
-                        if (_osmmUpdatesCountProposed > 0) _incidOSMMUpdatesProposedColour = "Green";
                         _filterCount = _osmmUpdatesCountProposed;
                         break;
                     case "Pending":
-                        if (_osmmUpdatesCountPending > 0) _incidOSMMUpdatesPendingColour = "Green";
                         _filterCount = _osmmUpdatesCountPending;
                         break;
                 }
@@ -657,11 +593,6 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidOSMMUpdatesAppliedCount");
             OnPropertyChanged("IncidOSMMUpdatesPendingCount");
             OnPropertyChanged("IncidOSMMUpdatesProposedCount");
-
-            OnPropertyChanged("IncidOSMMUpdatesRejectedColour");
-            OnPropertyChanged("IncidOSMMUpdatesIgnoredColour");
-            OnPropertyChanged("IncidOSMMUpdatesProposedColour");
-            OnPropertyChanged("IncidOSMMUpdatesPendingColour");
 
             OnPropertyChanged("CanApplyOSMMFilter");
 

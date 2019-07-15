@@ -161,6 +161,7 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowMainOSMMUpdate _viewModelOSMMUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
 
+        private bool haveSplashWin;
         private string _displayName = "HLU Tool";
         private int _windowHeight;
         private int _windowWidth;
@@ -361,7 +362,7 @@ namespace HLU.UI.ViewModel
             {
                 ProcessStartupArguments();
 
-                bool haveSplashWin = App.SplashViewModel != null;
+                haveSplashWin = App.SplashViewModel != null;
 
                 // open database connection and test whether it points to a valid HLU database
                 while (true)
@@ -2293,7 +2294,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 if (_canBulkUpdate == null) GetUserInfo();
-                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false && _osmmBulkUpdateMode == false;
+                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false && _osmmBulkUpdateMode == false && IsFiltered;
             }
         }
 
@@ -4050,20 +4051,18 @@ namespace HLU.UI.ViewModel
         /// <param name="sqlWhereClause">The where clause to apply in the query.</param>
         protected void _viewModelWinQueryOSMM_RequestClose(string processFlag, string spatialFlag, string changeFlag, string status, bool apply)
         {
+            // Close the window
             _viewModelWinQueryOSMM.RequestClose -= _viewModelWinQueryOSMM_RequestClose;
             _windowQueryOSMM.Close();
 
             // Set the default source details
             IncidSourcesRows[0].source_id = Settings.Default.BulkOSMMSourceId;
-
             IncidSourcesRows[0].source_habitat_class = "N/A";
             //_viewModelMain.IncidSourcesRows[0].source_habitat_type = "N/A";
-
             Date.VagueDateInstance defaultSourceDate = DefaultSourceDate(IncidSource1Date, Settings.Default.BulkOSMMSourceId);
             IncidSourcesRows[0].source_date_start = defaultSourceDate.StartDate;
             IncidSourcesRows[0].source_date_end = defaultSourceDate.EndDate;
             IncidSourcesRows[0].source_date_type = defaultSourceDate.DateType;
-
             IncidSourcesRows[0].source_boundary_importance = Settings.Default.SourceImportanceApply1;
             IncidSourcesRows[0].source_habitat_importance = Settings.Default.SourceImportanceApply1;
 
@@ -4602,13 +4601,13 @@ namespace HLU.UI.ViewModel
                 _incidSelectionWhereClause = null;
                 AnalyzeGisSelectionSet(true);
 
-                // Store the number of incids found in the database
-                _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
-
                 // Update the number of features found in the database.
                 _toidsSelectedDBCount = 0;
                 _fragsSelectedDBCount = 0;
                 ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+
+                // Store the number of incids found in the database
+                _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
 
                 // Indicate the selection came from the map.
                 if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
@@ -4656,9 +4655,11 @@ namespace HLU.UI.ViewModel
                 {
                     if (showMessage) MessageBox.Show("No map features selected.", "HLU Selection", 
                         MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
                     // Reset the incid and map selections and move
                     // to the first incid in the database.
-                    ClearFilter(true);
+                    if (!haveSplashWin)
+                        ClearFilter(true);
                 }
             }
             catch (Exception ex)
@@ -4750,17 +4751,17 @@ namespace HLU.UI.ViewModel
                 // Select all the features for the current incid in GIS.
                 PerformGisSelection(false, -1, -1);
 
-                // Store the number of incids found in the database
-                _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
-
                 // Analyse the results of the GIS selection by counting the number of
                 // incids, toids and fragments selected.
                 AnalyzeGisSelectionSet(true);
 
+                // Store the number of incids found in the database
+                //_incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
+
                 // Update the number of features found in the database.
-                _toidsSelectedDBCount = 0;
-                _fragsSelectedDBCount = 0;
-                ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                //_toidsSelectedDBCount = 0;
+                //_fragsSelectedDBCount = 0;
+                //ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                 // Indicate the selection didn't come from the map.
                 _filterByMap = false;
@@ -4986,11 +4987,12 @@ namespace HLU.UI.ViewModel
                         // CHANGED: CR22 (Record selectors)
                         // Show the wait cursor and processing message in the status area
                         // whilst moving to the new Incid.
-                        ChangeCursor(Cursors.Wait, "Processing ...");
+                        //ChangeCursor(Cursors.Wait, "Processing ...");
 
-                        IncidCurrentRowIndex = 1;
+                        _incidCurrentRowIndex = 1;
+                        //IncidCurrentRowIndex = 1;
 
-                        ChangeCursor(Cursors.Arrow, null);
+                        //ChangeCursor(Cursors.Arrow, null);
                         //---------------------------------------------------------------------
                     }
                     //---------------------------------------------------------------------
@@ -5604,7 +5606,7 @@ namespace HLU.UI.ViewModel
                     // fragment counts.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format("of {0} (filtered) [{1}:{2}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0} (filtered) [{1}:{2}]", _incidSelection.Rows.Count,
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else if (_osmmBulkUpdateMode == true)
@@ -5612,7 +5614,7 @@ namespace HLU.UI.ViewModel
                             _toidsSelectedMapCount.ToString(),
                             _fragsSelectedMapCount.ToString());
                     else
-                        return String.Format("of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
                             _toidsIncidGisCount.ToString(),
                             _fragsIncidGisCount.ToString(),
                             _toidsIncidDbCount.ToString(),
@@ -5644,11 +5646,11 @@ namespace HLU.UI.ViewModel
                     // counts, when auto selecting features on change of incid.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format("of {0} (filtered) [{1}:{2}]", _incidRowCount,
+                        return String.Format(" of {0} (filtered) [{1}:{2}]", _incidRowCount,
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else
-                        return String.Format("of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
+                        return String.Format(" of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
                             _toidsIncidGisCount.ToString(),
                             _fragsIncidGisCount.ToString(),
                             _toidsIncidDbCount.ToString(),
@@ -5772,6 +5774,7 @@ namespace HLU.UI.ViewModel
                             (IsFiltered && ((_incidSelection == null) || (value <= _incidSelection.Rows.Count))) ||
                             (!IsFiltered && ((_incidSelection == null) || (value <= _incidRowCount)))))
                             _incidCurrentRowIndex = value;
+
                         NewIncidCurrentRow();
                         break;
                     case MessageBoxResult.Cancel:
@@ -5977,9 +5980,11 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 069 Enable auto select of features on change of incid.
                 //
-                // Select the current DB record on the Map.
                 if (_gisApp != null && _autoSelectOnGis && _bulkUpdateMode == false && !_filterByMap)
+                {
+                    // Select the current DB record on the Map.
                     SelectOnMap(false);
+                }
                 //---------------------------------------------------------------------
 
                 // Count the number of toids and fragments for the current incid

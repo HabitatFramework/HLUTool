@@ -3101,9 +3101,9 @@
                   IsEnabled="{Binding WindowEnabled}"
 				  Visibility="{Binding Path=HideInOSMMUpdateMode}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid x:Name="GridBulkUpdate"
@@ -3115,10 +3115,10 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label x:Name="LabelBulkUpdate"
-                           Margin="0,0,8,0"
+                           Margin="0,0,4,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="Bulk Update. Affected:"
+                           Content="Bulk Update Affected:"
                            FontStretch="UltraExpanded"
                            FontWeight="Bold"
                            Style="{DynamicResource LabelReverseStyle}" />
@@ -3183,7 +3183,7 @@
                       VerticalAlignment="Bottom">
                     <Label x:Name="LabelStatusIncid"
                            Grid.Column="0"
-                           Margin="8,0,4,0"
+                           Margin="4,0,4,0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Content="{Binding StatusIncid,

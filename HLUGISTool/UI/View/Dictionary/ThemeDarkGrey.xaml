@@ -3550,8 +3550,8 @@
                             <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                             <!--
-                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                                 <Setter Property="Opacity" TargetName="grid" Value="0.5"/>
                                 <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
                             -->
@@ -3805,8 +3805,8 @@
                             <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
                             <!--
-                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
                                 <Setter Property="Opacity" TargetName="grid" Value="0.5"/>
                                 <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
                             -->

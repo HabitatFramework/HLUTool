@@ -223,74 +223,62 @@ namespace HLU.UI.ViewModel
                     ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                     vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.LogicalMerge, nowDtTm);
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR49 Process proposed OSMM Updates
-                    // Update proposed OSMM Updates status for source incid
-                    // to -2 (ignored).
-                    //    
-                    // Get all the incid osmm updates rows for the selected incids
-                    HluDataSet.incid_osmm_updatesDataTable osmmUpdates = new HluDataSet.incid_osmm_updatesDataTable();
-                    int[] incidColumnOrds = new int[1];
-                    incidColumnOrds[0] = _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal;
-                    _viewModelMain.GetIncidOSMMUpdatesRows(ViewModelWindowMainHelpers.GisSelectionToWhereClause(
-                        _viewModelMain.GisSelection.Select(), incidColumnOrds,
-                        ViewModelWindowMain.IncidPageSize, osmmUpdates), ref osmmUpdates);
+                    // Count incid records no longer in use
+                    string sqlCount = new StringBuilder(String.Format("SELECT {0}.{1} FROM {0} LEFT JOIN {2} ON {2}.{3} = {0}.{1} WHERE {0}.{1} IN ({4}) GROUP BY {0}.{1} HAVING COUNT({2}.{3}) = 0",
+                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.IncidTable.TableName),
+                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.incidColumn.ColumnName),
+                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
+                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.incidColumn.ColumnName),
+                        selectTable.Where(r => r.incid != keepIncid).Aggregate(new StringBuilder(), (sb, r) => sb.Append("," +
+                            _viewModelMain.DataBase.QuoteValue(r.incid))).Remove(0, 1))).ToString();
 
-                    // Count the distinct osmm_ref_id values
-                    int osmmXrefCount = osmmUpdates.AsDataView().ToTable(true, _viewModelMain.HluDataset.incid_osmm_updates.osmm_xref_idColumn.ColumnName).Select().Count();
-
-                    // If the merged features reference more than osmm_xref_id
-                    if (osmmXrefCount > 0)
-                    {
-                        // Get the osmm update row for the selected incid
-                        var updateOSMMXRef = from r in osmmUpdates
-                                             where r.incid != keepIncid
-                                             select r;
-
-                        // Reset the osmm updates flag for the selected incid
-                        foreach (HluDataSet.incid_osmm_updatesRow r in updateOSMMXRef)
-                        {
-                            // Set the update flag to "Ignored"
-                            r.status = -2;
-                            r.last_modified_date = nowDtTm;
-                            r.last_modified_user_id = _viewModelMain.UserID;
-                        }
-
-                        if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(osmmUpdates) == -1)
-                            throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_osmm_updates.TableName));
-                    }
-                    //---------------------------------------------------------------------
-
-                    // count incid records no longer in use
-                    List<string> deleteIncids = new List<string>();
-
-                    IDataReader delReader = _viewModelMain.DataBase.ExecuteReader(String.Format(
-                        "SELECT {0} FROM {1} WHERE {0} IN ({2}) GROUP BY {0} HAVING COUNT(*) = 0",
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.IncidTable.incidColumn.ColumnName),
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.IncidTable.TableName), 
-                        selectTable.Aggregate(new StringBuilder(), (sb, r) => sb.Append("," + 
-                            _viewModelMain.DataBase.QuoteValue(r.incid))).Remove(0, 1)),
+                    IDataReader delReader = _viewModelMain.DataBase.ExecuteReader(sqlCount,
                         _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
 
-                    if (delReader == null) throw new Exception("Error reading incid database table.");
+                    if (delReader == null) throw new Exception("Error counting incid and incid_mm_polygons database records.");
 
+                    // Build a list of the incids to delete
+                    List<string> deleteIncids = new List<string>();
                     while (delReader.Read())
                         deleteIncids.Add(delReader.GetString(0));
                     delReader.Close();
 
-                    // delete any incid records no longer in use
                     if (deleteIncids.Count > 0)
                     {
-                        int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(String.Format(
+                        // Delete any incid records no longer in use
+                        string sqlDelete = new StringBuilder(String.Format(
                             "DELETE FROM {0} WHERE {1} IN ({2})",
                             _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
-                            _viewModelMain.DataBase.QuoteValue(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
-                            String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray())),
+                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
+                            String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray()))).ToString();
+
+                        int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(sqlDelete,
                             _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
 
+                        // Refresh the total incid count
                         if (numAffected > 0) _viewModelMain.IncidRowCount(true);
+
+                        ////---------------------------------------------------------------------
+                        //// CHANGED: CR49 Process proposed OSMM Updates
+                        //// Update OSMM Updates status for deleted incids
+                        //// to -2 (ignored).
+                        ////
+                        //string sqlUpdate = new StringBuilder(String.Format("UPDATE {0} SET {1} = -2, {2} = {3}, {4} = {5} WHERE {6} IN ({7})",
+                        //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
+                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.statusColumn.ColumnName),
+                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_dateColumn.ColumnName),
+                        //    _viewModelMain.DataBase.QuoteValue(nowDtTm),
+                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_user_idColumn.ColumnName),
+                        //    _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID),
+                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.incidColumn.ColumnName),
+                        //    String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray())
+                        //    )).ToString();
+
+                        //numAffected = _viewModelMain.DataBase.ExecuteNonQuery(sqlDelete,
+                        //    _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
                     }
 
+                    // Update the last modified details of the kept incid
                     _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(keepIncid, nowDtTm);
 
                     if (physicallyMerge && (MessageBox.Show("Perform physical merge as well?", "HLU: Physical Merge",

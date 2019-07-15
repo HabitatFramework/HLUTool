@@ -2320,7 +2320,13 @@ namespace HLU.GISApplication.MapInfo
 
                 _mapInfoApp.Do(String.Format("Select {0} From {1}, {2} Where {3}", _hluColumnList, 
                     hluLayerNameQuoted, joinTableNameQuoted, String.Join(" AND ", joinCondList.ToArray())));
-                
+
+                if (TableExists(joinTable))
+                {
+                    try { _mapInfoApp.Do(String.Format("Close Table {0}", joinTable)); }
+                    catch { }
+                }
+
                 string selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
                     (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
 
@@ -2342,11 +2348,6 @@ namespace HLU.GISApplication.MapInfo
             }
             finally
             {
-                if (TableExists(joinTable))
-                {
-                    try { _mapInfoApp.Do(String.Format("Close Table {0}", joinTable)); }
-                    catch { }
-                }
             }
         }
 
