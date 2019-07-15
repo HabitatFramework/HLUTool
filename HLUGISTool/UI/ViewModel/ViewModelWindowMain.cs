@@ -2514,6 +2514,7 @@ namespace HLU.UI.ViewModel
         {
             if (_viewModelOSMMUpdate != null)
             {
+                _osmmUpdatesEmpty = false;
                 _viewModelOSMMUpdate.CancelOSMMUpdate();
                 _viewModelOSMMUpdate = null;
             }
@@ -2977,7 +2978,11 @@ namespace HLU.UI.ViewModel
 
         private void ZoomSelectionClicked(object param)
         {
-            _gisApp.ZoomSelected();
+            // Get the minimum auto zoom value and map distance units.
+            int minZoom = Settings.Default.MinimumAutoZoom;
+            string distUnits = Settings.Default.MapDistanceUnits;
+
+            _gisApp.ZoomSelected(minZoom, distUnits);
         }
 
         public bool CanZoomSelection { get { return HaveGisApp && _gisSelection != null; } }
@@ -4534,7 +4539,11 @@ namespace HLU.UI.ViewModel
                 // Zoom to the GIS selection if auto zoom is on.
                 if (_gisSelection != null && _autoZoomSelection)
                 {
-                    _gisApp.ZoomSelected();
+                    // Get the minimum auto zoom value and map distance units.
+                    int minZoom = Settings.Default.MinimumAutoZoom;
+                    string distUnits = Settings.Default.MapDistanceUnits;
+
+                    _gisApp.ZoomSelected(minZoom, distUnits);
                 }
                 //---------------------------------------------------------------------
 
@@ -4870,7 +4879,11 @@ namespace HLU.UI.ViewModel
                         // Zoom to the GIS selection if auto zoom is on.
                         if (_gisSelection != null && _autoZoomSelection)
                         {
-                            _gisApp.ZoomSelected();
+                            // Get the minimum auto zoom value and map distance units.
+                            int minZoom = Settings.Default.MinimumAutoZoom;
+                            string distUnits = Settings.Default.MapDistanceUnits;
+
+                            _gisApp.ZoomSelected(minZoom, distUnits);
                         }
                         //---------------------------------------------------------------------
 
@@ -5750,13 +5763,21 @@ namespace HLU.UI.ViewModel
 
                             // Indicate there are no more OSMM updates to review.
                             _osmmUpdatesEmpty = true;
-                            
+
                             // Clear all the form fields (except the habitat class
                             // and habitat type).
                             ClearForm();
 
                             // Clear the map selection.
                             _gisApp.ClearMapSelection();
+
+                            // Reset the map counters
+                            _incidsSelectedMapCount = 0;
+                            _toidsSelectedMapCount = 0;
+                            _fragsSelectedMapCount = 0;
+
+                            // Refresh all the controls
+                            RefreshAll();
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
@@ -7210,10 +7231,6 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //---------------------------------------------------------------------
-                // CHANGED: CR49 Process proposed OSMM Updates
-                // Don't show the date when there are no OSMM updates to process.
-                //
                 if (IncidCurrentRow != null && _osmmUpdatesEmpty == false)
                     return _incidLastModifiedDate.ToShortDateString();
                 else
@@ -7285,11 +7302,11 @@ namespace HLU.UI.ViewModel
 
                 // Show the group if not in osmm update mode and
                 // show updates are "Always" required, or "When Outstanding"
-                // (i.e. update flag is "Proposed" (> 0) or "Pending" = -1)
+                // (i.e. update flag is "Proposed" (> 0) or "Pending" = 0)
                 if ((_osmmUpdateMode == true) ||
                     (_bulkUpdateMode == false &&
                     (_showOSMMUpdates == "Always" ||
-                    (_showOSMMUpdates == "When Outstanding" && (IncidOSMMStatus > 0 || IncidOSMMStatus == -1)))))
+                    (_showOSMMUpdates == "When Outstanding" && (IncidOSMMStatus >= 0)))))
                 {
                     if (!(bool)_showingOSMMPendingGroup)
                     {

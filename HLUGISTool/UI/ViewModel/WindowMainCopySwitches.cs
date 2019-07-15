@@ -75,8 +75,6 @@ namespace HLU.UI.ViewModel
 
         #region Values
 
-        private string _reason;
-        private string _process;
         private string _incidIhsHabitat;
         private string _incidIhsMatrix1;
         private string _incidIhsMatrix2;
