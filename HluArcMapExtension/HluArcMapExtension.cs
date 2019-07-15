@@ -82,14 +82,15 @@ namespace HLU
         public delegate void SelectByQueryFilterDelegate(IQueryFilter queryFilter);
         public delegate void SelectByQueryDefDelegate(IQueryDef queryDef, string oidColumnAlias);
         public delegate void SelectByJoinDelegate(string scratchMdbPath, string selectionDatasetName);
-        public delegate void ZoomSelectedDelegate();
-        public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter);
+        public delegate void ZoomSelectedDelegate(int minZoom, string distUnits);
+        public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter, int minZoom, string distUnits);
         public delegate void ExportPromptDelegate(string mdbPathName, string attributeDatasetName);
         public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, bool selectedOnly);
         public delegate void IsHluWorkspaceDelegate();
         public delegate void ListHluLayersDelegate();
         public delegate void IsHluLayerDelegate(int ixMap, int ixLayer);
         public delegate void IsEditingDelegate();
+        public delegate void ClearSelectionDelegate();
 
         #endregion
 
@@ -172,6 +173,7 @@ namespace HLU
         private static ListHluLayersDelegate _ListHluLayersDel;
         private static IsHluLayerDelegate _isHluLayerDel;
         private static IsEditingDelegate _isEditingDel;
+        private static ClearSelectionDelegate _clearSelDel;
         private static bool _exportInEditSession = Properties.Settings.Default.ExportInEditSession;
         
         #endregion
@@ -356,6 +358,7 @@ namespace HLU
                 _ListHluLayersDel = new ListHluLayersDelegate(ListHluLayers);
                 _isHluLayerDel = new IsHluLayerDelegate(IsHluLayer);
                 _isEditingDel = new IsEditingDelegate(IsEditing);
+                _clearSelDel = new ClearSelectionDelegate(ClearSelection);
             }
         }
 
@@ -734,6 +737,13 @@ namespace HLU
                             catch { _pipeData.Clear(); }
                         }
                         break;
+                    case "cs": // clear selected features: cmd
+                        if (_pipeData.Count == 1)
+                        {
+                            try { _dummyControl.Invoke(_clearSelDel, null); }
+                            catch { _pipeData.Clear(); }
+                        }
+                        break;
                     //---------------------------------------------------------------------
                     // FIX: 053 Check if all selected rows have unique keys to avoid
                     // any potential data integrity problems.
@@ -860,17 +870,30 @@ namespace HLU
                     case "zs": // zoom selected: cmd [, queryFilter]
                         try
                         {
+                            int minZoom;
+                            string distUnits;
                             switch (_pipeData.Count)
                             {
-                                case 1:
+                                case 3:
+                                    if (!Int32.TryParse(_pipeData[1], out minZoom))
+                                        minZoom = 0;
+                                    distUnits = _pipeData[2];
+
                                     _pipeData.Clear();
-                                    _dummyControl.Invoke(_zoomSelDel, null);
+
+                                    _dummyControl.Invoke(_zoomSelDel, new object[] { minZoom, distUnits });
                                     break;
-                                case 2:
+                                case 4:
                                     IQueryFilter queryFilter = new QueryFilterClass();
                                     queryFilter.WhereClause = _pipeData[1];
+
+                                    if (!Int32.TryParse(_pipeData[2], out minZoom))
+                                        minZoom = 0;
+                                    distUnits = _pipeData[3];
+
                                     _pipeData.Clear();
-                                    _dummyControl.Invoke(_zoomSelCursorDel, new object[] { queryFilter });
+
+                                    _dummyControl.Invoke(_zoomSelCursorDel, new object[] { queryFilter, minZoom, distUnits });
                                     break;
                             }
                         }
@@ -1292,18 +1315,46 @@ namespace HLU
 
         #region View
 
-        private void ZoomSelectedCursor(IQueryFilter queryFilter)
+        private void ZoomSelectedCursor(IQueryFilter queryFilter, int minZoom, string distUnits)
         {
             if ((queryFilter == null) || (_hluFeatureClass == null) || (_hluView == null)) return;
+
+            // Get the geometry equalling the query filter
             IEnumGeometryBind enumGeometryBind = new EnumFeatureGeometryClass();
             enumGeometryBind.BindGeometrySource(queryFilter, _hluFeatureClass);
             IGeometryFactory geometryFactory = new GeometryEnvironmentClass();
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
-            _hluView.Extent = geom.Envelope;
-            _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
+
+            // Get the extents of the current selection.
+            double selMinX = geom.Envelope.XMin;
+            double selMaxX = geom.Envelope.XMax;
+            double selMinY = geom.Envelope.YMin;
+            double selMaxY = geom.Envelope.YMax;
+
+            // Get the extents of the current map window.
+            double winMinX = _hluView.Extent.XMin;
+            double winMaxX = _hluView.Extent.XMax;
+            double winMinY = _hluView.Extent.YMin;
+            double winMaxY = _hluView.Extent.YMax;
+
+            // Check if the current selection fits in the map window and if
+            // not zoom to the extent of the whole selection.
+            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
+            {
+                _hluView.Extent = geom.Envelope;
+                _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
+
+                // Get the zoom value of the new map window position.
+                double winZoom = _focusMap.MapScale;
+
+                // Check if the map window has zoomed in beyond the minimum
+                // auto zoom size.
+                if (winZoom < minZoom)
+                    _focusMap.MapScale = minZoom;
+            }
         }
 
-        private void ZoomSelected()
+        private void ZoomSelected(int minZoom, string distUnits)
         {
             if ((_hluFeatureClass == null) || (_hluView == null)) return;
 
@@ -1312,12 +1363,53 @@ namespace HLU
 
             if (_hluFeatureSelection.SelectionSet.Count == 0) return;
 
+            // Get the geometry of the current selection set
             IEnumGeometryBind enumGeometryBind = new EnumFeatureGeometryClass();
             enumGeometryBind.BindGeometrySource(null, _hluFeatureSelection.SelectionSet);
             IGeometryFactory geometryFactory = new GeometryEnvironmentClass();
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
-            _hluView.Extent = geom.Envelope;
-            _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
+
+            // Get the extents of the current selection.
+            double selMinX = geom.Envelope.XMin;
+            double selMaxX = geom.Envelope.XMax;
+            double selMinY = geom.Envelope.YMin;
+            double selMaxY = geom.Envelope.YMax;
+
+            // Get the extents of the current map window.
+            double winMinX = _hluView.Extent.XMin;
+            double winMaxX = _hluView.Extent.XMax;
+            double winMinY = _hluView.Extent.YMin;
+            double winMaxY = _hluView.Extent.YMax;
+
+            // Check if the current selection fits in the map window and if
+            // not zoom to the extent of the whole selection.
+            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
+            {
+                _hluView.Extent = geom.Envelope;
+                _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
+
+                // Get the zoom value of the new map window position.
+                double winZoom = _focusMap.MapScale;
+
+                // Check if the map window has zoomed in beyond the minimum
+                // auto zoom size.
+                if (winZoom < minZoom)
+                    _focusMap.MapScale = minZoom;
+            }
+        }
+
+        private void ClearSelection()
+        {
+            if ((_hluFeatureClass == null) || (_hluView == null)) return;
+
+            if (_hluFeatureSelection == null)
+                _hluFeatureSelection = (IFeatureSelection)_hluFeatureClass;
+
+            if (_hluFeatureSelection.SelectionSet.Count == 0) return;
+
+            _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
+            _hluFeatureSelection.Clear();
+
         }
 
         private void FlashFeature(IQueryFilter queryFilter)

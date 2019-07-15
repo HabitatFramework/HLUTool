@@ -745,6 +745,18 @@ namespace HLU.GISApplication.ArcGIS
         }
 
         //---------------------------------------------------------------------
+        // CHANGED: CR49 Process proposed OSMM Updates
+        //
+        /// <summary>
+        /// Clears the currently selected map features.
+        /// </summary>
+        public override void ClearMapSelection()
+        {
+            IpcArcMap(new string[] { "cs" });
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
         // FIX: 053 Check if all selected rows have unique keys to avoid
         // any potential data integrity problems.
         //
@@ -907,9 +919,10 @@ namespace HLU.GISApplication.ArcGIS
             catch { throw; }
         }
 
-        public override void ZoomSelected()
+        public override void ZoomSelected(int minZoom, string distUnits)
         {
-            IpcArcMap(new string[] { "zs" });
+            
+            IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits });
         }
 
         //---------------------------------------------------------------------
