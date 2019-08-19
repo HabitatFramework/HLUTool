@@ -174,7 +174,7 @@ namespace HLU
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU GIS Tool Installer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU Tool Installer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

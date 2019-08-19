@@ -255,7 +255,7 @@ namespace HLU
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU GIS Tool Installer", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(String.Format("{0}\n{1}", ex.Source, ex.Message), "HLU Tool Installer", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -370,9 +370,9 @@ namespace HLU
         {
             get
             {
-                return String.Format("HLU ArcMap Extension {0}\r\n{1}\r\n\r\nProvides an interface to the HLU GIS Tool.",
+                return String.Format("HLU ArcMap Extension {0}\r\n{1}\r\n\r\nProvides an interface to the HLU Tool.",
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014,2018 SxBRC.");
+                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014,2018 SxBRC.\r\nCopyright © 2019 LaSER.");
             }
         }
 
@@ -1325,33 +1325,8 @@ namespace HLU
             IGeometryFactory geometryFactory = new GeometryEnvironmentClass();
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
 
-            // Get the extents of the current selection.
-            double selMinX = geom.Envelope.XMin;
-            double selMaxX = geom.Envelope.XMax;
-            double selMinY = geom.Envelope.YMin;
-            double selMaxY = geom.Envelope.YMax;
-
-            // Get the extents of the current map window.
-            double winMinX = _hluView.Extent.XMin;
-            double winMaxX = _hluView.Extent.XMax;
-            double winMinY = _hluView.Extent.YMin;
-            double winMaxY = _hluView.Extent.YMax;
-
-            // Check if the current selection fits in the map window and if
-            // not zoom to the extent of the whole selection.
-            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
-            {
-                _hluView.Extent = geom.Envelope;
-                _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
-
-                // Get the zoom value of the new map window position.
-                double winZoom = _focusMap.MapScale;
-
-                // Check if the map window has zoomed in beyond the minimum
-                // auto zoom size.
-                if (winZoom < minZoom)
-                    _focusMap.MapScale = minZoom;
-            }
+            // Zoom to the extent of the geometry
+            ZoomExtent(geom, minZoom, distUnits);
         }
 
         private void ZoomSelected(int minZoom, string distUnits)
@@ -1369,7 +1344,20 @@ namespace HLU
             IGeometryFactory geometryFactory = new GeometryEnvironmentClass();
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
 
-            // Get the extents of the current selection.
+            // Zoom to the extent of the geometry
+            ZoomExtent(geom, minZoom, distUnits);
+        }
+
+        private void ZoomExtent(IGeometry geom, int minZoom, string distUnits)
+        {
+            //// Extend the extent of the current selection
+            //IEnvelope geomEnvelope = geom.Envelope;
+            //geomEnvelope.XMin -= 100;
+            //geomEnvelope.XMax += 100;
+            //geomEnvelope.YMin -= 100;
+            //geomEnvelope.YMax += 100;
+
+            // Get the extents of the extended selection.
             double selMinX = geom.Envelope.XMin;
             double selMaxX = geom.Envelope.XMax;
             double selMinY = geom.Envelope.YMin;
@@ -1381,18 +1369,38 @@ namespace HLU
             double winMinY = _hluView.Extent.YMin;
             double winMaxY = _hluView.Extent.YMax;
 
-            // Check if the current selection fits in the map window and if
-            // not zoom to the extent of the whole selection.
-            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
+            // Get the size of the window border (i.e. 10% of the total size)
+            double winBorder = Math.Min(winMaxX - winMinX, winMaxY - winMinY) / 10;
+
+            // Check if the current selection fits well within
+            // the map window (i.e. within the middle 80%).
+            if (selMinX <= (winMinX + winBorder) ||
+                selMaxX >= (winMaxX - winBorder) ||
+                selMinY <= (winMinY + winBorder) ||
+                selMaxY >= (winMaxY - winBorder))
             {
+                // Zoom to the extent of the whole selection.
                 _hluView.Extent = geom.Envelope;
                 _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeography, _hluLayer, _hluView.Extent);
 
-                // Get the zoom value of the new map window position.
+                // Get the map scale of the new map window position.
                 double winZoom = _focusMap.MapScale;
 
-                // Check if the map window has zoomed in beyond the minimum
-                // auto zoom size.
+                // Add 20% to allow for a window border.
+                winZoom = winZoom * 1.2;
+
+                // Round the map scale up.
+                double roundZoom;
+                if (minZoom < 1000)
+                    roundZoom = Math.Ceiling(winZoom / 100) * 100;
+                else
+                    roundZoom = Math.Ceiling(winZoom / 500) * 500;
+
+                // Round up the minimum zoom if necessary.
+                if (minZoom < roundZoom)
+                    minZoom = (int)roundZoom;
+
+                // Zoom out to the minimum zoom value.
                 if (winZoom < minZoom)
                     _focusMap.MapScale = minZoom;
             }
