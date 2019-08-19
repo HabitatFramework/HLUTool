@@ -1170,8 +1170,8 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 071 Add minimum auto zoom scale to options.
                 // Validate the minimum auto zoom scale.
-                if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
-                    error.Append("\n" + "Minimum auto zoom scale must be greater than 0.");
+                if (Convert.ToInt32(MinAutoZoom) < 100 || MinAutoZoom == null)
+                    error.Append("\n" + "Minimum auto zoom scale must be at least 100.");
                 if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
                     error.Append("\n" + String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom));
                 //---------------------------------------------------------------------

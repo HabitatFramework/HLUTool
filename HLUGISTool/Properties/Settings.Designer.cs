@@ -661,7 +661,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("G")]
+        [global::System.Configuration.DefaultSettingValueAttribute("H")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -926,7 +926,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Always")]
+        [global::System.Configuration.DefaultSettingValueAttribute("When Outstanding")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public string ShowOSMMUpdatesOption {
             get {

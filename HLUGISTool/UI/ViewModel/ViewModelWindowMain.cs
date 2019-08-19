@@ -442,10 +442,7 @@ namespace HLU.UI.ViewModel
                 // Check the assembly version is not earlier than the
                 // minimum required dataset application version.
                 if (!CheckVersion())
-                    //---------------------------------------------------------------------
-                    // FIX: 077 Trap error if database requires later application version.
-                    throw new Exception("Database requires later application version.");
-                    //---------------------------------------------------------------------
+                    return false;
                 //---------------------------------------------------------------------
 
                 // wire up event handler for copy switches
@@ -643,10 +640,13 @@ namespace HLU.UI.ViewModel
             // Compare the assembly and application versions.
             if (assVersion.CompareTo(appVersion) < 0)
             {
-                MessageBox.Show(String.Format("The database has been updated to a later version than the application.\n\n" +
-                   "The minimum application version must be {0}.", appVersion.ToString()),
-                   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return false;
+                //MessageBox.Show(String.Format("The database has been updated to a later version than the application.\n\n" +
+                //   "The minimum application version must be {0}.", appVersion.ToString()),
+                //   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                //---------------------------------------------------------------------
+                // FIX: 077 Trap error if database requires later application version.
+                throw new Exception(String.Format("The minimum application version must be {0}.", appVersion.ToString()));
+                //---------------------------------------------------------------------
             }
 
             // Get the minimum database version.
@@ -655,10 +655,13 @@ namespace HLU.UI.ViewModel
             // Compare the minimum database version.
             if (Base36.Base36ToNumber(lutDbVersion) < Base36.Base36ToNumber(minDbVersion))
             {
-                MessageBox.Show(String.Format("The database must be updated to a later version.\n\n" +
-                   "The minimum database version must is {0}.",minDbVersion),
-                   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return false;
+                //MessageBox.Show(String.Format("The database must be updated to a later version.\n\n" +
+                //   "The minimum database version must be {0}.",minDbVersion),
+                //   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                //---------------------------------------------------------------------
+                // FIX: 077 Trap error if application requires later database version.
+                throw new Exception(String.Format("The minimum database version must be {0}.", minDbVersion));
+                //---------------------------------------------------------------------
             }
 
             // Store the database version for displaying in the 'About' box.
@@ -1278,13 +1281,11 @@ namespace HLU.UI.ViewModel
                 {
                     _isAuthorisedUser = true;
                     _canBulkUpdate = (bool)result;
-                    _canOSMMUpdate = (bool)result;
                 }
                 else
                 {
                     _isAuthorisedUser = false;
                     _canBulkUpdate = false;
-                    _canOSMMUpdate = false;
                 }
 
                 //---------------------------------------------------------------------
@@ -1311,7 +1312,6 @@ namespace HLU.UI.ViewModel
             {
                 _isAuthorisedUser = null;
                 _canBulkUpdate = null;
-                _canOSMMUpdate = null;
             }
         }
 
@@ -2280,21 +2280,33 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Is the user authorised for bulk updates?
+        /// </summary>
         public bool CanBulkUpdate
         {
             get
             {
                 if (_canBulkUpdate == null) GetUserInfo();
+
                 return _canBulkUpdate == true;
             }
         }
 
+        /// <summary>
+        /// Can bulk update mode be started?
+        /// </summary>
         public bool CanBulkUpdateMode
         {
             get
             {
                 if (_canBulkUpdate == null) GetUserInfo();
-                return EditMode && _canBulkUpdate == true && _osmmUpdateMode == false && _osmmBulkUpdateMode == false && IsFiltered;
+
+                return EditMode &&
+                    _canBulkUpdate == true &&
+                    _osmmUpdateMode == false &&
+                    _osmmBulkUpdateMode == false &&
+                    (IsFiltered || _bulkUpdateMode == true);
             }
         }
 
@@ -2497,8 +2509,20 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Check if the user can process OSMM Updates.
-                if (_canOSMMUpdate == null) GetUserInfo();
+                if (_canOSMMUpdate == null)
+                {
+                    // Check if the user can process OSMM Updates.
+                    if (CanBulkUpdate)
+                    {
+                        // Check if there are incid OSMM updates in the database
+                        if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null))
+                            _canOSMMUpdate = true;
+                        else
+                            _canOSMMUpdate = false;
+                    }
+                    else
+                        _canOSMMUpdate = false;
+                }
 
                 // Can start OSMM Update mode if user is authorised
                 // and not currently in bulk update mode.
@@ -2796,14 +2820,28 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Check if the user can process OSMM Updates.
-                if (_canBulkUpdate == null) GetUserInfo();
+                if (_canOSMMUpdate == null)
+                {
+                    // Check if the user can process OSMM Updates.
+                    if (CanBulkUpdate)
+                    {
+                        // Check if there are incid OSMM updates in the database
+                        if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null))
+                            _canOSMMUpdate = true;
+                        else
+                            _canOSMMUpdate = false;
+                    }
+                    else
+                        _canOSMMUpdate = false;
+                }
 
                 // Can start OSMM Bulk Update mode if user is authorised
                 // and not currently in bulk update mode or osmm update mode.
-                return _canBulkUpdate == true
-                    && (_bulkUpdateMode == false || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true))
-                    && _osmmUpdateMode == false;
+                return EditMode &&
+                    _canBulkUpdate == true &&
+                    _canOSMMUpdate == true &&
+                    _osmmUpdateMode == false &&
+                    (_bulkUpdateMode == false || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true));            
             }
         }
 

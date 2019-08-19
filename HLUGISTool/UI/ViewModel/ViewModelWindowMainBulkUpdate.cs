@@ -1474,18 +1474,15 @@ namespace HLU.UI.ViewModel
                     historyTable = _viewModelMain.GISApplication.UpdateFeatures(updateColumns, updateValues,
                         _viewModelMain.HistoryColumns, ScratchDb.ScratchMdbPath, ScratchDb.ScratchSelectionTable);
 
-                    //
-                    //
-                    // TODO: Missing update of DB shadow copy of GIS layer !!!
-                    //
-                    //
+                    // No need to update the DB shadow copy of GIS layer as no changes to the fields
+                    // have been made.
                 }
                 // Otherwise, loop through each incid to individually update the GIS features
                 else
                 {
                     //
                     //
-                    // TODO: Replace this with using scratch table to no only select incids
+                    // TODO: Replace this with using scratch table to not only select incids
                     // but also supply columns/values to update
                     //
                     //

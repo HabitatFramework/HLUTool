@@ -622,8 +622,18 @@ namespace AppModule.NamedPipes
     [StructLayout(LayoutKind.Sequential)]
     public struct SECURITY_ATTRIBUTES
     {
+        /// <summary>
+        /// The size, in bytes, of this structure.
+        /// </summary>
         public int nLength;
+        /// <summary>
+        /// A pointer to a SECURITY_DESCRIPTOR structure that controls access to the object.
+        /// </summary>
         public IntPtr lpSecurityDescriptor;
+        /// <summary>
+        /// A Boolean value that specifies whether the returned handle is inherited when a
+        /// new process is created. If this member is TRUE, the new process inherits the handle.
+        /// </summary>
         public bool bInheritHandle;
     }
 

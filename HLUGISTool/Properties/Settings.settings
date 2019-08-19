@@ -190,7 +190,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MinimumDbVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">G</Value>
+      <Value Profile="(Default)">H</Value>
     </Setting>
     <Setting Name="PreferredHabitatClass" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">ICAT</Value>
@@ -267,7 +267,7 @@
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="ShowOSMMUpdatesOption" Roaming="true" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Always</Value>
+      <Value Profile="(Default)">When Outstanding</Value>
     </Setting>
     <Setting Name="ResetOSMMUpdatesStatus" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

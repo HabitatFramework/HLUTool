@@ -613,6 +613,22 @@
             Security Attributes structure.
             </summary>
         </member>
+        <member name="F:AppModule.NamedPipes.SECURITY_ATTRIBUTES.nLength">
+            <summary>
+            The size, in bytes, of this structure.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.SECURITY_ATTRIBUTES.lpSecurityDescriptor">
+            <summary>
+            A pointer to a SECURITY_DESCRIPTOR structure that controls access to the object.
+            </summary>
+        </member>
+        <member name="F:AppModule.NamedPipes.SECURITY_ATTRIBUTES.bInheritHandle">
+            <summary>
+            A Boolean value that specifies whether the returned handle is inherited when a
+            new process is created. If this member is TRUE, the new process inherits the handle.
+            </summary>
+        </member>
         <member name="T:AppModule.NamedPipes.Overlapped">
             <summary>
             This class is used as a dummy parameter only.

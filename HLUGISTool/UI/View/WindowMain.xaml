@@ -448,7 +448,7 @@
                            Margin="8,0,0,4"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Center"
-                           Content="DataBase INCIDs" />
+                           Content="Database INCIDs" />
                     <TextBox x:Name="TextBoxBulkUpdateStatusIncidDB"
                              Grid.Row="0"
                              Grid.Column="1"
