@@ -1,12 +1,13 @@
-HLU GIS Tool 2.4.2
+HLU Tool 3.0.0
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 Copyright © 2014, 2018 Sussex Biodiversity Record Centre
+Copyright © 2019 London & South East Record Centres (LaSER)
 
 Overview
 --------
-The HLU GIS Tool provides a user interface for maintaining habitat & Land Use
+The HLU Tool provides a user interface for maintaining habitat & Land Use
 data, including changes to attributes and changes to the spatial data. It also
 provides an audit trail to indicate when it was edited, why and by whom.
 
@@ -18,7 +19,7 @@ tested.
 
 Features
 --------
- - The HLU GIS Tool provides the following features:
+ - The HLU Tool provides the following features:
  - Ensures that all attributes selected by users are valid and compatible
  - Improved data retrieval/update response times over single GIS layers
  - Maintains a brief history of all changes made to every habitat polygon
@@ -31,15 +32,15 @@ Features
 
 Requirements
 ------------
-The HLU GIS Tool requires the following:
- - Microsoft Windows XP/2003/2008/Vista/Windows 7 or Windows 8 
+The HLU Tool requires the following:
+ - Microsoft Windows XP/2003/2008/Vista/Windows 7, Windows 8 or Windows 10
  - 3 GHz or higher processor
  - 2 GB RAM
  - 3 GB of free hard disk space
       (For increased performance a multiple core processor with as much RAM
 		as possible is recommended)
 
- - Microsoft .NET Framework 3.5 SP1, 4.0, or 4.5 installed. 
+ - Microsoft .NET Framework 3.5 SP1, 4.0, or 4.5 installed.
       (You can download .NET Framework 3.5 and its Service Pack from <http://www.microsoft.com/en-gb/download/details.aspx?id=25150>)
 
  - Microsoft Access 2000 or later, OR
@@ -50,7 +51,7 @@ The HLU GIS Tool requires the following:
 
 Installation
 ------------
-The HLU GIS Tool setup.exe contains all the required files to install the tool
+The HLU Tool setup.exe contains all the required files to install the tool
 but does not provide any of the GIS layers or relation databases required to
 run the tool. By default all files are installed in the
 "Program Files\HLU\HLU GIS Tool" folder (or
@@ -58,7 +59,7 @@ run the tool. By default all files are installed in the
 
 Source Code
 -----------
-The source code for the HLU GIS Tool is open source and can be downloaded from:
+The source code for the HLU Tool is open source and can be downloaded from:
 <https://github.com/HabitatFramework/HLUTool>
 
 Documentation
@@ -71,22 +72,22 @@ The technical guide for the latest release (and for earlier releases) can be vie
 
 Issue Reporting
 ---------------
-To search for existing known issues please use:
+To search for existing issues please use:
 <https://github.com/HabitatFramework/HLUTool/issues>
 
 To report new issues please use:
-<http://forum.lrcs.org.uk/viewforum.php?id=24>
+<https://khub.net/group/association-of-local-environmental-records-centres/group-forum>
 
 License Information
 -------------------
-The HLU GIS Tool is free software. You can redistribute it and/or modify it
+The HLU Tool is free software. You can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option) any
 later version.
 
 See the file "License.txt" installed with the tool for information on the
 terms & conditions for usage and copying, and a DISCLAIMER OF ALL WARRANTIES
-or see http://www.gnu.org/licenses for more details of the GNU General Public
+or see <http://www.gnu.org/licenses> for more details of the GNU General Public
 License.
 
 --------------------------------------------------------------------------------

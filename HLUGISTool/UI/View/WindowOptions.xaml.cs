@@ -34,8 +34,6 @@ namespace HLU.UI.View
             InitializeComponent();
         }
 
-        //---------------------------------------------------------------------
-        // FIX: 071 Add minimum auto zoom scale to options.
         // Initialise selected history column list items when History tab has focus.
         //
         /// <summary>
@@ -55,7 +53,6 @@ namespace HLU.UI.View
                     ForceIsSelectedUpdate(l);
             }
         }
-        //---------------------------------------------------------------------
 
         private void ForceIsSelectedUpdate(ListBox listBoxControl)
         {

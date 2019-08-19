@@ -943,6 +943,10 @@ namespace HLU.GISApplication.MapInfo
                 "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_SELNAME));
             if (string.IsNullOrEmpty(selName)) return;
 
+            // Set the default projection coordinate system to match
+            // the selection table.
+            _mapInfoApp.RunCommand(String.Format("Set coordsys table {0}", selName));
+
             // Get the extents of the current selection.
             float selMinX = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MINX)));
             float selMaxX = float.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", selName, (int)MapInfoConstants.TableInfo.TAB_INFO_MAXX)));
@@ -969,26 +973,46 @@ namespace HLU.GISApplication.MapInfo
             float winMinY = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MINY)));
             float winMaxY = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_MAXY)));
 
-            // Check if the current selection fits in the map window and if
-            // not zoom to the extent of the whole selection.
-            if (selMinX <= winMinX || selMaxX >= winMaxX || selMinY <= winMinY || selMaxY >= winMaxY)
-            {
-                _mapInfoApp.RunCommand(String.Format("select * from {0} into ZoomSelection NoSelect", selName));
+            // Get the size of the window border (i.e. 10% of the total size)
+            float winBorder = Math.Min(winMaxX - winMinX, winMaxY - winMinY) / 10;
 
+            // Check if the current selection fits well within
+            // the map window (i.e. within the middle 80%).
+            if (selMinX <= (winMinX + winBorder) ||
+                selMaxX >= (winMaxX - winBorder) ||
+                selMinY <= (winMinY + winBorder) ||
+                selMaxY >= (winMaxY - winBorder))
+            {
+                // Zoom to the extent of the whole selection.
+                _mapInfoApp.RunCommand(String.Format("select * from {0} into ZoomSelection NoSelect", selName));
                 _mapInfoApp.Do("Set Map Redraw Off");
                 _mapInfoApp.Do("Add Map Layer ZoomSelection");
                 _mapInfoApp.Do("Set Map Zoom Entire Layer ZoomSelection");
-                _mapInfoApp.Do("Remove Map Layer ZoomSelection");
-                _mapInfoApp.Do("Close Table ZoomSelection");
 
                 // Get the zoom value of the new map window position.
                 float winZoom = float.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})", mapWindowID, (int)MapInfoConstants.MapperInfo.MAPPER_INFO_ZOOM)));
 
-                // Check if the map window has zoomed in beyond the minimum
-                // auto zoom size.
+                // Add 20% to allow for a window border.
+                winZoom = winZoom * 1.2f;
+
+                // Round the map scale up.
+                double roundZoom;
+                if (minZoom < 1000)
+                    roundZoom = Math.Ceiling(winZoom / 100) * 100;
+                else
+                    roundZoom = Math.Ceiling(winZoom / 500) * 500;
+
+                // Round up the minimum zoom if necessary.
+                if (minZoom < roundZoom)
+                    minZoom = (int)roundZoom;
+
+                // Zoom out to the minimum zoom value.
                 if (winZoom < minZoom)
                     _mapInfoApp.Do(String.Format("Set Map Zoom {0} Units \"{1}\"", minZoom, distUnits));
                 
+                // Remove the temporary layer and refresh the map
+                _mapInfoApp.Do("Remove Map Layer ZoomSelection");
+                _mapInfoApp.Do("Close Table ZoomSelection");
                 _mapInfoApp.Do("Set Map Redraw On");
             }
             //---------------------------------------------------------------------

@@ -88,7 +88,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding DbConnectionTimeout, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 Text="{Binding DbConnectionTimeout, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                  TextAlignment="Right" />
 
@@ -104,7 +104,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding IncidTablePageSize, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 Text="{Binding IncidTablePageSize, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                  TextAlignment="Right" />
 
@@ -226,7 +226,7 @@
 											 Grid.Column="1"
 											 Margin="4,8,1,8"
 											 BorderThickness="1"
-											 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+											 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
 											 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
 											 TextAlignment="Right" />
 								</Grid>
@@ -399,7 +399,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                 Text="{Binding HistoryDisplayLastN, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                  TextAlignment="Right" />
                         </Grid>
@@ -661,9 +661,10 @@
                                      Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
-                                     Text="{Binding GetValueRows, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True}"
+                                     Text="{Binding GetValueRows, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
-                                     TextAlignment="Right" />
+                                     TextAlignment="Right"
+                                     IsEnabled="{Binding CanBrowseSqlPath}" />
 
                         </Grid>
 
@@ -795,7 +796,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding SeasonSpring, ValidatesOnDataErrors=True}"
+                                 Text="{Binding SeasonSpring, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
                         <TextBox x:Name="TextBoxSeasonSummer"
                                  Grid.Row="1"
@@ -803,7 +804,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding SeasonSummer, ValidatesOnDataErrors=True}"
+                                 Text="{Binding SeasonSummer, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
                         <TextBox x:Name="TextBoxSeasonAutumn"
                                  Grid.Row="0"
@@ -811,7 +812,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding SeasonAutumn, ValidatesOnDataErrors=True}"
+                                 Text="{Binding SeasonAutumn, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
                         <TextBox x:Name="TextBoxSeasonWinter"
                                  Grid.Row="1"
@@ -819,7 +820,7 @@
                                  Margin="4,8,4,8"
                                  VerticalAlignment="Center"
                                  BorderThickness="1"
-                                 Text="{Binding SeasonWinter, ValidatesOnDataErrors=True}"
+                                 Text="{Binding SeasonWinter, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
 
                         <Grid x:Name="GridDateDelimter"
@@ -842,7 +843,7 @@
                                      Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
-                                     Text="{Binding VagueDateDelimiter, ValidatesOnDataErrors=True}"
+                                     Text="{Binding VagueDateDelimiter, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                      TextAlignment="Center" />
                         </Grid>
@@ -1069,12 +1070,12 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="ButtonSave"
                         Grid.Column="1"
-                        Margin="2,0,0,0"
+                        Margin="0,0,2,0"
                         Command="{Binding SaveCommand}"
                         IsDefault="True" Content="_Save"/>
                 <Button x:Name="ButtonCancel"
                         Grid.Column="2"
-                        Margin="0,0,2,0"
+                        Margin="2,0,0,0"
                         Command="{Binding CancelCommand}"
                         IsCancel="True" Content="_Cancel"/>
             </Grid>
