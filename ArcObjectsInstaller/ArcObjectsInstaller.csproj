@@ -57,10 +57,8 @@
       <HintPath>C:\Windows\assembly\GAC_MSIL\ESRI.ArcGIS.ADF.Local\10.1.0.0__8fc3cc631e44ad86\ESRI.ArcGIS.ADF.Local.dll</HintPath>
     </Reference>
     -->
-    <Reference Include="ESRI.ArcGIS.ADF, Version=9.3.0.1770, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
+    <Reference Include="ESRI.ArcGIS.ADF, Version=10.2.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\ArcGIS\DotNet\ESRI.ArcGIS.ADF.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
