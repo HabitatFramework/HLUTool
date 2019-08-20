@@ -513,20 +513,20 @@ namespace HLU.UI.ViewModel
                 }
                 ReadMapSelection(false);
 
-                //---------------------------------------------------------------------
-                // FIX: 068 Enable auto zoom when selecting features on map.
-                //
-                // If there are no selected features in the map
-                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                {
-                    // Select the first incid in the map.
-                    SelectOnMap(false);
+                ////---------------------------------------------------------------------
+                //// FIX: 068 Enable auto zoom when selecting features on map.
+                ////
+                //// If there are no selected features in the map
+                //if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                //{
+                //    // Select the first incid in the map.
+                //    SelectOnMap(false);
 
-                    // Count the number of toids and fragments for the current incid
-                    // selected in the GIS and in the database.
-                    CountToidFrags();
-                }
-                //---------------------------------------------------------------------
+                //    // Count the number of toids and fragments for the current incid
+                //    // selected in the GIS and in the database.
+                //    CountToidFrags();
+                //}
+                ////---------------------------------------------------------------------
                     
                 // Clear the splash window status bar (or reset the cursor to an arrow)
                 if (haveSplashWin)
