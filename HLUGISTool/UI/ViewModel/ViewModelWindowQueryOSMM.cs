@@ -135,6 +135,7 @@ namespace HLU.UI.ViewModel
 
         public void OSMMUpdatesSelectedRow(OSMMUpdates selectedRow)
         {
+            // Set the filter fields to the selected row values
             if (selectedRow != null && selectedRow.ChangeFlag != "Total")
             {
                 _osmmProcessFlag = selectedRow.ProcessFlag;

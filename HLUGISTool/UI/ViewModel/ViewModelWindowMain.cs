@@ -3782,18 +3782,18 @@ namespace HLU.UI.ViewModel
                     throw (new Exception("No parent window loaded"));
                 _windowWarnGISSelect.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-                // create ViewModel to which main window binds
+                // Create ViewModel to which main window binds
                 _viewModelWinWarnGISSelect = new ViewModelWindowWarnOnGISSelect(
                     expectedNumFeatures, expectedNumIncids, expectedNumFeatures > -1 ? _gisLayerType : GeometryTypes.Unknown, selectByjoin);
 
-                // when ViewModel asks to be closed, close window
+                // When ViewModel asks to be closed, close window
                 _viewModelWinWarnGISSelect.RequestClose += 
                     new ViewModelWindowWarnOnGISSelect.RequestCloseEventHandler(_viewModelWinWarnGISSelect_RequestClose);
                     
-                // allow all controls in window to bind to ViewModel by setting DataContext
+                // Allow all controls in window to bind to ViewModel by setting DataContext
                 _windowWarnGISSelect.DataContext = _viewModelWinWarnGISSelect;
 
-                // show window
+                // Show the window
                 _windowWarnGISSelect.ShowDialog();
 
                 return IsFiltered;
@@ -3814,6 +3814,11 @@ namespace HLU.UI.ViewModel
             _viewModelWinWarnGISSelect.RequestClose -= _viewModelWinWarnGISSelect_RequestClose;
             _windowWarnGISSelect.Close();
 
+            // Update the user warning variable
+            _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
+
+            // If the user doesn't wish to proceed then clear the
+            // current incid filter.
             if (!proceed)
             {
                 _incidSelectionWhereClause = null;
@@ -4098,20 +4103,28 @@ namespace HLU.UI.ViewModel
             _viewModelWinQueryOSMM.RequestClose -= _viewModelWinQueryOSMM_RequestClose;
             _windowQueryOSMM.Close();
 
-            // Set the default source details
-            IncidSourcesRows[0].source_id = Settings.Default.BulkOSMMSourceId;
-            IncidSourcesRows[0].source_habitat_class = "N/A";
-            //_viewModelMain.IncidSourcesRows[0].source_habitat_type = "N/A";
-            Date.VagueDateInstance defaultSourceDate = DefaultSourceDate(IncidSource1Date, Settings.Default.BulkOSMMSourceId);
-            IncidSourcesRows[0].source_date_start = defaultSourceDate.StartDate;
-            IncidSourcesRows[0].source_date_end = defaultSourceDate.EndDate;
-            IncidSourcesRows[0].source_date_type = defaultSourceDate.DateType;
-            IncidSourcesRows[0].source_boundary_importance = Settings.Default.SourceImportanceApply1;
-            IncidSourcesRows[0].source_habitat_importance = Settings.Default.SourceImportanceApply1;
+            if (apply == true)
+            {
 
-            // Apply the OSMM Updates filter
-            if (processFlag != null || spatialFlag != null || changeFlag != null || status != null)
-                ApplyOSMMUpdatesFilter(processFlag, spatialFlag, changeFlag, status);
+                if (_osmmBulkUpdateMode == true)
+                {
+                    // Set the default source details
+                    IncidSourcesRows[0].source_id = Settings.Default.BulkOSMMSourceId;
+                    IncidSourcesRows[0].source_habitat_class = "N/A";
+                    //_viewModelMain.IncidSourcesRows[0].source_habitat_type = "N/A";
+                    //Date.VagueDateInstance defaultSourceDate = DefaultSourceDate(null, Settings.Default.BulkOSMMSourceId);
+                    Date.VagueDateInstance defaultSourceDate = new Date.VagueDateInstance();
+                    IncidSourcesRows[0].source_date_start = defaultSourceDate.StartDate;
+                    IncidSourcesRows[0].source_date_end = defaultSourceDate.EndDate;
+                    IncidSourcesRows[0].source_date_type = defaultSourceDate.DateType;
+                    IncidSourcesRows[0].source_boundary_importance = Settings.Default.SourceImportanceApply1;
+                    IncidSourcesRows[0].source_habitat_importance = Settings.Default.SourceImportanceApply1;
+                }
+
+                // Apply the OSMM Updates filter
+                if (processFlag != null || spatialFlag != null || changeFlag != null || status != null)
+                    ApplyOSMMUpdatesFilter(processFlag, spatialFlag, changeFlag, status);
+            }
         }
 
         public void ApplyOSMMUpdatesFilter(string processFlag, string spatialFlag, string changeFlag, string status)
@@ -12511,6 +12524,11 @@ namespace HLU.UI.ViewModel
             if (IncidSource1Id != null && IncidSource1Id != Int32.MinValue)
             //---------------------------------------------------------------------
             {
+                // Check the source id is found in the lookup table
+                EnumerableRowCollection<HluDataSet.lut_sourcesRow> rows =
+                    HluDataset.lut_sources.Where(r => r.source_id == IncidSource1Id);
+                if (rows.Count() == 0)
+                    errors.Add(new string[] { "IncidSource1Id", "Error: Source name is mandatory for each source" });
                 if (IncidSource1Date == null)
                     errors.Add(new string[] { "IncidSource1Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource1Date.IsBad)
@@ -12596,6 +12614,11 @@ namespace HLU.UI.ViewModel
             if (IncidSource2Id != null && IncidSource2Id != Int32.MinValue)
             //---------------------------------------------------------------------
             {
+                // Check the source id is found in the lookup table
+                EnumerableRowCollection<HluDataSet.lut_sourcesRow> rows =
+                    HluDataset.lut_sources.Where(r => r.source_id == IncidSource2Id);
+                if (rows.Count() == 0)
+                    errors.Add(new string[] { "IncidSource1Id", "Error: Source name is mandatory for each source" });
                 if (IncidSource2Date == null)
                     errors.Add(new string[] { "IncidSource2Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource2Date.IsBad)
@@ -12671,6 +12694,11 @@ namespace HLU.UI.ViewModel
             if (IncidSource3Id != null && IncidSource3Id != Int32.MinValue)
             //---------------------------------------------------------------------
             {
+                // Check the source id is found in the lookup table
+                EnumerableRowCollection<HluDataSet.lut_sourcesRow> rows =
+                    HluDataset.lut_sources.Where(r => r.source_id == IncidSource3Id);
+                if (rows.Count() == 0)
+                    errors.Add(new string[] { "IncidSource1Id", "Error: Source name is mandatory for each source" });
                 if (IncidSource3Date == null)
                     errors.Add(new string[] { "IncidSource3Date", "Error: Date is mandatory for each source" });
                 else if (IncidSource3Date.IsBad)

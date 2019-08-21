@@ -2854,9 +2854,9 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>South-east LRCs</td><td>0</td><td/><td>-878522322</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>-878522322</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>2082542517</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>-1406726636</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION35SP1</td><td>1033</td><td>Microsoft .NET Framework 3.5 SP1 needs to be installed for this installation to continue.</td><td>0</td><td/><td>2082577397</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3960,15 +3960,15 @@
 		<row><td>ID_STRING11</td><td>1033</td><td/><td>0</td><td/><td>2082571317</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>-1675556273</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675546001</td></row>
-		<row><td>ID_STRING14</td><td>1033</td><td>HLUGIS~1|HLU GIS Tool - Launch</td><td>0</td><td/><td>-450778992</td></row>
-		<row><td>ID_STRING15</td><td>1033</td><td>HLUGIS~1|HLU GIS Tool - Reconfigure</td><td>0</td><td/><td>-450768752</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>HLUTOO~1|HLU Tool - Launch</td><td>0</td><td/><td>-1406720460</td></row>
+		<row><td>ID_STRING15</td><td>1033</td><td>HLUTOO~1|HLU Tool - Reconfigure</td><td>0</td><td/><td>-1406718412</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>License.txt</td><td>0</td><td/><td>354519820</td></row>
 		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>899753546</td></row>
 		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>899769930</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>1428272041</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>1428272041</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>2082566933</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>2082587541</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>2082571221</td></row>
@@ -4605,7 +4605,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
 		<row><td>ProductCode</td><td>{C246C8CC-B0FD-49A9-9B61-18C11A98E5FA}</td><td/></row>
-		<row><td>ProductName</td><td>HLU GIS Tool 3.0.0</td><td/></row>
+		<row><td>ProductName</td><td>HLU Tool 3.0.0</td><td/></row>
 		<row><td>ProductVersion</td><td>3.0.0.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
