@@ -113,7 +113,11 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void YesCommandClick(object param)
         {
+            // Save the user options (in case the user doesn't want
+            // to be warned again in future.
             Settings.Default.Save();
+
+            // Close the window.
             this.RequestClose(true);
         }
 

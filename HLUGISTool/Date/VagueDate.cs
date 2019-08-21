@@ -67,6 +67,13 @@ namespace HLU.Date
             DateType = dateType;
             UserEntry = userEntry;
         }
+
+        public VagueDateInstance()
+        {
+            StartDate = -693593;
+            EndDate = -693593;
+            DateType = null;
+        }
     }
 
     class VagueDate
