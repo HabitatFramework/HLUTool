@@ -3253,8 +3253,8 @@ namespace HLU.UI.ViewModel
             _viewModelAbout.UserId = UserID;
             _viewModelAbout.UserName = UserName;
             _viewModelAbout.Copyright = AssemblyCopyright;
-            _viewModelAbout.UserGuideURL = "https://readthedocs.org/projects/hlugistool-userguide/";
-            _viewModelAbout.UserGuideText = "https://readthedocs.org/projects/hlugistool-userguide/";
+            _viewModelAbout.UserGuideURL = "https://readthedocs.org/projects/hlutool-userguide/";
+            _viewModelAbout.UserGuideText = "https://readthedocs.org/projects/hlutool-userguide/";
             _viewModelAbout.TechnicalGuideURL = "https://readthedocs.org/projects/hlutool-technicalguide/";
             _viewModelAbout.TechnicalGuideText = "https://readthedocs.org/projects/hlutool-technicalguide/";
 
