@@ -49,7 +49,7 @@ namespace HLU.UI.ViewModel
         private ICommand _browseMapPathCommand;
         private ICommand _browseExportPathCommand;
         private ICommand _browseSqlPathCommand;
-        private string _displayName = "HLU Options";
+        private string _displayName = "Options";
 
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
             new HluDataSet.incid_mm_polygonsDataTable();

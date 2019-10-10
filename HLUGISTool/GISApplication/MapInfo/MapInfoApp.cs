@@ -1420,7 +1420,7 @@ namespace HLU.GISApplication.MapInfo
                 //
                 // Prompt the user for where to save the export layer
                 SaveFileDialog saveFileFlg = new SaveFileDialog();
-                saveFileFlg.Title = "HLU Export";
+                saveFileFlg.Title = "Export";
                 saveFileFlg.ValidateNames = true;
                 saveFileFlg.OverwritePrompt = true;
                 saveFileFlg.RestoreDirectory = false;

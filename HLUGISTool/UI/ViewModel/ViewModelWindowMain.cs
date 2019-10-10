@@ -2515,7 +2515,11 @@ namespace HLU.UI.ViewModel
                     if (CanBulkUpdate)
                     {
                         // Check if there are incid OSMM updates in the database
-                        if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null))
+                        int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
+                            "SELECT COUNT(*) FROM {0}", _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName)),
+                            _db.Connection.ConnectionTimeout, CommandType.Text);
+
+                        if (incidOSMMUpdatesRowCount > 0)
                             _canOSMMUpdate = true;
                         else
                             _canOSMMUpdate = false;
@@ -2526,7 +2530,8 @@ namespace HLU.UI.ViewModel
 
                 // Can start OSMM Update mode if user is authorised
                 // and not currently in bulk update mode.
-                return _canOSMMUpdate == true && _bulkUpdateMode == false;
+                return _canOSMMUpdate == true &&
+                       _bulkUpdateMode == false;
             }
         }
 
@@ -2826,7 +2831,11 @@ namespace HLU.UI.ViewModel
                     if (CanBulkUpdate)
                     {
                         // Check if there are incid OSMM updates in the database
-                        if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null))
+                        int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
+                            "SELECT COUNT(*) FROM {0}", _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName)),
+                            _db.Connection.ConnectionTimeout, CommandType.Text);
+
+                        if (incidOSMMUpdatesRowCount > 0)
                             _canOSMMUpdate = true;
                         else
                             _canOSMMUpdate = false;
@@ -2835,10 +2844,10 @@ namespace HLU.UI.ViewModel
                         _canOSMMUpdate = false;
                 }
 
-                // Can start OSMM Bulk Update mode if user is authorised
+                // Can start OSMM Bulk Update mode if user is authorised,
+                // if there are incid OSMM updates in the database,
                 // and not currently in bulk update mode or osmm update mode.
                 return EditMode &&
-                    _canBulkUpdate == true &&
                     _canOSMMUpdate == true &&
                     _osmmUpdateMode == false &&
                     (_bulkUpdateMode == false || (_bulkUpdateMode == true && _osmmBulkUpdateMode == true));            
@@ -3398,7 +3407,7 @@ namespace HLU.UI.ViewModel
 
                 // create ViewModel to which main window binds
                 _viewModelWinQueryBuilder = new ViewModelWindowQueryBuilder(HluDataset);
-                _viewModelWinQueryBuilder.DisplayName = "HLU Query Builder";
+                _viewModelWinQueryBuilder.DisplayName = "Query Builder";
 
                 // when ViewModel asks to be closed, close window
                 _viewModelWinQueryBuilder.RequestClose +=
@@ -3587,7 +3596,7 @@ namespace HLU.UI.ViewModel
 
                 // create ViewModel to which main window binds
                 _viewModelWinQueryAdvanced = new ViewModelWindowQueryAdvanced(HluDataset, _db);
-                _viewModelWinQueryAdvanced.DisplayName = "HLU Advanced Query Builder";
+                _viewModelWinQueryAdvanced.DisplayName = "Advanced Query Builder";
 
                 // when ViewModel asks to be closed, close window
                 _viewModelWinQueryAdvanced.RequestClose +=
@@ -3888,7 +3897,7 @@ namespace HLU.UI.ViewModel
 
                 // create ViewModel to which main window binds
                 _viewModelWinQueryIncid = new ViewModelWindowQueryIncid();
-                _viewModelWinQueryIncid.DisplayName = "HLU Filter By Incid";
+                _viewModelWinQueryIncid.DisplayName = "Filter By Incid";
 
                 // when ViewModel asks to be closed, close window
                 _viewModelWinQueryIncid.RequestClose +=
@@ -4073,7 +4082,7 @@ namespace HLU.UI.ViewModel
 
                 // create ViewModel to which main window binds
                 _viewModelWinQueryOSMM = new ViewModelWindowQueryOSMM(HluDataset, _db, this);
-                _viewModelWinQueryOSMM.DisplayName = "HLU OSMM Updates Filter";
+                _viewModelWinQueryOSMM.DisplayName = "OSMM Updates Filter";
 
                 // when ViewModel asks to be closed, close window
                 _viewModelWinQueryOSMM.RequestClose +=
@@ -5670,7 +5679,7 @@ namespace HLU.UI.ViewModel
                     // fragment counts.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format(" of {0} (filtered) [{1}:{2}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0}* [{1}:{2}]", _incidSelection.Rows.Count,
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else if (_osmmBulkUpdateMode == true)
@@ -5678,7 +5687,7 @@ namespace HLU.UI.ViewModel
                             _toidsSelectedMapCount.ToString(),
                             _fragsSelectedMapCount.ToString());
                     else
-                        return String.Format(" of {0} (filtered) [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0}* [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
                             _toidsIncidGisCount.ToString(),
                             _fragsIncidGisCount.ToString(),
                             _toidsIncidDbCount.ToString(),
@@ -5710,7 +5719,7 @@ namespace HLU.UI.ViewModel
                     // counts, when auto selecting features on change of incid.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format(" of {0} (filtered) [{1}:{2}]", _incidRowCount,
+                        return String.Format(" of {0}* [{1}:{2}]", _incidRowCount,
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else

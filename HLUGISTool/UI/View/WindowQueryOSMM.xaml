@@ -216,7 +216,7 @@
 									Grid.Column="1"
             						Margin="8,2,4,2"
             						VerticalAlignment="Center"
-            						IsEnabled="True"
+            						IsEnabled="False"
             						IsReadOnly="True"
             						TextAlignment="Left"
 									Text="{Binding IncidOSMMUpdatesRejectedCount,
@@ -234,7 +234,7 @@
             						Margin="8,2,4,2"
             						VerticalAlignment="Center"
             						IsEnabled="False"
-            						IsReadOnly="False"
+            						IsReadOnly="True"
             						TextAlignment="Left"
 									Text="{Binding IncidOSMMUpdatesIgnoredCount,
 														Mode=OneWay,
