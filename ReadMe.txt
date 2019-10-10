@@ -1,4 +1,4 @@
-HLU Tool 3.0.0
+HLU Tool 3.0.1
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
@@ -65,10 +65,13 @@ The source code for the HLU Tool is open source and can be downloaded from:
 Documentation
 -------------
 The user guide for the latest release (and for earlier releases) can be viewed online or downloaded as a PDF from:
-<https://readthedocs.org/projects/hlugistool-userguide/>
+<https://readthedocs.org/projects/hlutool-userguide/>
 
 The technical guide for the latest release (and for earlier releases) can be viewed online or downloaded as a PDF from:
 <https://readthedocs.org/projects/hlutool-technicalguide/>
+
+The developers guide can be viewed online or downloaded as a PDF from:
+<https://readthedocs.org/projects/hlutool-developersguide/>
 
 Issue Reporting
 ---------------

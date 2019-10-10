@@ -213,9 +213,18 @@ namespace HLU.UI.ViewModel
                     if ((_viewModelMain.IncidSelectionWhereClause == null) &&
                         (_viewModelMain.GisSelection != null) && (_viewModelMain.GisSelection.Rows.Count > 0))
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 081 Enable subset of features for INCID to be exported.
+                        //
+                        //_viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
+                            //_viewModelMain.GisSelection.Select(), _viewModelMain.GisIDColumnOrdinals,
+                            //250, _viewModelMain.HluDataset.incid);
+                        int[] incidOrd = new int[1];
+                        incidOrd[0] = _viewModelMain.IncidTable.incidColumn.Ordinal;
                         _viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
-                            _viewModelMain.GisSelection.Select(), _viewModelMain.GisIDColumnOrdinals,
+                            _viewModelMain.GisSelection.Select(), incidOrd,
                             250, _viewModelMain.HluDataset.incid);
+                        //---------------------------------------------------------------------
 
                         // Set the export filter to the where clause.
                         exportFilter = _viewModelMain.IncidSelectionWhereClause;
@@ -248,7 +257,7 @@ namespace HLU.UI.ViewModel
                 else
                     rowCount = _viewModelMain.IncidRowCount(false);
                 
-                // Warn the user if the export is very large.
+                // Warn the user if the export is VERY large.
                 if (rowCount > 50000)
                 {
                     MessageBoxResult userResponse = MessageBoxResult.No;
