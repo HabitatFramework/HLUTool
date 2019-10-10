@@ -2873,7 +2873,7 @@
 		<col def="I4">TimeStamp</col>
 		<row><td>COMPANY_NAME</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>-1406710252</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>-1406726636</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>1428678890</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION35SP1</td><td>1033</td><td>Microsoft .NET Framework 3.5 SP1 needs to be installed for this installation to continue.</td><td>0</td><td/><td>2082577397</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -4627,9 +4627,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{C246C8CC-B0FD-49A9-9B61-18C11A98E5FA}</td><td/></row>
-		<row><td>ProductName</td><td>HLU Tool 3.0.0</td><td/></row>
-		<row><td>ProductVersion</td><td>3.0.0.0</td><td/></row>
+		<row><td>ProductCode</td><td>{5056D9AF-AF2A-4387-A3B2-19EE918B0479}</td><td/></row>
+		<row><td>ProductName</td><td>HLU Tool 3.0.1</td><td/></row>
+		<row><td>ProductVersion</td><td>3.0.1.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4919,7 +4919,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.0.0.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.0.1.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">
