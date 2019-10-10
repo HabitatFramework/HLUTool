@@ -68,7 +68,7 @@ The developers guide can be viewed online or downloaded as a PDF from:
 Issue Reporting
 ---------------
 To search for existing issues please use:
-<https://github.com/HabitatFramework/HLUTool/issues>
+<https://trello.com/b/fcGICLuu/hlu-tool-development>
 
 To report new issues please use:
 <https://khub.net/group/association-of-local-environmental-records-centres/group-forum>

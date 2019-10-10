@@ -2514,10 +2514,14 @@ namespace HLU.UI.ViewModel
                     // Check if the user can process OSMM Updates.
                     if (CanBulkUpdate)
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 082 Check if any OSMM updates before enabling functionality.
+                        //
                         // Check if there are incid OSMM updates in the database
                         int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
                             "SELECT COUNT(*) FROM {0}", _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName)),
                             _db.Connection.ConnectionTimeout, CommandType.Text);
+                        //---------------------------------------------------------------------
 
                         if (incidOSMMUpdatesRowCount > 0)
                             _canOSMMUpdate = true;
@@ -2830,10 +2834,14 @@ namespace HLU.UI.ViewModel
                     // Check if the user can process OSMM Updates.
                     if (CanBulkUpdate)
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 082 Check if any OSMM updates before enabling functionality.
+                        //
                         // Check if there are incid OSMM updates in the database
                         int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
                             "SELECT COUNT(*) FROM {0}", _db.QualifyTableName(_hluDS.incid_osmm_updates.TableName)),
                             _db.Connection.ConnectionTimeout, CommandType.Text);
+                        //---------------------------------------------------------------------
 
                         if (incidOSMMUpdatesRowCount > 0)
                             _canOSMMUpdate = true;
@@ -4878,7 +4886,7 @@ namespace HLU.UI.ViewModel
                 if (_selectAllOnMapCommand == null)
                 {
                     Action<object> selectAllOnMapAction = new Action<object>(this.SelectAllOnMapClicked);
-                    _selectAllOnMapCommand = new RelayCommand(selectAllOnMapAction, param => this.IsFiltered);
+                    _selectAllOnMapCommand = new RelayCommand(selectAllOnMapAction, param => this.CanSelectOnMap);
                 }
                 return _selectAllOnMapCommand;
             }
