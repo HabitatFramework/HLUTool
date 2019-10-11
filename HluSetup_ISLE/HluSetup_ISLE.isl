@@ -254,7 +254,6 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<row><td>ISExpHlp.dll</td><td/><td>&lt;ISProductFolder&gt;\redist\language independent\i386\ISExpHlp.dll</td></row>
 		<row><td>ISSELFREG.DLL</td><td/><td>&lt;ISProductFolder&gt;\redist\language independent\i386\isregsvr.dll</td></row>
-		<row><td>ISSetupFilesHelper</td><td/><td>&lt;ISProductFolder&gt;\redist\language independent\i386\SFHelper.dll</td></row>
 		<row><td>NewBinary1</td><td/><td>&lt;ISProductFolder&gt;\Support\Themes\InstallShield Blue Theme\banner.jpg</td></row>
 		<row><td>NewBinary10</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\CompleteSetupIco.ibd</td></row>
 		<row><td>NewBinary11</td><td/><td>&lt;ISProductFolder&gt;\Redist\Language Independent\OS Independent\CustomSetupIco.ibd</td></row>
@@ -345,7 +344,6 @@
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
 		<row><td>AppModule.InterProcessComm.Primary_output</td><td>{818CE24F-9F8E-47BE-8CBD-D274851027EA}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.interprocesscomm.p</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>AppModule.NamedPipes.Primary_output</td><td>{32231B20-E36C-4BF3-B739-2843F5BE88AE}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.namedpipes.primary</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ArcObjectsInstaller.Primary_output</td><td>{A4D38281-490A-4EBA-8046-CC0DF6DF9AC8}</td><td>INSTALLDIR</td><td>2</td><td/><td>arcobjectsinstaller.primary_</td><td>81</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td>{22BC8B1F-18F7-4FD4-A9E6-51429EDE15E2}</td><td>DesktopFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>HLUGISTool.Primary_output</td><td>{8177ABD7-6EFE-4D7B-98D9-1DC849B25162}</td><td>INSTALLDIR</td><td>2</td><td/><td>hlugistool.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>HluArcMapExtension.Primary_output</td><td>{5B287E73-A66E-4135-AF62-6C9BD3E07DD1}</td><td>INSTALLDIR</td><td>2</td><td/><td>hluarcmapextension.primary_o</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -913,7 +911,6 @@
 		<row><td>AdminWelcome</td><td>Next</td><td>NewDialog</td><td>AdminNetworkLocation</td><td>1</td><td>0</td></row>
 		<row><td>CancelSetup</td><td>No</td><td>EndDialog</td><td>Return</td><td>1</td><td>0</td></row>
 		<row><td>CancelSetup</td><td>Yes</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
-		<row><td>CancelSetup</td><td>Yes</td><td>DoAction</td><td>ISSetupFilesCleanup</td><td>1</td><td>200</td></row>
 		<row><td>CancelSetup</td><td>Yes</td><td>EndDialog</td><td>Exit</td><td>1</td><td>2</td></row>
 		<row><td>CustomSetup</td><td>Back</td><td>NewDialog</td><td>CustomerInformation</td><td>NOT Installed</td><td>0</td></row>
 		<row><td>CustomSetup</td><td>Back</td><td>NewDialog</td><td>MaintenanceType</td><td>Installed</td><td>0</td></row>
@@ -1023,11 +1020,9 @@
 		<row><td>SetupCompleteError</td><td>Cancel</td><td>EndDialog</td><td>Return</td><td>1</td><td>2</td></row>
 		<row><td>SetupCompleteError</td><td>Cancel</td><td>[Suspend]</td><td>1</td><td>1</td><td>1</td></row>
 		<row><td>SetupCompleteError</td><td>Finish</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
-		<row><td>SetupCompleteError</td><td>Finish</td><td>DoAction</td><td>ISSetupFilesCleanup</td><td>1</td><td>200</td></row>
 		<row><td>SetupCompleteError</td><td>Finish</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1")</td><td>3</td></row>
 		<row><td>SetupCompleteError</td><td>Finish</td><td>EndDialog</td><td>Exit</td><td>1</td><td>2</td></row>
 		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
-		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>ISSetupFilesCleanup</td><td>1</td><td>201</td></row>
 		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>LaunchReadmeFileFromSetupCompleteSuccess</td><td>LAUNCHREADME And READMEFILETOLAUNCHATEND &lt;&gt; "" And NOT Installed</td><td>2</td></row>
 		<row><td>SetupCompleteSuccess</td><td>OK</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1") And NOT ISENABLEDWUSFINISHDIALOG</td><td>7</td></row>
 		<row><td>SetupCompleteSuccess</td><td>OK</td><td>EndDialog</td><td>Exit</td><td>1</td><td>3</td></row>
@@ -1044,7 +1039,6 @@
 		<row><td>SetupInterrupted</td><td>Cancel</td><td>EndDialog</td><td>Exit</td><td>1</td><td>2</td></row>
 		<row><td>SetupInterrupted</td><td>Cancel</td><td>[Suspend]</td><td>1</td><td>1</td><td>1</td></row>
 		<row><td>SetupInterrupted</td><td>Finish</td><td>DoAction</td><td>CleanUp</td><td>ISSCRIPTRUNNING="1"</td><td>1</td></row>
-		<row><td>SetupInterrupted</td><td>Finish</td><td>DoAction</td><td>ISSetupFilesCleanup</td><td>1</td><td>200</td></row>
 		<row><td>SetupInterrupted</td><td>Finish</td><td>DoAction</td><td>ShowMsiLog</td><td>MsiLogFileLocation And (ISSHOWMSILOG="1")</td><td>3</td></row>
 		<row><td>SetupInterrupted</td><td>Finish</td><td>EndDialog</td><td>Exit</td><td>1</td><td>2</td></row>
 		<row><td>SetupProgress</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>0</td></row>
@@ -1086,10 +1080,9 @@
 		<row><td>ISSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterFiles</td><td/><td/></row>
 		<row><td>ISSelfRegisterFinalize</td><td>1</td><td>ISSELFREG.DLL</td><td>ISSelfRegisterFinalize</td><td/><td/></row>
 		<row><td>ISSetAllUsers</td><td>257</td><td>SetAllUsers.dll</td><td>SetAllUsers</td><td/><td/></row>
-		<row><td>ISSetupFilesCleanup</td><td>257</td><td>ISSetupFilesHelper</td><td>SFCleanupEx</td><td/><td/></row>
-		<row><td>ISSetupFilesExtract</td><td>257</td><td>ISSetupFilesHelper</td><td>SFStartupEx</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
 		<row><td>LaunchReadmeFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchReadMe</td><td/><td/></row>
+		<row><td>RegArcMapExtension</td><td>1058</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUGISToolArcExtReg.bat</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
 		<row><td>SetARPReadme</td><td>51</td><td>ARPREADME</td><td>[INSTALLDIR]\ReadMe.txt</td><td/><td/></row>
 		<row><td>SetAllUsersProfileNT</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%SystemRoot]\Profiles\All Users</td><td/><td/></row>
@@ -1154,11 +1147,18 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S255">ISFolderName</col>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
+		<row><td>ARCGIS</td><td>COMMON_FILES</td><td>ArcGIS</td><td/><td>0</td><td/></row>
+		<row><td>ARCGIS1</td><td>COMMON_FILES1</td><td>ArcGIS</td><td/><td>0</td><td/></row>
 		<row><td>AdminToolsFolder</td><td>TARGETDIR</td><td>.:Admint~1|AdminTools</td><td/><td>0</td><td/></row>
 		<row><td>AppDataFolder</td><td>TARGETDIR</td><td>.:APPLIC~1|Application Data</td><td/><td>0</td><td/></row>
+		<row><td>BIN</td><td>ARCGIS</td><td>bin</td><td/><td>0</td><td/></row>
+		<row><td>BIN1</td><td>ARCGIS1</td><td>bin</td><td/><td>0</td><td/></row>
+		<row><td>COMMON_FILES</td><td>PROGRAM_FILES__X86_</td><td>COMMON~1|Common Files</td><td/><td>0</td><td/></row>
+		<row><td>COMMON_FILES1</td><td>ProgramFilesFolder</td><td>COMMON~1|Common Files</td><td/><td>0</td><td/></row>
 		<row><td>CommonAppDataFolder</td><td>TARGETDIR</td><td>.:Common~1|CommonAppData</td><td/><td>0</td><td/></row>
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
 		<row><td>DATABASEDIR</td><td>ISYourDataBaseDir</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>DIRPROPERTY1</td><td>TARGETDIR</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>DesktopFolder</td><td>TARGETDIR</td><td>.:Desktop</td><td/><td>3</td><td/></row>
 		<row><td>ESDM</td><td>ProgramFilesFolder</td><td>ESDM</td><td/><td>0</td><td/></row>
 		<row><td>FavoritesFolder</td><td>TARGETDIR</td><td>.:FAVORI~1|Favorites</td><td/><td>0</td><td/></row>
@@ -1174,7 +1174,11 @@
 		<row><td>ISYourDataBaseDir</td><td>INSTALLDIR</td><td>Database</td><td/><td>0</td><td/></row>
 		<row><td>LocalAppDataFolder</td><td>TARGETDIR</td><td>.:LocalA~1|LocalAppData</td><td/><td>0</td><td/></row>
 		<row><td>MyPicturesFolder</td><td>TARGETDIR</td><td>.:MyPict~1|MyPictures</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY1</td><td>TARGETDIR</td><td>NEW_DIRECTORY1</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY2</td><td>TARGETDIR</td><td>NEW_DIRECTORY2</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY3</td><td>TARGETDIR</td><td>NEW_DIRECTORY3</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
+		<row><td>PROGRAM_FILES__X86_</td><td>DIRPROPERTY1</td><td>PROGRA~1|Program Files (x86)</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
 		<row><td>PrintHoodFolder</td><td>TARGETDIR</td><td>.:PRINTH~1|PrintHood</td><td/><td>0</td><td/></row>
@@ -1886,7 +1890,6 @@
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>AppModule.InterProcessComm.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>AppModule.NamedPipes.Primary_output</td></row>
-		<row><td>AlwaysInstall</td><td>ArcObjectsInstaller.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td></row>
 		<row><td>AlwaysInstall</td><td>HLUGISTool.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>HluArcMapExtension.Primary_output</td></row>
@@ -1913,11 +1916,11 @@
 		<col def="S72">ISComponentSubFolder_</col>
 		<row><td>appmodule.interprocesscomm.p</td><td>AppModule.InterProcessComm.Primary_output</td><td>AppModule.InterProcessComm.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.InterProcessComm&gt;|Built</td><td>3</td><td/></row>
 		<row><td>appmodule.namedpipes.primary</td><td>AppModule.NamedPipes.Primary_output</td><td>AppModule.NamedPipes.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.NamedPipes&gt;|Built</td><td>3</td><td/></row>
-		<row><td>arcobjectsinstaller.primary_</td><td>ArcObjectsInstaller.Primary_output</td><td>ArcObjectsInstaller.Primary output</td><td>0</td><td/><td/><td>0</td><td>1</td><td>&lt;ArcObjectsInstaller&gt;|Built</td><td>3</td><td/></row>
 		<row><td>empty.wor</td><td>ISX_DEFAULTCOMPONENT</td><td>Empty.wor</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\Empty.wor</td><td>1</td><td/></row>
 		<row><td>hlu32.ico</td><td>ISX_DEFAULTCOMPONENT</td><td>HLU32.ico</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>1</td><td/></row>
 		<row><td>hluarcmapextension.primary_o</td><td>HluArcMapExtension.Primary_output</td><td>HluArcMapExtension.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HluArcMapExtension&gt;|Built</td><td>3</td><td/></row>
 		<row><td>hlugistool.primary_output</td><td>HLUGISTool.Primary_output</td><td>HLUGISTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUGISTool&gt;|Built</td><td>3</td><td/></row>
+		<row><td>hlugistoolarcextreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUGIS~1.BAT|HLUGISToolArcExtReg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISToolArcExtReg.bat</td><td>1</td><td/></row>
 		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
 		<row><td>license.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\License.txt</td><td>1</td><td/></row>
 		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
@@ -1942,6 +1945,8 @@
 	<table name="ISAssistantTag">
 		<col key="yes" def="s72">Tag</col>
 		<col def="S255">Data</col>
+		<row><td>PROJECT_ASSISTANT_DEFAULT_FEATURE</td><td>AlwaysInstall</td></row>
+		<row><td>PROJECT_ASSISTANT_FEATURES</td><td>NonSelectable</td></row>
 	</table>
 
 	<table name="ISBillBoard">
@@ -2183,7 +2188,6 @@
 		<col def="S0">Miscellaneous</col>
 		<row><td>AppModule.InterProcessComm.Primary_output</td><td/><td/><td>_6C24C2B5_7E23_4E0A_A4C3_5BB2D980579B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>AppModule.NamedPipes.Primary_output</td><td/><td/><td>_267EA415_D695_4B05_92C9_6E71D53F1F0D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ArcObjectsInstaller.Primary_output</td><td/><td/><td>_46E60676_9A80_4506_B62B_A4ACE70774D4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td/><td/><td>_951FB2C4_E849_4A06_8570_0D0C508564CF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>HLUGISTool.Primary_output</td><td/><td/><td>_BF6061FC_F869_4AA3_8EE8_19B0215D7A7B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>HluArcMapExtension.Primary_output</td><td/><td/><td>_5FD44DB7_5106_45F8_B23C_86F0B65C3EEE_FILTER</td><td/><td/><td/><td/></row>
@@ -2546,7 +2550,6 @@
 		<col def="i4">Type</col>
 		<row><td>AppModule.InterProcessComm</td><td>NamedPipeDotNet\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj</td><td/><td>2</td></row>
 		<row><td>AppModule.NamedPipes</td><td>NamedPipeDotNet\AppModule.NamedPipes\AppModule.NamedPipes.csproj</td><td/><td>2</td></row>
-		<row><td>ArcObjectsInstaller</td><td>ArcObjectsInstaller\ArcObjectsInstaller.csproj</td><td/><td>2</td></row>
 		<row><td>CommonFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>HLUGISTool</td><td>HLUGISTool\HLUGISTool.csproj</td><td/><td>2</td></row>
 		<row><td>HluArcMapExtension</td><td>HluArcMapExtension\HluArcMapExtension.csproj</td><td/><td>2</td></row>
@@ -2824,7 +2827,6 @@
 		<col def="S50">Language</col>
 		<col def="I2">Splash</col>
 		<col def="S0">Path</col>
-		<row><td>_isconfig.xml</td><td>_isconfig.xml</td><td/><td>0</td><td>0</td><td>&lt;ISProjectDataFolder&gt;\_isconfig.xml</td></row>
 	</table>
 
 	<table name="ISSetupPrerequisites">
@@ -2833,11 +2835,6 @@
 		<col def="I2">Order</col>
 		<col def="I2">ISSetupLocation</col>
 		<col def="S255">ISReleaseFlags</col>
-		<row><td>_5F296F10_20D2_4950_AB8E_B845C11C8EB9_</td><td>Windows Installer 3.1 for Windows Server 2003 SP1 (x86).prq</td><td/><td>2</td><td/></row>
-		<row><td>_6FEEF3B7_77E2_45E1_8980_D8949A706D23_</td><td>Windows Installer 3.1 for Windows XP (x64).prq</td><td/><td>2</td><td/></row>
-		<row><td>_9B35F9C9_04C2_4C04_ABC0_6FD683E6C062_</td><td>Microsoft .NET Framework 3.5 SP1.prq</td><td/><td>2</td><td/></row>
-		<row><td>_A6743D0A_3B6F_4237_AD3C_D29D9093A213_</td><td>Windows Installer 3.1 for Windows Server 2003 SP1 (x64).prq</td><td/><td>2</td><td/></row>
-		<row><td>_B5A6FC96_4F32_40CA_BFB4_0A88657C9FDD_</td><td>Windows Installer 3.1 (x86).prq</td><td/><td>2</td><td/></row>
 	</table>
 
 	<table name="ISSetupType">
@@ -2871,7 +2868,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>-1406710252</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>1562838442</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>1428678890</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3982,11 +3979,11 @@
 		<row><td>ID_STRING15</td><td>1033</td><td>HLUTOO~1|HLU Tool - Reconfigure</td><td>0</td><td/><td>-1406718412</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td/><td>0</td><td/><td>765530390</td></row>
-		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>899776553</td></row>
-		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>899746153</td></row>
+		<row><td>ID_STRING18</td><td>1033</td><td>http://www.South-EastLERCs.com/issues</td><td>0</td><td/><td>1562838442</td></row>
+		<row><td>ID_STRING19</td><td>1033</td><td>http://www.South-EastLERCs.com</td><td>0</td><td/><td>1562838442</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1406677516</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>1562838442</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>2082566933</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>2082587541</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>2082571221</td></row>
@@ -4152,8 +4149,6 @@
 		<row><td>ISSelfRegisterFiles</td><td/><td>5601</td><td/><td/></row>
 		<row><td>ISSelfRegisterFinalize</td><td/><td>6601</td><td/><td/></row>
 		<row><td>ISSetAllUsers</td><td>Not Installed</td><td>10</td><td/><td/></row>
-		<row><td>ISSetupFilesCleanup</td><td>UILevel &lt; 5</td><td>6602</td><td/><td/></row>
-		<row><td>ISSetupFilesExtract</td><td/><td>3</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td/><td>2202</td><td/><td/></row>
 		<row><td>InstallFiles</td><td/><td>4000</td><td>InstallFiles</td><td/></row>
 		<row><td>InstallFinalize</td><td/><td>6600</td><td>InstallFinalize</td><td/></row>
@@ -4174,6 +4169,7 @@
 		<row><td>PublishFeatures</td><td/><td>6300</td><td>PublishFeatures</td><td/></row>
 		<row><td>PublishProduct</td><td/><td>6400</td><td>PublishProduct</td><td/></row>
 		<row><td>RMCCPSearch</td><td>Not CCP_SUCCESS And CCP_TEST</td><td>600</td><td>RMCCPSearch</td><td/></row>
+		<row><td>RegArcMapExtension</td><td>Not Installed</td><td>6405</td><td/><td/></row>
 		<row><td>RegisterClassInfo</td><td/><td>4600</td><td>RegisterClassInfo</td><td/></row>
 		<row><td>RegisterComPlus</td><td/><td>5700</td><td>RegisterComPlus</td><td/></row>
 		<row><td>RegisterExtensionInfo</td><td/><td>4700</td><td>RegisterExtensionInfo</td><td/></row>
@@ -4242,7 +4238,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{8B23027E-8FC4-4BE5-9BDE-45AFB8EC8151}</td></row>
 		<row><td>ISUSSignature</td><td>{4089835E-B983-4C42-8BEC-11C3BDE3AE74}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions,viewRegistry,viewUpgradePaths,viewObjects,viewSQLServer,viewComponentServices,viewTextMessages,viewAppV</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions,viewRegistry,viewUpgradePaths,viewObjects,viewSQLServer,viewComponentServices,viewTextMessages,viewAppV,viewSetupDesign</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4273,8 +4269,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>FindRelatedProducts</td><td/><td>430</td><td>FindRelatedProducts</td><td/></row>
 		<row><td>ISPreventDowngrade</td><td>ISFOUNDNEWERPRODUCTVERSION</td><td>450</td><td>ISPreventDowngrade</td><td/></row>
 		<row><td>ISSetAllUsers</td><td>Not Installed</td><td>10</td><td/><td/></row>
-		<row><td>ISSetupFilesCleanup</td><td>UILevel &lt; 5</td><td>1301</td><td/><td/></row>
-		<row><td>ISSetupFilesExtract</td><td/><td>3</td><td/><td/></row>
 		<row><td>InstallWelcome</td><td>Not Installed</td><td>1210</td><td>InstallWelcome</td><td/></row>
 		<row><td>IsolateComponents</td><td/><td>950</td><td>IsolateComponents</td><td/></row>
 		<row><td>LaunchConditions</td><td>Not Installed</td><td>410</td><td>LaunchConditions</td><td/></row>
@@ -4563,6 +4557,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ARPURLINFOABOUT</td><td>##ID_STRING19##</td><td/></row>
 		<row><td>AgreeToLicense</td><td>No</td><td/></row>
 		<row><td>ApplicationUsers</td><td>AllUsers</td><td/></row>
+		<row><td>DIRPROPERTY1</td><td>C:\</td><td/></row>
 		<row><td>DWUSINTERVAL</td><td>30</td><td/></row>
 		<row><td>DWUSLINK</td><td>CE6CB02F6E2C87AFCEAC307879DC978FDEBBE78FDEAC87EFCEFCD7AF99AC508FC93BD0AF9EAC</td><td/></row>
 		<row><td>DefaultUIFont</td><td>ExpressDefault</td><td/></row>

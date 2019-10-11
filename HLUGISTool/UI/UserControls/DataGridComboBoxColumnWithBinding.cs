@@ -23,16 +23,16 @@ using Microsoft.Windows.Controls;
 
 namespace HLU.UI.UserControls
 {
-    class DataGridComboBoxColumnWithBinding : DataGridComboBoxColumn
+    class DataGridComboBoxColumnWithBinding : Microsoft.Windows.Controls.DataGridComboBoxColumn
     {
-        protected override FrameworkElement GenerateEditingElement(DataGridCell cell, object dataItem)
+        protected override FrameworkElement GenerateEditingElement(Microsoft.Windows.Controls.DataGridCell cell, object dataItem)
         {
             FrameworkElement element = base.GenerateEditingElement(cell, dataItem);
             CopyItemsSource(element);
             return element;
         }
 
-        protected override FrameworkElement GenerateElement(DataGridCell cell, object dataItem)
+        protected override FrameworkElement GenerateElement(Microsoft.Windows.Controls.DataGridCell cell, object dataItem)
         {
             FrameworkElement element = base.GenerateElement(cell, dataItem);
             CopyItemsSource(element);
