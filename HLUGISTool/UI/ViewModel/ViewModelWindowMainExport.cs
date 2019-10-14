@@ -219,11 +219,20 @@ namespace HLU.UI.ViewModel
                         //_viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
                             //_viewModelMain.GisSelection.Select(), _viewModelMain.GisIDColumnOrdinals,
                             //250, _viewModelMain.HluDataset.incid);
-                        int[] incidOrd = new int[1];
-                        incidOrd[0] = _viewModelMain.IncidTable.incidColumn.Ordinal;
-                        _viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
-                            _viewModelMain.GisSelection.Select(), incidOrd,
-                            250, _viewModelMain.HluDataset.incid);
+                        // Get the incid column ordinal
+                        int incidOrd = _viewModelMain.IncidTable.incidColumn.Ordinal;
+
+                        // Get a unique list of incids from the selected GIS features
+                        IEnumerable<string> incidsSelected = _viewModelMain.GisSelection.AsEnumerable()
+                        .GroupBy(r => r.Field<string>(_viewModelMain.GisSelection.Columns[0].ColumnName)).Select(g => g.Key).OrderBy(s => s);
+
+                        // Set the where clause to match the list of selected incids.
+                        _viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
+                            250, incidOrd, _viewModelMain.IncidTable, incidsSelected);
+
+                        //_viewModelMain.IncidSelectionWhereClause = ViewModelWindowMainHelpers.GisSelectionToWhereClause(
+                        //    _viewModelMain.GisSelection.Select(), incidOrd,
+                        //    250, _viewModelMain.HluDataset.incid);
                         //---------------------------------------------------------------------
 
                         // Set the export filter to the where clause.
