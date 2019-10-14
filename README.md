@@ -1,7 +1,7 @@
 HLU Tool
 ========
 
-HLU Tool 3.0.1
+HLU Tool 3.0.2
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
@@ -36,14 +36,13 @@ The HLU Tool requires the following:
  - 3 GB of free hard disk space
   (For increased performance a multiple core processor with as much RAM as possible is recommended)
 
- - Microsoft .NET Framework 3.5 SP1, 4.0 or 4.5 installed.
-   (You can download .NET Framework 3.5 and its Service Pack from <http://www.microsoft.com/en-gb/download/details.aspx?id=25150>)
+ - Microsoft .NET Framework 4.5 or later installed
 
  - Microsoft Access 2000 or later, OR
  - Microsoft SQL Server 2008 Express Edition or later, OR
  - Microsoft SQL Server 2008 or later
 
- - ArcGIS 10.1 or later (ArcGIS 9.3 is supported by v1.0.1), OR
+ - ArcGIS 10.1, 10.2 or 10.7, OR
  - MapInfo 8.0 or later (32bit versions only)
 
 Installation

@@ -3945,7 +3945,12 @@ namespace HLU.UI.ViewModel
 
                     // Replace any connection type specific qualifiers and delimiters.
                     string newWhereClause = null;
-                    string sqlWhereClause = String.Format("incid = '{0}'", queryIncid);
+                    //---------------------------------------------------------------------
+                    // FIX: 083 Ensure predicted count of toids/fragment selected works with
+                    // any query.
+                    //
+                    string sqlWhereClause = String.Format("[incid].incid = '{0}'", queryIncid);
+                    //---------------------------------------------------------------------
                     newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
                     // Create a selection DataTable of PK values of IncidTable.
