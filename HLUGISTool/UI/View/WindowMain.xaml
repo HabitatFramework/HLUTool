@@ -9,7 +9,8 @@
         Title="{Binding WindowTitle}"
         Width="{Binding WindowWidth,
                          Mode=TwoWay}"
-						 Height="900"
+        Height="{Binding WindowHeight,
+                         Mode=TwoWay}"
         Icon="..\..\Icons\HLUIcon.png"
         KeyUp="Window_KeyUp"
         KeyDown="Window_KeyDown"
@@ -17,8 +18,6 @@
         Topmost="{Binding ElementName=MenuItemAppKeepOnTop,
                           Path=IsChecked}"
         WindowStyle="SingleBorderWindow">
-        <!-- Height="{Binding WindowHeight,
-                         Mode=TwoWay}" -->
     <!--  SizeToContent="Height"  -->
     <!--  Style="{DynamicResource WindowStyle}"  -->
 
@@ -29,7 +28,7 @@
                 <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\VagueDateConverterDictionary.xaml" />
                 <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
-                  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/> 
+                <!--  <ResourceDictionary Source="Dictionary/ThemeDarkGrey.xaml"/>  -->
                 <!--  <ResourceDictionary Source="Dictionary/ThemeLightGrey.xaml"/>  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2VisibilityConverterDictionary.xaml" />  -->
                 <!--  <ResourceDictionary Source="Dictionary\Bool2CollapsedConverterDictionary.xaml" />  -->
