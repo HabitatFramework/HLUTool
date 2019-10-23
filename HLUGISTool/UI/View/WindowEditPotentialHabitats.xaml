@@ -1,0 +1,153 @@
+﻿<Window x:Class="HLU.UI.View.WindowEditPotentialHabitats"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
+        xmlns:tkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+        Title="{Binding Path=WindowTitle}"
+        Width="800"
+		MinWidth="500"
+        MinHeight="250"
+        Icon="..\..\Icons\HLUIcon.png"
+        ResizeMode="CanResize"
+        ShowInTaskbar="False"
+        SizeToContent="Height"
+        WindowStyle="SingleBorderWindow">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary\CodeDescriptionConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary\CodeNameDescriptionConverterDictionary.xaml" />
+                <ResourceDictionary Source="Dictionary\ErrorMessageConverterDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="4" />
+            <RowDefinition Height="23" />
+        </Grid.RowDefinitions>
+
+        <GroupBox Name="GroupBoxFeatures"
+                  Grid.Row="0"
+                  Grid.Column="0"
+                  Header="Potential Priority Habitats">
+                <tkit:DataGrid x:Name="DataGridUserBapHabitats"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="4,2,6,2"
+                                AutoGenerateColumns="False"
+                                BorderBrush="Black"
+                                BorderThickness="1"
+                                CanUserAddRows="True"
+                                CanUserDeleteRows="True"
+                                CanUserReorderColumns="False"
+                                CanUserResizeColumns="True"
+                                CanUserSortColumns="True"
+                                HeadersVisibility="All"
+                                IsEnabled="{Binding BapHabitatsUserEnabled}"
+                                ItemsSource="{Binding IncidBapHabitatsUser}"
+                                MinRowHeight="24"
+                                Padding="2,0"
+                                RowDetailsVisibilityMode="Visible"
+                                RowHeaderWidth="20"
+                                RowHeight="24">
+                    <tkit:DataGrid.RowValidationRules>
+                        <DataErrorValidationRule />
+                    </tkit:DataGrid.RowValidationRules>
+                    <tkit:DataGrid.Columns>
+                        <tkit:DataGridTextColumn Binding="{Binding bap_id}"
+                                                    Header="bap_id"
+                                                    IsReadOnly="True"
+                                                    Visibility="Collapsed" />
+                        <tkit:DataGridTextColumn Binding="{Binding incid}"
+                                                    Header="INCID"
+                                                    IsReadOnly="True"
+                                                    Visibility="Collapsed" />
+                        <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
+                                                                MinWidth="225"
+                                                                CanUserResize="True"
+                                                                DisplayMemberPath="description"
+                                                                EditingElementStyle="{DynamicResource ComboBoxStyle}"
+                                                                Header="Habitat"
+                                                                IsReadOnly="False"
+                                                                ItemsSource="{Binding DataContext.BapHabitatCodes,
+                                                                                        IsAsync=true,
+                                                                                        RelativeSource={RelativeSource AncestorType={x:Type Window},
+                                                                                                                    Mode=FindAncestor}}"
+                                                                SelectedValueBinding="{Binding bap_habitat,
+                                                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                                                ValidatesOnDataErrors=True}"
+                                                                SelectedValuePath="code" />
+                        <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
+                                                                MinWidth="175"
+                                                                CanUserResize="True"
+                                                                DisplayMemberPath="description"
+                                                                EditingElementStyle="{DynamicResource ComboBoxStyle}"
+                                                                Header="Determ. Quality"
+                                                                ItemsSource="{Binding DataContext.BapDeterminationQualityCodesUser,
+                                                                                        IsAsync=true,
+                                                                                        RelativeSource={RelativeSource AncestorType={x:Type Window},
+                                                                                                                    Mode=FindAncestor}}"
+                                                                SelectedValueBinding="{Binding quality_determination,
+                                                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                                                ValidatesOnDataErrors=True}"
+                                                                SelectedValuePath="code" />
+                        <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
+                                                                MinWidth="100"
+                                                                CanUserResize="True"
+                                                                DisplayMemberPath="description"
+                                                                EditingElementStyle="{DynamicResource ComboBoxStyle}"
+                                                                Header="Interp. Quality"
+                                                                ItemsSource="{Binding DataContext.BapInterpretationQualityCodes,
+                                                                                        IsAsync=true,
+                                                                                        RelativeSource={RelativeSource AncestorType={x:Type Window},
+                                                                                                                    Mode=FindAncestor}}"
+                                                                SelectedValueBinding="{Binding quality_interpretation,
+                                                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                                                ValidatesOnDataErrors=True}"
+                                                                SelectedValuePath="code" />
+                        <tkit:DataGridTextColumn Width="SizeToCells"
+                                                    MinWidth="150"
+                                                    Binding="{Binding interpretation_comments,
+                                                                    UpdateSourceTrigger=PropertyChanged,
+                                                                    ValidatesOnDataErrors=True}"
+                                                    CanUserResize="True"
+                                                    EditingElementStyle="{DynamicResource TextBoxStyle}"
+                                                    Header="Interp. Comments" />
+                    </tkit:DataGrid.Columns>
+                </tkit:DataGrid>
+		</GroupBox>
+
+        <Grid Name="GridButtons"
+              Grid.Row="2"
+              Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="82" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="82" />
+                <ColumnDefinition Width="82" />
+            </Grid.ColumnDefinitions>
+            <Button Name="ButtonOK"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Margin="0,0,2,0"
+                    Command="{Binding Path=OkCommand}"
+                    IsDefault="True"
+                    IsEnabled="{Binding Path=CanOk}">
+                _OK
+            </Button>
+            <Button Name="ButtonCancel"
+                    Grid.Row="0"
+                    Grid.Column="3"
+                    Margin="2,0,0,0"
+                    Command="{Binding Path=CancelCommand}"
+                    IsCancel="True">
+                _Cancel
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

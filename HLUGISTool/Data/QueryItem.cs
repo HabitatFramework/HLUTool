@@ -134,17 +134,23 @@ namespace HLU.Data
         {
             get
             {
+                // Return null if there is no table or column selected.
                 if ((Table == null) || (Column == null) || (!String.IsNullOrEmpty(_sqlCond.Operator) &&
                     _sqlCond.Operator.ToUpper().EndsWith("NULL"))) return null;
 
                 _cursorType = Cursors.Wait;
                 OnPropertyChanged("CursorType");
 
+                // Find the related lookup tables for the selected table and column
                 IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
                 IEnumerable<DataRelation> lutRelations = parentRelations.Where(r => r.ChildTable == Table &&
                     r.ParentTable.TableName.StartsWith("lut_", StringComparison.CurrentCultureIgnoreCase) && 
                     r.ChildColumns.Length == 1 && r.ChildColumns.Contains(Column));
+
                 DataRelation lutRelation;
+
+                // If there is only one related lookup table then load the
+                // column and description values.
                 if (lutRelations.Count() == 1)
                 {
                     lutRelation = lutRelations.ElementAt(0);
@@ -159,9 +165,23 @@ namespace HLU.Data
                         lut.Columns[_descriptionFieldOrdinal] : lutColumn.Ordinal < lut.Columns.Count - 1 ? 
                         lut.Columns[lutColumn.Ordinal + 1] : lutColumn;
 
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //// If the select table is the 'incid_bap' table then only
+                    //// 'PHAP' values from the related lookup table (lut_habitat_type).
+                    //var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
+                    //    lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
+                    //    lut.AsEnumerable();
+                    //
+                    // If the select table is the 'incid_bap' table then only get
+                    // bap_priority values from the related lookup table (lut_habitat_type).
                     var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
-                        lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
+                        lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true)) :
                         lut.AsEnumerable();
+                    //---------------------------------------------------------------------
 
                     return q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ? 
                         " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);

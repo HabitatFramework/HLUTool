@@ -26,7 +26,8 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLEXPRESS2016;Initial Catalog=HLUData;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDeveloper2016;Initial Catalog=HLUData;Integrated Security=Tru" +
+            "e")]
         public string HluConnectionString {
             get {
                 return ((string)(this["HluConnectionString"]));
@@ -1113,6 +1114,17 @@ namespace HLU.Properties {
             }
             set {
                 this["BulkOSMMSourceId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=zipy\\sqldeveloper2016;Initial Catalog=HLUData;Integrated Security=Tru" +
+            "e")]
+        public string HLUDataConnectionString {
+            get {
+                return ((string)(this["HLUDataConnectionString"]));
             }
         }
     }

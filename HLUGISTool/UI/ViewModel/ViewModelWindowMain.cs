@@ -106,6 +106,8 @@ namespace HLU.UI.ViewModel
         private ICommand _selectAllOnMapCommand;
         private ICommand _clearFilterCommand;
         private ICommand _readMapSelectionCommand;
+        private ICommand _editPriorityHabitatsCommand;
+        private ICommand _editPotentialHabitatsCommand;
         private ICommand _selectByIncidCommand;
         private ICommand _switchGISLayerCommand;
         private ICommand _logicalSplitCommand;
@@ -160,6 +162,10 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowMainBulkUpdate _viewModelBulkUpdate;
         private ViewModelWindowMainOSMMUpdate _viewModelOSMMUpdate;
         private ViewModelWindowMainUpdate _viewModelUpd;
+        private WindowEditPriorityHabitats _windowEditPriorityHabitats;
+        private ViewModelWindowEditPriorityHabitats _viewModelWinEditPriorityHabitats;
+        private WindowEditPotentialHabitats _windowEditPotentialHabitats;
+        private ViewModelWindowEditPotentialHabitats _viewModelWinEditPotentialHabitats;
 
         private bool haveSplashWin;
         private string _displayName = "HLU Tool";
@@ -4768,6 +4774,145 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("Process");
             }
         }
+
+        #endregion
+
+        #region Priority Habitats Command
+        //---------------------------------------------------------------------
+        // CHANGED: CR52 Enable support for multiple priority habitat classifications
+        // Enable multiple priority habitat types (from the same or different
+        // classifications) to be assigned
+        //
+        /// <summary>
+        /// EditPriorityHabitats command.
+        /// </summary>
+        public ICommand EditPriorityHabitatsCommand
+        {
+            get
+            {
+                if (_editPriorityHabitatsCommand == null)
+                {
+                    Action<object> editPriorityHabitatsAction = new Action<object>(this.EditPriorityHabitatsClicked);
+                    _editPriorityHabitatsCommand = new RelayCommand(editPriorityHabitatsAction, param => this.CanEditPriorityHabitats);
+                }
+                return _editPriorityHabitatsCommand;
+            }
+        }
+
+        private void EditPriorityHabitatsClicked(object param)
+        {
+            try
+            {
+                _windowEditPriorityHabitats = new WindowEditPriorityHabitats();
+                _windowEditPriorityHabitats.Owner = App.Current.MainWindow;
+                _windowEditPriorityHabitats.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                // create ViewModel to which main window binds
+                _viewModelWinEditPriorityHabitats = new ViewModelWindowEditPriorityHabitats(this, IncidBapHabitatsAuto);
+                _viewModelWinEditPriorityHabitats.DisplayName = "Priority Habitats";
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinEditPriorityHabitats.RequestClose += new ViewModelWindowEditPriorityHabitats
+                    .RequestCloseEventHandler(_viewModelWinEditPriorityHabitats_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowEditPriorityHabitats.DataContext = _viewModelWinEditPriorityHabitats;
+
+                // show window
+                _windowEditPriorityHabitats.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //throw;
+            }
+        }
+
+        protected void _viewModelWinEditPriorityHabitats_RequestClose(ObservableCollection<BapEnvironment> incidBapHabitatsAuto)
+        {
+            _viewModelWinEditPriorityHabitats.RequestClose -= _viewModelWinEditPriorityHabitats_RequestClose;
+            _windowEditPriorityHabitats.Close();
+
+            if (incidBapHabitatsAuto != null)
+            {
+                IncidBapHabitatsAuto = incidBapHabitatsAuto;
+                OnPropertyChanged("IncidBapHabitatsAuto");
+                OnPropertyChanged("DetailsTabLabel");
+            }
+        }
+
+        private bool CanEditPriorityHabitats
+        {
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && BapHabitatsAutoEnabled; }
+        }
+
+        #endregion
+
+        #region Potential Priority Habitats Command
+
+        /// <summary>
+        /// EditPotentialHabitats command.
+        /// </summary>
+        public ICommand EditPotentialHabitatsCommand
+        {
+            get
+            {
+                if (_editPotentialHabitatsCommand == null)
+                {
+                    Action<object> editPotentialHabitatsAction = new Action<object>(this.EditPotentialHabitatsClicked);
+                    _editPotentialHabitatsCommand = new RelayCommand(editPotentialHabitatsAction, param => this.CanEditPotentialHabitats);
+                }
+                return _editPotentialHabitatsCommand;
+            }
+        }
+
+        private void EditPotentialHabitatsClicked(object param)
+        {
+            try
+            {
+                _windowEditPotentialHabitats = new WindowEditPotentialHabitats();
+                _windowEditPotentialHabitats.Owner = App.Current.MainWindow;
+                _windowEditPotentialHabitats.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                // create ViewModel to which main window binds
+                _viewModelWinEditPotentialHabitats = new ViewModelWindowEditPotentialHabitats(this, IncidBapHabitatsUser);
+                _viewModelWinEditPotentialHabitats.DisplayName = "Potential Priority Habitats";
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinEditPotentialHabitats.RequestClose += new ViewModelWindowEditPotentialHabitats
+                    .RequestCloseEventHandler(_viewModelWinEditPotentialHabitats_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowEditPotentialHabitats.DataContext = _viewModelWinEditPotentialHabitats;
+
+                // show window
+                _windowEditPotentialHabitats.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //throw;
+            }
+        }
+
+        protected void _viewModelWinEditPotentialHabitats_RequestClose(ObservableCollection<BapEnvironment> incidBapHabitatsUser)
+        {
+            _viewModelWinEditPotentialHabitats.RequestClose -= _viewModelWinEditPotentialHabitats_RequestClose;
+            _windowEditPotentialHabitats.Close();
+
+            if (incidBapHabitatsUser != null)
+            {
+                IncidBapHabitatsUser = incidBapHabitatsUser;
+                OnPropertyChanged("IncidBapHabitatsUser");
+                OnPropertyChanged("DetailsTabLabel");
+            }
+        }
+
+        private bool CanEditPotentialHabitats
+        {
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && BapHabitatsUserEnabled; }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -9988,9 +10133,18 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
 
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //_bapHabitatCodes = (from r in HluDataset.lut_habitat_type
+                    //                    where r.habitat_class_code == "PHAP"
+                    //                    select r).ToArray();
                     _bapHabitatCodes = (from r in HluDataset.lut_habitat_type
-                                        where r.habitat_class_code == "PHAP"
+                                        where r.bap_priority == true
                                         select r).ToArray();
+                    //---------------------------------------------------------------------
                 }
 
                 return _bapHabitatCodes;
@@ -10532,14 +10686,27 @@ namespace HLU.UI.ViewModel
             string ihsManagement1, string ihsManagement2, string ihsComplex1, string ihsComplex2)
         {
             IEnumerable<string> primaryBap = null;
+            string[] q = null;
 
             if (!String.IsNullOrEmpty(ihsHabitat))
             {
                 try
                 {
-                    primaryBap = from r in HluDataset.lut_ihs_habitat
-                                   where r.code == ihsHabitat && !r.Iscode_bap_priority_habitatNull()
-                                   select r.code_bap_priority_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //primaryBap = from r in HluDataset.lut_ihs_habitat
+                    //             where r.code == ihsHabitat && !r.Iscode_bap_priority_habitatNull()
+                    //             select r.code_bap_priority_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_habitat
+                         join b in HluDataset.lut_ihs_habitat_bap_habitat on r.code equals b.code_habitat
+                         where r.code == ihsHabitat
+                         select b.bap_habitat).ToArray();
+                    primaryBap = q;
+                    //---------------------------------------------------------------------
                 }
                 catch { }
             }
@@ -10548,9 +10715,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_matrix
-                            where r.code == ihsMatrix1 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_matrix
+                    //        where r.code == ihsMatrix1 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_matrix
+                         join b in HluDataset.lut_ihs_matrix_bap_habitat on r.code equals b.code_matrix
+                         where r.code == ihsMatrix1
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10560,9 +10738,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_matrix
-                            where r.code == ihsMatrix2 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_matrix
+                    //        where r.code == ihsMatrix2 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_matrix
+                         join b in HluDataset.lut_ihs_matrix_bap_habitat on r.code equals b.code_matrix
+                         where r.code == ihsMatrix2
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10572,9 +10761,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_matrix
-                            where r.code == ihsMatrix3 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_matrix
+                    //        where r.code == ihsMatrix3 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_matrix
+                         join b in HluDataset.lut_ihs_matrix_bap_habitat on r.code equals b.code_matrix
+                         where r.code == ihsMatrix3
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10584,9 +10784,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_formation
-                            where r.code == ihsFormation1 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_formation
+                    //        where r.code == ihsFormation1 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_formation
+                         join b in HluDataset.lut_ihs_formation_bap_habitat on r.code equals b.code_formation
+                         where r.code == ihsFormation1
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10596,9 +10807,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_formation
-                            where r.code == ihsFormation2 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_formation
+                    //        where r.code == ihsFormation2 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_formation
+                         join b in HluDataset.lut_ihs_formation_bap_habitat on r.code equals b.code_formation
+                         where r.code == ihsFormation2
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10608,9 +10830,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_management
-                            where r.code == ihsManagement1 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_management
+                    //        where r.code == ihsManagement1 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_management
+                         join b in HluDataset.lut_ihs_management_bap_habitat on r.code equals b.code_management
+                         where r.code == ihsManagement1
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10619,9 +10852,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_management
-                            where r.code == ihsManagement2 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_management
+                    //        where r.code == ihsManagement2 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_management
+                         join b in HluDataset.lut_ihs_management_bap_habitat on r.code equals b.code_management
+                         where r.code == ihsManagement2
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10631,9 +10875,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_complex
-                            where r.code == ihsComplex1 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_complex
+                    //        where r.code == ihsComplex1 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_complex
+                         join b in HluDataset.lut_ihs_complex_bap_habitat on r.code equals b.code_complex
+                         where r.code == ihsComplex1
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
@@ -10643,9 +10898,20 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    var q = from r in HluDataset.lut_ihs_complex
-                            where r.code == ihsComplex2 && !r.Isbap_habitatNull()
-                            select r.bap_habitat;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
+                    // Enable multiple priority habitat types (from the same or different
+                    // classifications) to be assigned
+                    //
+                    //var q = from r in HluDataset.lut_ihs_complex
+                    //        where r.code == ihsComplex2 && !r.Isbap_habitatNull()
+                    //        select r.bap_habitat;
+                    q = null;
+                    q = (from r in HluDataset.lut_ihs_complex
+                         join b in HluDataset.lut_ihs_complex_bap_habitat on r.code equals b.code_complex
+                         where r.code == ihsComplex2
+                         select b.bap_habitat).ToArray();
+                    //---------------------------------------------------------------------
                     primaryBap = primaryBap != null ? primaryBap.Concat(q) : q;
                 }
                 catch { }
