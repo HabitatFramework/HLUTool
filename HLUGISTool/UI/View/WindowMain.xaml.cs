@@ -251,6 +251,48 @@ namespace HLU
             }
         }
 
+        //---------------------------------------------------------------------
+        // CHANGED: CR54 Add pop-out windows to show/edit priority habitats
+        // New pop-out windows to view and edit priority and potential
+        // priority habitats more clearly.
+        //
+        private void ButtonEditPriorityHabitats_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditPriorityHabitats.IsEnabled)
+            {
+                this.ButtonEditPriorityHabitats.Width *= 1.1;
+                this.ButtonEditPriorityHabitats.Height *= 1.1;
+            }
+        }
+
+        private void ButtonEditPriorityHabitats_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditPriorityHabitats.IsEnabled)
+            {
+                this.ButtonEditPriorityHabitats.Width = this.ButtonEditPriorityHabitats.Width / 11 * 10;
+                this.ButtonEditPriorityHabitats.Height = this.ButtonEditPriorityHabitats.Width / 11 * 10;
+            }
+        }
+
+        private void ButtonEditPotentialHabitats_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditPotentialHabitats.IsEnabled)
+            {
+                this.ButtonEditPotentialHabitats.Width *= 1.1;
+                this.ButtonEditPotentialHabitats.Height *= 1.1;
+            }
+        }
+
+        private void ButtonEditPotentialHabitats_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditPotentialHabitats.IsEnabled)
+            {
+                this.ButtonEditPotentialHabitats.Width = this.ButtonEditPotentialHabitats.Width / 11 * 10;
+                this.ButtonEditPotentialHabitats.Height = this.ButtonEditPotentialHabitats.Width / 11 * 10;
+            }
+        }
+        //---------------------------------------------------------------------
+
         private void EditableComboBox_KeyUp(object sender, KeyEventArgs e)
         {
             ValidateComboboxText(sender as ComboBox);
