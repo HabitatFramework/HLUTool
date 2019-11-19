@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2019 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 

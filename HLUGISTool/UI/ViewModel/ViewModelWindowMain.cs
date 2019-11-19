@@ -3,6 +3,7 @@
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2019 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -220,6 +221,10 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses;
         private IEnumerable<HluDataSet.lut_osmm_ihs_xrefRow> _ihsOSMMXrefIds;
+        private IEnumerable<HluDataSet.lut_habitat_type_ihs_matrixRow> _xrefHabitatTypeMatrixCodes;
+        private IEnumerable<HluDataSet.lut_habitat_type_ihs_formationRow> _xrefHabitatTypeFormationCodes;
+        private IEnumerable<HluDataSet.lut_habitat_type_ihs_managementRow> _xrefHabitatTypeManagementCodes;
+        private IEnumerable<HluDataSet.lut_habitat_type_ihs_complexRow> _xrefHabitatTypeComplexCodes;
 
         private double _incidArea;
         private double _incidLength;
@@ -333,6 +338,22 @@ namespace HLU.UI.ViewModel
         private List<string[]> _source1Errors = null;
         private List<string[]> _source2Errors = null;
         private List<string[]> _source3Errors = null;
+        private int _matrixCodeErrorNum;
+        private int _matrixCodeErrorCount;
+        private int _matrixCodeWarningNum;
+        private int _matrixCodeWarningCount;
+        private int _formationCodeErrorNum;
+        private int _formationCodeErrorCount;
+        private int _formationCodeWarningNum;
+        private int _formationCodeWarningCount;
+        private int _managementCodeErrorNum;
+        private int _managementCodeErrorCount;
+        private int _managementCodeWarningNum;
+        private int _managementCodeWarningCount;
+        private int _complexCodeErrorNum;
+        private int _complexCodeErrorCount;
+        private int _complexCodeWarningNum;
+        private int _complexCodeWarningCount;
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
@@ -4780,9 +4801,9 @@ namespace HLU.UI.ViewModel
 
         #region Priority Habitats Command
         //---------------------------------------------------------------------
-        // CHANGED: CR52 Enable support for multiple priority habitat classifications
-        // Enable multiple priority habitat types (from the same or different
-        // classifications) to be assigned
+        // CHANGED: CR54 Add pop-out windows to show/edit priority habitats
+        // New pop-out windows to view and edit priority and potential
+        // priority habitats more clearly.
         //
         /// <summary>
         /// EditPriorityHabitats command.
@@ -7992,8 +8013,28 @@ namespace HLU.UI.ViewModel
                 }
 
                 OnPropertyChanged("IhsHabitatCodes");
-                if ((_ihsHabitatCodes != null) && (_ihsHabitatCodes.Count() == 1))
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                // Check that any mandatory or recommended multiplex codes
+                // relating to the current habitat type have been selected
+                //
+                // Select the first IHS habitat code if there is only
+                // one choice for the current habitat type
+                if ((IncidCurrentRow != null) && (_ihsHabitatCodes != null))
+                {
+                    if (_ihsHabitatCodes.Count() == 1)
+                        IncidIhsHabitat = _ihsHabitatCodes.First().code;
+                    else
+                        IncidIhsHabitat = _incidIhsHabitat;
+
                     OnPropertyChanged("IncidIhsHabitat");
+                }
+
+                //if ((_ihsHabitatCodes != null) && (_ihsHabitatCodes.Count() == 1))
+                //    OnPropertyChanged("IncidIhsHabitat");
+                //---------------------------------------------------------------------
+
                 OnPropertyChanged("IhsHabitatListEnabled");
                 OnPropertyChanged("NvcCodes");
             }
@@ -8102,11 +8143,19 @@ namespace HLU.UI.ViewModel
 
                 if (_ihsHabitatCodes != null)
                 {
-                    if ((IncidCurrentRow != null) && (_ihsHabitatCodes.Count() == 1) &&
-                        (IncidIhsHabitat != _ihsHabitatCodes.First().code))
-                        IncidIhsHabitat = _ihsHabitatCodes.ElementAt(0).code;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    // Check that any mandatory or recommended multiplex codes
+                    // relating to the current habitat type have been selected
+                    //
+                    // The first, and only, code is now selected when the
+                    // habitat type is selected
+                    //if ((IncidCurrentRow != null) && (_ihsHabitatCodes.Count() == 1) &&
+                    //    (IncidIhsHabitat != _ihsHabitatCodes.First().code))
+                    //    IncidIhsHabitat = _ihsHabitatCodes.ElementAt(0).code;
 
-                    OnPropertyChanged("IncidIhsHabitat");
+                    //OnPropertyChanged("IncidIhsHabitat");
+                    //---------------------------------------------------------------------
                     return _ihsHabitatCodes.ToArray();
                 }
                 else if (!String.IsNullOrEmpty(IncidIhsHabitat))
@@ -8173,6 +8222,36 @@ namespace HLU.UI.ViewModel
                                 IncidIhsComplex1 = q.ElementAt(0).default_complex_code;
                                 OnPropertyChanged("IncidIhsComplex1");
                             }
+
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                            // Check that any mandatory or recommended multiplex codes
+                            // relating to the current habitat type have been selected
+                            //
+                            // Get the list of expected matrix codes for the current
+                            // habitat type and ihs habitat code
+                            _xrefHabitatTypeMatrixCodes = from m in HluDataset.lut_habitat_type_ihs_matrix
+                                                          where m.code_habitat_type == HabitatType && m.code_habitat == IncidIhsHabitat
+                                                          select m;
+
+                            // Get the list of expected formation codes for the current
+                            // habitat type and ihs habitat code
+                            _xrefHabitatTypeFormationCodes = from m in HluDataset.lut_habitat_type_ihs_formation
+                                                          where m.code_habitat_type == HabitatType && m.code_habitat == IncidIhsHabitat
+                                                          select m;
+
+                            // Get the list of expected management codes for the current
+                            // habitat type and ihs habitat code
+                            _xrefHabitatTypeManagementCodes = from m in HluDataset.lut_habitat_type_ihs_management
+                                                          where m.code_habitat_type == HabitatType && m.code_habitat == IncidIhsHabitat
+                                                          select m;
+
+                            // Get the list of expected complex codes for the current
+                            // habitat type and ihs habitat code
+                            _xrefHabitatTypeComplexCodes = from m in HluDataset.lut_habitat_type_ihs_complex
+                                                         where m.code_habitat_type == HabitatType && m.code_habitat == IncidIhsHabitat
+                                                         select m;
+                            //---------------------------------------------------------------------
                         }
 
                         OnPropertyChanged("NvcCodes");
@@ -12759,49 +12838,925 @@ namespace HLU.UI.ViewModel
                 IncidIhsComplex2 = null;
         }
 
-        private string ValidateIhsFormation1Code()
+        //---------------------------------------------------------------------
+        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+        // Check that any mandatory or recommended multiplex codes
+        // relating to the current habitat type have been selected
+        //
+        private string ValidateIhsComplexCodes(int complexNum)
         {
-            //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
-            // 
-            //if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) ||
-            //    String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null))
+            // Skip validation when there is no incid, habitat code or complex xrefs
+            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+                (IhsHabitatCodes == null) || (_xrefHabitatTypeComplexCodes == null) || (_xrefHabitatTypeComplexCodes.Count() == 0))
+                return null;
+
+            // Store the previous complex code in error
+            int oldComplexCodeErrorNum = _complexCodeErrorNum;
+            int oldComplexCodeErrorCount = _complexCodeErrorCount;
+
+            // Store the previous complex code with a warning
+            int oldComplexCodeWarningNum = _complexCodeWarningNum;
+            int oldComplexCodeWarningCount = _complexCodeWarningCount;
+
+            // Get the habitat type row for the selected habitat type
+            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+                r.code == HabitatType);
+
+            // Get the mandatory habitat type to complex codes xrefs
+            var mandatoryCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
+                r.mandatory == 1);
+
+            // Get the mandatory habitat type to complex codes xrefs that
+            // aren't referenced by any of the complex code fields
+            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
+                (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsComplex2) ||
+                (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing mandatory xrefs
+            _complexCodeErrorCount = missingCodes.Count();
+
+            // If there are missing mandatory codes
+            if (_complexCodeErrorCount > 0)
+            {
+                // Clear the complex code number with a warning
+                _complexCodeWarningNum = 0;
+
+                // Set the error message to return
+                string errorMsg = null;
+                if (_complexCodeErrorCount == 1)
+                    errorMsg = String.Format("Error: Complex code {0} is mandatory for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_complex,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    errorMsg = String.Format("Error: Complex codes {0} are mandatory for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_complex,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If complex code 1 is blank, or doesn't match a mandatory code
+                // and complex codes 2 and 3 are non-blank
+                if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
+                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsComplex2))))
+                {
+                    _complexCodeErrorNum = 1;
+
+                    if (complexNum == 1)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsComplex2");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldComplexCodeErrorNum != 1 || _complexCodeErrorCount != oldComplexCodeErrorCount)
+                            OnPropertyChanged("IncidIhsComplex1");
+                        return null;
+                    }
+                }
+
+                // If complex code 2 is blank, or doesn't match a mandatory code
+                if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
+                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))))
+                {
+                    _complexCodeErrorNum = 2;
+
+                    if (complexNum == 2)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
+                            OnPropertyChanged("IncidIhsComplex1");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldComplexCodeErrorNum != 2 || _complexCodeErrorCount != oldComplexCodeErrorCount)
+                            OnPropertyChanged("IncidIhsComplex2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the complex code number with an error
+            _complexCodeErrorNum = 0;
+
+            // Get the recommended habitat type to complex codes xrefs
+            var recommendedCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
+                r.mandatory == 0);
+
+            // Get the recommended habitat type to complex codes xrefs that
+            // aren't referenced by any of the complex code fields
+            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
+                (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsComplex2) ||
+                (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing recommended xrefs
+            _complexCodeWarningCount = missingCodes.Count();
+
+            // If there are missing recommended codes
+            if (_complexCodeWarningCount > 0)
+            {
+                // Set the error message to return
+                string warningMsg = null;
+                if (_complexCodeWarningCount == 1)
+                    warningMsg = String.Format("Warning: Complex code {0} is recommended for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_complex,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    warningMsg = String.Format("Warning: Complex codes {0} are recommended for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_complex,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If complex code 1 is blank, or doesn't match a recommended code
+                // and complex codes 2 and 3 are non-blank, and isn't a mandatory
+                // code
+                if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
+                    ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsComplex2))) &&
+                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _complexCodeWarningNum = 1;
+
+                    if (complexNum == 1)
+                    {
+                        // Clear any old errors
+                        if (oldComplexCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsComplex2");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldComplexCodeWarningNum != 1 || _complexCodeWarningCount != oldComplexCodeWarningCount)
+                            OnPropertyChanged("IncidIhsComplex1");
+                        return null;
+                    }
+                }
+
+                // If complex code 2 is blank, or doesn't match a recommended code
+                if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
+                    ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _complexCodeWarningNum = 2;
+
+                    if (complexNum == 2)
+                    {
+                        // Clear any old errors
+                        if (oldComplexCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsComplex1");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldComplexCodeWarningNum != 2 || _complexCodeWarningCount != oldComplexCodeWarningCount)
+                            OnPropertyChanged("IncidIhsComplex2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the complex code number with a warning
+            _complexCodeWarningNum = 0;
+
+            // Clear any old error or warning messages
+            if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
+                OnPropertyChanged("IncidIhsComplex1");
+            if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
+                OnPropertyChanged("IncidIhsComplex2");
+
+            return null;
+
+        }
+
+        private string ValidateIhsMatrixCodes(int matrixNum)
+        {
+            // Skip validation when there is no incid, habitat code or matrix xrefs
+            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+                (IhsHabitatCodes == null) || (_xrefHabitatTypeMatrixCodes == null) || (_xrefHabitatTypeMatrixCodes.Count() == 0))
+                return null;
+
+            // Store the previous matrix code in error
+            int oldMatrixCodeErrorNum = _matrixCodeErrorNum;
+            int oldMatrixCodeErrorCount = _matrixCodeErrorCount;
+
+            // Store the previous matrix code with a warning
+            int oldMatrixCodeWarningNum = _matrixCodeWarningNum;
+            int oldMatrixCodeWarningCount = _matrixCodeWarningCount;
+
+            // Get the habitat type row for the selected habitat type
+            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+                r.code == HabitatType);
+
+            // Get the mandatory habitat type to matrix codes xrefs
+            var mandatoryCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
+                r.mandatory == 1);
+
+            // Get the mandatory habitat type to matrix codes xrefs that
+            // aren't referenced by any of the matrix code fields
+            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
+                (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsMatrix2) ||
+                (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsMatrix3) ||
+                (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing mandatory xrefs
+            _matrixCodeErrorCount = missingCodes.Count();
+
+            // If there are missing mandatory codes
+            if (_matrixCodeErrorCount > 0)
+            {
+                // Clear the matrix code number with a warning
+                _matrixCodeWarningNum = 0;
+
+                // Set the error message to return
+                string errorMsg = null;
+                if (_matrixCodeErrorCount == 1)
+                    errorMsg = String.Format("Error: Matrix code {0} is mandatory for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_matrix,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    errorMsg = String.Format("Error: Matrix codes {0} are mandatory for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_matrix,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If matrix code 1 is blank, or doesn't match a mandatory code
+                // and matrix codes 2 and 3 are non-blank
+                if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
+                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))))
+                {
+                    _matrixCodeErrorNum = 1;
+
+                    if (matrixNum == 1)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsMatrix2");
+                        if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+                            OnPropertyChanged("IncidIhsMatrix3");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeErrorNum != 1 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        return null;
+                    }
+                }
+
+                // If matrix code 2 is blank, or doesn't match a mandatory code
+                // and matrix code 3 is non-blank
+                if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
+                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    !String.IsNullOrEmpty(IncidIhsMatrix3)))
+                {
+                    _matrixCodeErrorNum = 2;
+
+                    if (matrixNum == 2)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+                            OnPropertyChanged("IncidIhsMatrix3");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeErrorNum != 2 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+                            OnPropertyChanged("IncidIhsMatrix2");
+                        return null;
+                    }
+                }
+
+                // If matrix code 3 is blank or doesn't match a mandatory code
+                if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
+                    (mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _matrixCodeErrorNum = 3;
+
+                    if (matrixNum == 3)
+                    {
+                        // Clear any old errors
+                        if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsMatrix2");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeErrorNum != 3 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+                            OnPropertyChanged("IncidIhsMatrix3");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the matrix code number with an error
+            _matrixCodeErrorNum = 0;
+
+            // Get the recommended habitat type to matrix codes xrefs
+            var recommendedCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
+                r.mandatory == 0);
+
+            // Get the recommended habitat type to matrix codes xrefs that
+            // aren't referenced by any of the matrix code fields
+            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
+                (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsMatrix2) ||
+                (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsMatrix3) ||
+                (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing recommended xrefs
+            _matrixCodeWarningCount = missingCodes.Count();
+
+            // If there are missing recommended codes
+            if (_matrixCodeWarningCount > 0)
+            {
+                // Set the error message to return
+                string warningMsg = null;
+                if (_matrixCodeWarningCount == 1)
+                    warningMsg = String.Format("Warning: Matrix code {0} is recommended for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_matrix,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    warningMsg = String.Format("Warning: Matrix codes {0} are recommended for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_matrix,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If matrix code 1 is blank, or doesn't match a recommended code
+                // and matrix codes 2 and 3 are non-blank, and isn't a mandatory
+                // code
+                if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
+                    ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))) &&
+                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _matrixCodeWarningNum = 1;
+
+                    if (matrixNum == 1)
+                    {
+                        // Clear any old errors
+                        if (oldMatrixCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsMatrix2");
+                        if (oldMatrixCodeWarningNum == 3)
+                            OnPropertyChanged("IncidIhsMatrix3");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeWarningNum != 1 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        return null;
+                    }
+                }
+
+                // If matrix code 2 is blank, or doesn't match a recommended code
+                // and matrix code 3 is non-blank
+                if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
+                    ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    !String.IsNullOrEmpty(IncidIhsMatrix3)) &&
+                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _matrixCodeWarningNum = 2;
+
+                    if (matrixNum == 2)
+                    {
+                        // Clear any old errors
+                        if (oldMatrixCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        if (oldMatrixCodeWarningNum == 3)
+                            OnPropertyChanged("IncidIhsMatrix3");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeWarningNum != 2 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+                            OnPropertyChanged("IncidIhsMatrix2");
+                        return null;
+                    }
+                }
+
+                // If matrix code 3 is blank or doesn't match a recommended code
+                if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
+                    (recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _matrixCodeWarningNum = 3;
+
+                    if (matrixNum == 3)
+                    {
+                        // Clear any old errors
+                        if (oldMatrixCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsMatrix1");
+                        if (oldMatrixCodeWarningNum == 3)
+                            OnPropertyChanged("IncidIhsMatrix2");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldMatrixCodeWarningNum != 3 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+                            OnPropertyChanged("IncidIhsMatrix3");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the matrix code number with a warning
+            _matrixCodeWarningNum = 0;
+
+            // Clear any old error or warning messages
+            if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+                OnPropertyChanged("IncidIhsMatrix1");
+            if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+                OnPropertyChanged("IncidIhsMatrix2");
+            if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+                OnPropertyChanged("IncidIhsMatrix3");
+
+            return null;
+
+        }
+
+        private string ValidateIhsFormationCodes(int formationNum)
+        {
+            // Skip validation when there is no incid or habitat code
             if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
                 (IhsHabitatCodes == null))
                 return null;
-            //---------------------------------------------------------------------
 
-            var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
-                !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
+            // Store the previous formation code in error
+            int oldFormationCodeErrorNum = _formationCodeErrorNum;
+            int oldFormationCodeErrorCount = _formationCodeErrorCount;
 
-            if ((q.Count() > 0) && (q.ElementAt(0).man_formation == 1) && String.IsNullOrEmpty(IncidIhsFormation1))
-                return String.Format("Error: IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
-                    q.ElementAt(0).description);
-            else
+            // Store the previous formation code with a warning
+            int oldFormationCodeWarningNum = _formationCodeWarningNum;
+            int oldFormationCodeWarningCount = _formationCodeWarningCount;
+
+            // Check if at least one formation code has been selected
+            // if they are mandatory for the current habitat type
+            if (formationNum == 1)
+            {
+                var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
+                    !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
+
+                if ((q.Count() > 0) && (q.ElementAt(0).man_formation == 1) && String.IsNullOrEmpty(IncidIhsFormation1))
+                {
+                    _formationCodeErrorNum = 1;
+                    _formationCodeErrorCount = 1;
+                    return String.Format("Error: IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+                        q.ElementAt(0).description);
+                }
+            }
+
+            // Skip remaining validation when there are no formation xrefs
+            if ((_xrefHabitatTypeFormationCodes == null) || (_xrefHabitatTypeFormationCodes.Count() == 0))
                 return null;
+
+            // Get the habitat type row for the selected habitat type
+            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+                r.code == HabitatType);
+
+            // Get the mandatory habitat type to formation codes xrefs
+            var mandatoryCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
+                r.mandatory == 1);
+
+            // Get the mandatory habitat type to formation codes xrefs that
+            // aren't referenced by any of the formation code fields
+            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
+                (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsFormation2) ||
+                (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing mandatory xrefs
+            _formationCodeErrorCount = missingCodes.Count();
+
+            // If there are missing mandatory codes
+            if (_formationCodeErrorCount > 0)
+            {
+                // Clear the formation code number with a warning
+                _formationCodeWarningNum = 0;
+
+                // Set the error message to return
+                string errorMsg = null;
+                if (_formationCodeErrorCount == 1)
+                    errorMsg = String.Format("Error: Formation code {0} is mandatory for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_formation,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    errorMsg = String.Format("Error: Formation codes {0} are mandatory for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_formation,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If formation code 1 is blank, or doesn't match a mandatory code
+                // and formation codes 2 and 3 are non-blank
+                if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
+                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsFormation2))))
+                {
+                    _formationCodeErrorNum = 1;
+
+                    if (formationNum == 1)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsFormation2");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldFormationCodeErrorNum != 1 || _formationCodeErrorCount != oldFormationCodeErrorCount)
+                            OnPropertyChanged("IncidIhsFormation1");
+                        return null;
+                    }
+                }
+
+                // If formation code 2 is blank, or doesn't match a mandatory code
+                if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
+                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))))
+                {
+                    _formationCodeErrorNum = 2;
+
+                    if (formationNum == 2)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
+                            OnPropertyChanged("IncidIhsFormation1");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldFormationCodeErrorNum != 2 || _formationCodeErrorCount != oldFormationCodeErrorCount)
+                            OnPropertyChanged("IncidIhsFormation2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the formation code number with an error
+            _formationCodeErrorNum = 0;
+
+            // Get the recommended habitat type to formation codes xrefs
+            var recommendedCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
+                r.mandatory == 0);
+
+            // Get the recommended habitat type to formation codes xrefs that
+            // aren't referenced by any of the formation code fields
+            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
+                (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsFormation2) ||
+                (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing recommended xrefs
+            _formationCodeWarningCount = missingCodes.Count();
+
+            // If there are missing recommended codes
+            if (_formationCodeWarningCount > 0)
+            {
+                // Set the error message to return
+                string warningMsg = null;
+                if (_formationCodeWarningCount == 1)
+                    warningMsg = String.Format("Warning: Formation code {0} is recommended for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_formation,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    warningMsg = String.Format("Warning: Formation codes {0} are recommended for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_formation,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If formation code 1 is blank, or doesn't match a recommended code
+                // and formation codes 2 and 3 are non-blank, and isn't a mandatory
+                // code
+                if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
+                    ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsFormation2))) &&
+                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _formationCodeWarningNum = 1;
+
+                    if (formationNum == 1)
+                    {
+                        // Clear any old errors
+                        if (oldFormationCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsFormation2");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldFormationCodeWarningNum != 1 || _formationCodeWarningCount != oldFormationCodeWarningCount)
+                            OnPropertyChanged("IncidIhsFormation1");
+                        return null;
+                    }
+                }
+
+                // If formation code 2 is blank, or doesn't match a recommended code
+                if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
+                    ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _formationCodeWarningNum = 2;
+
+                    if (formationNum == 2)
+                    {
+                        // Clear any old errors
+                        if (oldFormationCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsFormation1");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldFormationCodeWarningNum != 2 || _formationCodeWarningCount != oldFormationCodeWarningCount)
+                            OnPropertyChanged("IncidIhsFormation2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the formation code number with a warning
+            _formationCodeWarningNum = 0;
+
+            // Clear any old error or warning messages
+            if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
+                OnPropertyChanged("IncidIhsFormation1");
+            if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
+                OnPropertyChanged("IncidIhsFormation2");
+
+            return null;
+
         }
 
-        private string ValidateIhsManagement1Code()
+        private string ValidateIhsManagementCodes(int managementNum)
         {
-            //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
-            // 
-            //if ((_bulkUpdateMode == true) || (_incidCurrentRow == null) ||
-            //    String.IsNullOrEmpty(IncidIhsHabitat) || (IhsHabitatCodes == null))
-            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) || 
+            // Skip validation when there is no incid or habitat code
+            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
                 (IhsHabitatCodes == null))
                 return null;
-            //---------------------------------------------------------------------
 
-            var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
-                !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
+            // Store the previous management code in error
+            int oldManagementCodeErrorNum = _managementCodeErrorNum;
+            int oldManagementCodeErrorCount = _managementCodeErrorCount;
 
-            if ((q.Count() > 0) && (q.ElementAt(0).man_management == 1) && String.IsNullOrEmpty(IncidIhsManagement1))
-                return String.Format("Error: IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
-                    q.ElementAt(0).description);
-            else
+            // Store the previous management code with a warning
+            int oldManagementCodeWarningNum = _managementCodeWarningNum;
+            int oldManagementCodeWarningCount = _managementCodeWarningCount;
+
+            // Check if at least one management code has been selected
+            // if they are mandatory for the current habitat type
+            if (managementNum == 1)
+            {
+                var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
+                    !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
+
+                if ((q.Count() > 0) && (q.ElementAt(0).man_management == 1) && String.IsNullOrEmpty(IncidIhsManagement1))
+                {
+                    _managementCodeErrorNum = 1;
+                    _managementCodeErrorCount = 1;
+                    return String.Format("Error: IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+                        q.ElementAt(0).description);
+                }
+            }
+
+            // Skip remaining validation when there are no management xrefs
+            if ((_xrefHabitatTypeManagementCodes == null) || (_xrefHabitatTypeManagementCodes.Count() == 0))
                 return null;
+
+            // Get the habitat type row for the selected habitat type
+            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+                r.code == HabitatType);
+
+            // Get the mandatory habitat type to management codes xrefs
+            var mandatoryCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
+                r.mandatory == 1);
+
+            // Get the mandatory habitat type to management codes xrefs that
+            // aren't referenced by any of the management code fields
+            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
+                (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsManagement2) ||
+                (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing mandatory xrefs
+            _managementCodeErrorCount = missingCodes.Count();
+
+            // If there are missing mandatory codes
+            if (_managementCodeErrorCount > 0)
+            {
+                // Clear the management code number with a warning
+                _managementCodeWarningNum = 0;
+
+                // Set the error message to return
+                string errorMsg = null;
+                if (_managementCodeErrorCount == 1)
+                    errorMsg = String.Format("Error: Management code {0} is mandatory for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_management,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    errorMsg = String.Format("Error: Management codes {0} are mandatory for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_management,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If management code 1 is blank, or doesn't match a mandatory code
+                // and management codes 2 and 3 are non-blank
+                if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
+                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsManagement2))))
+                {
+                    _managementCodeErrorNum = 1;
+
+                    if (managementNum == 1)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsManagement2");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldManagementCodeErrorNum != 1 || _managementCodeErrorCount != oldManagementCodeErrorCount)
+                            OnPropertyChanged("IncidIhsManagement1");
+                        return null;
+                    }
+                }
+
+                // If management code 2 is blank, or doesn't match a mandatory code
+                if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
+                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))))
+                {
+                    _managementCodeErrorNum = 2;
+
+                    if (managementNum == 2)
+                    {
+                        // Clear any old error & warning messages
+                        if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
+                            OnPropertyChanged("IncidIhsManagement1");
+
+                        return errorMsg;
+                    }
+                    else
+                    {
+                        if (oldManagementCodeErrorNum != 2 || _managementCodeErrorCount != oldManagementCodeErrorCount)
+                            OnPropertyChanged("IncidIhsManagement2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the management code number with an error
+            _managementCodeErrorNum = 0;
+
+            // Get the recommended habitat type to management codes xrefs
+            var recommendedCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
+                r.mandatory == 0);
+
+            // Get the recommended habitat type to management codes xrefs that
+            // aren't referenced by any of the management code fields
+            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
+                (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
+                (String.IsNullOrEmpty(IncidIhsManagement2) ||
+                (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
+
+            // Count the number of missing recommended xrefs
+            _managementCodeWarningCount = missingCodes.Count();
+
+            // If there are missing recommended codes
+            if (_managementCodeWarningCount > 0)
+            {
+                // Set the error message to return
+                string warningMsg = null;
+                if (_managementCodeWarningCount == 1)
+                    warningMsg = String.Format("Warning: Management code {0} is recommended for habitat type '{1} : {2}'",
+                        missingCodes.ElementAt(0).code_management,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+                else
+                    warningMsg = String.Format("Warning: Management codes {0} are recommended for habitat type '{1} : {2}'",
+                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_management,
+                        habitatTypes.ElementAt(0).name,
+                        habitatTypes.ElementAt(0).description);
+
+                // If management code 1 is blank, or doesn't match a recommended code
+                // and management codes 2 and 3 are non-blank, and isn't a mandatory
+                // code
+                if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
+                    ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+                    (!String.IsNullOrEmpty(IncidIhsManagement2))) &&
+                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _managementCodeWarningNum = 1;
+
+                    if (managementNum == 1)
+                    {
+                        // Clear any old errors
+                        if (oldManagementCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsManagement2");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldManagementCodeWarningNum != 1 || _managementCodeWarningCount != oldManagementCodeWarningCount)
+                            OnPropertyChanged("IncidIhsManagement1");
+                        return null;
+                    }
+                }
+
+                // If management code 2 is blank, or doesn't match a recommended code
+                if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
+                    ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
+                {
+                    _managementCodeWarningNum = 2;
+
+                    if (managementNum == 2)
+                    {
+                        // Clear any old errors
+                        if (oldManagementCodeWarningNum == 2)
+                            OnPropertyChanged("IncidIhsManagement1");
+
+                        return warningMsg;
+                    }
+                    else
+                    {
+                        if (oldManagementCodeWarningNum != 2 || _managementCodeWarningCount != oldManagementCodeWarningCount)
+                            OnPropertyChanged("IncidIhsManagement2");
+                        return null;
+                    }
+                }
+            }
+
+            // Clear the management code number with a warning
+            _managementCodeWarningNum = 0;
+
+            // Clear any old error or warning messages
+            if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
+                OnPropertyChanged("IncidIhsManagement1");
+            if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
+                OnPropertyChanged("IncidIhsManagement2");
+
+            return null;
+
         }
+        //---------------------------------------------------------------------
 
         private List<string[]> ValidateSource1()
         {
@@ -13342,12 +14297,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
                         {
                             error = "Error: Matrix code 1 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsMatrixCodes(1);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsMatrix2":
@@ -13358,12 +14329,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
                         {
                             error = "Error: Matrix code 2 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsMatrixCodes(2);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsMatrix3":
@@ -13374,12 +14361,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
                         {
                             error = "Error: Matrix code 3 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsMatrixCodes(3);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsFormation1":
@@ -13390,18 +14393,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
                         {
                             error = "Error: Formation code 1 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
                         }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
                         else
-                            error = ValidateIhsFormation1Code();
+                            error = ValidateIhsFormationCodes(1);
                         if (error != null)
                         {
-                            AddErrorList(ref _ihsErrors, columnName);
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsFormation2":
@@ -13412,12 +14425,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
                         {
                             error = "Error: Formation code 2 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsFormationCodes(2);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsManagement1":
@@ -13428,18 +14457,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
                         {
                             error = "Error: Management code 1 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
                         }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
                         else
-                            error = ValidateIhsManagement1Code();
+                            error = ValidateIhsManagementCodes(1);
                         if (error != null)
                         {
-                            AddErrorList(ref _ihsErrors, columnName);
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsManagement2":
@@ -13450,12 +14489,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
                         {
                             error = "Error: Management code 2 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsManagementCodes(2);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsComplex1":
@@ -13466,12 +14521,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
                         {
                             error = "Error: Complex code 1 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsComplexCodes(1);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "IncidIhsComplex2":
@@ -13482,12 +14553,28 @@ namespace HLU.UI.ViewModel
                             (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
                         {
                             error = "Error: Complex code 2 does not correspond to chosen IHS habitat";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            //AddErrorList(ref _ihsErrors, columnName);
+                        }
+                        //---------------------------------------------------------------------
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // Check that any mandatory or recommended multiplex codes
+                        // relating to the current habitat type have been selected
+                        //
+                        else
+                            error = ValidateIhsComplexCodes(2);
+                        if (error != null)
+                        {
+                            if (error.StartsWith("Error", true, null))
+                                AddErrorList(ref _ihsErrors, columnName);
+                            else
+                                AddErrorList(ref _ihsWarnings, columnName);
                         }
                         else
                         {
                             DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _ihsWarnings, columnName);
                         }
+                        //---------------------------------------------------------------------
                         OnPropertyChanged("IhsTabLabel");
                         break;
                     case "DetailsTabLabel":

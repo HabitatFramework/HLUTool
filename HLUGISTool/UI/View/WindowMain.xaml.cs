@@ -1,6 +1,7 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2014 Sussex Biodiversity Record Centre
+// Copyright © 2019 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -62,8 +63,12 @@ namespace HLU
             // Get the last style to be the default style (already loaded).
             _lastStyle = Settings.Default.InterfaceStyle;
 
-            // Check the menu item for the default style.
-            CheckMenuItem(_lastStyle, true);
+            // Switch the style to the default menu item style.
+            if (App.LoadStyleDictionaryFromFile(_lastStyle))
+            {
+                // Check the menu item for the default style.
+                CheckMenuItem(_lastStyle, true);
+            }
 
             //---------------------------------------------------------------------
             // FIX: 074 Save option to always keep app window on top.

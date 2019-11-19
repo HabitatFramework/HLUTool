@@ -190,7 +190,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MinimumDbVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">H</Value>
+      <Value Profile="(Default)">O</Value>
     </Setting>
     <Setting Name="PreferredHabitatClass" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">ICAT</Value>
