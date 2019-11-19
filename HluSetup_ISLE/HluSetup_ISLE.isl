@@ -4604,9 +4604,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{A1783BB0-A715-46FB-81F8-E50CCD86B3E2}</td><td/></row>
-		<row><td>ProductName</td><td>HLU Tool 3.0.2</td><td/></row>
-		<row><td>ProductVersion</td><td>3.0.2.0</td><td/></row>
+		<row><td>ProductCode</td><td>{7E36AEDB-7781-449D-92D6-2F971CFEEF11}</td><td/></row>
+		<row><td>ProductName</td><td>HLU Tool 3.1.0</td><td/></row>
+		<row><td>ProductVersion</td><td>3.1.0.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4896,7 +4896,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.0.2.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.1.0.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">
