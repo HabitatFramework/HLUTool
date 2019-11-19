@@ -1,12 +1,13 @@
 HLU Tool
 ========
 
-HLU Tool 3.0.2
+HLU Tool 3.1.0
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 Copyright © 2019 London & South East Record Centres (LaSER)
+Copyright © 2019 Greenspace Information for Greater London CIC
 
 Overview
 --------
