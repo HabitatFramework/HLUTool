@@ -6217,24 +6217,20 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
+                // Clear the list of IHS codes.
+                //_ihsHabitatCodes = null;
+
+                // Clear the habitat type.
+                HabitatType = null;
+
                 //---------------------------------------------------------------------
-                // CHANGED: CR29 (Habitat classification and conversion to IHS)
-                // Clear the list of IHS codes then find the Habitat Type
-                // for the current incid IHS habitat (which will then reload
-                // the list of IHS codes).
-                _ihsHabitatCodes = null;
-                if (String.IsNullOrEmpty(_incidIhsHabitat))
-                {
-                    HabitatType = null;
-                }
-                else
-                {
-                    // Find the first possible habitat type from the current
-                    // habitat class that cross-references to the selected
-                    // ihs habitat code.
-                    HabitatType = FindHabitatType(_incidIhsHabitat);
-                    OnPropertyChanged("HabitatType");
-                }
+                // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                // No longer find first habitat type as this might
+                // select a habitat type that has mandatory or optional
+                // multiplex codes.
+                //
+                //HabitatType = FindHabitatType(_incidIhsHabitat);
+                OnPropertyChanged("HabitatType");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
@@ -7929,14 +7925,19 @@ namespace HLU.UI.ViewModel
                     // Clear the habitat type and then reload the list of
                     // possible habitat types that relate to the selected
                     // habitat class.
-                    _habitatType = null;
-                    OnPropertyChanged("HabitatTypeCodes");
+                    //_habitatType = null;
+                    //OnPropertyChanged("HabitatTypeCodes");
 
-                    // Find the first possible habitat type from the current
-                    // habitat class that cross-references to the selected
-                    // ihs habitat code.
-                    HabitatType = FindHabitatType(_incidIhsHabitat);
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    // No longer find first habitat type as this might
+                    // select a habitat type that has mandatory or optional
+                    // multiplex codes.
+                    //
+                    //HabitatType = FindHabitatType(_incidIhsHabitat);
+                    HabitatType = null;
                     OnPropertyChanged("HabitatType");
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
@@ -8160,7 +8161,9 @@ namespace HLU.UI.ViewModel
                 }
                 else if (!String.IsNullOrEmpty(IncidIhsHabitat))
                 {
-                    return HluDataset.lut_ihs_habitat.Where(r => r.code == IncidIhsHabitat).ToArray();
+                    //return HluDataset.lut_ihs_habitat.Where(r => r.code == IncidIhsHabitat).ToArray();
+                    _ihsHabitatCodes = HluDataset.lut_ihs_habitat.Where(r => r.code == IncidIhsHabitat);
+                    return _ihsHabitatCodes.ToArray();
                 }
                 else
                 {
@@ -8182,24 +8185,25 @@ namespace HLU.UI.ViewModel
             {
                 if (IncidCurrentRow != null)
                 {
-                    if (_pasting && (_ihsHabitatCodes.Count(r => r.code == value) == 0))
+                    if (_pasting && (_ihsHabitatCodes == null || _ihsHabitatCodes.Count(r => r.code == value) == 0))
                     {
                         _pasting = false;
                         //---------------------------------------------------------------------
-                        // CHANGED: CR29 (Habitat classification and conversion to IHS)
-                        // Find the first possible habitat type from the current
-                        // habitat class that cross-references to the selected
-                        // ihs habitat code.
-                        HabitatType = FindHabitatType(value);
+                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                        // No longer find first habitat type as this might
+                        // select a habitat type that has mandatory or optional
+                        // multiplex codes.
+                        //
+                        //HabitatType = FindHabitatType(value);
+                        _incidIhsHabitat = value;
+                        HabitatType = null;
                         OnPropertyChanged("HabitatType");
-                        //var q = HluDataset.lut_habitat_type_ihs_habitat.Where(r => r.code_habitat == value
-                        //    && _habitatClassCodes.Count(h => h.code == r.code_habitat) == 1);
-                        //if (q.Count() > 0) HabitatType = q.First().code_habitat_type;
                         //---------------------------------------------------------------------
                     }
 
                     _incidIhsHabitat = value;
                     _incidLastModifiedUser = UserID;
+
                     //---------------------------------------------------------------------
                     // FIX: 028 Only update DateTime fields to whole seconds
                     // Fractions of a second can cause rounding differences when
@@ -8254,6 +8258,7 @@ namespace HLU.UI.ViewModel
                             //---------------------------------------------------------------------
                         }
 
+                        OnPropertyChanged("IhsHabitatListEnabled");
                         OnPropertyChanged("NvcCodes");
                         GetBapEnvironments();
                         OnPropertyChanged("IncidBapHabitatsAuto");
@@ -8286,7 +8291,7 @@ namespace HLU.UI.ViewModel
         /// The first habitat type in the current habitat class that
         /// cross-references to the selected ihs habitat code.
         /// </returns>
-        private string FindHabitatType(string ihsHabitatCode)
+        public string FindHabitatType(string ihsHabitatCode)
         {
             if (!String.IsNullOrEmpty(ihsHabitatCode))
             {
