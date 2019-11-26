@@ -896,12 +896,6 @@ namespace HLU.UI.ViewModel
                 {
                     propertyName = pi.Name.Remove(0, 4);
 
-                    //if (propertyName == "IncidIhsHabitat")
-                    //{
-                    //    //vmMain.FindHabitatType(
-                    //    vmMain.OnPropertyChanged("IhsHabitatCodes");
-                    //}
-
                     PropertyInfo copyPI = this.GetType().GetProperty(propertyName);
                     PropertyInfo valuePI = vmMain.GetType().GetProperty(propertyName);
 
