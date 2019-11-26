@@ -132,7 +132,8 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                //if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                if (_incidBapRowsAuto != null)
                 {
                     int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                     if (countInvalid > 0)

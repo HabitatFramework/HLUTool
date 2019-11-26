@@ -4858,6 +4858,23 @@ namespace HLU.UI.ViewModel
             if (incidBapHabitatsAuto != null)
             {
                 IncidBapHabitatsAuto = incidBapHabitatsAuto;
+
+                //---------------------------------------------------------------------
+                // FIX: 086 Clear error messages if errors have been resolved
+                // in pop-up window.
+                //
+                // Check if there are any errors in the primary BAP records to see
+                // if the Details tab label should be flagged as also in error.
+                if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                {
+                    int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
+                    if (countInvalid > 0)
+                        AddErrorList(ref _detailsErrors, "BapAuto");
+                    else
+                        DelErrorList(ref _detailsErrors, "BapAuto");
+                }
+                //---------------------------------------------------------------------
+
                 OnPropertyChanged("IncidBapHabitatsAuto");
                 OnPropertyChanged("DetailsTabLabel");
             }
@@ -4925,6 +4942,23 @@ namespace HLU.UI.ViewModel
             if (incidBapHabitatsUser != null)
             {
                 IncidBapHabitatsUser = incidBapHabitatsUser;
+
+                //---------------------------------------------------------------------
+                // FIX: 086 Clear error messages if errors have been resolved
+                // in pop-up window.
+                //
+                // Check if there are any errors in the secondary BAP records to see
+                // if the Details tab label should be flagged as also in error.
+                if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
+                {
+                    int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
+                    if (countInvalid > 0)
+                        AddErrorList(ref _detailsErrors, "BapUser");
+                    else
+                        DelErrorList(ref _detailsErrors, "BapUser");
+                }
+                //---------------------------------------------------------------------
+
                 OnPropertyChanged("IncidBapHabitatsUser");
                 OnPropertyChanged("DetailsTabLabel");
             }
@@ -6224,10 +6258,9 @@ namespace HLU.UI.ViewModel
                 HabitatType = null;
 
                 //---------------------------------------------------------------------
-                // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                // No longer find first habitat type as this might
-                // select a habitat type that has mandatory or optional
-                // multiplex codes.
+                // FIX: 084 No longer find first habitat type on change in IHS habitat
+                // Disabled as this might select a habitat type that has
+                // mandatory or optional multiplex codes.
                 //
                 //HabitatType = FindHabitatType(_incidIhsHabitat);
                 OnPropertyChanged("HabitatType");
@@ -7925,14 +7958,13 @@ namespace HLU.UI.ViewModel
                     // Clear the habitat type and then reload the list of
                     // possible habitat types that relate to the selected
                     // habitat class.
-                    //_habitatType = null;
-                    //OnPropertyChanged("HabitatTypeCodes");
+                    _habitatType = null;
+                    OnPropertyChanged("HabitatTypeCodes");
 
                     //---------------------------------------------------------------------
-                    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                    // No longer find first habitat type as this might
-                    // select a habitat type that has mandatory or optional
-                    // multiplex codes.
+                    // FIX: 084 No longer find first habitat type on change in IHS habitat
+                    // Disabled as this might select a habitat type that has
+                    // mandatory or optional multiplex codes.
                     //
                     //HabitatType = FindHabitatType(_incidIhsHabitat);
                     HabitatType = null;
@@ -8189,10 +8221,9 @@ namespace HLU.UI.ViewModel
                     {
                         _pasting = false;
                         //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // No longer find first habitat type as this might
-                        // select a habitat type that has mandatory or optional
-                        // multiplex codes.
+                        // FIX: 084 No longer find first habitat type on change in IHS habitat
+                        // Disabled as this might select a habitat type that has
+                        // mandatory or optional multiplex codes.
                         //
                         //HabitatType = FindHabitatType(value);
                         _incidIhsHabitat = value;
@@ -12963,11 +12994,19 @@ namespace HLU.UI.ViewModel
                 (String.IsNullOrEmpty(IncidIhsComplex2) ||
                 (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
 
+            // Count the total number of recommended xrefs
+            int complexCodeCount = recommendedCodes.Count();
+
             // Count the number of missing recommended xrefs
             _complexCodeWarningCount = missingCodes.Count();
 
-            // If there are missing recommended codes
-            if (_complexCodeWarningCount > 0)
+            //---------------------------------------------------------------------
+            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // code is selected.
+            //
+            // If there are missing recommended codes (and none are already referenced)
+            if ((_complexCodeWarningCount > 0) && (_complexCodeWarningCount == complexCodeCount))
+            //---------------------------------------------------------------------
             {
                 // Set the error message to return
                 string warningMsg = null;
@@ -13199,11 +13238,19 @@ namespace HLU.UI.ViewModel
                 (String.IsNullOrEmpty(IncidIhsMatrix3) ||
                 (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
 
+            // Count the total number of recommended xrefs
+            int matrixCodeCount = recommendedCodes.Count();
+
             // Count the number of missing recommended xrefs
             _matrixCodeWarningCount = missingCodes.Count();
 
-            // If there are missing recommended codes
-            if (_matrixCodeWarningCount > 0)
+            //---------------------------------------------------------------------
+            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // code is selected.
+            //
+            // If there are missing recommended codes (and none are already referenced)
+            if ((_matrixCodeWarningCount > 0) && (_matrixCodeWarningCount == matrixCodeCount))
+            //---------------------------------------------------------------------
             {
                 // Set the error message to return
                 string warningMsg = null;
@@ -13455,11 +13502,19 @@ namespace HLU.UI.ViewModel
                 (String.IsNullOrEmpty(IncidIhsFormation2) ||
                 (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
 
+            // Count the total number of recommended xrefs
+            int formationCodeCount = recommendedCodes.Count();
+
             // Count the number of missing recommended xrefs
             _formationCodeWarningCount = missingCodes.Count();
 
-            // If there are missing recommended codes
-            if (_formationCodeWarningCount > 0)
+            //---------------------------------------------------------------------
+            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // code is selected.
+            //
+            // If there are missing recommended codes (and none are already referenced)
+            if ((_formationCodeWarningCount > 0) && (_formationCodeWarningCount == formationCodeCount))
+            //---------------------------------------------------------------------
             {
                 // Set the error message to return
                 string warningMsg = null;
@@ -13676,11 +13731,19 @@ namespace HLU.UI.ViewModel
                 (String.IsNullOrEmpty(IncidIhsManagement2) ||
                 (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
 
+            // Count the total number of recommended xrefs
+            int managementCodeCount = recommendedCodes.Count();
+
             // Count the number of missing recommended xrefs
             _managementCodeWarningCount = missingCodes.Count();
 
-            // If there are missing recommended codes
-            if (_managementCodeWarningCount > 0)
+            //---------------------------------------------------------------------
+            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // code is selected.
+            //
+            // If there are missing recommended codes (and none are already referenced)
+            if ((_managementCodeWarningCount > 0) && (_managementCodeWarningCount == managementCodeCount))
+            //---------------------------------------------------------------------
             {
                 // Set the error message to return
                 string warningMsg = null;
