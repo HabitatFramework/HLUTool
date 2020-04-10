@@ -3,7 +3,7 @@
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // Copyright © 2019 London & South East Record Centres (LaSER)
-// Copyright © 2019 Greenspace Information for Greater London CIC
+// Copyright © 2019-2020 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -250,6 +250,7 @@ namespace HLU.UI.ViewModel
         private bool _autoSplit = true;
         private bool _splitting = false;
         private bool _filterByMap = false;
+        private bool _moving = false;
         private bool _comingFromIncidIhsMatrix2 = false;
         private bool _comingFromIncidIhsMatrix3 = false;
         private bool _comingFromIncidIhsFormation2 = false;
@@ -1725,9 +1726,9 @@ namespace HLU.UI.ViewModel
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
-                    ((_gisSelection.Rows.Count > 0) &&
+                    ((_gisSelection.Rows.Count > 0) && _filterByMap == true &&
                     ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
-                    (_gisSelection.Rows.Count == 1)) &&
+                    (_gisSelection.Rows.Count == 1)) && _filterByMap == true &&
                     //---------------------------------------------------------------------
                     // CHANGED: CR7 (Split/merge options)
                     // Only enable logical split menu/button if a subset of all the
@@ -1747,7 +1748,7 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
-                    (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
+                    (_gisSelection != null) && (_gisSelection.Rows.Count > 1) && _filterByMap == true &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1);
             }
         }
@@ -1859,7 +1860,7 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
-                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 && _filterByMap == true &&
                     (_incidsSelectedMapCount > 1) && (_fragsSelectedMapCount > 1);
             }
         }
@@ -1873,7 +1874,7 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
-                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 && _filterByMap == true &&
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
         }
@@ -1973,13 +1974,22 @@ namespace HLU.UI.ViewModel
                             "Would you like to apply the changes to all features for this incid?", "HLU: Save Changes",
                             MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
+                    // Set the status to processing and the cursor to wait.
+                    ChangeCursor(Cursors.Wait, "Processing ...");
+
+                    // Select all features for current incid
                     SelectOnMap(false);
 
                     // If there are still no features selected in the GIS this suggests
                     // that the feature layer contains only a subset of the database
                     // features so this incid cannot be updated.
                     if (_incidsSelectedMapCount <= 0)
+                    {
+                        // Reset the cursor back to normal
+                        ChangeCursor(Cursors.Arrow, null);
+
                         return;
+                    }
 
                     // Count the number of toids and fragments for the current incid
                     // selected in the GIS and in the database.
@@ -1990,9 +2000,17 @@ namespace HLU.UI.ViewModel
 
                 }
                 else
+                {
+                    // Reset the cursor back to normal
+                    ChangeCursor(Cursors.Arrow, null);
+
                     return;
+                }
             }
             //---------------------------------------------------------------------
+
+            // Reset the cursor back to normal
+            ChangeCursor(Cursors.Arrow, null);
 
             // If in bulk update mode then perform the bulk update and exit.
             if (_bulkUpdateMode == true)
@@ -4483,6 +4501,9 @@ namespace HLU.UI.ViewModel
 
         private void SelectOnMapClicked(object param)
         {
+            // Set the status to processing and the cursor to wait.
+            ChangeCursor(Cursors.Wait, "Processing ...");
+
             SelectOnMap(false);
 
             //---------------------------------------------------------------------
@@ -4497,6 +4518,9 @@ namespace HLU.UI.ViewModel
             // Refresh all the status type fields.
             RefreshStatus();
             //---------------------------------------------------------------------
+
+            // Reset the cursor back to normal
+            ChangeCursor(Cursors.Arrow, null);
         }
 
         private bool CanSelectOnMap
@@ -4520,9 +4544,6 @@ namespace HLU.UI.ViewModel
             //
             try
             {
-                // Set the status to processing and the cursor to wait.
-                ChangeCursor(Cursors.Wait, "Processing ...");
-
                 DataTable prevIncidSelection = NewIncidSelectionTable();
                 DataTable prevGISSelection = NewGisSelectionTable();
 
@@ -4656,11 +4677,8 @@ namespace HLU.UI.ViewModel
             {
                 MessageBox.Show(ex.Message, "HLU", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            // Make sure the cursor is always reset.
             finally
             {
-                // Reset the cursor back to normal
-                ChangeCursor(Cursors.Arrow, null);
             }
             //---------------------------------------------------------------------
 
@@ -5527,7 +5545,7 @@ namespace HLU.UI.ViewModel
         {
             if (_gisApp != null)
             {
-                ChangeCursor(Cursors.Wait, "Processing ...");
+                //ChangeCursor(Cursors.Wait, "Processing ...");
 
                 // Build a where clause list for the incids to be selected.
                 List<SqlFilterCondition> whereClause = new List<SqlFilterCondition>();
@@ -6224,7 +6242,9 @@ namespace HLU.UI.ViewModel
                 // from a previous row with valid IHS habitat code 
                 // (seemingly alternating rows when browsing, i.e. 1 ok, 2 wrong, 3 ok, ...)
                 _incidIhsHabitat = null;
+                _moving = true;
                 OnPropertyChanged("IncidIhsHabitat");
+                _moving = false;
 
                 IncidCurrentRowDerivedValuesRetrieve();
                 GetIncidChildRows(IncidCurrentRow);
@@ -7154,7 +7174,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             OnPropertyChanged("NvcCodes");
-            RefreshIhsMultiplexValues();
+            //RefreshIhsMultiplexValues();
             RefreshIhsMultiplexCodes();
             OnPropertyChanged("IncidLegacyHabitat");
         }
@@ -8053,15 +8073,15 @@ namespace HLU.UI.ViewModel
                 //
                 // Select the first IHS habitat code if there is only
                 // one choice for the current habitat type
-                if ((IncidCurrentRow != null) && (_ihsHabitatCodes != null))
-                {
-                    if (_ihsHabitatCodes.Count() == 1)
-                        IncidIhsHabitat = _ihsHabitatCodes.First().code;
-                    else
-                        IncidIhsHabitat = _incidIhsHabitat;
+                //if ((IncidCurrentRow != null) && (_ihsHabitatCodes != null))
+                //{
+                //    if (_ihsHabitatCodes.Count() == 1)
+                //        IncidIhsHabitat = _ihsHabitatCodes.First().code;
+                //    else
+                //        IncidIhsHabitat = _incidIhsHabitat;
 
-                    OnPropertyChanged("IncidIhsHabitat");
-                }
+                //    OnPropertyChanged("IncidIhsHabitat");
+                //}
 
                 //if ((_ihsHabitatCodes != null) && (_ihsHabitatCodes.Count() == 1))
                 //    OnPropertyChanged("IncidIhsHabitat");
@@ -9329,6 +9349,10 @@ namespace HLU.UI.ViewModel
                         _ihsManagement1Codes = _lutIhsManagementCodes;
                     }
                 }
+
+                if (IncidIhsManagement1 == _incidIhsManagementRows[0].management)
+                    return _ihsManagement1Codes;
+
                 return _ihsManagement1Codes;
             }
             set { }
@@ -14345,7 +14369,7 @@ namespace HLU.UI.ViewModel
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false)
+                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false && _moving == false)
                         {
                             error = "Error: IHS Habitat is mandatory for every INCID";
                             AddErrorList(ref _ihsErrors, columnName);

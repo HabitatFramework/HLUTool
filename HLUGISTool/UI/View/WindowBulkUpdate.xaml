@@ -51,14 +51,16 @@
                                Margin="8,8,8,4"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center"
-							   Content="Delete Orphan Priority Habitats?">
+							   Content="Delete Orphan Priority Habitats?"
+                               IsEnabled="{Binding Path=EnableDeleteOrphanBapHabitats}">
                         </Label>
                         <CheckBox Name="CheckBoxDeleteOrphanBapHabitats"
                                   Grid.Column="1"
                                   Margin="0,8,0,4"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"
-                                  IsChecked="{Binding Path=DeleteOrphanBapHabitats}" />
+                                  IsChecked="{Binding Path=DeleteOrphanBapHabitats}"
+								  IsEnabled="{Binding Path=EnableDeleteOrphanBapHabitats}" />
                     </Grid>
 
                     <Grid x:Name="GridDeletePotentialBapHabitats"
@@ -76,14 +78,16 @@
                                Margin="8,8,8,4"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center"
-							   Content="Delete Potential Priority Habitats?">
+							   Content="Delete Potential Priority Habitats?"
+                               IsEnabled="{Binding Path=EnableDeletePotentialBapHabitats}">
                         </Label>
                         <CheckBox Name="CheckBoxDeletePotentialBapHabitats"
                                   Grid.Column="1"
                                   Margin="0,8,0,4"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"
-                                  IsChecked="{Binding Path=DeletePotentialBapHabitats}" />
+                                  IsChecked="{Binding Path=DeletePotentialBapHabitats}"
+								  IsEnabled="{Binding Path=EnableDeletePotentialBapHabitats}" />
                     </Grid>
 
                     <Grid x:Name="GridDeleteMultiplexCodes"
@@ -102,7 +106,7 @@
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center"
 							   Content="Delete Existing Multiplex Rows?"
-							   IsEnabled="{Binding DisableInOSMMBulkUpdateMode}"/>
+    						   IsEnabled="{Binding Path=EnableDeleteMultiplexCodes}"/>
                         <ComboBox Name="ComboBoxDeleteMultiplexCodes"
                                   Grid.Column="1"
                                   Margin="4,6,4,2"
@@ -116,7 +120,7 @@
                                                         ValidatesOnDataErrors=True}"
                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                   ToolTipService.ShowOnDisabled="True"
-								  IsEnabled="{Binding Path=DisableInOSMMBulkUpdateMode}" />
+								  IsEnabled="{Binding Path=EnableDeleteMultiplexCodes}" />
                     </Grid>
 
                     <Grid x:Name="GridDeleteSources"
