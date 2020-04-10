@@ -2,6 +2,7 @@
 // Copyright © 2011 Hampshire Biodiversity Information Centre
 // Copyright © 2013 Thames Valley Environmental Records Centre
 // Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2020 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -173,12 +174,33 @@ namespace HLU.UI.ViewModel
             bool createHistory = Settings.Default.BulkUpdateCreateHistoryRecords;
             string determinationQuality = Settings.Default.BulkUpdateDeterminationQuality;
             string interpretationQuality = Settings.Default.BulkUpdateInterpretationQuality;
+            bool ihsHabitatChanged = true;
 
             // Set any mandatory options
             if (_osmmBulkUpdateMode == true)
             {
                 deleteMultiplexCodes = 0;
                 createHistory = true;
+            }
+
+            // If in OSMM bulk update mode
+            if (_osmmBulkUpdateMode == true)
+            {
+                // Flag the IHS habitat has not been changed (so that the user
+                // has no control over these options).
+                ihsHabitatChanged = false;
+                deleteOrphanBapHabitats = true;
+                deletePotentialBapHabitats = true;
+                deleteMultiplexCodes = (int)DeleteMultiplexCodesAction.All;
+            }
+            // Determine if the IHS habitat has been changed
+            else if (_viewModelMain.IncidIhsHabitat == null)
+            {
+                // Flag the IHS habitat has not changed
+                ihsHabitatChanged = false;
+                deleteOrphanBapHabitats = false;
+                deletePotentialBapHabitats = false;
+                deleteMultiplexCodes = (int)DeleteMultiplexCodesAction.None;
             }
 
             _windowBulkUpdate = new WindowBulkUpdate();
@@ -194,7 +216,7 @@ namespace HLU.UI.ViewModel
             // to select the options they want to use.
             _viewModelBulkUpdate = new ViewModelBulkUpdate(_viewModelMain, _osmmBulkUpdateMode,
                 deleteOrphanBapHabitats, deletePotentialBapHabitats, sourceCount, deleteMultiplexCodes,
-                createHistory, determinationQuality, interpretationQuality);
+                createHistory, determinationQuality, interpretationQuality, ihsHabitatChanged);
             if (_osmmBulkUpdateMode == true)
                 _viewModelBulkUpdate.DisplayName = "OSMM Bulk Update";
             else
@@ -870,7 +892,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_matrixRow[] incidIhsMatrixRows = _viewModelMain.IncidIhsMatrixRows;
             // Store a copy of the table for the current incid
             HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
-                (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
+                (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Clone();
             // Update the rows in the database
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
@@ -885,7 +907,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_formationRow[] incidIhsFormationRows = _viewModelMain.IncidIhsFormationRows;
             // Store a copy of the table for the current incid
             HluDataSet.incid_ihs_formationDataTable ihsFormationTable =
-                (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Copy();
+                (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Clone();
             // Update the rows in the database
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
@@ -900,7 +922,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_managementRow[] incidIhsManagementRows = _viewModelMain.IncidIhsManagementRows;
             // Store a copy of the table for the current incid
             HluDataSet.incid_ihs_managementDataTable ihsManagementTable =
-                (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Copy();
+                (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Clone();
             // Update the rows in the database
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
@@ -908,6 +930,9 @@ namespace HLU.UI.ViewModel
             BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
                 ihsManagementTable, ref incidIhsManagementRows);
+            //BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
+            //    _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
+            //    _viewModelMain.HluDataset.incid_ihs_management, ref incidIhsManagementRows);
             //---------------------------------------------------------------------
             //_viewModelMain.IncidIhsManagementRows = incidIhsManagementRows;
 
@@ -915,7 +940,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_complexRow[] incidIhsComplexRows = _viewModelMain.IncidIhsComplexRows;
             // Store a copy of the table for the current incid
             HluDataSet.incid_ihs_complexDataTable ihsComplexTable =
-                (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Copy();
+                (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Clone();
             // Update the rows in the database
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
@@ -1910,7 +1935,7 @@ namespace HLU.UI.ViewModel
             }
 
             // Re-insert any old rows not in the new rows
-            if (deleteExistingRows == (int)DeleteMultiplexCodesAction.None)
+            if (deleteExistingRows != (int)DeleteMultiplexCodesAction.All)
             {
                 foreach (R oldRow in oldRows)
                 {

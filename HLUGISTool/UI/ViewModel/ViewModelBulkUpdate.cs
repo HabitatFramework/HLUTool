@@ -1,5 +1,6 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
 // Copyright © 2019 London & South East Record Centres (LaSER)
+// Copyright © 2020 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -28,10 +29,6 @@ using HLU.Properties;
 
 namespace HLU.UI.ViewModel
 {
-    //---------------------------------------------------------------------
-    // CHANGED: CR49 Process proposed OSMM Updates
-    // Functionality to process proposed OSMM Updates.
-    //    
     class ViewModelBulkUpdate : ViewModelBase, IDataErrorInfo
     {
         #region Fields
@@ -51,6 +48,7 @@ namespace HLU.UI.ViewModel
         private bool _createHistory;
         private string _determinationQuality;
         private string _interpretationQuality;
+        private bool _ihsHabitatChanged;
 
         #endregion
 
@@ -64,7 +62,8 @@ namespace HLU.UI.ViewModel
             int deleteMultiplexCodes,
             bool createHistory,
             string determinationQuality,
-            string interpretationQuality)
+            string interpretationQuality,
+            bool ihsHabitatChanged)
         {
             _viewModelMain = viewModelMain;
             _osmmBulkUpdateMode = osmmBulkUpdateMode;
@@ -75,6 +74,7 @@ namespace HLU.UI.ViewModel
             _createHistory = createHistory;
             _determinationQuality = determinationQuality;
             _interpretationQuality = interpretationQuality;
+            _ihsHabitatChanged = ihsHabitatChanged;
 
             //OnPropertyChanged("ShowInOSMMBulkUpdateMode");
             //OnPropertyChanged("HideInOSMMBulkUpdateMode");
@@ -434,6 +434,71 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
+        /// <summary>
+        /// Enable control when in OSMM Bulk Update mode and
+        /// the IHS habitat has changed.
+        /// </summary>
+        public bool EnableDeleteOrphanBapHabitats
+        {
+            get
+            {
+                // Enable the control if the IHS habitat has changed
+                if (_ihsHabitatChanged == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Enable control when in OSMM Bulk Update mode and
+        /// the IHS habitat has changed.
+        /// </summary>
+        public bool EnableDeletePotentialBapHabitats
+        {
+            get
+            {
+                // Enable the control if the IHS habitat has changed
+                if (_ihsHabitatChanged == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Enable control when in OSMM Bulk Update mode and
+        /// the IHS habitat has changed.
+        /// </summary>
+        public bool EnableDeleteMultiplexCodes
+        {
+            get
+            {
+                // Enable the control if not in OSMM Bulk Update mode and
+                // the IHS habitat has changed
+                if ((_osmmBulkUpdateMode == false) && (_ihsHabitatChanged == true))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set { }
+        }
+
+
         #endregion
 
         #region IDataErrorInfo Members
@@ -465,6 +530,11 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
+                    case "DeleteMultiplexCodes":
+                        if ((EnableDeleteMultiplexCodes == true) &&
+                            (DeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.All))
+                            error="Warning: This option will delete ALL multiplex codes from all affected incids";
+                        break;
                     case "DeterminationQuality":
                         if (String.IsNullOrEmpty(DeterminationQuality))
                             error= "Error: You must choose a Determination Quality";
