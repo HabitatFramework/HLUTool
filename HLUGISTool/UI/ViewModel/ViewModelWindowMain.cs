@@ -1726,9 +1726,13 @@ namespace HLU.UI.ViewModel
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
-                    ((_gisSelection.Rows.Count > 0) && _filterByMap == true &&
-                    ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
-                    (_gisSelection.Rows.Count == 1)) && _filterByMap == true &&
+                    ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
+                    (_gisSelection.Rows.Count == 1)) &&
+                    //---------------------------------------------------------------------
+                    // FIX: 089 Only enable split/merge after select from map
+                    //
+                    (_filterByMap == true) &&
+                    //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // CHANGED: CR7 (Split/merge options)
                     // Only enable logical split menu/button if a subset of all the
@@ -1748,7 +1752,12 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
-                    (_gisSelection != null) && (_gisSelection.Rows.Count > 1) && _filterByMap == true &&
+                    (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
+                    //---------------------------------------------------------------------
+                    // FIX: 089 Only enable split/merge after select from map
+                    //
+                    (_filterByMap == true) &&
+                    //---------------------------------------------------------------------
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1);
             }
         }
@@ -1860,7 +1869,12 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) && 
-                    _gisSelection != null && _gisSelection.Rows.Count > 1 && _filterByMap == true &&
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    //---------------------------------------------------------------------
+                    // FIX: 089 Only enable split/merge after select from map
+                    //
+                    (_filterByMap == true) &&
+                    //---------------------------------------------------------------------
                     (_incidsSelectedMapCount > 1) && (_fragsSelectedMapCount > 1);
             }
         }
@@ -1874,7 +1888,12 @@ namespace HLU.UI.ViewModel
             {
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
-                    _gisSelection != null && _gisSelection.Rows.Count > 1 && _filterByMap == true &&
+                    _gisSelection != null && _gisSelection.Rows.Count > 1 &&
+                    //---------------------------------------------------------------------
+                    // FIX: 089 Only enable split/merge after select from map
+                    //
+                    (_filterByMap == true) &&
+                    //---------------------------------------------------------------------
                     (_incidsSelectedMapCount == 1) && (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount > 1);
             }
         }
@@ -8569,86 +8588,95 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
+
+                    if (value == null)
                     {
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
+                        if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
                         {
-                            _incidIhsMatrixRows[0].matrix = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsMatrix1Codes");
+
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsMatrixRows[0].matrix = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsMatrix1Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsMatrixRow(0);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
                         }
-                        else
-                        {
-                            RemoveIncidIhsMatrixRow(0);
-                        }
-
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
-                    }
-                }
-                else
-                {
-                    if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
-                    {
-                        _incidIhsMatrixRows[0].matrix = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsMatrix1Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
                     }
                     else
                     {
-                        AddIncidIhsMatrixRow(value, 0);
-                        OnPropertyChanged("IhsMatrix1Codes");
+                        if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null))
+                        {
+                            _incidIhsMatrixRows[0].matrix = value;
+
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsMatrix1Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsMatrixRow(value, 0);
+                            OnPropertyChanged("IhsMatrix1Codes");
+                        }
                     }
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsMatrix1Codes");
+                        OnPropertyChanged("IhsMatrix1Enabled");
+                    }
+                    if (!_comingFromIncidIhsMatrix2)
+                    {
+                        OnPropertyChanged("IhsMatrix2Codes");
+                        OnPropertyChanged("IhsMatrix2Enabled");
+                    }
+                    else
+                    {
+                        _comingFromIncidIhsMatrix2 = false;
+                    }
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsMatrix1Codes");
-                    OnPropertyChanged("IhsMatrix1Enabled");
-                }
-                if (!_comingFromIncidIhsMatrix2)
-                {
-                    OnPropertyChanged("IhsMatrix2Codes");
-                    OnPropertyChanged("IhsMatrix2Enabled");
-                }
-                else
-                {
-                    _comingFromIncidIhsMatrix2 = false;
-                }
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -8666,92 +8694,101 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
-                    {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
-                        {
-                            _incidIhsMatrixRows[1].matrix = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsMatrix2Codes");
-                        }
-                        else
-                        {
-                            RemoveIncidIhsMatrixRow(1);
-                        }
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
 
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
+                    if (value == null)
+                    {
+                        if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
+                        {
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsMatrixRows[1].matrix = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsMatrix2Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsMatrixRow(1);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
+                        }
                     }
-                }
-                else if ((_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
-                {
-                    return;
-                }
-                else
-                {
-                    if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
+                    else if ((_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
                     {
-                        _incidIhsMatrixRows[1].matrix = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsMatrix2Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
+                        return;
                     }
                     else
                     {
-                        AddIncidIhsMatrixRow(value, 1);
-                        OnPropertyChanged("IhsMatrix2Codes");
-                    }
-                }
+                        if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
+                        {
+                            _incidIhsMatrixRows[1].matrix = value;
 
-                _comingFromIncidIhsMatrix2 = true;
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsMatrix2Codes");
-                    OnPropertyChanged("IhsMatrix2Enabled");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsMatrix2Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsMatrixRow(value, 1);
+                            OnPropertyChanged("IhsMatrix2Codes");
+                        }
+                    }
+
+                    _comingFromIncidIhsMatrix2 = true;
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsMatrix2Codes");
+                        OnPropertyChanged("IhsMatrix2Enabled");
+                    }
+                    OnPropertyChanged("IhsMatrix1Codes");
+                    if (!_comingFromIncidIhsMatrix3)
+                    {
+                        OnPropertyChanged("IhsMatrix3Codes");
+                        OnPropertyChanged("IhsMatrix3Enabled");
+                    }
+                    else
+                    {
+                        _comingFromIncidIhsMatrix3 = false;
+                    }
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                OnPropertyChanged("IhsMatrix1Codes");
-                if (!_comingFromIncidIhsMatrix3)
-                {
-                    OnPropertyChanged("IhsMatrix3Codes");
-                    OnPropertyChanged("IhsMatrix3Enabled");
-                }
-                else
-                {
-                    _comingFromIncidIhsMatrix3 = false;
-                }
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -8769,84 +8806,93 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
-                    {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
-                        {
-                            _incidIhsMatrixRows[2].matrix = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsMatrix1Codes");
-                        }
-                        else
-                        {
-                            RemoveIncidIhsMatrixRow(2);
-                        }
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
 
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
+                    if (value == null)
+                    {
+                        if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
+                        {
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsMatrixRows[2].matrix = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsMatrix1Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsMatrixRow(2);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
+                        }
                     }
-                }
-                else if (((_incidIhsMatrixRows[1] != null) && (_incidIhsMatrixRows[1].matrix == value)) ||
-                    (_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
-                {
-                    return;
-                }
-                else
-                {
-                    if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
+                    else if (((_incidIhsMatrixRows[1] != null) && (_incidIhsMatrixRows[1].matrix == value)) ||
+                        (_incidIhsMatrixRows[0] != null) && (_incidIhsMatrixRows[0].matrix == value))
                     {
-                        _incidIhsMatrixRows[2].matrix = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsMatrix3Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
+                        return;
                     }
                     else
                     {
-                        AddIncidIhsMatrixRow(value, 2);
-                        OnPropertyChanged("IhsMatrix3Codes");
+                        if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
+                        {
+                            _incidIhsMatrixRows[2].matrix = value;
+
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsMatrix3Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsMatrixRow(value, 2);
+                            OnPropertyChanged("IhsMatrix3Codes");
+                        }
                     }
+                    _comingFromIncidIhsMatrix3 = true;
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsMatrix3Codes");
+                        OnPropertyChanged("IhsMatrix3Enabled");
+                    }
+                    OnPropertyChanged("IhsMatrix1Codes");
+                    OnPropertyChanged("IhsMatrix2Codes");
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                _comingFromIncidIhsMatrix3 = true;
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsMatrix3Codes");
-                    OnPropertyChanged("IhsMatrix3Enabled");
-                }
-                OnPropertyChanged("IhsMatrix1Codes");
-                OnPropertyChanged("IhsMatrix2Codes");
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -9053,85 +9099,94 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
+
+                    if (value == null)
                     {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
+                        if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
                         {
-                            _incidIhsFormationRows[0].formation = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsFormation1Codes");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsFormationRows[0].formation = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsFormation1Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsFormationRow(0);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
                         }
-                        else
-                        {
-                            RemoveIncidIhsFormationRow(0);
-                        }
-
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
-                    }
-                }
-                else
-                {
-                    if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
-                    {
-                        _incidIhsFormationRows[0].formation = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsFormation1Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
                     }
                     else
                     {
-                        AddIncidIhsFormationRow(value, 0);
-                        OnPropertyChanged("IhsFormation1Codes");
+                        if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
+                        {
+                            _incidIhsFormationRows[0].formation = value;
+
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsFormation1Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsFormationRow(value, 0);
+                            OnPropertyChanged("IhsFormation1Codes");
+                        }
                     }
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsFormation1Codes");
+                        OnPropertyChanged("IhsFormation1Enabled");
+                    }
+                    if (!_comingFromIncidIhsFormation2)
+                    {
+                        OnPropertyChanged("IhsFormation2Codes");
+                        OnPropertyChanged("IhsFormation2Enabled");
+                    }
+                    else
+                    {
+                        _comingFromIncidIhsFormation2 = false;
+                    }
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsFormation1Codes");
-                    OnPropertyChanged("IhsFormation1Enabled");
-                }
-                if (!_comingFromIncidIhsFormation2)
-                {
-                    OnPropertyChanged("IhsFormation2Codes");
-                    OnPropertyChanged("IhsFormation2Enabled");
-                }
-                else
-                {
-                    _comingFromIncidIhsFormation2 = false;
-                }
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -9149,83 +9204,92 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
-                    {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
-                        {
-                            _incidIhsFormationRows[1].formation = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsFormation2Codes");
-                        }
-                        else
-                        {
-                            RemoveIncidIhsFormationRow(1);
-                        }
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
 
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
+                    if (value == null)
+                    {
+                        if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
+                        {
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsFormationRows[1].formation = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsFormation2Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsFormationRow(1);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
+                        }
                     }
-                }
-                else if ((_incidIhsFormationRows[0] != null) && (_incidIhsFormationRows[0].formation == value))
-                {
-                    return;
-                }
-                else
-                {
-                    if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
+                    else if ((_incidIhsFormationRows[0] != null) && (_incidIhsFormationRows[0].formation == value))
                     {
-                        _incidIhsFormationRows[1].formation = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsFormation2Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
+                        return;
                     }
                     else
                     {
-                        AddIncidIhsFormationRow(value, 1);
-                        OnPropertyChanged("IhsFormation2Codes");
-                    }
-                }
+                        if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
+                        {
+                            _incidIhsFormationRows[1].formation = value;
 
-                _comingFromIncidIhsFormation2 = true;
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsFormation2Codes");
-                    OnPropertyChanged("IhsFormation2Enabled");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsFormation2Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsFormationRow(value, 1);
+                            OnPropertyChanged("IhsFormation2Codes");
+                        }
+                    }
+
+                    _comingFromIncidIhsFormation2 = true;
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsFormation2Codes");
+                        OnPropertyChanged("IhsFormation2Enabled");
+                    }
+                    OnPropertyChanged("IhsFormation1Codes");
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                OnPropertyChanged("IhsFormation1Codes");
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -9432,6 +9496,9 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
                 // Ignore setting this value to null when moving incid
                 // (it's a weird bug and this is the fiddle/work around)
                 if ((value != null) || (_moving == false))
@@ -9518,6 +9585,7 @@ namespace HLU.UI.ViewModel
                     Changed = true;
                     //---------------------------------------------------------------------
                 }
+                //---------------------------------------------------------------------
             }
         }
 
@@ -9534,83 +9602,92 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
-                    {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
-                        {
-                            _incidIhsManagementRows[1].management = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsManagement2Codes");
-                        }
-                        else
-                        {
-                            RemoveIncidIhsManagementRow(1);
-                        }
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
 
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
+                    if (value == null)
+                    {
+                        if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
+                        {
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsManagementRows[1].management = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsManagement2Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsManagementRow(1);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
+                        }
                     }
-                }
-                else if ((_incidIhsManagementRows[0] != null) && (_incidIhsManagementRows[0].management == value))
-                {
-                    return;
-                }
-                else
-                {
-                    if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
+                    else if ((_incidIhsManagementRows[0] != null) && (_incidIhsManagementRows[0].management == value))
                     {
-                        _incidIhsManagementRows[1].management = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsManagement2Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
+                        return;
                     }
                     else
                     {
-                        AddIncidIhsManagementRow(value, 1);
-                        OnPropertyChanged("IhsManagement2Codes");
-                    }
-                }
+                        if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
+                        {
+                            _incidIhsManagementRows[1].management = value;
 
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsManagement2Codes");
-                    OnPropertyChanged("IhsManagement2Enabled");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsManagement2Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsManagementRow(value, 1);
+                            OnPropertyChanged("IhsManagement2Codes");
+                        }
+                    }
+
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsManagement2Codes");
+                        OnPropertyChanged("IhsManagement2Enabled");
+                    }
+                    _comingFromIncidIhsManagement2 = true;
+                    OnPropertyChanged("IhsManagement1Codes");
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                _comingFromIncidIhsManagement2 = true;
-                OnPropertyChanged("IhsManagement1Codes");
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -9817,87 +9894,96 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
+
+                    if (value == null)
                     {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
+                        if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
                         {
-                            _incidIhsComplexRows[0].complex = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsComplex1Codes");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsComplexRows[0].complex = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsComplex1Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsComplexRow(0);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
                         }
-                        else
-                        {
-                            RemoveIncidIhsComplexRow(0);
-                        }
-
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
-                    }
-                }
-                else
-                {
-                    if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
-                    {
-                        _incidIhsComplexRows[0].complex = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsComplex1Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
                     }
                     else
                     {
-                        AddIncidIhsComplexRow(value, 0);
-                        OnPropertyChanged("IhsComplex1Codes");
+                        if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
+                        {
+                            _incidIhsComplexRows[0].complex = value;
+
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsComplex1Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsComplexRow(value, 0);
+                            OnPropertyChanged("IhsComplex1Codes");
+                        }
                     }
-                }
 
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsComplex1Codes");
-                    OnPropertyChanged("IhsComplex1Enabled");
-                }
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsComplex1Codes");
+                        OnPropertyChanged("IhsComplex1Enabled");
+                    }
 
-                if (!_comingFromIncidIhsComplex2)
-                {
-                    OnPropertyChanged("IhsComplex2Codes");
-                    OnPropertyChanged("IhsComplex2Enabled");
+                    if (!_comingFromIncidIhsComplex2)
+                    {
+                        OnPropertyChanged("IhsComplex2Codes");
+                        OnPropertyChanged("IhsComplex2Enabled");
+                    }
+                    else
+                    {
+                        _comingFromIncidIhsComplex2 = false;
+                    }
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                else
-                {
-                    _comingFromIncidIhsComplex2 = false;
-                }
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -9915,83 +10001,92 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                bool removeDeleteCode = value == _codeDeleteRow;
-                if (removeDeleteCode) value = null;
-
-                if (value == null)
+                //---------------------------------------------------------------------
+                // FIX: 092 Fix bug with multiplex codes when moving incid
+                //
+                // Ignore setting this value to null when moving incid
+                // (it's a weird bug and this is the fiddle/work around)
+                if ((value != null) || (_moving == false))
                 {
-                    if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
-                    {
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Allow codes to be cleared (but not deleted) in bulk update mode
-                        if (_bulkUpdateMode == true)
-                        {
-                            _incidIhsComplexRows[1].complex = value;
-                            // Remove <clear> from the combobox list if it is present
-                            if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
-                                OnPropertyChanged("IhsComplex2Codes");
-                        }
-                        else
-                        {
-                            RemoveIncidIhsComplexRow(1);
-                        }
+                    bool removeDeleteCode = value == _codeDeleteRow;
+                    if (removeDeleteCode) value = null;
 
-                        OnPropertyChanged("IncidIhsSummary");
-                        //---------------------------------------------------------------------
+                    if (value == null)
+                    {
+                        if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
+                        {
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Allow codes to be cleared (but not deleted) in bulk update mode
+                            if (_bulkUpdateMode == true)
+                            {
+                                _incidIhsComplexRows[1].complex = value;
+                                // Remove <clear> from the combobox list if it is present
+                                if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() != 0)
+                                    OnPropertyChanged("IhsComplex2Codes");
+                            }
+                            else
+                            {
+                                RemoveIncidIhsComplexRow(1);
+                            }
+
+                            OnPropertyChanged("IncidIhsSummary");
+                            //---------------------------------------------------------------------
+                        }
                     }
-                }
-                else if ((_incidIhsComplexRows[0] != null) && (_incidIhsComplexRows[0].complex == value))
-                {
-                    return;
-                }
-                else
-                {
-                    if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
+                    else if ((_incidIhsComplexRows[0] != null) && (_incidIhsComplexRows[0].complex == value))
                     {
-                        _incidIhsComplexRows[1].complex = value;
-
-                        //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
-                        // 
-                        // Add <clear> to the combobox list if it isn't already present
-                        if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
-                            OnPropertyChanged("IhsComplex2Codes");
-                        //---------------------------------------------------------------------
-
-                        OnPropertyChanged("IncidIhsSummary");
+                        return;
                     }
                     else
                     {
-                        AddIncidIhsComplexRow(value, 1);
-                        OnPropertyChanged("IhsComplex2Codes");
-                    }
-                }
+                        if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
+                        {
+                            _incidIhsComplexRows[1].complex = value;
 
-                _comingFromIncidIhsComplex2 = true;
-                if (removeDeleteCode)
-                {
-                    OnPropertyChanged("IhsComplex2Codes");
-                    OnPropertyChanged("IhsComplex2Enabled");
+                            //---------------------------------------------------------------------
+                            // FIX: 078 Bulk update overhaul/improvements.
+                            // 
+                            // Add <clear> to the combobox list if it isn't already present
+                            if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
+                                OnPropertyChanged("IhsComplex2Codes");
+                            //---------------------------------------------------------------------
+
+                            OnPropertyChanged("IncidIhsSummary");
+                        }
+                        else
+                        {
+                            AddIncidIhsComplexRow(value, 1);
+                            OnPropertyChanged("IhsComplex2Codes");
+                        }
+                    }
+
+                    _comingFromIncidIhsComplex2 = true;
+                    if (removeDeleteCode)
+                    {
+                        OnPropertyChanged("IhsComplex2Codes");
+                        OnPropertyChanged("IhsComplex2Enabled");
+                    }
+                    OnPropertyChanged("IhsComplex1Codes");
+                    GetBapEnvironments();
+                    OnPropertyChanged("IncidBapHabitatsAuto");
+                    OnPropertyChanged("IncidBapHabitatsUser");
+                    //---------------------------------------------------------------------
+                    // FIXED: KI96 (BAP Habitats)
+                    // Enable editing of bap habitats when they are only associated
+                    // with matrix, formation, management or complex codes (rather
+                    // than habitat codes.
+                    OnPropertyChanged("BapHabitatsAutoEnabled");
+                    //---------------------------------------------------------------------
+                    OnPropertyChanged("BapHabitatsUserEnabled");
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
                 }
-                OnPropertyChanged("IhsComplex1Codes");
-                GetBapEnvironments();
-                OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("IncidBapHabitatsUser");
-                //---------------------------------------------------------------------
-                // FIXED: KI96 (BAP Habitats)
-                // Enable editing of bap habitats when they are only associated
-                // with matrix, formation, management or complex codes (rather
-                // than habitat codes.
-                OnPropertyChanged("BapHabitatsAutoEnabled");
-                //---------------------------------------------------------------------
-                OnPropertyChanged("BapHabitatsUserEnabled");
-                //---------------------------------------------------------------------
-                // CHANGED: CR2 (Apply button)
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                Changed = true;
                 //---------------------------------------------------------------------
             }
         }
@@ -14372,7 +14467,12 @@ namespace HLU.UI.ViewModel
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false && _moving == false)
+                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false &&
+                        //---------------------------------------------------------------------
+                        // FIX: 090 Don't display habitat errors during change of incid
+                        //
+                            (_moving == false))
+                        //---------------------------------------------------------------------
                         {
                             error = "Error: IHS Habitat is mandatory for every INCID";
                             AddErrorList(ref _ihsErrors, columnName);
@@ -14752,7 +14852,7 @@ namespace HLU.UI.ViewModel
                     //    
                     case "NumIncidSelectedMap":
                         if (_incidsSelectedMapCount < _incidsSelectedDBCount)
-                        error = "Warning: Not all database incids are selected in map";
+                            error = "Warning: Not all database incids are selected in map";
                         break;
                     case "NumToidSelectedMap":
                         if (_toidsSelectedMapCount < _toidsSelectedDBCount)

@@ -4601,7 +4601,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{F99CCF4B-FF36-4E16-A3CA-ACE32BBBD342}</td><td/></row>
+		<row><td>ProductCode</td><td>{7705A91D-0B21-4CE3-B497-DBB1B2EAB2BD}</td><td/></row>
 		<row><td>ProductName</td><td>HLU Tool 3.1.2</td><td/></row>
 		<row><td>ProductVersion</td><td>3.1.2.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>

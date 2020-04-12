@@ -434,6 +434,9 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 087 Enable bulk update options only if habitat has changed
+        //
         /// <summary>
         /// Enable control when in OSMM Bulk Update mode and
         /// the IHS habitat has changed.
@@ -497,7 +500,7 @@ namespace HLU.UI.ViewModel
             }
             set { }
         }
-
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -530,11 +533,15 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
+                    //---------------------------------------------------------------------
+                    // FIX: 088 Add warning to delete option in bulk update
+                    //
                     case "DeleteMultiplexCodes":
                         if ((EnableDeleteMultiplexCodes == true) &&
                             (DeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.All))
                             error="Warning: This option will delete ALL multiplex codes from all affected incids";
                         break;
+                    //---------------------------------------------------------------------
                     case "DeterminationQuality":
                         if (String.IsNullOrEmpty(DeterminationQuality))
                             error= "Error: You must choose a Determination Quality";
