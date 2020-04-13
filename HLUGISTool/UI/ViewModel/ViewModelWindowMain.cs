@@ -250,7 +250,6 @@ namespace HLU.UI.ViewModel
         private bool _autoSplit = true;
         private bool _splitting = false;
         private bool _filterByMap = false;
-        private bool _moving = false;
         private bool _comingFromIncidIhsMatrix2 = false;
         private bool _comingFromIncidIhsMatrix3 = false;
         private bool _comingFromIncidIhsFormation2 = false;
@@ -6254,8 +6253,6 @@ namespace HLU.UI.ViewModel
 
             if (canMove)
             {
-                _moving = true;
-
                 CloneIncidCurrentRow();
 
                 _incidArea = -1;
@@ -6339,8 +6336,6 @@ namespace HLU.UI.ViewModel
                 RefreshSource2();
                 RefreshSource3();
                 RefreshHistory();
-
-                _moving = false;
             }
             CheckEditingControlState();
         }
@@ -8090,6 +8085,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
+                    // Fix: 092 Load all IHS habitats when habitat type is blank
                     // Load all IHS habitat codes that are flagged as local.
                     _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
                                        where h.is_local
@@ -8596,12 +8592,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -8702,12 +8693,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -8814,12 +8800,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -9110,12 +9091,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -9215,12 +9191,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -9510,12 +9481,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -9616,12 +9582,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -9911,12 +9872,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -10018,12 +9974,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //---------------------------------------------------------------------
-                // FIX: 092 Fix bug with multiplex codes when moving incid
-                //
-                // Ignore setting this value to null when moving incid
-                // (it's a weird bug and this is the fiddle/work around)
-                if ((value != null) || (_moving == false))
+                if (value != null)
                 {
                     bool removeDeleteCode = value == _codeDeleteRow;
                     if (removeDeleteCode) value = null;
@@ -14484,12 +14435,7 @@ namespace HLU.UI.ViewModel
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
-                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false &&
-                            //---------------------------------------------------------------------
-                            // FIX: 090 Don't display habitat errors during change of incid
-                            //
-                            (_moving == false))
-                        //---------------------------------------------------------------------
+                        if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false)
                         {
                             error = "Error: IHS Habitat is mandatory for every INCID";
                             AddErrorList(ref _ihsErrors, columnName);
