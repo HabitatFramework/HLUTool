@@ -47,15 +47,16 @@ namespace HLU.UI.ViewModel
 
     public class OSMMUpdates
     {
-        public string ProcessFlag { get; set; }
-        public string SpatialFlag { get; set; }
-        public string ChangeFlag { get; set; }
-        public string Rejected { get; set; }
-        public string Ignored { get; set; }
-        public string Proposed { get; set; }
-        public string Pending { get; set; }
-        public string Applied { get; set; }
-        public string Total { get; set; }
+        public string Process { get; set; }
+        public string Spatial { get; set; }
+        public string Change { get; set; }
+        //public string Summary { get; set; }
+        public int Rejected { get; set; }
+        public int Ignored { get; set; }
+        public int Proposed { get; set; }
+        public int Pending { get; set; }
+        public int Applied { get; set; }
+        public int Total { get; set; }
     }
 
     class ViewModelWindowQueryOSMM : ViewModelBase, INotifyPropertyChanged
@@ -102,6 +103,8 @@ namespace HLU.UI.ViewModel
 
         private string _displayName = "OSMM Updates Filter";
 
+        List<OSMMUpdates> _tableTotal;
+
         #endregion
 
         #region Constructor
@@ -136,11 +139,11 @@ namespace HLU.UI.ViewModel
         public void OSMMUpdatesSelectedRow(OSMMUpdates selectedRow)
         {
             // Set the filter fields to the selected row values
-            if (selectedRow != null && selectedRow.ChangeFlag != "Total")
+            if (selectedRow != null && selectedRow.Change != "Total")
             {
-                _osmmProcessFlag = selectedRow.ProcessFlag;
-                _osmmSpatialFlag = selectedRow.SpatialFlag;
-                _osmmChangeFlag = selectedRow.ChangeFlag;
+                _osmmProcessFlag = selectedRow.Process;
+                _osmmSpatialFlag = selectedRow.Spatial;
+                _osmmChangeFlag = selectedRow.Change;
 
                 // Count the incid_osmm_update rows for the initial values.
                 CountOSMMUpdates();
@@ -603,9 +606,8 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Count the total number of OSMM Updates in the database.
+        /// Summarise the OSMM Updates in the database.
         /// </summary>
-        //public DataTable OSMMUpdatesSummary
         public List<OSMMUpdates> OSMMUpdatesSummary
         {
             get
@@ -647,12 +649,34 @@ namespace HLU.UI.ViewModel
                         _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.spatial_flagColumn.ColumnName),
                         _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.change_flagColumn.ColumnName),
                         _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName));
-                    dataReader = _db.ExecuteReader(String.Format(
+                    String sql = String.Format(
                         "SELECT DISTINCT {0} FROM {1} GROUP BY {3} ORDER BY {3}",
                         sqlColumns,
                         _db.QualifyTableName(_hluDataset.incid_osmm_updates.TableName),
-                        _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName),
-                        sqlGroupBy),
+                        _db.QualifyTableName(_hluDataset.lut_osmm_ihs_xref.TableName),
+                        sqlGroupBy);
+                    //string sqlColumns = String.Format("{0}, {1}, {2}, {3}, {4}, COUNT(*) As RecCount",
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.process_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.spatial_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.change_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.ihs_summaryColumn.ColumnName));
+                    //string sqlGroupBy = String.Format("{0}, {1}, {2}, {3}, {4}",
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.process_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.spatial_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.change_flagColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.ihs_summaryColumn.ColumnName));
+                    //String sql = String.Format(
+                    //    "SELECT DISTINCT {0} FROM {1},{2} WHERE {1}.{4} = {2}.{5} GROUP BY {3} ORDER BY {3}",
+                    //    sqlColumns,
+                    //    _db.QualifyTableName(_hluDataset.incid_osmm_updates.TableName),
+                    //    _db.QualifyTableName(_hluDataset.lut_osmm_ihs_xref.TableName),
+                    //    sqlGroupBy,
+                    //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.osmm_xref_idColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.osmm_xref_idColumn.ColumnName));
+
+                    dataReader = _db.ExecuteReader(sql,
                         _db.Connection.ConnectionTimeout, CommandType.Text);
 
                     if (dataReader == null) throw new Exception(String.Format("Error reading values from {0}", _hluDataset.incid_osmm_updates.TableName));
@@ -661,6 +685,7 @@ namespace HLU.UI.ViewModel
                     string spatialFlag, lastSpatialFlag = null;
                     string changeFlag, lastChangeFlag = null;
                     int status;
+                    //string summary;
                     int recs;
                     OSMMUpdates dataRow;
 
@@ -671,6 +696,7 @@ namespace HLU.UI.ViewModel
                         spatialFlag = dataReader.GetValue(1).ToString();
                         changeFlag = dataReader.GetValue(2).ToString();
                         status = (int)dataReader.GetValue(3);
+                        //summary = dataReader.GetValue(4).ToString();
                         recs = (int)dataReader.GetValue(4);
 
                         if (lastProcessFlag == null)
@@ -685,15 +711,15 @@ namespace HLU.UI.ViewModel
                         {
                             // Add the results as a new row.
                             dataRow = new OSMMUpdates();
-                            dataRow.ProcessFlag = lastProcessFlag;
-                            dataRow.SpatialFlag = lastSpatialFlag;
-                            dataRow.ChangeFlag = lastChangeFlag;
-                            dataRow.Rejected = String.Format("{0:n0}", rejectedCount);
-                            dataRow.Ignored = String.Format("{0:n0}", ignoredCount);
-                            dataRow.Proposed = String.Format("{0:n0}", proposedCount);
-                            dataRow.Pending = String.Format("{0:n0}", pendingCount);
-                            dataRow.Applied = String.Format("{0:n0}", appliedCount);
-                            dataRow.Total = String.Format("{0:n0}", allCount);
+                            dataRow.Process = lastProcessFlag;
+                            dataRow.Spatial = lastSpatialFlag;
+                            dataRow.Change = lastChangeFlag;
+                            dataRow.Rejected = rejectedCount;
+                            dataRow.Ignored = ignoredCount;
+                            dataRow.Proposed = proposedCount;
+                            dataRow.Pending = pendingCount;
+                            dataRow.Applied = appliedCount;
+                            dataRow.Total = allCount;
                             dataTable.Add(dataRow);
 
                             // Update the totals.
@@ -735,15 +761,15 @@ namespace HLU.UI.ViewModel
 
                     // Add the last results as a new row.
                     dataRow = new OSMMUpdates();
-                    dataRow.ProcessFlag = lastProcessFlag;
-                    dataRow.SpatialFlag = lastSpatialFlag;
-                    dataRow.ChangeFlag = lastChangeFlag;
-                    dataRow.Rejected = String.Format("{0:n0}", rejectedCount);
-                    dataRow.Ignored = String.Format("{0:n0}", ignoredCount);
-                    dataRow.Proposed = String.Format("{0:n0}", proposedCount);
-                    dataRow.Pending = String.Format("{0:n0}", pendingCount);
-                    dataRow.Applied = String.Format("{0:n0}", appliedCount);
-                    dataRow.Total = String.Format("{0:n0}", allCount);
+                    dataRow.Process = lastProcessFlag;
+                    dataRow.Spatial = lastSpatialFlag;
+                    dataRow.Change = lastChangeFlag;
+                    dataRow.Rejected = rejectedCount;
+                    dataRow.Ignored = ignoredCount;
+                    dataRow.Proposed = proposedCount;
+                    dataRow.Pending = pendingCount;
+                    dataRow.Applied = appliedCount;
+                    dataRow.Total = allCount;
                     dataTable.Add(dataRow);
 
                     // Update the totals.
@@ -755,17 +781,18 @@ namespace HLU.UI.ViewModel
                     allTotal = allTotal + allCount;
 
                     // Add the totals as a new row.
+                    _tableTotal = new List<OSMMUpdates>();
                     dataRow = new OSMMUpdates();
-                    dataRow.ProcessFlag = "";
-                    dataRow.SpatialFlag = "";
-                    dataRow.ChangeFlag = "Total";
-                    dataRow.Rejected = String.Format("{0:n0}", rejectedTotal);
-                    dataRow.Ignored = String.Format("{0:n0}", ignoredTotal);
-                    dataRow.Proposed = String.Format("{0:n0}", proposedTotal);
-                    dataRow.Pending = String.Format("{0:n0}", pendingTotal);
-                    dataRow.Applied = String.Format("{0:n0}", appliedTotal);
-                    dataRow.Total = String.Format("{0:n0}", allTotal);
-                    dataTable.Add(dataRow);
+                    dataRow.Process = "";
+                    dataRow.Spatial = "";
+                    dataRow.Change = "Total";
+                    dataRow.Rejected = rejectedTotal;
+                    dataRow.Ignored = ignoredTotal;
+                    dataRow.Proposed = proposedTotal;
+                    dataRow.Pending = pendingTotal;
+                    dataRow.Applied = appliedTotal;
+                    dataRow.Total = allTotal;
+                    _tableTotal.Add(dataRow);
 
                     // Reset the cursor back to normal.
                     ChangeCursor(Cursors.Arrow);
@@ -784,11 +811,22 @@ namespace HLU.UI.ViewModel
                 finally
                 {
                     // Close the data reader.
-                    if (!dataReader.IsClosed)
+                    if ((dataReader != null) && (!dataReader.IsClosed))
                         dataReader.Close();
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Count the total number of OSMM Updates in the database.
+        /// </summary>
+        public List<OSMMUpdates> OSMMUpdatesSummaryTotal
+        {
+            get
+            {
+                return _tableTotal;
+            }
         }
 
         #region Cursor

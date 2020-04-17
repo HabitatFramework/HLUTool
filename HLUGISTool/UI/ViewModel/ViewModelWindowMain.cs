@@ -102,6 +102,7 @@ namespace HLU.UI.ViewModel
         private ICommand _navigateNextCommand;
         private ICommand _navigateLastCommand;
         private ICommand _filterByAttributesCommand;
+        private ICommand _filterByAttributesAdvancedCommand;
         private ICommand _filterByIncidCommand;
         private ICommand _selectOnMapCommand;
         private ICommand _selectAllOnMapCommand;
@@ -3467,6 +3468,56 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 092 Enable advanced filter in OSMM mode
+        //
+        /// <summary>
+        /// FilterByAttributesAdvanced command.
+        /// </summary>
+        public ICommand FilterByAttributesAdvancedCommand
+        {
+            get
+            {
+                if (_filterByAttributesAdvancedCommand == null)
+                {
+                    Action<object> filterByAttributesAdvancedAction = new Action<object>(this.FilterByAttributesAdvancedClicked);
+                    _filterByAttributesAdvancedCommand = new RelayCommand(filterByAttributesAdvancedAction, param => this.CanFilterByAttributesAdvanced);
+                }
+                return _filterByAttributesAdvancedCommand;
+            }
+        }
+
+        /// <summary>
+        /// Opens the relevant query window based on the mode/options.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        private void FilterByAttributesAdvancedClicked(object param)
+        {
+            // Open the Advanced query window.
+            OpenWindowQueryOSMMAdvanced(false);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the filter by attributes advanced command can
+        /// be executed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance can filter by attributes; otherwise, <c>false</c>.
+        /// </value>
+        private bool CanFilterByAttributesAdvanced
+        {
+            //---------------------------------------------------------------------
+            // CHANGED: CR49 Process proposed OSMM Updates
+            // Enable filter when in OSMM bulk update mode
+            // 
+            get
+            {
+                return (_osmmUpdateMode == true && IncidCurrentRow != null);
+            }
+            //---------------------------------------------------------------------
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// Opens the standard query builder window.
         /// </summary>
@@ -4184,8 +4235,11 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Process the sql when the window is closed.
         /// </summary>
-        /// <param name="sqlFromTables">The tables to query.</param>
-        /// <param name="sqlWhereClause">The where clause to apply in the query.</param>
+        /// <param name="processFlag">The process flag value.</param>
+        /// <param name="spatialFlag">The spatial flag value.</param>
+        /// <param name="changeFlag">The change flag value.</param>
+        /// <param name="status">The OSMM status value.</param>
+        /// <param name="apply">Whether to apply (or cancel) the query.</param>
         protected void _viewModelWinQueryOSMM_RequestClose(string processFlag, string spatialFlag, string changeFlag, string status, bool apply)
         {
             // Close the window
@@ -4215,6 +4269,301 @@ namespace HLU.UI.ViewModel
                     ApplyOSMMUpdatesFilter(processFlag, spatialFlag, changeFlag, status);
             }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 092 Enable advanced filter in OSMM mode
+        //
+        public void OpenWindowQueryOSMMAdvanced(bool initialise)
+        {
+            if (initialise)
+            {
+                // Clear the selection (filter).
+                _incidSelection = null;
+
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+
+                // Indicate there are no more OSMM updates to review.
+                if (_osmmBulkUpdateMode == false)
+                    _osmmUpdatesEmpty = true;
+
+                // Clear all the form fields (except the habitat class
+                // and habitat type).
+                ClearForm();
+
+                // Clear the map selection.
+                _gisApp.ClearMapSelection();
+
+                // Reset the map counters
+                _incidsSelectedMapCount = 0;
+                _toidsSelectedMapCount = 0;
+                _fragsSelectedMapCount = 0;
+
+                // Refresh all the controls
+                RefreshAll();
+
+                DispatcherHelper.DoEvents();
+            }
+
+            try
+            {
+                _windowQueryAdvanced = new WindowQueryAdvanced();
+                if ((_windowQueryAdvanced.Owner = App.GetActiveWindow()) == null)
+                    throw (new Exception("No parent window loaded"));
+                _windowQueryAdvanced.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                // create ViewModel to which main window binds
+                _viewModelWinQueryAdvanced = new ViewModelWindowQueryAdvanced(HluDataset, _db);
+                _viewModelWinQueryAdvanced.DisplayName = "OSMM Updates Advanced Filter";
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinQueryAdvanced.RequestClose +=
+                    new ViewModelWindowQueryAdvanced.RequestCloseEventHandler(_viewModelWinQueryOSMMAdvanced_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowQueryAdvanced.DataContext = _viewModelWinQueryAdvanced;
+
+                // show window
+                _windowQueryAdvanced.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //throw;
+            }
+        }
+
+        /// <summary>
+        /// Process the sql when the advanced query window is closed.
+        /// </summary>
+        /// <param name="sqlFromTables">The tables to query.</param>
+        /// <param name="sqlWhereClause">The where clause to apply in the query.</param>
+        protected void _viewModelWinQueryOSMMAdvanced_RequestClose(string sqlFromTables, string sqlWhereClause)
+        {
+            _viewModelWinQueryAdvanced.RequestClose -= _viewModelWinQueryOSMMAdvanced_RequestClose;
+            _windowQueryAdvanced.Close();
+
+            if ((sqlFromTables != null) && (sqlWhereClause != null))
+            {
+
+                //if (_osmmBulkUpdateMode == true)
+                //{
+                //    // Set the default source details
+                //    IncidSourcesRows[0].source_id = Settings.Default.BulkOSMMSourceId;
+                //    IncidSourcesRows[0].source_habitat_class = "N/A";
+                //    //_viewModelMain.IncidSourcesRows[0].source_habitat_type = "N/A";
+                //    //Date.VagueDateInstance defaultSourceDate = DefaultSourceDate(null, Settings.Default.BulkOSMMSourceId);
+                //    Date.VagueDateInstance defaultSourceDate = new Date.VagueDateInstance();
+                //    IncidSourcesRows[0].source_date_start = defaultSourceDate.StartDate;
+                //    IncidSourcesRows[0].source_date_end = defaultSourceDate.EndDate;
+                //    IncidSourcesRows[0].source_date_type = defaultSourceDate.DateType;
+                //    IncidSourcesRows[0].source_boundary_importance = Settings.Default.SourceImportanceApply1;
+                //    IncidSourcesRows[0].source_habitat_importance = Settings.Default.SourceImportanceApply1;
+                //}
+
+                try
+                {
+                    ChangeCursor(Cursors.Wait, "Filtering ...");
+                    DispatcherHelper.DoEvents();
+
+                    // Get a list of all the possible query tables.
+                    List<DataTable> tables = new List<DataTable>();
+                    if ((ViewModelWindowQueryAdvanced.HluDatasetStatic != null))
+                    {
+                        tables = ViewModelWindowQueryAdvanced.HluDatasetStatic.incid.ChildRelations
+                            .Cast<DataRelation>().Select(r => r.ChildTable).ToList();
+                        tables.Add(ViewModelWindowQueryAdvanced.HluDatasetStatic.incid);
+                    }
+
+                    // Split the string of query table names created by the
+                    // user in the form into an array.
+                    string[] fromTables = sqlFromTables.Split(',').Select(s => s.Trim(' ')).Distinct().ToArray();
+
+                    // Include the incid_osmm_updates table to use in the query.
+                    if (fromTables.Contains(IncidOSMMUpdatesTable.TableName) == false)
+                        fromTables = fromTables.Concat(new string[] { IncidOSMMUpdatesTable.TableName }).ToArray();
+
+                    // Select only the database tables that are in the query array.
+                    List<DataTable> whereTables = tables.Where(t => fromTables.Contains(t.TableName)).ToList();
+
+                    // If a status is included in the SQL then also filter out pending
+                    // and applied updates, otherwise filter out everything
+                    // except proposed updates.
+                    if (sqlWhereClause.Contains("[incid_osmm_updates].status") == true)
+                        sqlWhereClause = String.Format("{0} AND [incid_osmm_updates].status <> 0 AND [incid_osmm_updates].status <> -1", sqlWhereClause);
+                    else
+                        sqlWhereClause = String.Format("{0} AND [incid_osmm_updates].status > 0", sqlWhereClause);
+
+                    // create a selection DataTable of PK values of IncidTable
+                    if (whereTables.Count() > 0)
+                    {
+                        ChangeCursor(Cursors.Wait, "Processing ...");
+
+                        // Replace any connection type specific qualifiers and delimiters.
+                        string newWhereClause = null;
+                        if (sqlWhereClause != null)
+                            newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
+
+                        // Create a selection DataTable of PK values of IncidTable.
+                        _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
+
+                        // Get a list of all the incids in the selection.
+                        _incidsSelectedMap = _incidSelection.AsEnumerable()
+                            .GroupBy(r => r.Field<string>(_incidSelection.Columns[0].ColumnName)).Select(g => g.Key).OrderBy(s => s);
+
+                        // Retrospectively set the where clause to match the list
+                        // of selected incids (for possible use later).
+                        _incidSelectionWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(
+                            IncidPageSize, IncidTable.incidColumn.Ordinal, IncidTable, _incidsSelectedMap);
+
+                        // Backup the current selection (filter).
+                        DataTable incidSelectionBackup = _incidSelection;
+
+                        // If there are any records in the selection (and the tool is
+                        // not currently in bulk update mode).
+                        if (IsFiltered)
+                        {
+                            // Find the expected number of features to be selected in GIS.
+                            _toidsSelectedDBCount = 0;
+                            _fragsSelectedDBCount = 0;
+                            ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+
+                            //---------------------------------------------------------------------
+                            // CHANGED: CR12 (Select by attribute performance)
+                            // Store the number of incids found in the database
+                            _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
+                            //---------------------------------------------------------------------
+
+                            // Select the required incid(s) in GIS.
+                            if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
+                            {
+                                //---------------------------------------------------------------------
+                                // CHANGED: CR21 (Select current incid in map)
+                                // Analyse the results, set the filter and reset the cursor AFTER
+                                // returning from performing the GIS selection so that other calls
+                                // to the PerformGisSelection method can control if/when these things
+                                // are done.
+                                //
+                                // Analyse the results of the GIS selection by counting the number of
+                                // incids, toids and fragments selected.
+                                AnalyzeGisSelectionSet(true);
+
+                                // Indicate the selection didn't come from the map.
+                                _filterByMap = false;
+
+                                if (_osmmBulkUpdateMode == false)
+                                {
+                                    // Indicate there are more OSMM updates to review.
+                                    _osmmUpdatesEmpty = false;
+
+                                    // Set the filter to the first incid.
+                                    SetFilter();
+                                }
+
+                                // Refresh all the controls
+                                RefreshAll();
+
+                                // Reset the cursor back to normal.
+                                ChangeCursor(Cursors.Arrow, null);
+
+                                // Warn the user that no records were found.
+                                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
+                                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "OSMM Updates",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                                //---------------------------------------------------------------------
+                            }
+                            else
+                            {
+                                if (_osmmBulkUpdateMode == false)
+                                {
+                                    // Clear the selection (filter).
+                                    _incidSelection = null;
+
+                                    // Indicate the selection didn't come from the map.
+                                    _filterByMap = false;
+
+                                    // Indicate there are no more OSMM updates to review.
+                                    if (_osmmBulkUpdateMode == false)
+                                        _osmmUpdatesEmpty = true;
+
+                                    // Clear all the form fields (except the habitat class
+                                    // and habitat type).
+                                    ClearForm();
+
+                                    // Clear the map selection.
+                                    _gisApp.ClearMapSelection();
+
+                                    // Reset the map counters
+                                    _incidsSelectedMapCount = 0;
+                                    _toidsSelectedMapCount = 0;
+                                    _fragsSelectedMapCount = 0;
+
+                                    // Refresh all the controls
+                                    RefreshAll();
+                                }
+                            
+                                // Reset the cursor back to normal.
+                                ChangeCursor(Cursors.Arrow, null);
+
+                                // Warn the user that no records were found.
+                                MessageBox.Show(App.Current.MainWindow, "No records found.", "OSMM Updates",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                        }
+                        else
+                        {
+                            if (_osmmBulkUpdateMode == false)
+                            {
+                                // Clear the selection (filter).
+                                _incidSelection = null;
+
+                                // Indicate the selection didn't come from the map.
+                                _filterByMap = false;
+
+                                // Indicate there are no more OSMM updates to review.
+                                _osmmUpdatesEmpty = true;
+
+                                // Clear all the form fields (except the habitat class
+                                // and habitat type).
+                                ClearForm();
+
+                                // Clear the map selection.
+                                _gisApp.ClearMapSelection();
+
+                                // Reset the map counters
+                                _incidsSelectedMapCount = 0;
+                                _toidsSelectedMapCount = 0;
+                                _fragsSelectedMapCount = 0;
+
+                                // Refresh all the controls
+                                RefreshAll();
+                            }
+                            else
+                            {
+                                // Restore the previous selection (filter).
+                                _incidSelection = incidSelectionBackup;
+                            }
+
+                            // Reset the cursor back to normal.
+                            ChangeCursor(Cursors.Arrow, null);
+
+                            // Warn the user that no records were found.
+                            MessageBox.Show(App.Current.MainWindow, "No records selected.", "OSMM Updates",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _incidSelection = null;
+                    ChangeCursor(Cursors.Arrow, null);
+                MessageBox.Show(App.Current.MainWindow, ex.Message, "OSMM Updates",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally { RefreshStatus(); }
+            }
+        }
+        //---------------------------------------------------------------------
 
         public void ApplyOSMMUpdatesFilter(string processFlag, string spatialFlag, string changeFlag, string status)
         {
@@ -8084,7 +8433,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    // Fix: 092 Load all IHS habitats when habitat type is blank
+                    // Fix: 090 Load all IHS habitats when habitat type is blank
                     // Load all IHS habitat codes that are flagged as local.
                     _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
                                        where h.is_local
