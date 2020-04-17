@@ -105,6 +105,11 @@
                           Command="{Binding FilterByAttributesCommand}"
                           Header="Filter by _Attributes..."
                           IsEnabled="{Binding CanFilterByAttributes}" />
+                <MenuItem x:Name="MenuItemAdvancedFilterByAttributes"
+                          Command="{Binding FilterByAttributesAdvancedCommand}"
+                          Header="Filter by _Attributes - Advanced..."
+                          IsEnabled="{Binding CanFilterByAttributesAdvanced}"
+						  Visibility="{Binding ShowInOSMMUpdateMode}" />
                 <MenuItem x:Name="MenuItemFilterByIncid"
                           Command="{Binding FilterByIncidCommand}"
                           Header="Filter by _Incid..."
@@ -1781,6 +1786,18 @@
                                                                          EditingElementStyle="{DynamicResource TextBoxStyle}"
                                                                          Header="Interp. Comments" />
                                             </tkit:DataGrid.Columns>
+											<!--
+                                            <tkit:DataGrid.RowDetailsTemplate>
+                                            <DataTemplate>
+												<StackPanel>
+													<TextBlock Text="{Binding bap_habitat}" />
+													<TextBlock Text="{Binding quality_determination}" />
+													<TextBlock Text="{Binding quality_interpretation}" />
+													<TextBlock Text="{Binding interpretation_comments}" />
+												</StackPanel>
+                                            </DataTemplate>
+                                            </tkit:DataGrid.RowDetailsTemplate>
+											-->
                                             <!--
                                                 <tkit:DataGrid.RowDetailsTemplate>
                                                 <DataTemplate>

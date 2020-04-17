@@ -186,9 +186,38 @@ namespace HLU.UI.ViewModel
                     {
                         if (i >= _lastValueCounter)
                         {
+                            //---------------------------------------------------------------------
+                            // FIX: 092 Enable advanced filter in OSMM mode
+                            //
                             // Add the key (string) and value (object) to the dictionary
                             // (if the key already exists the value will be updated).
-                            q[dataReader.GetValue(0).ToString()] = dataReader.GetValue(0);
+                            if ((Table.TableName.ToLower() == "incid_osmm_updates") &&
+                               (Column.ColumnName.ToLower() == "status"))
+                            {
+                                String status;
+                                switch (dataReader.GetValue(0).ToString())
+                                {
+                                case "-99":
+                                    status = "Rejected";
+                                    break;
+                                case "-2":
+                                    status = "Ignored";
+                                    break;
+                                case "-1":
+                                    status = "Applied";
+                                    break;
+                                case "0":
+                                    status = "Pending";
+                                    break;
+                                default:
+                                    status = "Proposed";
+                                    break;
+                                }
+                                q[dataReader.GetValue(0).ToString() + " : " + status] = dataReader.GetValue(0);
+                            }
+                            else
+                            //---------------------------------------------------------------------
+                                q[dataReader.GetValue(0).ToString()] = dataReader.GetValue(0);
                         }
                         i += 1;
                     }
@@ -844,16 +873,39 @@ namespace HLU.UI.ViewModel
                         //var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
                         //    lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
                         //    lut.AsEnumerable();
-                        
+
+                        //---------------------------------------------------------------------
+                        // FIX: 092 Enable advanced filter in OSMM mode
+                        //
                         // If the select table is the 'incid_bap' table then only
                         // bap_priority values from the related lookup table (lut_habitat_type).
-                        var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
-                            lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true)) :
-                            lut.AsEnumerable();
-                        //---------------------------------------------------------------------
+                        var q = lut.AsEnumerable();
 
-                        _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
-                            " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
+                        if (lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable)
+                        {
+                            q = lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true));
+                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
+                                " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
+                        }
+                        else if (lut is HluDataSet.lut_osmm_ihs_xrefDataTable && Table is HluDataSet.incid_osmm_updatesDataTable)
+                        {
+                            DataColumn summaryColumn = lut.Columns["ihs_summary"];
+                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + " : " + r[summaryColumn].ToString(), r => r[lutColumn]);
+
+                            //Dictionary<string, object> qvalues = new Dictionary<string, object>();
+
+                            //foreach (var qv in q.OrderBy(key => key[summaryColumn])) {
+                            //    qvalues.Add(qv[lutColumn].ToString() + " : " + qv[summaryColumn].ToString(), qv[lutColumn]);
+                            //}
+                            //_queryValues = qvalues;
+                        }
+                        else
+                        {
+                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
+                                " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
+                        }
+                        //---------------------------------------------------------------------
+                        //---------------------------------------------------------------------
 
                         // Reset the cursor back to normal.
                         ChangeCursor(Cursors.Arrow);

@@ -44,20 +44,30 @@
 								Grid.Row="0"
 								Header="OSMM Updates Summary">
 
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-4,0,-4,0">
+
+            			<Grid x:Name="GridOSMMUpdatesSummary" Margin="0">
+            				<Grid.RowDefinitions>
+            					<RowDefinition Height="Auto" />
+            					<RowDefinition Height="Auto" />
+            				</Grid.RowDefinitions>
+
 						<tkit:DataGrid x:Name="DataGridOSMMUpdatesSummary"
 										Grid.Row="0"
 										Grid.Column="0"
-										Margin="4,0,4,4"
-										AutoGenerateColumns="True"
+										Margin="0,0,0,0"
+										AutoGenerateColumns="False"
 										BorderBrush="Black"
 										BorderThickness="1"
 										CanUserAddRows="False"
 										CanUserDeleteRows="False"
 										CanUserReorderColumns="False"
 										CanUserResizeColumns="False"
-										CanUserSortColumns="False"
-										HeadersVisibility="All"
+										CanUserSortColumns="True"
+										HeadersVisibility="Column"
 										VerticalContentAlignment="Center"
+										HorizontalAlignment="Right"
 										ScrollViewer.CanContentScroll="True"
 										ScrollViewer.VerticalScrollBarVisibility="Auto"
 										IsEnabled="True"
@@ -67,13 +77,125 @@
 													UpdateSourceTrigger=PropertyChanged}"
 										SelectionMode="Single"
 									    SelectionChanged="OSMMUpdates_SelectionChanged"
-										Padding="2,0"
+										Padding="0,0"
 										RowDetailsVisibilityMode="Visible"
-										RowHeaderWidth="20"
+										RowHeaderWidth="0"
 										RowHeight="24">
 										<!--  SelectedItem="{Binding OSMMUpdatesSelected, Mode=TwoWay}"  -->
 										<!--  SelectionChanged="{Binding OSMMUpdates_SelectionChanged}"  -->
+                                         <tkit:DataGrid.Columns>
+                                            <tkit:DataGridTextColumn Binding="{Binding Process}"
+																	 Width="65"
+                                                                     Header="Process"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
+																	 Width="65"
+                                                                     Header="Spatial"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Change}"
+																	 Width="65"
+                                                                     Header="Change"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Rejected}"
+																	 Width="67"
+                                                                     Header="Rejected"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Ignored}"
+																	 Width="67"
+                                                                     Header="Ignored"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Proposed}"
+																	 Width="67"
+                                                                     Header="Proposed"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Pending}"
+																	 Width="67"
+                                                                     Header="Pending"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Applied}"
+																	 Width="67"
+                                                                     Header="Applied"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Total}"
+																	 TextBlock.FontWeight="Bold"
+																	 Width="70"
+                                                                     Header="Total"
+                                                                     IsReadOnly="True" />
+                                        </tkit:DataGrid.Columns>
                         </tkit:DataGrid>
+						<tkit:DataGrid x:Name="DataGridOSMMUpdatesTotal"
+										Grid.Row="1"
+										Grid.Column="0"
+										Margin="0,0,0,0"
+										FontWeight="Bold"
+										AutoGenerateColumns="False"
+										BorderBrush="Black"
+										BorderThickness="1"
+										CanUserAddRows="False"
+										CanUserDeleteRows="False"
+										CanUserReorderColumns="False"
+										CanUserResizeColumns="False"
+										CanUserSortColumns="False"
+										HeadersVisibility="Column"
+										ColumnHeaderHeight="0"
+										VerticalContentAlignment="Center"
+										HorizontalAlignment="Right"
+										ScrollViewer.CanContentScroll="True"
+										ScrollViewer.VerticalScrollBarVisibility="Auto"
+										IsEnabled="True"
+										IsReadOnly="True"
+										ItemsSource="{Binding OSMMUpdatesSummaryTotal,
+													Mode=OneWay,
+													UpdateSourceTrigger=PropertyChanged}"
+										SelectionMode="Single"
+										Padding="0,0"
+										RowDetailsVisibilityMode="Collapsed"
+										RowHeaderWidth="0"
+										RowHeight="26">
+                                         <tkit:DataGrid.Columns>
+                                            <tkit:DataGridTextColumn Binding="{Binding Process}"
+																	 Width="0"
+                                                                     Header="Process"
+																	 Visibility="Hidden"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
+																	 Width="0"
+                                                                     Header="Spatial"
+																	 Visibility="Hidden"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Change}"
+																	 Width="195"
+                                                                     Header="Process"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Rejected}"
+																	 Width="67"
+                                                                     Header="Rejected"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Ignored}"
+																	 Width="67"
+                                                                     Header="Ignored"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Proposed}"
+																	 Width="67"
+                                                                     Header="Proposed"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Pending}"
+																	 Width="67"
+                                                                     Header="Pending"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Applied}"
+																	 Width="67"
+                                                                     Header="Applied"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Total}"
+																	 Width="70"
+                                                                     Header="Total"
+                                                                     IsReadOnly="True" />
+                                        </tkit:DataGrid.Columns>
+                        </tkit:DataGrid>
+            			</Grid>
+                        </ScrollViewer>
+                    </AdornerDecorator>
 					</GroupBox>
 
 					<!--  GroupBoxOSMMUpdate  -->
