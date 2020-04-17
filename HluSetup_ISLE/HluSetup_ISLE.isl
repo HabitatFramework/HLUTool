@@ -2867,7 +2867,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>1562838442</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977083862</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>1428678890</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3977,11 +3977,11 @@
 		<row><td>ID_STRING15</td><td>1033</td><td>HLUTOO~1|HLU Tool - Reconfigure</td><td>0</td><td/><td>-1406718412</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td/><td>0</td><td/><td>765530390</td></row>
-		<row><td>ID_STRING18</td><td>1033</td><td>http://www.South-EastLERCs.com/issues</td><td>0</td><td/><td>1562838442</td></row>
-		<row><td>ID_STRING19</td><td>1033</td><td>http://www.South-EastLERCs.com</td><td>0</td><td/><td>1562838442</td></row>
+		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>-1977087990</td></row>
+		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>-1977087990</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
-		<row><td>ID_STRING4</td><td>1033</td><td>South-East LERCs</td><td>0</td><td/><td>1562838442</td></row>
+		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977030646</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>2082566933</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td/><td>0</td><td/><td>2082587541</td></row>
 		<row><td>ID_STRING7</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>2082571221</td></row>
@@ -4619,9 +4619,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{A1783BB0-A715-46FB-81F8-E50CCD86B3E2}</td><td/></row>
-		<row><td>ProductName</td><td>HLU Tool 3.0.2</td><td/></row>
-		<row><td>ProductVersion</td><td>3.0.2.0</td><td/></row>
+		<row><td>ProductCode</td><td>{7705A91D-0B21-4CE3-B497-DBB1B2EAB2BD}</td><td/></row>
+		<row><td>ProductName</td><td>HLU Tool 3.1.2</td><td/></row>
+		<row><td>ProductVersion</td><td>3.1.2.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4910,7 +4910,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.0.1.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.1.2.0</td><td>1033</td><td>768</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">
