@@ -143,11 +143,8 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                // Get the incid number
-                int currIncidNum = RecordIds.IncidNumber(_viewModelMain.IncidOSMMUpdatesRows[0].incid);
-                
                 // Apply the updates to the current incid and all following incids
-                BulkIncidOSMMUpdates(updateStatus, currIncidNum);
+                BulkIncidOSMMUpdates(updateStatus, _viewModelMain.IncidOSMMUpdatesRows[0].incid);
 
                 _viewModelMain.DataBase.CommitTransaction();
                 _viewModelMain.HluDataset.AcceptChanges();
@@ -171,7 +168,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private void BulkIncidOSMMUpdates(int updateStatus, int fromIncidNum)
+        private void BulkIncidOSMMUpdates(int updateStatus, string fromIncid)
         {
             // Get the incid column number
             int incidOrdinal =
@@ -193,33 +190,67 @@ namespace HLU.UI.ViewModel
             // Get the current userid
             string user_id = _viewModelMain.UserID;
 
-            // Loop through all rows in the selection
-            foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
+            //---------------------------------------------------------------------
+            // FIX: 096 Improve performance of reviewing OSMM updates
+            //
+            // Use the stored where clause if set
+            if (_viewModelMain.OSMMUpdateWhereClause != null)
             {
-                // Get the incid of the current row
-                string currIncid = r[incidOrdinal].ToString();
+                // Build an UPDATE statement for the osmm_incid_updates table
+                string updateCommand = String.Format("UPDATE {0} SET {1} = {2}, {3} = {4}, {5} = {6} WHERE {7} >= {8} AND {9}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(statusColumn),
+                    updateStatus,
+                    _viewModelMain.DataBase.QuoteIdentifier(last_modified_dateColumn),
+                    _viewModelMain.DataBase.QuoteValue(nowDtTm),
+                    _viewModelMain.DataBase.QuoteIdentifier(last_modified_user_idColumn),
+                    _viewModelMain.DataBase.QuoteValue(user_id),
+                    _viewModelMain.DataBase.QuoteIdentifier(incidColumn),
+                    _viewModelMain.DataBase.QuoteValue(fromIncid),
+                    _viewModelMain.OSMMUpdateWhereClause);
 
-                // Get the incid number
-                int currIncidNum = RecordIds.IncidNumber(currIncid);
+                // Update the incid for the current row
+                if (_viewModelMain.DataBase.ExecuteNonQuery(updateCommand,
+                    _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                    throw new Exception("Failed to update incid_osmm_updates table.");
+            }
+            else
+            {
+                // Get the from incid number
+                int fromIncidNum = RecordIds.IncidNumber(fromIncid);
 
-                // Check the incid is to be updated
-                if (currIncidNum >= fromIncidNum)
+                // Build an UPDATE statement for the osmm_incid_updates table
+                string updateCommand = String.Format("UPDATE {0} SET {1} = {2}, {3} = {4}, {5} = {6} WHERE {7} = {8}",
+                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
+                            _viewModelMain.DataBase.QuoteIdentifier(statusColumn),
+                            updateStatus,
+                            _viewModelMain.DataBase.QuoteIdentifier(last_modified_dateColumn),
+                            _viewModelMain.DataBase.QuoteValue(nowDtTm),
+                            _viewModelMain.DataBase.QuoteIdentifier(last_modified_user_idColumn),
+                            _viewModelMain.DataBase.QuoteValue(user_id),
+                            _viewModelMain.DataBase.QuoteIdentifier(incidColumn),
+                            _viewModelMain.DataBase.QuoteValue("{0}"));
+
+                // Loop through all rows in the selection
+                foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
                 {
-                    // Update the incid for the current row
-                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4}, {5} = {6} WHERE {7} = {8}",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(statusColumn),
-                        updateStatus,
-                        _viewModelMain.DataBase.QuoteIdentifier(last_modified_dateColumn),
-                        _viewModelMain.DataBase.QuoteValue(nowDtTm),
-                        _viewModelMain.DataBase.QuoteIdentifier(last_modified_user_idColumn),
-                        _viewModelMain.DataBase.QuoteValue(user_id),
-                        _viewModelMain.DataBase.QuoteIdentifier(incidColumn),
-                        _viewModelMain.DataBase.QuoteValue(currIncid)),
-                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
-                        throw new Exception("Failed to update incid_osmm_updates table.");
+                    // Get the incid of the current row
+                    string currIncid = r[incidOrdinal].ToString();
+
+                    // Get the incid number
+                    int currIncidNum = RecordIds.IncidNumber(currIncid);
+
+                    // Check the incid is to be updated
+                    if (currIncidNum >= fromIncidNum)
+                    {
+                        // Update the incid for the current row
+                        if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(updateCommand, currIncid),
+                            _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                            throw new Exception("Failed to update incid_osmm_updates table.");
+                    }
                 }
             }
+            //---------------------------------------------------------------------
         }
 
         public void CancelOSMMUpdate()
