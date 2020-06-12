@@ -280,7 +280,7 @@ namespace HLU.UI.ViewModel
             {
                 // Build a blank WHERE clause based on incid column
                 string incidWhereClause = String.Format(" WHERE {0} = {1}",
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName), 
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue("{0}"));
 
                 // Build the SELECT statement based on the incid where clause
@@ -309,18 +309,16 @@ namespace HLU.UI.ViewModel
                     new StringBuilder(String.Format("UPDATE {0} SET ",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName)))
                     .Append(_viewModelMain.HluDataset.incid.Columns.Cast<DataColumn>()
-                    .Where(c => c.Ordinal != _viewModelMain.HluDataset.incid.incidColumn.Ordinal && 
+                    .Where(c => c.Ordinal != _viewModelMain.HluDataset.incid.incidColumn.Ordinal &&
                         !_viewModelMain.IncidCurrentRow.IsNull(c.Ordinal))
                     .Aggregate(new StringBuilder(), (sb, c) => sb.Append(String.Format(", {0} = {1}",
-                        _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
+                        _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidCurrentRow[c.Ordinal]))))
                         .Remove(0, 2)).Append(incidWhereClause).ToString();
 
-                // Get the column ordinal for the incid column on the incid table
-                int incidOrdinal = 
-                    _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
-
+                // Build DELETE statements for all IHS multiplex rows
                 List<string> ihsMultiplexDelStatements = new List<string>();
+
                 // If all multiplex codes are to be deleted
                 if (_bulkDeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.All)
                 {
@@ -368,7 +366,7 @@ namespace HLU.UI.ViewModel
                         _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.matrixColumn.ColumnName),
                         _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.code_habitatColumn.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
-                    
+
                     ihsMultiplexDelStatements.Add(
                         String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
                         _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
@@ -420,6 +418,10 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.IncidSourcesRows = FilterUpdateRows<HluDataSet.incid_sourcesDataTable,
                     HluDataSet.incid_sourcesRow>(_viewModelMain.IncidSourcesRows);
 
+                // Get the column ordinal for the incid column on the incid table
+                int incidOrdinal =
+                    _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
+
                 //---------------------------------------------------------------------
                 // FIX: 078 Bulk update overhaul/improvements.
                 // 
@@ -448,7 +450,7 @@ namespace HLU.UI.ViewModel
 
                 // force re-loading data from db
                 _viewModelMain.IncidTable.Clear();
-                
+
                 MessageBox.Show("Bulk update succeeded.", "HLU: Bulk Update",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -539,7 +541,7 @@ namespace HLU.UI.ViewModel
                 // the incid table
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                //---------------------------------------------------------------------
+
                 _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
                 _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
@@ -548,15 +550,53 @@ namespace HLU.UI.ViewModel
                 // indicate that the column has/will change
                 _viewModelMain.IncidCurrentRow.ihs_habitat = "";
 
-                // Get the column ordinal for the incid column on the incid table
-                int incidOrdinal =
-                    _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
-
                 // Build a collection of the updated columns in the incid table
                 var incidUpdateVals = _viewModelMain.HluDataset.incid.Columns.Cast<DataColumn>()
                     .Where(c => c.Ordinal != _viewModelMain.HluDataset.incid.incidColumn.Ordinal &&
                         !_viewModelMain.IncidCurrentRow.IsNull(c.Ordinal));
-                
+
+                // Build DELETE statements for all IHS multiplex rows
+                List<string> ihsMultiplexDelStatements = new List<string>();
+
+                // Always assume all existing multiplex codes are to be deleted
+                ihsMultiplexDelStatements.Add(
+                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue("{0}")));
+
+                ihsMultiplexDelStatements.Add(
+                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.incidColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue("{0}")));
+
+                ihsMultiplexDelStatements.Add(
+                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_management.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.incidColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue("{0}")));
+
+                ihsMultiplexDelStatements.Add(
+                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_complex.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.incidColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue("{0}")));
+
+                // Build an UPDATE statement for the incid_osmm_updates table
+                string updateCommandIncidOSMMUpdates = new StringBuilder(String.Format("UPDATE {0} SET {1} = -1, {2} = {3}, {4} = {5}",
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.statusColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_dateColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(nowDtTm),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_user_idColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID)))
+                    .Append(incidWhereClause).ToString();
+
+                // Get the column ordinal for the incid column on the incid table
+                int incidOrdinal =
+                    _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
+
                 // Loop through each row in the incid selection
                 foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
                 {
@@ -597,16 +637,6 @@ namespace HLU.UI.ViewModel
                                 _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
                                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidCurrentRow[c.Ordinal]))))
                                 .Remove(0, 2)).Append(incidWhereClause).ToString();
-
-                        // Build an UPDATE statement for the incid_osmm_updates table
-                        string updateCommandIncidOSMMUpdates = new StringBuilder(String.Format("UPDATE {0} SET {1} = -1, {2} = {3}, {4} = {5}",
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.statusColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_dateColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue(nowDtTm),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_user_idColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID)))
-                            .Append(incidWhereClause).ToString();
 
                         // Create new rows in the matrix table from the lut_osmm_ihs_xref table
                         string newMultiplexCode;
@@ -713,34 +743,6 @@ namespace HLU.UI.ViewModel
 
                         _viewModelMain.IncidSourcesRows = FilterUpdateRows<HluDataSet.incid_sourcesDataTable,
                             HluDataSet.incid_sourcesRow>(_viewModelMain.IncidSourcesRows);
-
-
-                        // Always assume all existing multiplex codes are to be deleted
-                        List<string> ihsMultiplexDelStatements = new List<string>();
-                        // Build DELETE statements for all IHS multiplex rows
-                        ihsMultiplexDelStatements.Add(
-                            String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                        ihsMultiplexDelStatements.Add(
-                            String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.incidColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                        ihsMultiplexDelStatements.Add(
-                            String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_management.TableName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.incidColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                        ihsMultiplexDelStatements.Add(
-                            String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                            _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_complex.TableName),
-                            _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.incidColumn.ColumnName),
-                            _viewModelMain.DataBase.QuoteValue("{0}")));
 
                         // Perform the bulk updates on the data tables
                         if (Settings.Default.BulkUpdateUsesAdo)
@@ -977,7 +979,10 @@ namespace HLU.UI.ViewModel
             //_viewModelMain.IncidIhsComplexRows = incidIhsComplexRows;
 
             // Store a copy of the table for the current incid
-            HluDataSet.incid_bapDataTable bapTable = (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Copy();
+            //HluDataSet.incid_bapDataTable bapTable =
+            //    (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Copy();
+            HluDataSet.incid_bapDataTable bapTable =
+                (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Clone();
             // Load the child rows for the bap table for the supplied incid
             _viewModelMain.GetIncidChildRowsDb(relValues,
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
@@ -992,8 +997,10 @@ namespace HLU.UI.ViewModel
             // Store the rows from the user interface
             HluDataSet.incid_sourcesRow[] incidSourcesRows = _viewModelMain.IncidSourcesRows;
             // Store a copy of the table for the current incid
+            //HluDataSet.incid_sourcesDataTable sourcesTable =
+            //    (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Copy();
             HluDataSet.incid_sourcesDataTable sourcesTable =
-                (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Copy();
+                (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Clone();
             //---------------------------------------------------------------------
             // FIX: 078 Bulk update overhaul/improvements.
             // 
@@ -1001,8 +1008,12 @@ namespace HLU.UI.ViewModel
             int newRows = (from nr in incidSourcesRows
                            where nr.source_id != Int32.MinValue
                            select nr).Count();
+            //---------------------------------------------------------------------
+            // FIX: 093 Delete existing sources for bulk OSMM update
+            //
             // If there are new source rows then delete the old sources
-            int deleteSources = newRows > 0 ? 1 : 3;
+            int deleteSources = newRows > 0 ? 0 : 2;
+            //---------------------------------------------------------------------
             // Update the rows in the database
             BulkUpdateAdoMultiplexSourceTable(deleteSources, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
@@ -1424,6 +1435,50 @@ namespace HLU.UI.ViewModel
                     updateRows.Add(BapEnvironment.MakeSecondary(r));
                 });
             }
+
+            //---------------------------------------------------------------------
+            // FIX: 094 Insert new primary BAP habitats for bulk OSMM update
+            //
+            // Determine if there are any primary BAP habitats that aren't
+            // in the user interface (they must have come from an OSMM
+            // bulk update)
+            var newBap = from p in primaryBap
+                            where beUI.Count(row => row.bap_habitat == p) == 0
+                            select new BapEnvironment(false, false, -1, currIncid, p, _bulkDeterminationQuality, _bulkInterpretationQuality, "Based on OSMM Update");
+
+            // Insert any new primary BAP environments that aren't
+            // in the user interface
+            foreach (BapEnvironment be in newBap)
+            {
+                // Get any rows for the current BAP habitat already in the database
+                IEnumerable<HluDataSet.incid_bapRow> dbRows =
+                    incidBapTable.Where(r => r.bap_habitat == be.bap_habitat);
+
+                switch (dbRows.Count())
+                {
+                    // If the current BAP habitat is not already in the database
+                    case 0: // Insert the newly added BAP habitat
+                        HluDataSet.incid_bapRow newRow = _viewModelMain.IncidBapTable.Newincid_bapRow();
+                        newRow.ItemArray = be.ToItemArray(_viewModelMain.RecIDs.NextIncidBapId, currIncid);
+                        if (be.IsValid(false, false, newRow)) // reset bulk update mode for full validation of a new row
+                            _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Insert(newRow);
+                        break;
+                    // If the current BAP habitat is already in the database
+                    case 1: // Update the existing row
+                        updateRow = dbRows.ElementAt(0);
+                        object[] itemArray = be.ToItemArray();
+                        for (int i = 0; i < itemArray.Length; i++)
+                        {
+                            if ((itemArray[i] != null) && (Array.IndexOf(skipOrdinals, i) == -1))
+                                updateRow[i] = itemArray[i];
+                        }
+                        updateRows.Add(updateRow);
+                        break;
+                    default: // impossible if rules properly enforced
+                        break;
+                }
+            }
+            //---------------------------------------------------------------------
 
             // Update the BAP habitat if there are any rows to update
             if (updateRows.Count > 0)

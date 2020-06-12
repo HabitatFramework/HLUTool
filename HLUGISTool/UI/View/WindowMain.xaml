@@ -906,6 +906,8 @@
             			<Grid.ColumnDefinitions>
             				<ColumnDefinition Width="Auto" MinWidth="75"/>
             				<ColumnDefinition MinWidth="100"/>
+            				<ColumnDefinition Width="Auto" MinWidth="40" />
+            				<ColumnDefinition Width="55"/>
             			</Grid.ColumnDefinitions>
             			<Label x:Name="LabelOSMMIhsSummary"
 							Grid.Column="0"
@@ -922,6 +924,23 @@
             				IsReadOnly="True"
             				TextAlignment="Left"
 							Text="{Binding IncidOSMMIhsSummary,
+								  Mode=OneWay,
+								  ValidatesOnDataErrors=False}" />
+            			<Label x:Name="LabelOSMMXRefID"
+							Grid.Column="2"
+            				Margin="0,0,0,2"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="XRef ID">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMXRefID"
+							Grid.Column="3"
+            				Margin="8,0,8,2"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Left"
+							Text="{Binding IncidOSMMXRefID,
 								  Mode=OneWay,
 								  ValidatesOnDataErrors=False}" />
             		</Grid>

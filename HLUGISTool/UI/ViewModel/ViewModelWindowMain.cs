@@ -292,10 +292,11 @@ namespace HLU.UI.ViewModel
         private int _incidOSMMUpdatesProcessFlag;
         private string _incidOSMMUpdatesSpatialFlag;
         private string _incidOSMMUpdatesChangeFlag;
-        private int _incidOSMMUpdatesStatus;
+        private Nullable<int> _incidOSMMUpdatesStatus;
         private Dictionary<Type, List<SqlFilterCondition>> _childRowFilterDict;
         private Dictionary<Type, string> _childRowOrderByDict;
         private List<List<SqlFilterCondition>> _incidSelectionWhereClause;
+        private string _osmmUpdateWhereClause;
         private List<string> _exportMdbs = new List<string>();
         private string _userName;
         private string _dbVersion;
@@ -910,6 +911,16 @@ namespace HLU.UI.ViewModel
             get { return _incidSelectionWhereClause; }
             set { _incidSelectionWhereClause = value; }
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 096 Improve performance of reviewing OSMM updates
+        //
+        internal string OSMMUpdateWhereClause
+        {
+            get { return _osmmUpdateWhereClause; }
+            set { _osmmUpdateWhereClause = value; }
+        }
+        //---------------------------------------------------------------------
 
         internal List<string> ExportMdbs
         {
@@ -2674,6 +2685,10 @@ namespace HLU.UI.ViewModel
             {
                 // Mark all the remaining OSMM Update rows as accepted
                 _viewModelOSMMUpdate.OSMMUpdateAll(0);
+
+                // Reset the button tags
+                OSMMAcceptTag = "";
+                OSMMRejectTag = "";
             }
             else
             {
@@ -2722,6 +2737,10 @@ namespace HLU.UI.ViewModel
             {
                 // Mark all the remaining OSMM Update rows as accepted
                 _viewModelOSMMUpdate.OSMMUpdateAll(-99);
+
+                // Reset the button tags
+                OSMMAcceptTag = "";
+                OSMMRejectTag = "";
             }
             else
             {
@@ -4404,6 +4423,13 @@ namespace HLU.UI.ViewModel
                         if (sqlWhereClause != null)
                             newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
+                        //---------------------------------------------------------------------
+                        // FIX: 096 Improve performance of reviewing OSMM updates
+                        //
+                        // Store the where clause for updating the OSMM updates later.
+                        _osmmUpdateWhereClause = null;
+                        //---------------------------------------------------------------------
+
                         // Create a selection DataTable of PK values of IncidTable.
                         _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
 
@@ -4628,6 +4654,13 @@ namespace HLU.UI.ViewModel
                 // Replace any connection type specific qualifiers and delimiters.
                 string newWhereClause = null;
                 newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
+
+                //---------------------------------------------------------------------
+                // FIX: 096 Improve performance of reviewing OSMM updates
+                //
+                // Store the where clause for updating the OSMM updates later.
+                _osmmUpdateWhereClause = newWhereClause;
+                //---------------------------------------------------------------------
 
                 // Create a selection DataTable of PK values of IncidTable.
                 _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
@@ -6639,7 +6672,12 @@ namespace HLU.UI.ViewModel
                     _incidOSMMUpdatesProcessFlag = 0;
                     _incidOSMMUpdatesSpatialFlag = null;
                     _incidOSMMUpdatesChangeFlag = null;
-                    _incidOSMMUpdatesStatus = 0;
+                    //---------------------------------------------------------------------
+                    // FIX: 095 Show OSMM XRef ID in user interface
+                    //
+                    //_incidOSMMUpdatesStatus = 0;
+                    _incidOSMMUpdatesStatus = null;
+                    //---------------------------------------------------------------------
                 }
                 //---------------------------------------------------------------------
 
@@ -7529,6 +7567,7 @@ namespace HLU.UI.ViewModel
         {
             OnPropertyChanged("ShowIncidOSMMPendingGroup");
             OnPropertyChanged("IncidOSMMIhsSummary");
+            OnPropertyChanged("IncidOSMMXRefID");
             OnPropertyChanged("IncidOSMMProcessFlag");
             OnPropertyChanged("IncidOSMMSpatialFlag");
             OnPropertyChanged("IncidOSMMChangeFlag");
@@ -7993,12 +8032,111 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
+        /// Gets the OSMM process flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Process Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMProcessFlag
+        {
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: 095 Show OSMM XRef ID in user interface
+                //
+                return _incidOSMMUpdatesProcessFlag.ToString();
+                //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.process_flagColumn))
+                //    return _incidOSMMUpdatesRows[0].process_flag.ToString();
+                //else
+                //    return null;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM spatial flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Spatial Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMSpatialFlag
+        {
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: 095 Show OSMM XRef ID in user interface
+                //
+                return _incidOSMMUpdatesSpatialFlag;
+                //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.spatial_flagColumn))
+                //    return _incidOSMMUpdatesRows[0].spatial_flag.ToString();
+                //else
+                //    return null;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM change flag that relates to the selected incid.
+        /// It is used to show how the latest OSMM translation was
+        /// processed.
+        /// </summary>
+        /// <value>
+        /// The string of Change Flag related to the current incid.
+        /// </value>
+        public string IncidOSMMChangeFlag
+        {
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: 095 Show OSMM XRef ID in user interface
+                //
+                return _incidOSMMUpdatesChangeFlag;
+                //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.change_flagColumn))
+                //    return _incidOSMMUpdatesRows[0].change_flag.ToString();
+                //else
+                //    return null;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM updates status that relates to the selected incid.
+        /// It contains the update status of the latest OSMM translation.
+        /// </summary>
+        /// <value>
+        /// The integer value of OSMM Updates Status related to the current incid.
+        /// </value>
+        public Nullable<int> IncidOSMMStatus
+        {
+            get
+            {
+                //---------------------------------------------------------------------
+                // FIX: 095 Show OSMM XRef ID in user interface
+                //
+                return _incidOSMMUpdatesStatus;
+                //if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
+                //    return _incidOSMMUpdatesRows[0].status;
+                //else
+                //    return null;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        /// <summary>
         /// Gets the OSMM Update proposed IHS Summary that relates to the
         /// selected incid. It is used to show how the latest OSMM translates
         /// directly to IHS.
         /// </summary>
         /// <value>
-        /// The string of IHS Summary related to the current incid.
+        /// The string of OSMM IHS Summary related to the current incid.
         /// </value>
         public string IncidOSMMIhsSummary
         {
@@ -8021,84 +8159,28 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //---------------------------------------------------------------------
+        // FIX: 095 Show OSMM XRef ID in user interface
+        //
         /// <summary>
-        /// Gets the OSMM process flag that relates to the selected incid.
-        /// It is used to show how the latest OSMM translation was
-        /// processed.
+        /// Gets the OSMM XRef ID that relates to the selected Incid.
+        /// It shows the cross-reference ID of the latest OSMM and
+        /// how it translates directly to IHS.
         /// </summary>
         /// <value>
-        /// The string of Process Flag related to the current incid.
+        /// The string of OSMM XRef ID related to the current incid.
         /// </value>
-        public string IncidOSMMProcessFlag
+        public string IncidOSMMXRefID
         {
             get
             {
-                if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.process_flagColumn))
-                    return _incidOSMMUpdatesRows[0].process_flag.ToString();
+                if (_incidOSMMUpdatesOSMMXref != 0)
+                    return _incidOSMMUpdatesOSMMXref.ToString();
                 else
                     return null;
             }
         }
-
-        /// <summary>
-        /// Gets the OSMM spatial flag that relates to the selected incid.
-        /// It is used to show how the latest OSMM translation was
-        /// processed.
-        /// </summary>
-        /// <value>
-        /// The string of Spatial Flag related to the current incid.
-        /// </value>
-        public string IncidOSMMSpatialFlag
-        {
-            get
-            {
-                if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.spatial_flagColumn))
-                    return _incidOSMMUpdatesRows[0].spatial_flag.ToString();
-                else
-                    return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the OSMM change flag that relates to the selected incid.
-        /// It is used to show how the latest OSMM translation was
-        /// processed.
-        /// </summary>
-        /// <value>
-        /// The string of Change Flag related to the current incid.
-        /// </value>
-        public string IncidOSMMChangeFlag
-        {
-            get
-            {
-                if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.change_flagColumn))
-                    return _incidOSMMUpdatesRows[0].change_flag.ToString();
-                else
-                    return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the OSMM updates status that relates to the selected incid.
-        /// It contains the update status of the latest OSMM translation.
-        /// </summary>
-        /// <value>
-        /// The integer value of OSMM Updates Status related to the current incid.
-        /// </value>
-        public Nullable<int> IncidOSMMStatus
-        {
-            get
-            {
-                if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
-                    return _incidOSMMUpdatesRows[0].status;
-                else
-                    return null;
-            }
-        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// Gets the OSMM update flag that relates to the selected incid.
@@ -8113,15 +8195,20 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
-                    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
+                //---------------------------------------------------------------------
+                // FIX: 095 Show OSMM XRef ID in user interface
+                //
+                if (_incidOSMMUpdatesStatus != null)
+                //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
+                //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
+                //---------------------------------------------------------------------
                 {
                     // Values greater than zero indicate proposed changes
-                    if (_incidOSMMUpdatesRows[0].status > 0)
+                    if (_incidOSMMUpdatesStatus > 0)
                         return "Proposed";
                     else
                     {
-                        switch (_incidOSMMUpdatesRows[0].status)
+                        switch (_incidOSMMUpdatesStatus)
                         {
                             case 0:
                                 return "Pending";
@@ -15175,7 +15262,12 @@ namespace HLU.UI.ViewModel
                             error = "Warning: Not all database fragments are selected in map";
                         break;
                     case "IncidOSMMUpdateStatus":
-                        if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
+                        //---------------------------------------------------------------------
+                        // FIX: 095 Show OSMM XRef ID in user interface
+                        //
+                        //if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
+                        if (_incidOSMMUpdatesStatus != null & _incidOSMMUpdatesStatus >= 0)
+                        //---------------------------------------------------------------------
                             error = "Warning: OSMM Update is outstanding";
                         break;
                     //---------------------------------------------------------------------
