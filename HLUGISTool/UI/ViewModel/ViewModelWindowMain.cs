@@ -8046,12 +8046,13 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 095 Show OSMM XRef ID in user interface
                 //
-                return _incidOSMMUpdatesProcessFlag.ToString();
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.process_flagColumn))
                 //    return _incidOSMMUpdatesRows[0].process_flag.ToString();
-                //else
-                //    return null;
+                if (_incidOSMMUpdatesProcessFlag != 0)
+                    return _incidOSMMUpdatesProcessFlag.ToString();
+                else
+                    return null;
                 //---------------------------------------------------------------------
             }
         }
@@ -8071,12 +8072,12 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 095 Show OSMM XRef ID in user interface
                 //
-                return _incidOSMMUpdatesSpatialFlag;
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.spatial_flagColumn))
                 //    return _incidOSMMUpdatesRows[0].spatial_flag.ToString();
                 //else
                 //    return null;
+                return _incidOSMMUpdatesSpatialFlag;
                 //---------------------------------------------------------------------
             }
         }
@@ -8096,12 +8097,12 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 095 Show OSMM XRef ID in user interface
                 //
-                return _incidOSMMUpdatesChangeFlag;
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.change_flagColumn))
                 //    return _incidOSMMUpdatesRows[0].change_flag.ToString();
                 //else
                 //    return null;
+                return _incidOSMMUpdatesChangeFlag;
                 //---------------------------------------------------------------------
             }
         }
@@ -8120,12 +8121,12 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 095 Show OSMM XRef ID in user interface
                 //
-                return _incidOSMMUpdatesStatus;
                 //if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
                 //    return _incidOSMMUpdatesRows[0].status;
                 //else
                 //    return null;
+                return _incidOSMMUpdatesStatus;
                 //---------------------------------------------------------------------
             }
         }
