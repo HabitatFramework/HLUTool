@@ -88,13 +88,13 @@
 																	 Width="65"
                                                                      Header="Process"
                                                                      IsReadOnly="True" />
-                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
-																	 Width="65"
-                                                                     Header="Spatial"
-                                                                     IsReadOnly="True" />
                                             <tkit:DataGridTextColumn Binding="{Binding Change}"
 																	 Width="65"
                                                                      Header="Change"
+                                                                     IsReadOnly="True" />
+                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
+																	 Width="65"
+                                                                     Header="Spatial"
                                                                      IsReadOnly="True" />
                                             <tkit:DataGridTextColumn Binding="{Binding Rejected}"
 																	 Width="67"
@@ -158,14 +158,14 @@
                                                                      Header="Process"
 																	 Visibility="Hidden"
                                                                      IsReadOnly="True" />
-                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
+                                            <tkit:DataGridTextColumn Binding="{Binding Change}"
 																	 Width="0"
-                                                                     Header="Spatial"
+                                                                     Header="Process"
 																	 Visibility="Hidden"
                                                                      IsReadOnly="True" />
-                                            <tkit:DataGridTextColumn Binding="{Binding Change}"
+                                            <tkit:DataGridTextColumn Binding="{Binding Spatial}"
 																	 Width="195"
-                                                                     Header="Process"
+                                                                     Header="Spatial"
                                                                      IsReadOnly="True" />
                                             <tkit:DataGridTextColumn Binding="{Binding Rejected}"
 																	 Width="67"
@@ -245,38 +245,15 @@
 									  SelectedValuePath="code"
 									  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
 									  ToolTipService.ShowOnDisabled="True" />
-            					<Label x:Name="LabelOSMMUpdatesSpatial"
-									Grid.Column="2"
-            						Margin="0,0,0,8"
-            						HorizontalAlignment="Right"
-            						VerticalAlignment="Center"
-            						Content="Spatial">
-            					</Label>
-								<ComboBox x:Name="ComboBoxOSMMUpdatesSpatial"
-									  Grid.Column="3"
-									  Margin="8,2,4,8"
-									  VerticalAlignment="Center"
-									  DisplayMemberPath="code"
-									  IsEditable="False"
-									  IsEnabled="True"
-									  IsReadOnly="False"
-									  ItemsSource="{Binding IncidOSMMUpdatesSpatialFlags,
-															Mode=TwoWay,
-															UpdateSourceTrigger=PropertyChanged}"
-									  SelectedValue="{Binding IncidOSMMUpdatesSpatialFlag,
-															  ValidatesOnDataErrors=True}"
-									  SelectedValuePath="code"
-									  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-									  ToolTipService.ShowOnDisabled="True" />
             					<Label x:Name="LabelOSMMUpdatesChange"
-									Grid.Column="4"
+									Grid.Column="2"
             						Margin="0,0,0,8"
             						HorizontalAlignment="Right"
             						VerticalAlignment="Center"
             						Content="Change">
             					</Label>
 								<ComboBox x:Name="ComboBoxOSMMUpdatesChange"
-									  Grid.Column="5"
+									  Grid.Column="3"
 									  Margin="8,2,4,8"
 									  VerticalAlignment="Center"
 									  DisplayMemberPath="code"
@@ -287,6 +264,29 @@
 															Mode=TwoWay,
 															UpdateSourceTrigger=PropertyChanged}"
 									  SelectedValue="{Binding IncidOSMMUpdatesChangeFlag,
+															  ValidatesOnDataErrors=True}"
+									  SelectedValuePath="code"
+									  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+									  ToolTipService.ShowOnDisabled="True" />
+            					<Label x:Name="LabelOSMMUpdatesSpatial"
+									Grid.Column="4"
+            						Margin="0,0,0,8"
+            						HorizontalAlignment="Right"
+            						VerticalAlignment="Center"
+            						Content="Spatial">
+            					</Label>
+								<ComboBox x:Name="ComboBoxOSMMUpdatesSpatial"
+									  Grid.Column="5"
+									  Margin="8,2,4,8"
+									  VerticalAlignment="Center"
+									  DisplayMemberPath="code"
+									  IsEditable="False"
+									  IsEnabled="True"
+									  IsReadOnly="False"
+									  ItemsSource="{Binding IncidOSMMUpdatesSpatialFlags,
+															Mode=TwoWay,
+															UpdateSourceTrigger=PropertyChanged}"
+									  SelectedValue="{Binding IncidOSMMUpdatesSpatialFlag,
 															  ValidatesOnDataErrors=True}"
 									  SelectedValuePath="code"
 									  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"

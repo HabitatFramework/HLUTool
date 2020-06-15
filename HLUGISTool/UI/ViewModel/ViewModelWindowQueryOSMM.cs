@@ -784,8 +784,8 @@ namespace HLU.UI.ViewModel
                     _tableTotal = new List<OSMMUpdates>();
                     dataRow = new OSMMUpdates();
                     dataRow.Process = "";
-                    dataRow.Spatial = "";
-                    dataRow.Change = "Total";
+                    dataRow.Change = "";
+                    dataRow.Spatial = "Total";
                     dataRow.Rejected = rejectedTotal;
                     dataRow.Ignored = ignoredTotal;
                     dataRow.Proposed = proposedTotal;
