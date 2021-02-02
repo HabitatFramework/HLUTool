@@ -69,6 +69,17 @@ namespace HLU.UI.ViewModel
         Never
     };
 
+    /// <summary>
+    /// An enumeration of the different options for whether
+    /// to auto zoom to the GIS selection.
+    /// </summary>
+    public enum AutoZoomSelection
+    {
+        Off,
+        When,
+        Always
+    };
+
     public class ViewModelWindowMain : ViewModelBase, IDataErrorInfo
     {
         #region Enums
@@ -129,7 +140,9 @@ namespace HLU.UI.ViewModel
         private ICommand _copyCommand;
         private ICommand _pasteCommand;
         private ICommand _appKeepOnTopCommand;
-        private ICommand _autoZoomSelectedCommand;
+        private ICommand _autoZoomSelectedOffCommand;
+        private ICommand _autoZoomSelectedWhenCommand;
+        private ICommand _autoZoomSelectedAlwaysCommand;
         private ICommand _autoSelectOnGisCommand;
         private ICommand _zoomSelectionCommand;
         private ICommand _gisWinSideBySideCommand;
@@ -360,7 +373,7 @@ namespace HLU.UI.ViewModel
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
         private bool _appKeepOnTop = Settings.Default.AppKeepOnTop;
-        private bool _autoZoomSelection = Settings.Default.AutoZoomSelection;
+        private int _autoZoomSelection = Settings.Default.AutoZoomSelection;
         private bool _autoSelectOnGis = Settings.Default.AutoSelectOnGis;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
@@ -1737,19 +1750,19 @@ namespace HLU.UI.ViewModel
                 return (_bulkUpdateMode == false && _osmmUpdateMode == false) &&
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_incidsSelectedMapCount == 1) &&
-                    ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 1)) ||
+                    ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 0)) ||
                     (_gisSelection.Rows.Count == 1)) &&
                     //---------------------------------------------------------------------
                     // FIX: 089 Only enable split/merge after select from map
                     //
-                    (_filterByMap == true) &&
+                    (_filterByMap == true); //&&
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // CHANGED: CR7 (Split/merge options)
                     // Only enable logical split menu/button if a subset of all the
                     // features for the current incid have been selected.
-                    ((_toidsIncidGisCount != _toidsIncidDbCount) ||
-                    (_fragsIncidGisCount != _fragsIncidDbCount));
+                    //((_toidsIncidGisCount != _toidsIncidDbCount) ||
+                    //(_fragsIncidGisCount != _fragsIncidDbCount));
                 //---------------------------------------------------------------------
             }
         }
@@ -1951,6 +1964,10 @@ namespace HLU.UI.ViewModel
         {
             _viewModelWinWarnSplitMerge.RequestClose -= _viewModelWinWarnSplitMerge_RequestClose;
             _windowWarnSplitMerge.Close();
+
+            // Update the user notify setting
+            _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+
         }
         //---------------------------------------------------------------------
 
@@ -3045,30 +3062,75 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 068 Enable auto zoom when selecting features on map.
+        // FIX: 097 Enable auto zoom when selecting features on map.
         //
-        public ICommand AutoZoomSelectedCommand
+        public ICommand AutoZoomSelectedOffCommand
         {
             get
             {
-                if (_autoZoomSelectedCommand == null)
+                if (_autoZoomSelectedOffCommand == null)
                 {
-                    Action<object> autoZoomSelectionAction = new Action<object>(this.AutoZoomSelectedClicked);
-                    _autoZoomSelectedCommand = new RelayCommand(autoZoomSelectionAction, param => this.CanAutoZoomSelected);
+                    Action<object> autoZoomSelectionOffAction = new Action<object>(this.AutoZoomSelectedOffClicked);
+                    _autoZoomSelectedOffCommand = new RelayCommand(autoZoomSelectionOffAction, param => this.CanAutoZoomSelected);
                 }
-                return _autoZoomSelectedCommand;
+                return _autoZoomSelectedOffCommand;
             }
         }
 
-        private void AutoZoomSelectedClicked(object param)
+        private void AutoZoomSelectedOffClicked(object param)
         {
             // Update the auto zoom on selected option.
-            _autoZoomSelection = !_autoZoomSelection;
+            _autoZoomSelection = (int)AutoZoomSelection.Off;
 
             // Save the new auto zoom option in the user settings.
             Settings.Default.AutoZoomSelection = _autoZoomSelection;
             Settings.Default.Save();
+        }
 
+        public ICommand AutoZoomSelectedWhenCommand
+        {
+            get
+            {
+                if (_autoZoomSelectedWhenCommand == null)
+                {
+                    Action<object> autoZoomSelectionWhenAction = new Action<object>(this.AutoZoomSelectedWhenClicked);
+                    _autoZoomSelectedWhenCommand = new RelayCommand(autoZoomSelectionWhenAction, param => this.CanAutoZoomSelected);
+                }
+                return _autoZoomSelectedWhenCommand;
+            }
+        }
+
+        private void AutoZoomSelectedWhenClicked(object param)
+        {
+            // Update the auto zoom on selected option.
+            _autoZoomSelection = (int)AutoZoomSelection.When;
+
+            // Save the new auto zoom option in the user settings.
+            Settings.Default.AutoZoomSelection = _autoZoomSelection;
+            Settings.Default.Save();
+        }
+
+        public ICommand AutoZoomSelectedAlwaysCommand
+        {
+            get
+            {
+                if (_autoZoomSelectedAlwaysCommand == null)
+                {
+                    Action<object> autoZoomSelectionAlwaysAction = new Action<object>(this.AutoZoomSelectedAlwaysClicked);
+                    _autoZoomSelectedAlwaysCommand = new RelayCommand(autoZoomSelectionAlwaysAction, param => this.CanAutoZoomSelected);
+                }
+                return _autoZoomSelectedAlwaysCommand;
+            }
+        }
+
+        private void AutoZoomSelectedAlwaysClicked(object param)
+        {
+            // Update the auto zoom on selected option.
+            _autoZoomSelection = (int)AutoZoomSelection.Always;
+
+            // Save the new auto zoom option in the user settings.
+            Settings.Default.AutoZoomSelection = _autoZoomSelection;
+            Settings.Default.Save();
         }
 
         public bool CanAutoZoomSelected { get { return HaveGisApp; } }
@@ -3123,7 +3185,7 @@ namespace HLU.UI.ViewModel
             int minZoom = Settings.Default.MinimumAutoZoom;
             string distUnits = Settings.Default.MapDistanceUnits;
 
-            _gisApp.ZoomSelected(minZoom, distUnits);
+            _gisApp.ZoomSelected(minZoom, distUnits, true);
         }
 
         public bool CanZoomSelection { get { return HaveGisApp && _gisSelection != null; } }
@@ -5059,16 +5121,16 @@ namespace HLU.UI.ViewModel
                 _filterByMap = false;
 
                 //---------------------------------------------------------------------
-                // FIX: 068 Enable auto zoom when selecting features on map.
+                // FIX: 097 Enable auto zoom when selecting features on map.
                 //
                 // Zoom to the GIS selection if auto zoom is on.
-                if (_gisSelection != null && _autoZoomSelection)
+                if (_gisSelection != null && _autoZoomSelection != 0)
                 {
                     // Get the minimum auto zoom value and map distance units.
                     int minZoom = Settings.Default.MinimumAutoZoom;
                     string distUnits = Settings.Default.MapDistanceUnits;
 
-                    _gisApp.ZoomSelected(minZoom, distUnits);
+                    _gisApp.ZoomSelected(minZoom, distUnits, _autoZoomSelection == 2);
                 }
                 //---------------------------------------------------------------------
 
@@ -5570,16 +5632,16 @@ namespace HLU.UI.ViewModel
                         SetFilter();
 
                         //---------------------------------------------------------------------
-                        // FIX: 068 Enable auto zoom when selecting features on map.
+                        // FIX: 097 Enable auto zoom when selecting features on map.
                         //
                         // Zoom to the GIS selection if auto zoom is on.
-                        if (_gisSelection != null && _autoZoomSelection)
+                        if (_gisSelection != null && _autoZoomSelection != 0)
                         {
                             // Get the minimum auto zoom value and map distance units.
                             int minZoom = Settings.Default.MinimumAutoZoom;
                             string distUnits = Settings.Default.MapDistanceUnits;
 
-                            _gisApp.ZoomSelected(minZoom, distUnits);
+                            _gisApp.ZoomSelected(minZoom, distUnits, _autoZoomSelection == 2);
                         }
                         //---------------------------------------------------------------------
 

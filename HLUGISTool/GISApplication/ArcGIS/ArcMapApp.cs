@@ -919,10 +919,15 @@ namespace HLU.GISApplication.ArcGIS
             catch { throw; }
         }
 
-        public override void ZoomSelected(int minZoom, string distUnits)
+        public override void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
-            
-            IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits });
+            //---------------------------------------------------------------------
+            // FIX: 097 Enable auto zoom when selecting features on map.
+            if (alwaysZoom)
+                IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits, "always" });
+            else
+                IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits, "when" });
+            //---------------------------------------------------------------------
         }
 
         //---------------------------------------------------------------------

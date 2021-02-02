@@ -82,7 +82,7 @@ namespace HLU
         public delegate void SelectByQueryFilterDelegate(IQueryFilter queryFilter);
         public delegate void SelectByQueryDefDelegate(IQueryDef queryDef, string oidColumnAlias);
         public delegate void SelectByJoinDelegate(string scratchMdbPath, string selectionDatasetName);
-        public delegate void ZoomSelectedDelegate(int minZoom, string distUnits);
+        public delegate void ZoomSelectedDelegate(int minZoom, string distUnits, bool alwaysZoom);
         public delegate void ZoomSelectedCursorDelegate(IQueryFilter queryFilter, int minZoom, string distUnits);
         public delegate void ExportPromptDelegate(string mdbPathName, string attributeDatasetName);
         public delegate void ExportDelegate(string mdbPathName, string attributeDatasetName, bool selectedOnly);
@@ -867,38 +867,46 @@ namespace HLU
                         }
                         break;
                     //---------------------------------------------------------------------
-                    case "zs": // zoom selected: cmd [, queryFilter]
+                    //---------------------------------------------------------------------
+                    // FIX: 097 Enable auto zoom when selecting features on map.
+                    case "zs": // zoom selected: cmd [, queryFilter], minZoom, distUnits, alwaysZoom [, queryFilter]
                         try
                         {
                             int minZoom;
                             string distUnits;
+                            bool alwaysZoom = false;
                             switch (_pipeData.Count)
                             {
-                                case 3:
+                                case 4:
                                     if (!Int32.TryParse(_pipeData[1], out minZoom))
                                         minZoom = 0;
                                     distUnits = _pipeData[2];
+                                    if (_pipeData[3] == "always")
+                                        alwaysZoom = true;
 
                                     _pipeData.Clear();
 
-                                    _dummyControl.Invoke(_zoomSelDel, new object[] { minZoom, distUnits });
+                                    _dummyControl.Invoke(_zoomSelDel, new object[] { minZoom, distUnits, alwaysZoom });
                                     break;
-                                case 4:
+                                case 5:
                                     IQueryFilter queryFilter = new QueryFilterClass();
                                     queryFilter.WhereClause = _pipeData[1];
 
                                     if (!Int32.TryParse(_pipeData[2], out minZoom))
                                         minZoom = 0;
                                     distUnits = _pipeData[3];
+                                    if (_pipeData[4] == "always")
+                                        alwaysZoom = true;
 
                                     _pipeData.Clear();
 
-                                    _dummyControl.Invoke(_zoomSelCursorDel, new object[] { queryFilter, minZoom, distUnits });
+                                    _dummyControl.Invoke(_zoomSelCursorDel, new object[] { queryFilter, minZoom, distUnits, alwaysZoom });
                                     break;
                             }
                         }
                         catch { _pipeData.Clear(); }
                         break;
+                    //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // FIX: 065 Prompt for the GIS layer name before starting export.
                     //
@@ -1326,10 +1334,12 @@ namespace HLU
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
 
             // Zoom to the extent of the geometry
-            ZoomExtent(geom, minZoom, distUnits);
+            ZoomExtent(geom, minZoom, distUnits, true);
         }
 
-        private void ZoomSelected(int minZoom, string distUnits)
+        //---------------------------------------------------------------------
+        // FIX: 097 Enable auto zoom when selecting features on map.
+        private void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
             if ((_hluFeatureClass == null) || (_hluView == null)) return;
 
@@ -1345,10 +1355,10 @@ namespace HLU
             IGeometry geom = geometryFactory.CreateGeometryFromEnumerator((IEnumGeometry)enumGeometryBind);
 
             // Zoom to the extent of the geometry
-            ZoomExtent(geom, minZoom, distUnits);
+            ZoomExtent(geom, minZoom, distUnits, true);
         }
 
-        private void ZoomExtent(IGeometry geom, int minZoom, string distUnits)
+        private void ZoomExtent(IGeometry geom, int minZoom, string distUnits, bool alwaysZoom)
         {
             //// Extend the extent of the current selection
             //IEnvelope geomEnvelope = geom.Envelope;
@@ -1374,10 +1384,11 @@ namespace HLU
 
             // Check if the current selection fits well within
             // the map window (i.e. within the middle 80%).
-            if (selMinX <= (winMinX + winBorder) ||
+            if ((selMinX <= (winMinX + winBorder) ||
                 selMaxX >= (winMaxX - winBorder) ||
                 selMinY <= (winMinY + winBorder) ||
-                selMaxY >= (winMaxY - winBorder))
+                selMaxY >= (winMaxY - winBorder)) ||
+                alwaysZoom)
             {
                 // Zoom to the extent of the whole selection.
                 _hluView.Extent = geom.Envelope;
@@ -1405,6 +1416,7 @@ namespace HLU
                     _focusMap.MapScale = minZoom;
             }
         }
+        //---------------------------------------------------------------------
 
         private void ClearSelection()
         {
