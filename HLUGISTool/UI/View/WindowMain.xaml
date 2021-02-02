@@ -95,10 +95,23 @@
                           Command="{Binding AppKeepOnTopCommand}"
                           Header="_Keep Tool Window on Top"
                           IsCheckable="True" />
-                <MenuItem x:Name="MenuItemAutoZoomSelected"
-                          Command="{Binding AutoZoomSelectedCommand}"
-                          Header="Auto _Zoom To Selection"
-                          IsCheckable="True" />
+                <MenuItem x:Name="MenuItemAutoZoomSelected" Header="Auto _Zoom To Selection">
+                    <MenuItem Name="ZoomOff"
+                              Click="MenuItem_Zoom_Click"
+							  Command="{Binding AutoZoomSelectedOffCommand}"
+                              Header="Off"
+                              IsCheckable="True" />
+                    <MenuItem Name="ZoomWhen"
+                              Click="MenuItem_Zoom_Click"
+							  Command="{Binding AutoZoomSelectedWhenCommand}"
+                              Header="When out of view"
+                              IsCheckable="True" />
+                    <MenuItem Name="ZoomAlways"
+                              Click="MenuItem_Zoom_Click"
+							  Command="{Binding AutoZoomSelectedAlwaysCommand}"
+                              Header="Always"
+                              IsCheckable="True" />
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Select">
                 <MenuItem x:Name="MenuItemFilterByAttributes"

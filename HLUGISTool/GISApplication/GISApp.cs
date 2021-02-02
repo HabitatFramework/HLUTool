@@ -113,7 +113,7 @@ namespace HLU.GISApplication
 
         public abstract void FlashSelectedFeatures(List<List<SqlFilterCondition>> whereClauses);
 
-        public abstract void ZoomSelected(int minZoom, string distUnits);
+        public abstract void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom);
 
         public abstract int HluLayerCount { get; }
 

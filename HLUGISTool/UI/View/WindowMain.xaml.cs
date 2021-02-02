@@ -41,7 +41,7 @@ namespace HLU
         private MenuItem[] _menuItems;
         public string _lastStyle = null;
         public bool _keepOnTop = false;
-        public bool _autoZoom = false;
+        public int _autoZoom = 1;
         public bool _autoSelect = false;
 
         public WindowMain()
@@ -81,13 +81,24 @@ namespace HLU
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 068 Enable auto zoom when selecting features on map.
+            // FIX: 097 Enable auto zoom when selecting features on map.
             //
             // Get the auto zoom option default value.
             _autoZoom = Settings.Default.AutoZoomSelection;
 
             // Check the menu item for the auto zoom option.
-            CheckMenuItem("MenuItemAutoZoomSelected", _autoZoom);
+            switch (_autoZoom)
+            {
+                case 0:
+                    CheckMenuItem("ZoomOff", true);
+                    break;
+                case 1:
+                    CheckMenuItem("ZoomWhen", true);
+                    break;
+                case 2:
+                    CheckMenuItem("ZoomAlways", true);
+                    break;
+            }
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
@@ -369,6 +380,38 @@ namespace HLU
 
                 // Store the last style as the current menu item.
                 _lastStyle = mi.Name;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 097 Enable auto zoom when selecting features on map.
+        /// <summary>
+        /// Handles the Click event of the MenuItem_Zoom control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MenuItem_Zoom_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the zoom option from the menu item name.
+            MenuItem mi = sender as MenuItem;
+            string ZoomOption = string.Format("{0}", mi.Name);
+
+            // Clear the check against the other zoom options.
+            switch (ZoomOption)
+            {
+                case "ZoomOff":
+                    CheckMenuItem("ZoomWhen", false);
+                    CheckMenuItem("ZoomAlways", false);
+                    break;
+                case "ZoomWhen":
+                    CheckMenuItem("ZoomOff", false);
+                    CheckMenuItem("ZoomAlways", false);
+                    break;
+                case "ZoomAlways":
+                    CheckMenuItem("ZoomOff", false);
+                    CheckMenuItem("ZoomWhen", false);
+                    break;
             }
         }
         //---------------------------------------------------------------------

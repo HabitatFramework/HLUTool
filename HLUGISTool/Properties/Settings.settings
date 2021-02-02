@@ -243,8 +243,8 @@
     <Setting Name="ShowNVCCodes" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="AutoZoomSelection" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="AutoZoomSelection" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="AutoSelectOnGis" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

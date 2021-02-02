@@ -268,7 +268,7 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.incidColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.Incid)),
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
-                if (featCount == 1)
+                if (featCount < 1)
                 {
                     MessageBox.Show(String.Format("Cannot split: feature selected in map is the only" +
                         " feature corresponding to INCID {0}", _viewModelMain.Incid), "HLU: Logical Split",

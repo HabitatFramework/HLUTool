@@ -905,7 +905,7 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
-        public override void ZoomSelected(int minZoom, string distUnits)
+        public override void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
             //---------------------------------------------------------------------
             // FIX: 070 Improve zoom to selected features scaling.
@@ -976,12 +976,16 @@ namespace HLU.GISApplication.MapInfo
             // Get the size of the window border (i.e. 10% of the total size)
             float winBorder = Math.Min(winMaxX - winMinX, winMaxY - winMinY) / 10;
 
+            //---------------------------------------------------------------------
+            // FIX: 097 Enable auto zoom when selecting features on map.
             // Check if the current selection fits well within
             // the map window (i.e. within the middle 80%).
-            if (selMinX <= (winMinX + winBorder) ||
+            if ((selMinX <= (winMinX + winBorder) ||
                 selMaxX >= (winMaxX - winBorder) ||
                 selMinY <= (winMinY + winBorder) ||
-                selMaxY >= (winMaxY - winBorder))
+                selMaxY >= (winMaxY - winBorder)) ||
+                alwaysZoom)
+            //---------------------------------------------------------------------
             {
                 // Zoom to the extent of the whole selection.
                 _mapInfoApp.RunCommand(String.Format("select * from {0} into ZoomSelection NoSelect", selName));
