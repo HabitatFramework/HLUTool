@@ -264,6 +264,7 @@ namespace HLU.UI.ViewModel
         private bool _autoSplit = true;
         private bool _splitting = false;
         private bool _filterByMap = false;
+        private bool _osmmUpdating = false;
         private bool _comingFromIncidIhsMatrix2 = false;
         private bool _comingFromIncidIhsMatrix3 = false;
         private bool _comingFromIncidIhsFormation2 = false;
@@ -2592,6 +2593,11 @@ namespace HLU.UI.ViewModel
                         return;
                 }
 
+                //---------------------------------------------------------------------
+                // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                _osmmUpdating = false;
+                //---------------------------------------------------------------------
+
                 // Start the OSMM update mode
                 _viewModelOSMMUpdate.StartOSMMUpdate();
             }
@@ -2645,6 +2651,10 @@ namespace HLU.UI.ViewModel
                 _osmmUpdatesEmpty = false;
                 _viewModelOSMMUpdate.CancelOSMMUpdate();
                 _viewModelOSMMUpdate = null;
+                //---------------------------------------------------------------------
+                // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                _osmmUpdating = false;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -2672,8 +2682,18 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void OSMMSkipClicked(object param)
         {
+            //---------------------------------------------------------------------
+            // FIX: 099 Prevent OSMM updates being actioned too quickly.
             // Mark the OSMM Update row as skipped
-            _viewModelOSMMUpdate.OSMMUpdate(1);
+            if (_osmmUpdating == false)
+            {
+                _osmmUpdating = true;
+
+                _viewModelOSMMUpdate.OSMMUpdate(1);
+
+                _osmmUpdating = false;
+            }
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -2698,20 +2718,30 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void OSMMAcceptClicked(object param)
         {
-            if (OSMMAcceptTag == "Ctrl")
+            //---------------------------------------------------------------------
+            // FIX: 099 Prevent OSMM updates being actioned too quickly.
+            if (_osmmUpdating == false)
             {
-                // Mark all the remaining OSMM Update rows as accepted
-                _viewModelOSMMUpdate.OSMMUpdateAll(0);
+                _osmmUpdating = true;
 
-                // Reset the button tags
-                OSMMAcceptTag = "";
-                OSMMRejectTag = "";
+                if (OSMMAcceptTag == "Ctrl")
+                {
+                    // Mark all the remaining OSMM Update rows as accepted
+                    _viewModelOSMMUpdate.OSMMUpdateAll(0);
+
+                    // Reset the button tags
+                    OSMMAcceptTag = "";
+                    OSMMRejectTag = "";
+                }
+                else
+                {
+                    // Mark the OSMM Update row as accepted
+                    _viewModelOSMMUpdate.OSMMUpdate(0);
+                }
+
+                _osmmUpdating = false;
             }
-            else
-            {
-                // Mark the OSMM Update row as accepted
-                _viewModelOSMMUpdate.OSMMUpdate(0);
-            }
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -2722,9 +2752,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
+                //---------------------------------------------------------------------
+                // FIX: 099 Prevent OSMM updates being actioned too quickly.
                 // Check if there are no proposed OSMM Updates
                 // for the current filter.
-                return _osmmUpdatesEmpty == false;
+                return (_osmmUpdating == false && _osmmUpdatesEmpty == false);
+                //---------------------------------------------------------------------
             }
         }
 
@@ -2750,20 +2783,30 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void OSMMRejectClicked(object param)
         {
-            if (OSMMRejectTag == "Ctrl")
+            //---------------------------------------------------------------------
+            // FIX: 099 Prevent OSMM updates being actioned too quickly.
+            if (_osmmUpdating == false)
             {
-                // Mark all the remaining OSMM Update rows as accepted
-                _viewModelOSMMUpdate.OSMMUpdateAll(-99);
+                _osmmUpdating = true;
 
-                // Reset the button tags
-                OSMMAcceptTag = "";
-                OSMMRejectTag = "";
+                if (OSMMRejectTag == "Ctrl")
+                {
+                    // Mark all the remaining OSMM Update rows as accepted
+                    _viewModelOSMMUpdate.OSMMUpdateAll(-99);
+
+                    // Reset the button tags
+                    OSMMAcceptTag = "";
+                    OSMMRejectTag = "";
+                }
+                else
+                {
+                    // Mark the OSMM Update row as rejected
+                    _viewModelOSMMUpdate.OSMMUpdate(-99);
+                }
+
+                _osmmUpdating = false;
             }
-            else
-            {
-                // Mark the OSMM Update row as rejected
-                _viewModelOSMMUpdate.OSMMUpdate(-99);
-            }
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
