@@ -3747,7 +3747,7 @@ namespace HLU.UI.ViewModel
 
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
@@ -3935,7 +3935,7 @@ namespace HLU.UI.ViewModel
 
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
@@ -4207,7 +4207,7 @@ namespace HLU.UI.ViewModel
 
                             // Warn the user that no records were found.
                             if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
@@ -4556,7 +4556,7 @@ namespace HLU.UI.ViewModel
 
                                 // Warn the user that no records were found.
                                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "OSMM Updates",
+                                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "OSMM Updates",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                                 //---------------------------------------------------------------------
                             }
@@ -4788,7 +4788,7 @@ namespace HLU.UI.ViewModel
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Query",
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "OSMM Updates",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         //---------------------------------------------------------------------
                     }
@@ -4826,7 +4826,7 @@ namespace HLU.UI.ViewModel
                         ChangeCursor(Cursors.Arrow, null);
 
                         // Warn the user that no records were found.
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "OSMM Updates",
+                        MessageBox.Show(App.Current.MainWindow, "No map features found in current layer.", "OSMM Updates",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
@@ -5136,7 +5136,7 @@ namespace HLU.UI.ViewModel
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Selection",
                         MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -5246,7 +5246,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    if (showMessage) MessageBox.Show("No map features selected.", "HLU Selection",
+                    if (showMessage) MessageBox.Show("No map features selected in current layer.", "HLU Selection",
                         MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
                     // Reset the incid and map selections and move
@@ -5537,7 +5537,7 @@ namespace HLU.UI.ViewModel
 
                 // Warn the user that no records were found.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                    MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU Selection",
+                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Selection",
                         MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Reset the cursor back to normal.
@@ -5647,7 +5647,7 @@ namespace HLU.UI.ViewModel
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected.", "HLU",
+                            MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
@@ -6043,9 +6043,18 @@ namespace HLU.UI.ViewModel
                     {
                         ScratchDb.WriteSelectionScratchTable(_gisIDColumns, _incidSelection);
                         DispatcherHelper.DoEvents();
+
+                        // Select all features for incid selection in current layer.
                         _gisSelection = _gisApp.SqlSelect(ScratchDb.ScratchMdbPath,
                             ScratchDb.ScratchSelectionTable, _gisIDColumns);
-                        return true;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 098 Fix bug when no features found when applying filter.
+                        if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
+                            return true;
+                        else
+                            return false;
+                        //---------------------------------------------------------------------
                     }
                 }
                 // Otherwise, perform the selection using a SQL query in GIS.
@@ -6054,9 +6063,18 @@ namespace HLU.UI.ViewModel
                     if ((!confirmSelect) || (ConfirmGISSelect(false, expectedNumFeatures, expectedNumIncids)))
                     {
                         DispatcherHelper.DoEvents();
+
+                        // Select all features for incid selection in current layer.
                         _gisSelection = _gisApp.SqlSelect(true, false, _gisIDColumns,
                             whereClause);
-                        return true;
+
+                        //---------------------------------------------------------------------
+                        // FIX: 098 Fix bug when no features found when applying filter.
+                        if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
+                            return true;
+                        else
+                            return false;
+                        //---------------------------------------------------------------------
                     }
                 }
                 //---------------------------------------------------------------------
@@ -11733,7 +11751,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.general_commentsColumn))
-                    return IncidCurrentRow.general_comments.Trim();
+                    return IncidCurrentRow.general_comments;
                 else
                     return null;
             }
@@ -11741,7 +11759,7 @@ namespace HLU.UI.ViewModel
             {
                 if ((IncidCurrentRow != null) && (value != null))
                 {
-                    IncidCurrentRow.general_comments = value.Trim();
+                    IncidCurrentRow.general_comments = value;
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
