@@ -1,16 +1,23 @@
 HLU Tool
 ========
 
-HLU Tool 3.1.3
+HLU Tool 3.1.4
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
+
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
+
 Copyright © 2014, 2018 Sussex Biodiversity Record Centre
+
 Copyright © 2019 London & South East Record Centres (LaSER)
+
 Copyright © 2019-2020 Greenspace Information for Greater London CIC
+
+Copyright © 2022 Andy Foy Consulting
 
 Overview
 --------
+
 The HLU Tool provides a user interface for maintaining habitat & Land Use data, including changes to attributes and changes to the spatial data. It also provides an audit trail to indicate when it was edited, why and by whom.
 
 The tool provides an interface that links the spatial and attribute data in multiple software environments - it can link ArcGIS or MapInfo applications
@@ -35,7 +42,7 @@ The HLU Tool requires the following:
  - 3 GHz or higher processor
  - 2 GB RAM
  - 3 GB of free hard disk space
-  (For increased performance a multiple core processor with as much RAM as possible is recommended)
+    (For increased performance a multiple core processor with as much RAM as possible is recommended)
 
  - Microsoft .NET Framework 4.5 or later installed
 
