@@ -757,6 +757,22 @@ namespace HLU.GISApplication.ArcGIS
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
+        // FIX: 102 Display correct number of selected features on export.
+        //
+        /// <summary>
+        /// Counts the currently selected map features.
+        /// </summary>
+        public override void CountMapSelection(ref int fragCount)
+        {
+            List<string> retList = IpcArcMap(new string[] { "qs" });
+            if (retList.Count > 0)
+                fragCount = Convert.ToInt32(retList[0]);
+            else
+                fragCount = 0;
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
         // FIX: 053 Check if all selected rows have unique keys to avoid
         // any potential data integrity problems.
         //

@@ -400,6 +400,29 @@ namespace HLU.GISApplication.MapInfo
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        // FIX: 102 Display correct number of selected features on export.
+        //
+        /// <summary>
+        /// Counts the currently selected map features.
+        /// </summary>
+        public override void CountMapSelection(ref int fragCount)
+        {
+            if (_mapInfoApp == null) return;
+            fragCount = 0;
+
+            try
+            {
+                if (String.IsNullOrEmpty(_selName)) return;
+                
+                fragCount = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
+                    _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
+                return;
+            }
+            catch { }
+        }
+        //---------------------------------------------------------------------
+
         /// <summary>
         /// Flashes a single list of selected features whose UIDs are passed in.
         /// </summary>
@@ -1530,9 +1553,22 @@ namespace HLU.GISApplication.MapInfo
                 }
                 //---------------------------------------------------------------------
 
-                //Register (build) a MapInfo table from the Access attribute table
-                _mapInfoApp.Do(String.Format("Register Table {0} Type {1} Table {2}",
-                    QuoteValue(tempMdbPathName), QuoteValue("Access"), QuoteValue(attributeDatasetName)));
+                //---------------------------------------------------------------------
+                // FIX: 105 Trap error when unable to register Access table.
+                //
+                try
+                {
+                    //Register (build) a MapInfo table from the Access attribute table
+                    _mapInfoApp.Do(String.Format("Register Table {0} Type {1} Table {2}",
+                        QuoteValue(tempMdbPathName), QuoteValue("Access"), QuoteValue(attributeDatasetName)));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Export failed. Unable to register Access attribute table",
+                        "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+                //---------------------------------------------------------------------
 
                 // Open the registered attribute table
                 _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(tempMdbPathName)));

@@ -91,6 +91,7 @@ namespace HLU
         public delegate void IsHluLayerDelegate(int ixMap, int ixLayer);
         public delegate void IsEditingDelegate();
         public delegate void ClearSelectionDelegate();
+        public delegate void CountSelectionDelegate();
 
         #endregion
 
@@ -174,6 +175,7 @@ namespace HLU
         private static IsHluLayerDelegate _isHluLayerDel;
         private static IsEditingDelegate _isEditingDel;
         private static ClearSelectionDelegate _clearSelDel;
+        private static CountSelectionDelegate _countSelDel;
         private static bool _exportInEditSession = Properties.Settings.Default.ExportInEditSession;
         
         #endregion
@@ -359,6 +361,7 @@ namespace HLU
                 _isHluLayerDel = new IsHluLayerDelegate(IsHluLayer);
                 _isEditingDel = new IsEditingDelegate(IsEditing);
                 _clearSelDel = new ClearSelectionDelegate(ClearSelection);
+                _countSelDel = new CountSelectionDelegate(CountSelection);
             }
         }
 
@@ -744,6 +747,17 @@ namespace HLU
                             catch { _pipeData.Clear(); }
                         }
                         break;
+                    //---------------------------------------------------------------------
+                    // FIX: 102 Display correct number of selected features on export.
+                    //
+                    case "qs": // count selection: cmd
+                        if (_pipeData.Count == 1)
+                        {
+                            try { _dummyControl.Invoke(_countSelDel, null); }
+                            catch { _pipeData.Clear(); }
+                        }
+                        break;
+                    //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // FIX: 053 Check if all selected rows have unique keys to avoid
                     // any potential data integrity problems.
@@ -1429,8 +1443,25 @@ namespace HLU
 
             _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
             _hluFeatureSelection.Clear();
-
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 102 Display correct number of selected features on export.
+        //
+        private void CountSelection()
+        {
+            if ((_hluFeatureClass == null) || (_hluView == null)) return;
+
+            if (_hluFeatureSelection == null)
+                _hluFeatureSelection = (IFeatureSelection)_hluFeatureClass;
+
+            lock (_pipeData)
+            {
+                _pipeData.Clear();
+                _pipeData.Add(_hluFeatureSelection.SelectionSet.Count.ToString());
+            }
+        }
+        //---------------------------------------------------------------------
 
         private void FlashFeature(IQueryFilter queryFilter)
         {

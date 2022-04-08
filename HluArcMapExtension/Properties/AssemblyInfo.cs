@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HluArcMapExtension")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC.Copyright © 2013-14, 2016 TVERC.Copyright © 2014, 2018 SxBRC.Copyright © 2019 LaSER")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2021 Andy Foy Consulting")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.0.2.0")]
+[assembly: AssemblyVersion("3.1.4.0")]
 //[assembly: AssemblyFileVersion("1.0.*")]
