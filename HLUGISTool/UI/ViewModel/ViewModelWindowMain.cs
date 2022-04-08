@@ -2753,10 +2753,14 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
+                // FIX: 101 Enable get map selection when in OSMM update mode.
+                //---------------------------------------------------------------------
                 // FIX: 099 Prevent OSMM updates being actioned too quickly.
                 // Check if there are no proposed OSMM Updates
                 // for the current filter.
-                return (_osmmUpdating == false && _osmmUpdatesEmpty == false);
+                return (_osmmUpdating == false && _osmmUpdatesEmpty == false &&
+                    (_incidOSMMUpdatesStatus > 0 || _incidOSMMUpdatesStatus < -1));
+                //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
             }
         }
