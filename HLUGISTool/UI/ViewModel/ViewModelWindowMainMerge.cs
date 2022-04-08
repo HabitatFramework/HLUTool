@@ -161,7 +161,7 @@ namespace HLU.UI.ViewModel
                 if (_mergeResultFeatureIndex == -1)
                     return false;
 
-                _viewModelMain.ChangeCursor(Cursors.Wait, "Processing ...");
+                _viewModelMain.ChangeCursor(Cursors.Wait, "Merging ...");
 
                 _viewModelMain.DataBase.BeginTransaction(true, IsolationLevel.ReadCommitted);
 
@@ -398,7 +398,7 @@ namespace HLU.UI.ViewModel
 
                 if (_mergeResultFeatureIndex != -1)
                 {
-                    _viewModelMain.ChangeCursor(Cursors.Wait, "Processing ...");
+                    _viewModelMain.ChangeCursor(Cursors.Wait, "Merging ...");
                     bool startTransaction = _viewModelMain.DataBase.Transaction != null;
 
                     if (startTransaction)
