@@ -131,6 +131,8 @@ namespace HLU.UI.ViewModel
         private ICommand _bulkUpdateCommandMenu;
         private ICommand _cancelBulkUpdateCommand;
         private ICommand _osmmUpdateCommandMenu;
+        private ICommand _osmmUpdateAcceptCommandMenu;
+        private ICommand _osmmUpdateRejectCommandMenu;
         private ICommand _osmmSkipCommand;
         private ICommand _osmmAcceptCommand;
         private ICommand _osmmRejectCommand;
@@ -185,6 +187,7 @@ namespace HLU.UI.ViewModel
         private bool haveSplashWin;
         private string _displayName = "HLU Tool";
         private int _windowHeight;
+        private int _defaultWindowHeight;
         private int _windowWidth;
         private int _mapWindowsCount;
         private bool? _showingReasonProcessGroup = null;
@@ -461,7 +464,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    ChangeCursor(Cursors.Wait, "Processing ...");
+                    ChangeCursor(Cursors.Wait, "Initiating ...");
                 }
 
                 // create table adapter manager for the dataset and connection
@@ -765,30 +768,38 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
+                // FIX: 105 Trap error when unable to register Access table.
                 // FIX: 073 Add option to reset window dimensions to default.
                 // 
                 // Set the initial window height if not already set.
                 if (_windowHeight == 0)
                 {
                     if (_showGroupHeaders)
-                        _windowHeight = 975;
+                        _windowHeight = 961;
                     else
-                        _windowHeight = 880;
+                        _windowHeight = 881;
 
                     //// Adjust the standard height if the NVC codes text is not showing.
                     //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
                     //if (!(bool)_showingNVCCodesText)
-                    //    _windowHeight = _windowHeight - 26;
+                    //    _windowHeight -= 22;
 
                     // Adjust the standard height if the Reason and Process group is not showing.
                     if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
                     if (!(bool)_showingReasonProcessGroup)
-                        _windowHeight = _windowHeight - 47;
+                        _windowHeight -= 47;
 
                     // Adjust the standard height if the OSMM Updates group is not showing.
                     if (!_showingOSMMPendingGroup.HasValue) _showingOSMMPendingGroup = true;
                     if (!(bool)_showingOSMMPendingGroup)
-                        _windowHeight = _windowHeight - 89;
+                        _windowHeight -= 83;
+
+                    // Adjust the standard height for older versions of Windows
+                    if (System.Environment.OSVersion.Version.Major < 10)
+                        _windowHeight += 10;
+
+                    // Set the default window height
+                    _defaultWindowHeight = _windowHeight;
                 }
                 //---------------------------------------------------------------------
 
@@ -801,37 +812,46 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
+        // FIX: 105 Trap error when unable to register Access table.
         // FIX: 073 Add option to reset window dimensions to default.
         // 
         /// <summary>
         /// Adjusts the window height for any optional groups/fields.
         /// </summary>
-        public void AdjustWindowHeight(int adjustment)
+        public void AdjustWindowHeight()
         {
-            // Calculate the minimum window height.
-            int _defaultWindowHeight;
+            // Calculate the new window height.
+            int _newWindowHeight;
             if (_showGroupHeaders)
-                _defaultWindowHeight = 975;
+                _newWindowHeight = 961;
             else
-                _defaultWindowHeight = 880;
+                _newWindowHeight = 881;
 
             //// Adjust the minimum height if the NVC codes text is not showing.
             //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
             //if (!(bool)_showingNVCCodesText)
-            //    _defaultWindowHeight -= 26;
+            //    _defaultWindowHeight -= 22;
 
             // Adjust the minimum height if the Reason and Process group is not showing.
             if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
             if (!(bool)_showingReasonProcessGroup)
-                _defaultWindowHeight -= 47;
+                _newWindowHeight -= 47;
 
             // Adjust the minimum height if the OSMM Updates group is not showing.
+            if (!_showingOSMMPendingGroup.HasValue) _showingOSMMPendingGroup = true;
             if (!(bool)_showingOSMMPendingGroup)
-                _defaultWindowHeight -= 89;
+                _newWindowHeight -= 83;
+
+            // Adjust the standard height for older versions of Windows
+            if (System.Environment.OSVersion.Version.Major < 10)
+                _newWindowHeight += 10;
 
             // Only adjust the window height if it needs to grow/shrink
             if (_windowHeight == _defaultWindowHeight)
-                _windowHeight += adjustment;
+                _windowHeight = _newWindowHeight;
+
+            // Set the new default window height
+            _defaultWindowHeight = _newWindowHeight;
         }
         //---------------------------------------------------------------------
 
@@ -2023,7 +2043,7 @@ namespace HLU.UI.ViewModel
                             MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     // Set the status to processing and the cursor to wait.
-                    ChangeCursor(Cursors.Wait, "Processing ...");
+                    ChangeCursor(Cursors.Wait, "Selecting ...");
 
                     // Select all features for current incid
                     SelectOnMap(false);
@@ -2106,7 +2126,7 @@ namespace HLU.UI.ViewModel
                 return;
             }
 
-            ChangeCursor(Cursors.Wait, "Processing ...");
+            ChangeCursor(Cursors.Wait, "Filtering ...");
 
             DispatcherHelper.DoEvents();
 
@@ -2152,7 +2172,7 @@ namespace HLU.UI.ViewModel
                     if (_updateAllFeatures == false)
                     {
                         // Set the status to processing and the cursor to wait.
-                        ChangeCursor(Cursors.Wait, "Processing ...");
+                        ChangeCursor(Cursors.Wait, "Splitting ...");
 
                         // Logically split the features for the current incid into a new incid.
                         ViewModelWindowMainSplit vmSplit = new ViewModelWindowMainSplit(this);
@@ -2242,6 +2262,12 @@ namespace HLU.UI.ViewModel
                     OnPropertyChanged("CanOSMMUpdateMode");
                     OnPropertyChanged("CanOSMMBulkUpdateMode");
                     OnPropertyChanged("ShowReasonProcessGroup");
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    OnPropertyChanged("CanOSMMUpdateAccept");
+                    OnPropertyChanged("CanOSMMUpdateReject");
+                    //---------------------------------------------------------------------
                 }
                 return _editMode;
             }
@@ -2598,6 +2624,9 @@ namespace HLU.UI.ViewModel
                 _osmmUpdating = false;
                 //---------------------------------------------------------------------
 
+                OnPropertyChanged("CanOSMMAccept");
+                OnPropertyChanged("CanOSMMSkip");
+
                 // Start the OSMM update mode
                 _viewModelOSMMUpdate.StartOSMMUpdate();
             }
@@ -2633,10 +2662,16 @@ namespace HLU.UI.ViewModel
                         _canOSMMUpdate = false;
                 }
 
-                // Can start OSMM Update mode if user is authorised
+                //---------------------------------------------------------------------
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.     
+                //
+                // Can start OSMM Update mode if in edit mode,
+                // and user is authorised,
                 // and not currently in bulk update mode.
-                return _canOSMMUpdate == true &&
+                return EditMode &&
+                        _canOSMMUpdate == true &&
                        _bulkUpdateMode == false;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -2670,7 +2705,11 @@ namespace HLU.UI.ViewModel
                 if (_osmmSkipCommand == null)
                 {
                     Action<object> osmmSkipAction = new Action<object>(this.OSMMSkipClicked);
-                    _osmmSkipCommand = new RelayCommand(osmmSkipAction, param => this.CanOSMMAccept);
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    _osmmSkipCommand = new RelayCommand(osmmSkipAction, param => this.CanOSMMSkip);
+                    //---------------------------------------------------------------------
                 }
                 return _osmmSkipCommand;
             }
@@ -2685,16 +2724,47 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIX: 099 Prevent OSMM updates being actioned too quickly.
             // Mark the OSMM Update row as skipped
-            if (_osmmUpdating == false)
+            // If there are any OSMM Updates for this incid then store the values.
+            if (_osmmUpdating == false && _osmmUpdatesEmpty == false)
             {
-                _osmmUpdating = true;
+                if (IncidOSMMStatus  > 0)
+                {
+                    _osmmUpdating = true;
 
-                _viewModelOSMMUpdate.OSMMUpdate(1);
+                    // Mark the OSMM Update row as skipped
+                    _viewModelOSMMUpdate.OSMMUpdate(1);
 
-                _osmmUpdating = false;
+                    _osmmUpdating = false;
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    OnPropertyChanged("CanOSMMAccept");
+                    OnPropertyChanged("CanOSMMSkip");
+                    //---------------------------------------------------------------------
+                }
             }
             //---------------------------------------------------------------------
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 099 Prevent OSMM updates being actioned too quickly.
+        //
+        /// <summary>
+        /// Can the proposed OSMM Update for the current incid
+        /// be skipped?
+        /// </summary>
+        public bool CanOSMMSkip
+        {
+            get
+            {
+                // Check if there are proposed OSMM Updates
+                // for the current filter.
+                return (IsFiltered &&
+                        _osmmUpdating == false &&
+                        _osmmUpdatesEmpty == false);
+            }
+        }
+        //---------------------------------------------------------------------
 
         /// <summary>
         /// OSMM Accept command.
@@ -2740,6 +2810,12 @@ namespace HLU.UI.ViewModel
                 }
 
                 _osmmUpdating = false;
+                //---------------------------------------------------------------------
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                //
+                OnPropertyChanged("CanOSMMAccept");
+                OnPropertyChanged("CanOSMMSkip");
+                //---------------------------------------------------------------------
             }
             //---------------------------------------------------------------------
         }
@@ -2809,6 +2885,12 @@ namespace HLU.UI.ViewModel
                 }
 
                 _osmmUpdating = false;
+                //---------------------------------------------------------------------
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                //
+                OnPropertyChanged("CanOSMMAccept");
+                OnPropertyChanged("CanOSMMSkip");
+                //---------------------------------------------------------------------
             }
             //---------------------------------------------------------------------
         }
@@ -2934,6 +3016,83 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
+        #region OSMM Update Edits
+
+        //---------------------------------------------------------------------
+        // FIX: 103 Accept/Reject OSMM updates in edit mode.
+        //
+        /// <summary>
+        /// Accept the proposed OSMM Update.
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMUpdateAcceptClicked()
+        {
+            if (_viewModelOSMMUpdate == null)
+                _viewModelOSMMUpdate = new ViewModelWindowMainOSMMUpdate(this);
+
+            // Mark the OSMM Update row as accepted
+            _viewModelOSMMUpdate.OSMMUpdate(0);
+
+            OnPropertyChanged("CanOSMMUpdateAccept");
+        }
+
+        /// <summary>
+        /// Can OSMM Update be accepted?
+        /// </summary>
+        public bool CanOSMMUpdateAccept
+        {
+            get
+            {
+                // If not in a bulk mode and a proposed OSMM update is showing
+                if (EditMode &&
+                    _osmmUpdateMode == false &&
+                    _bulkUpdateMode == false &&
+                    (_showOSMMUpdates == "Always" ||
+                    _showOSMMUpdates == "When Outstanding") &&
+                    IncidOSMMStatus > 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Reject the proposed OSMM Update.
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMUpdateRejectClicked()
+        {
+            if (_viewModelOSMMUpdate == null)
+                _viewModelOSMMUpdate = new ViewModelWindowMainOSMMUpdate(this);
+
+            // Mark the OSMM Update row as rejected
+            _viewModelOSMMUpdate.OSMMUpdate(-99);
+
+            OnPropertyChanged("CanOSMMUpdateReject");
+        }
+
+        /// <summary>
+        /// Can OSMM Update be rejected?
+        /// </summary>
+        public bool CanOSMMUpdateReject
+        {
+            get
+            {
+                // If not in a bulk mode and a proposed OSMM update is showing
+                if (EditMode &&
+                    _osmmUpdateMode == false &&
+                    _bulkUpdateMode == false &&
+                    (_showOSMMUpdates == "Always" ||
+                    _showOSMMUpdates == "When Outstanding") &&
+                    IncidOSMMStatus > 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
         #region OSMM Bulk Update
 
         //---------------------------------------------------------------------
@@ -3002,8 +3161,9 @@ namespace HLU.UI.ViewModel
                         _canOSMMUpdate = false;
                 }
 
-                // Can start OSMM Bulk Update mode if user is authorised,
-                // if there are incid OSMM updates in the database,
+                // Can start OSMM Bulk Update mode if in edit mode,
+                // and user is authorised,
+                // and there are incid OSMM updates in the database,
                 // and not currently in bulk update mode or osmm update mode.
                 return EditMode &&
                     _canOSMMUpdate == true &&
@@ -3073,6 +3233,62 @@ namespace HLU.UI.ViewModel
             else
                 // Start the OSMM Bulk update mode
                 OSMMBulkUpdateClicked(param);
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 103 Accept/Reject OSMM updates in edit mode.
+        //
+        /// <summary>
+        /// OSMM Update Accept menu command.
+        /// </summary>
+        public ICommand OSMMUpdateAcceptCommandMenu
+        {
+            get
+            {
+                if (_osmmUpdateAcceptCommandMenu == null)
+                {
+                    Action<object> osmmUpdateAcceptMenuAction = new Action<object>(this.OSMMUpdateAcceptCommandMenuClicked);
+                    _osmmUpdateAcceptCommandMenu = new RelayCommand(osmmUpdateAcceptMenuAction);
+                }
+                return _osmmUpdateAcceptCommandMenu;
+            }
+        }
+
+        /// <summary>
+        /// Accept the OSMM proposed update.
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMUpdateAcceptCommandMenuClicked(object param)
+        {
+            // Accept the OSMM proposed update
+            OSMMUpdateAcceptClicked();
+        }
+
+        /// <summary>
+        /// OSMM Update Reject menu command.
+        /// </summary>
+        public ICommand OSMMUpdateRejectCommandMenu
+        {
+            get
+            {
+                if (_osmmUpdateRejectCommandMenu == null)
+                {
+                    Action<object> osmmUpdateRejectMenuAction = new Action<object>(this.OSMMUpdateRejectCommandMenuClicked);
+                    _osmmUpdateRejectCommandMenu = new RelayCommand(osmmUpdateRejectMenuAction);
+                }
+                return _osmmUpdateRejectCommandMenu;
+            }
+        }
+
+        /// <summary>
+        /// Reject the OSMM proposed update.
+        /// </summary>
+        /// <param name="param"></param>
+        private void OSMMUpdateRejectCommandMenuClicked(object param)
+        {
+            // Reject the OSMM proposed update
+            OSMMUpdateRejectClicked();
         }
         //---------------------------------------------------------------------
 
@@ -3277,8 +3493,8 @@ namespace HLU.UI.ViewModel
         private void ResetToolWindowClicked(object param)
         {
             WindowHeight = 0;
-            WindowWidth = 0;
             OnPropertyChanged("WindowHeight");
+            WindowWidth = 0;
             OnPropertyChanged("WindowWidth");
         }
 
@@ -3359,15 +3575,15 @@ namespace HLU.UI.ViewModel
                 _showNVCCodes = Settings.Default.ShowNVCCodes;
                 OnPropertyChanged("ShowNVCCodesText");
                 //---------------------------------------------------------------------
-                // FIX: 076 New option to hide group headers to reduce window height.
-                _showGroupHeaders = Settings.Default.ShowGroupHeaders;
-                RefreshGroupHeaders();
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
                 // CHANGED: CR49 Process proposed OSMM Updates
                 _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
+                //---------------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // FIX: 076 New option to hide group headers to reduce window height.
+                _showGroupHeaders = Settings.Default.ShowGroupHeaders;
+                RefreshGroupHeaders();
                 //---------------------------------------------------------------------
             }
         }
@@ -3738,7 +3954,6 @@ namespace HLU.UI.ViewModel
                     // create a selection DataTable of PK values of IncidTable
                     if (_incidSelectionWhereClause.Count > 0)
                     {
-                        ChangeCursor(Cursors.Wait, "Processing ...");
 
                         _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, _incidSelectionWhereClause[0]);
                         for (i = 1; i < _incidSelectionWhereClause.Count; i++)
@@ -3769,6 +3984,7 @@ namespace HLU.UI.ViewModel
                         _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
+                        ChangeCursor(Cursors.Wait, "Filtering ...");
                         // Select the required incid(s) in GIS.
                         if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
@@ -3912,7 +4128,6 @@ namespace HLU.UI.ViewModel
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
-                        ChangeCursor(Cursors.Wait, "Processing ...");
 
                         // Replace any connection type specific qualifiers and delimiters.
                         string newWhereClause = null;
@@ -3957,6 +4172,7 @@ namespace HLU.UI.ViewModel
                         _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
+                        ChangeCursor(Cursors.Wait, "Filtering ...");
                         // Select the required incid(s) in GIS.
                         if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
@@ -4183,7 +4399,7 @@ namespace HLU.UI.ViewModel
             {
                 try
                 {
-                    ChangeCursor(Cursors.Wait, "Processing ...");
+                    ChangeCursor(Cursors.Wait, "Validating ...");
 
                     // Select only the incid database table to use in the query.
                     List<DataTable> whereTables = new List<DataTable>();
@@ -4229,6 +4445,7 @@ namespace HLU.UI.ViewModel
                         _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                         //---------------------------------------------------------------------
 
+                        ChangeCursor(Cursors.Wait, "Filtering ...");
                         // Select the required incid(s) in GIS.
                         if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                         {
@@ -4491,7 +4708,7 @@ namespace HLU.UI.ViewModel
 
                 try
                 {
-                    ChangeCursor(Cursors.Wait, "Filtering ...");
+                    ChangeCursor(Cursors.Wait, "Validating ...");
                     DispatcherHelper.DoEvents();
 
                     // Get a list of all the possible query tables.
@@ -4525,7 +4742,6 @@ namespace HLU.UI.ViewModel
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
-                        ChangeCursor(Cursors.Wait, "Processing ...");
 
                         // Replace any connection type specific qualifiers and delimiters.
                         string newWhereClause = null;
@@ -4569,6 +4785,7 @@ namespace HLU.UI.ViewModel
                             _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                             //---------------------------------------------------------------------
 
+                            ChangeCursor(Cursors.Wait, "Filtering ...");
                             // Select the required incid(s) in GIS.
                             if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                             {
@@ -4590,6 +4807,12 @@ namespace HLU.UI.ViewModel
                                 {
                                     // Indicate there are more OSMM updates to review.
                                     _osmmUpdatesEmpty = false;
+                                    //---------------------------------------------------------------------
+                                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                                    //
+                                    OnPropertyChanged("CanOSMMAccept");
+                                    OnPropertyChanged("CanOSMMSkip");
+                                    //---------------------------------------------------------------------
 
                                     // Set the filter to the first incid.
                                     SetFilter();
@@ -4704,7 +4927,7 @@ namespace HLU.UI.ViewModel
         {
             try
             {
-                ChangeCursor(Cursors.Wait, "Filtering ...");
+                ChangeCursor(Cursors.Wait, "Validating ...");
                 DispatcherHelper.DoEvents();
 
                 // Select only the incid_osmm_updates database table to use in the query.
@@ -4801,6 +5024,7 @@ namespace HLU.UI.ViewModel
                     _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
                     //---------------------------------------------------------------------
 
+                    ChangeCursor(Cursors.Wait, "Filtering ...");
                     // Select the required incid(s) in GIS.
                     if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
                     {
@@ -4822,6 +5046,12 @@ namespace HLU.UI.ViewModel
                         {
                             // Indicate there are more OSMM updates to review.
                             _osmmUpdatesEmpty = false;
+                            //---------------------------------------------------------------------
+                            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                            //
+                            OnPropertyChanged("CanOSMMAccept");
+                            OnPropertyChanged("CanOSMMSkip");
+                            //---------------------------------------------------------------------
 
                             // Set the filter to the first incid.
                             SetFilter();
@@ -5015,7 +5245,7 @@ namespace HLU.UI.ViewModel
         private void SelectOnMapClicked(object param)
         {
             // Set the status to processing and the cursor to wait.
-            ChangeCursor(Cursors.Wait, "Processing ...");
+            ChangeCursor(Cursors.Wait, "Selecting ...");
 
             SelectOnMap(false);
 
@@ -5224,14 +5454,18 @@ namespace HLU.UI.ViewModel
 
         private bool CanReadMapSelection
         {
-            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp; }
+                //---------------------------------------------------------------------
+                // FIX: 101 Enable get map selection when in OSMM update mode.
+                //--------------------------------------------------------------            //get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp; }
+            get { return _bulkUpdateMode == false && HaveGisApp; }
+                //---------------------------------------------------------------------
         }
 
         internal void ReadMapSelection(bool showMessage)
         {
             try
             {
-                ChangeCursor(Cursors.Wait, "Processing ...");
+                ChangeCursor(Cursors.Wait, "Filtering ...");
 
                 DispatcherHelper.DoEvents();
 
@@ -5256,6 +5490,19 @@ namespace HLU.UI.ViewModel
                 if (_gisSelection.Rows.Count > 0)
                 {
                     SetFilter();
+
+                    //---------------------------------------------------------------------
+                    // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //---------------------------------------------------------------------
+                    if (_osmmBulkUpdateMode == false && _osmmUpdateMode == true)
+                    {
+                        // Indicate there are more OSMM updates to review.
+                        _osmmUpdatesEmpty = false;
+                        OnPropertyChanged("CanOSMMAccept");
+                        OnPropertyChanged("CanOSMMSkip");
+                    }
+                    //---------------------------------------------------------------------
 
                     if (_autoSplit && (_gisSelection != null) && (_gisSelection.Rows.Count > 1) && (_incidsSelectedMapCount == 1) &&
                         (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1))
@@ -5549,7 +5796,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 // Set the status to processing and the cursor to wait.
-                ChangeCursor(Cursors.Wait, "Processing ...");
+                ChangeCursor(Cursors.Wait, "Selecting ...");
 
                 // Set the table of selected incids to the current incid.
                 _incidSelection = NewIncidSelectionTable();
@@ -5647,7 +5894,7 @@ namespace HLU.UI.ViewModel
                 try
                 {
                     // Set the status to processing and the cursor to wait.
-                    ChangeCursor(Cursors.Wait, "Processing ...");
+                    ChangeCursor(Cursors.Wait, "Selecting ...");
 
                     // Backup the current selection (filter).
                     DataTable incidSelectionBackup = _incidSelection;
@@ -6088,6 +6335,7 @@ namespace HLU.UI.ViewModel
                 {
                     if ((!confirmSelect) || (ConfirmGISSelect(true, expectedNumFeatures, expectedNumIncids)))
                     {
+                        // Save the incids to the selected to a temporary database
                         ScratchDb.WriteSelectionScratchTable(_gisIDColumns, _incidSelection);
                         DispatcherHelper.DoEvents();
 
@@ -6243,7 +6491,7 @@ namespace HLU.UI.ViewModel
             if ((switchGISLayer) && (selectedHLULayer != _gisApp.CurrentHluLayer))
             {
                 // Check if there are unsaved edits
-                if (EditMode && (_bulkUpdateMode == false && _osmmUpdateMode == false) && IsDirty)
+                if (_editMode && (_bulkUpdateMode == false && _osmmUpdateMode == false) && IsDirty)
                 {
                     // Inform the user to save the unsaved edits first.
                     MessageBox.Show("The current record has been changed." +
@@ -6643,7 +6891,7 @@ namespace HLU.UI.ViewModel
         {
             MessageBoxResult userResponse = MessageBoxResult.No;
 
-            if (EditMode && (_bulkUpdateMode == false))
+            if (_editMode && (_bulkUpdateMode == false))
             {
                 userResponse = MessageBoxResult.Yes;
                 if (!IsDirty)
@@ -6671,7 +6919,7 @@ namespace HLU.UI.ViewModel
             // Don't check for edits when in OSMM Update mode (because the data
             // can't be edited by the user).
             //
-            if (EditMode
+            if (_editMode
                 && (_splitting == false)
                 && (_bulkUpdateMode == false)
                 && (_osmmUpdateMode == false)
@@ -7651,6 +7899,12 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("CanBulkUpdateMode");
             OnPropertyChanged("CanOSMMUpdateMode");
             OnPropertyChanged("CanOSMMBulkUpdateMode");
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            OnPropertyChanged("CanOSMMUpdateAccept");
+            OnPropertyChanged("CanOSMMUpdateReject");
+            //---------------------------------------------------------------------
             OnPropertyChanged("IsFiltered");
             OnPropertyChanged("CanClearFilter");
         }
@@ -8057,7 +8311,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (IncidCurrentRow != null && _osmmUpdatesEmpty == false)
+                if (IncidCurrentRow != null && _osmmUpdatesEmpty == false && _incidLastModifiedDate != DateTime.MinValue)
                     return _incidLastModifiedDate.ToShortDateString();
                 else
                     return null;
@@ -8134,24 +8388,30 @@ namespace HLU.UI.ViewModel
                     (_showOSMMUpdates == "Always" ||
                     (_showOSMMUpdates == "When Outstanding" && (IncidOSMMStatus >= 0)))))
                 {
-                    if (!(bool)_showingOSMMPendingGroup)
-                    {
-                        AdjustWindowHeight(89);
-                        OnPropertyChanged("WindowHeight");
-                    }
-
+                    //---------------------------------------------------------------------
+                    // FIX: 104 Set interface height correctly.
+                    //
                     _showingOSMMPendingGroup = true;
+
+                    // Adjust the window height
+                    AdjustWindowHeight();
+                        OnPropertyChanged("WindowHeight");
+                    //---------------------------------------------------------------------
+
                     return Visibility.Visible;
                 }
                 else
                 {
-                    if ((bool)_showingOSMMPendingGroup)
-                    {
-                        AdjustWindowHeight(-89);
-                        OnPropertyChanged("WindowHeight");
-                    }
-
+                    //---------------------------------------------------------------------
+                    // FIX: 104 Set interface height correctly.
+                    //
                     _showingOSMMPendingGroup = false;
+
+                    // Adjust the window height
+                    AdjustWindowHeight();
+                        OnPropertyChanged("WindowHeight");
+                    //---------------------------------------------------------------------
+
                     return Visibility.Collapsed;
                 }
             }
@@ -8389,24 +8649,30 @@ namespace HLU.UI.ViewModel
 
                 if (_editMode == true && _osmmUpdateMode == false)
                 {
-                    if (!(bool)_showingReasonProcessGroup)
-                    {
-                        AdjustWindowHeight(47);
-                        OnPropertyChanged("WindowHeight");
-                    }
-
+                    //---------------------------------------------------------------------
+                    // FIX: 104 Set interface height correctly.
+                    //
                     _showingReasonProcessGroup = true;
+
+                    // Adjust the window height
+                    AdjustWindowHeight();
+                        OnPropertyChanged("WindowHeight");
+                    //---------------------------------------------------------------------
+
                     return Visibility.Visible;
                 }
                 else
                 {
-                    if ((bool)_showingReasonProcessGroup)
-                    {
-                        AdjustWindowHeight(-47);
-                        OnPropertyChanged("WindowHeight");
-                    }
-
+                    //---------------------------------------------------------------------
+                    // FIX: 104 Set interface height correctly.
+                    //
                     _showingReasonProcessGroup = false;
+
+                    // Adjust the window height
+                    AdjustWindowHeight();
+                        OnPropertyChanged("WindowHeight");
+                    //---------------------------------------------------------------------
+
                     return Visibility.Collapsed;
                 }
             }
@@ -8692,7 +8958,7 @@ namespace HLU.UI.ViewModel
                 {
                     if (!(bool)_showingNVCCodesText)
                     {
-                        //AdjustWindowHeight(26);
+                        //AdjustWindowHeight();
                         //OnPropertyChanged("WindowHeight");
                     }
 
@@ -8703,7 +8969,7 @@ namespace HLU.UI.ViewModel
                 {
                     if ((bool)_showingNVCCodesText)
                     {
-                        //AdjustWindowHeight(-26);
+                        //AdjustWindowHeight();
                         //OnPropertyChanged("WindowHeight");
                     }
 

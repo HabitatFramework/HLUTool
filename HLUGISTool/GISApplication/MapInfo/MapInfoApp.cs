@@ -2337,8 +2337,22 @@ namespace HLU.GISApplication.MapInfo
             string selTablePath = Path.GetDirectoryName(scratchMdbPath) +
                 Path.DirectorySeparatorChar + selectionTableName + ".TAB";
 
-            _mapInfoApp.Do(String.Format("Register Table {0} Type ACCESS Table {1} Into {2}",
-                QuoteValue(scratchMdbPath), QuoteValue(selectionTableName), QuoteValue(selTablePath)));
+            //---------------------------------------------------------------------
+            // FIX: 105 Trap error when unable to register Access table.
+            //
+            try
+            {
+                //Register (build) a MapInfo table from the Access attribute table
+                _mapInfoApp.Do(String.Format("Register Table {0} Type ACCESS Table {1} Into {2}",
+                    QuoteValue(scratchMdbPath), QuoteValue(selectionTableName), QuoteValue(selTablePath)));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Export failed. Unable to register Access attribute table",
+                    "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
+                return String.Empty;
+            }
+            //---------------------------------------------------------------------
 
             _mapInfoApp.Do(String.Format("Open Table {0}", QuoteValue(selTablePath)));
 
@@ -2356,7 +2370,14 @@ namespace HLU.GISApplication.MapInfo
 
             try
             {
+                //---------------------------------------------------------------------
+                // FIX: 105 Trap error when unable to register Access table.
+                //
+                // Join to the temporary data table to the GIS layer
                 joinTable = AddJoinTable(scratchMdbPath, selectionTableName);
+                if (joinTable == String.Empty)
+                    return new DataTable();
+                //---------------------------------------------------------------------
 
                 // Close the previous temporary selection table.
                 CloseTable(ref _selName);

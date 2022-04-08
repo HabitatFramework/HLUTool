@@ -63,6 +63,15 @@
                           Header="Paste"
                           IsEnabled="{Binding CanPaste}" />
                 <Separator />
+                <MenuItem x:Name="MenuItemOSMMAccept"
+                          Command="{Binding OSMMUpdateAcceptCommandMenu}"
+                          Header="Accept OSMM Update"
+                          IsEnabled="{Binding CanOSMMUpdateAccept}" />
+                <MenuItem x:Name="MenuItemOSMMReject"
+                          Command="{Binding OSMMUpdateRejectCommandMenu}"
+                          Header="Reject OSMM Update"
+                          IsEnabled="{Binding CanOSMMUpdateReject}" />
+                <Separator />
                 <MenuItem x:Name="MenuItemOSMMUpdate"
                           Command="{Binding OSMMUpdateCommandMenu}"
                           Header="{Binding OSMMUpdateCommandHeader}"
@@ -1134,7 +1143,9 @@
                                                  IsEnabled="False"
                                                  Text="{Binding NvcCodes,
                                                                 Mode=OneWay}"
-                                                 Visibility="{Binding Path=ShowNVCCodesText}" />
+                                                 Visibility="{Binding Path=ShowNVCCodesText}"
+						                         ToolTip="{Binding NvcCodes}"
+                                                 ToolTipService.ShowOnDisabled="True" />
                                     </Grid>
                                 </GroupBox>
 
@@ -3385,7 +3396,7 @@
                             Command="{Binding OSMMSkipCommand}"
                             Content="_Skip"
                             Foreground="White"
-                            IsEnabled="{Binding CanOSMMAccept}" />
+                            IsEnabled="{Binding CanOSMMSkip, UpdateSourceTrigger=PropertyChanged}" />
                     <Button x:Name="ButtonOSMMReject"
                             Grid.Column="1"
                             Margin="2,0,0,0"
@@ -3412,14 +3423,6 @@
 							Tag="{Binding OSMMAcceptTag,
                                           Mode=TwoWay,
 							              UpdateSourceTrigger=PropertyChanged}" />
-<!--                    <Button x:Name="ButtonOSMMAcceptAll"
-                            Grid.Column="2"
-                            Margin="2,0,0,0"
-                            Background="#FFC80000"
-                            Command="{Binding OSMMAcceptAllCommand}"
-                            Content="Accept A_ll"
-                            Foreground="White"
-                            IsEnabled="{Binding OSMMCanAcceptAll}" /> -->
                 </Grid>
             </Grid>
         </Grid>
