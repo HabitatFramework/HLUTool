@@ -92,11 +92,20 @@ namespace HLU.UI.ViewModel
                 return;
             }
 
+            //---------------------------------------------------------------------
+            // FIX: 102 Display correct number of selected features on export.
+            //
             // Display the export interface to prompt the user
             // to select which export format they want to use.
+            int fragCount = 0;
+            _viewModelMain.GISApplication.CountMapSelection(ref fragCount);
+            //_viewModelExport = new ViewModelExport(_viewModelMain.GisSelection == null ? 0 :
+                //_viewModelMain.GisSelection.Rows.Count, _viewModelMain.GISApplication.HluLayerName,
+                //_viewModelMain.GISApplication.ApplicationType, _viewModelMain.HluDataset.exports);
             _viewModelExport = new ViewModelExport(_viewModelMain.GisSelection == null ? 0 :
-                _viewModelMain.GisSelection.Rows.Count, _viewModelMain.GISApplication.HluLayerName,
+                fragCount, _viewModelMain.GISApplication.HluLayerName,
                 _viewModelMain.GISApplication.ApplicationType, _viewModelMain.HluDataset.exports);
+            //---------------------------------------------------------------------
             _viewModelExport.DisplayName = "Export";
             _viewModelExport.RequestClose += new ViewModelExport.RequestCloseEventHandler(_viewModelExport_RequestClose);
 

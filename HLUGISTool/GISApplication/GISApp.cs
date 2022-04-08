@@ -107,6 +107,15 @@ namespace HLU.GISApplication
         /// </summary>
         public abstract void ClearMapSelection();
 
+        //---------------------------------------------------------------------
+        // FIX: 102 Display correct number of selected features on export.
+        //
+        /// <summary>
+        /// Counts the map selection.
+        /// </summary>
+        public abstract void CountMapSelection(ref int fragCount);
+        //---------------------------------------------------------------------
+
         public abstract bool SelectedRowsUnique();
 
         public abstract void FlashSelectedFeature(List<SqlFilterCondition> whereClause);
