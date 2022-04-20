@@ -576,7 +576,10 @@ namespace HLU.UI.ViewModel
 
                 // Clear the splash window status bar (or reset the cursor to an arrow)
                 if (haveSplashWin)
+                {
                     App.SplashViewModel.ProgressText = String.Empty;
+                    haveSplashWin = false;
+                }
                 else
                     ChangeCursor(Cursors.Arrow, null);
 
@@ -1414,43 +1417,56 @@ namespace HLU.UI.ViewModel
 
         public void OnRequestClose()
         {
-            EventHandler handler = this.RequestClose;
-            if (handler != null)
+            //---------------------------------------------------------------------
+            // FIX: 106 Check if user is sure before closing application.
+            //
+            // Check if the user is sure first
+            if (MessageBox.Show(String.Format("Close HLU Tool. Are you sure?",
+                _gisApp.ApplicationType), "HLU: Exit", MessageBoxButton.YesNo,
+                MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                // Check there are no outstanding edits.
-                MessageBoxResult userResponse = CheckDirty();
 
-                switch (userResponse)
+                // Set the event handler to close the application
+                EventHandler handler = this.RequestClose;
+                if (handler != null)
                 {
-                    case MessageBoxResult.Yes:
-                        if (!_viewModelUpd.Update()) return;
-                        break;
-                    case MessageBoxResult.No:
-                        break;
-                    case MessageBoxResult.Cancel:
-                        return;
-                }
+                    // Check there are no outstanding edits.
+                    MessageBoxResult userResponse = CheckDirty();
 
-                if (HaveGisApp && MessageBox.Show(String.Format("Close {0} as well?",
-                    _gisApp.ApplicationType), "HLU: Exit", MessageBoxButton.YesNo,
-                    MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    _gisApp.Close();
-
-                    ScratchDb.CleanUp();
-
-                    if (_exportMdbs != null)
+                    switch (userResponse)
                     {
-                        foreach (string path in _exportMdbs)
+                        case MessageBoxResult.Yes:
+                            if (!_viewModelUpd.Update()) return;
+                            break;
+                        case MessageBoxResult.No:
+                            break;
+                        case MessageBoxResult.Cancel:
+                            return;
+                    }
+
+                    if (HaveGisApp && MessageBox.Show(String.Format("Close {0} as well?",
+                        _gisApp.ApplicationType), "HLU: Exit", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        _gisApp.Close();
+
+                        ScratchDb.CleanUp();
+
+                        if (_exportMdbs != null)
                         {
-                            try { File.Delete(path); }
-                            catch { }
+                            foreach (string path in _exportMdbs)
+                            {
+                                try { File.Delete(path); }
+                                catch { }
+                            }
                         }
                     }
-                }
 
-                handler(this, EventArgs.Empty);
+                    // Call the event handle to close the application
+                    handler(this, EventArgs.Empty);
+                }
             }
+            //---------------------------------------------------------------------
         }
 
         #endregion
@@ -2734,6 +2750,13 @@ namespace HLU.UI.ViewModel
                     // Mark the OSMM Update row as skipped
                     _viewModelOSMMUpdate.OSMMUpdate(1);
 
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    // Move to the next Incid
+                    IncidCurrentRowIndex += 1;
+                    //---------------------------------------------------------------------
+
                     _osmmUpdating = false;
                     //---------------------------------------------------------------------
                     // FIX: 103 Accept/Reject OSMM updates in edit mode.
@@ -2742,6 +2765,15 @@ namespace HLU.UI.ViewModel
                     OnPropertyChanged("CanOSMMSkip");
                     //---------------------------------------------------------------------
                 }
+                //---------------------------------------------------------------------
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                //
+                else
+                {
+                    // Move to the next Incid
+                    IncidCurrentRowIndex += 1;
+                }
+                //---------------------------------------------------------------------
             }
             //---------------------------------------------------------------------
         }
@@ -2807,6 +2839,13 @@ namespace HLU.UI.ViewModel
                 {
                     // Mark the OSMM Update row as accepted
                     _viewModelOSMMUpdate.OSMMUpdate(0);
+
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    // Move to the next Incid
+                    IncidCurrentRowIndex += 1;
+                    //---------------------------------------------------------------------
                 }
 
                 _osmmUpdating = false;
@@ -2829,7 +2868,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 101 Enable get map selection when in OSMM update mode.
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.
                 //---------------------------------------------------------------------
                 // FIX: 099 Prevent OSMM updates being actioned too quickly.
                 // Check if there are no proposed OSMM Updates
@@ -2882,6 +2921,13 @@ namespace HLU.UI.ViewModel
                 {
                     // Mark the OSMM Update row as rejected
                     _viewModelOSMMUpdate.OSMMUpdate(-99);
+
+                    //---------------------------------------------------------------------
+                    // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                    //
+                    // Move to the next Incid
+                    IncidCurrentRowIndex += 1;
+                    //---------------------------------------------------------------------
                 }
 
                 _osmmUpdating = false;
@@ -3030,10 +3076,25 @@ namespace HLU.UI.ViewModel
             if (_viewModelOSMMUpdate == null)
                 _viewModelOSMMUpdate = new ViewModelWindowMainOSMMUpdate(this);
 
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            // Save the current incid
+            int incidCurrRowIx = IncidCurrentRowIndex;
+            //---------------------------------------------------------------------
+
             // Mark the OSMM Update row as accepted
             _viewModelOSMMUpdate.OSMMUpdate(0);
 
-            OnPropertyChanged("CanOSMMUpdateAccept");
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            // Reload the incid
+            IncidCurrentRowIndex = incidCurrRowIx;
+
+            //OnPropertyChanged("CanOSMMUpdateAccept");
+            //---------------------------------------------------------------------
+
         }
 
         /// <summary>
@@ -3065,10 +3126,24 @@ namespace HLU.UI.ViewModel
             if (_viewModelOSMMUpdate == null)
                 _viewModelOSMMUpdate = new ViewModelWindowMainOSMMUpdate(this);
 
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            // Save the current incid
+            int incidCurrRowIx = IncidCurrentRowIndex;
+            //---------------------------------------------------------------------
+
             // Mark the OSMM Update row as rejected
             _viewModelOSMMUpdate.OSMMUpdate(-99);
 
-            OnPropertyChanged("CanOSMMUpdateReject");
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            // Reload the incid
+            IncidCurrentRowIndex = incidCurrRowIx;
+
+            //OnPropertyChanged("CanOSMMUpdateReject");
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -5167,6 +5242,7 @@ namespace HLU.UI.ViewModel
             // Disable the History tab
             TabItemHistoryEnabled = false;
 
+            // Clear the habitat fields
             IncidIhsHabitat = null;
             HabitatClass = null;
             HabitatType = null;
@@ -5218,6 +5294,18 @@ namespace HLU.UI.ViewModel
                 IncidSourcesRows[i].source_id = Int32.MinValue;
                 IncidSourcesRows[i].incid = RecIDs.CurrentIncid;
             }
+
+            //---------------------------------------------------------------------
+            // FIX: 103 Accept/Reject OSMM updates in edit mode.
+            //
+            // Clear the OSMM Update fields
+            _incidOSMMUpdatesOSMMXref = 0;
+            _incidOSMMUpdatesProcessFlag = 0;
+            _incidOSMMUpdatesSpatialFlag = null;
+            _incidOSMMUpdatesChangeFlag = null;
+            _incidOSMMUpdatesStatus = null;
+            //---------------------------------------------------------------------
+
 
         }
         //---------------------------------------------------------------------
@@ -5456,8 +5544,9 @@ namespace HLU.UI.ViewModel
         {
                 //---------------------------------------------------------------------
                 // FIX: 101 Enable get map selection when in OSMM update mode.
-                //--------------------------------------------------------------            //get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp; }
-            get { return _bulkUpdateMode == false && HaveGisApp; }
+                //--------------------------------------------------------------            
+                //get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp; }
+                get { return _bulkUpdateMode == false && HaveGisApp; }
                 //---------------------------------------------------------------------
         }
 
@@ -5489,8 +5578,6 @@ namespace HLU.UI.ViewModel
 
                 if (_gisSelection.Rows.Count > 0)
                 {
-                    SetFilter();
-
                     //---------------------------------------------------------------------
                     // FIX: 099 Prevent OSMM updates being actioned too quickly.
                     // FIX: 103 Accept/Reject OSMM updates in edit mode.
@@ -5503,6 +5590,9 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("CanOSMMSkip");
                     }
                     //---------------------------------------------------------------------
+
+                    // Set the filter to the first incid.
+                    SetFilter();
 
                     if (_autoSplit && (_gisSelection != null) && (_gisSelection.Rows.Count > 1) && (_incidsSelectedMapCount == 1) &&
                         (_toidsSelectedMapCount == 1) && (_fragsSelectedMapCount == 1))
@@ -5547,6 +5637,15 @@ namespace HLU.UI.ViewModel
                     // to the first incid in the database.
                     if (!haveSplashWin)
                         ClearFilter(true);
+
+                    //---------------------------------------------------------------------
+                    // FIX: 107 Reset filter when no map features selected.
+                    // 
+                    // Indicate the selection didn't come from the map (but only after
+                    // the filter has been cleared and the first incid selected so that
+                    // the map doesn't auto zoom to the incid.
+                    _filterByMap = false;
+                    //---------------------------------------------------------------------
                 }
             }
             catch (Exception ex)
@@ -6040,8 +6139,12 @@ namespace HLU.UI.ViewModel
                     _fragsSelectedMapCount = 0;
                     _incidPageRowNoMax = -1;
 
-                    // Indicate the selection didn't come from the map.
-                    _filterByMap = false;
+                    //---------------------------------------------------------------------
+                    // FIX: 107 Reset filter when no map features selected.
+                    // 
+                    //// Indicate the selection didn't come from the map.
+                    //_filterByMap = false;
+                    //---------------------------------------------------------------------
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR10 (Attribute updates for incid subsets)
@@ -6149,6 +6252,12 @@ namespace HLU.UI.ViewModel
                 {
                     _incidSelection = null;
                     _incidSelectionWhereClause = null;
+
+                    //---------------------------------------------------------------------
+                    // FIX: 107 Reset filter when no map features selected.
+                    // 
+                    _incidPageRowNoMax = -1;
+                    //---------------------------------------------------------------------
                 }
             }
         }
@@ -7966,7 +8075,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             OnPropertyChanged("NvcCodes");
-            RefreshIhsMultiplexValues();
+            //RefreshIhsMultiplexValues();
             RefreshIhsMultiplexCodes();
             OnPropertyChanged("IncidLegacyHabitat");
         }
