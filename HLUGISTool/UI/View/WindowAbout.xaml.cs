@@ -23,7 +23,7 @@ using System.Windows.Navigation;
 namespace HLU.UI.View
 {
     //---------------------------------------------------------------------
-    // FIX: 079 Display links to online guides in new 'About' window.
+    // FIXOLD: 079 Display links to online guides in new 'About' window.
     //
     /// <summary>
     /// Interaction logic for WindowAbout.xaml

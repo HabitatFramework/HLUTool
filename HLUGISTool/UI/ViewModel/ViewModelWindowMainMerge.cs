@@ -171,7 +171,7 @@ namespace HLU.UI.ViewModel
                     string keepIncid = selectTable[_mergeResultFeatureIndex].incid;
 
                     //---------------------------------------------------------------------
-                    // FIX: 028 Only update DateTime fields to whole seconds
+                    // FIXOLD: 028 Only update DateTime fields to whole seconds
                     // Fractions of a second can cause rounding differences when
                     // comparing DateTime fields later in some databases.
                     DateTime currDtTm = DateTime.Now;
@@ -311,7 +311,7 @@ namespace HLU.UI.ViewModel
 
                         // Synch with the GIS selection.
                         //---------------------------------------------------------------------
-                        // FIX: 027 Force refill of Incid table after split/merge
+                        // FIXOLD: 027 Force refill of Incid table after split/merge
                         // Force the Incid table to be refilled because it has been
                         // updated directly in the database rather than via the
                         // local copy.
@@ -408,7 +408,7 @@ namespace HLU.UI.ViewModel
                     try
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 028 Only update DateTime fields to whole seconds
+                        // FIXOLD: 028 Only update DateTime fields to whole seconds
                         // Fractions of a second can cause rounding differences when
                         // comparing DateTime fields later in some databases.
                         DateTime currDtTm = DateTime.Now;
@@ -476,7 +476,7 @@ namespace HLU.UI.ViewModel
 
                         // Synch with the GIS selection.
                         //---------------------------------------------------------------------
-                        // FIX: 027 Force refill of Incid table after split/merge
+                        // FIXOLD: 027 Force refill of Incid table after split/merge
                         // Force the Incid table to be refilled because it has been
                         // updated directly in the database rather than via the
                         // local copy.

@@ -169,7 +169,7 @@ namespace HLU.GISApplication
         public abstract DataTable MergeFeaturesLogically(string keepIncid, DataColumn[] historyColumns);
 
         //---------------------------------------------------------------------
-        // FIX: 065 Prompt for the GIS layer name before starting export.
+        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
         //
         public abstract bool ExportPrompt(string tempMdbPathName, string attributeDatasetName, int attributesLength, bool selectedOnly);
         //---------------------------------------------------------------------

@@ -154,7 +154,7 @@ namespace HLU.Converters
             if (codeColumnOrdinal == -1) return rows;
 
             //---------------------------------------------------------------------
-            // FIX: 025 Add default sort order to all lookup tables
+            // FIXOLD: 025 Add default sort order to all lookup tables
             if ((nameColumnOrdinal != -1) && (descriptionColumnOrdinal != -1) && (sortColumnOrdinal != -1))
                 return (from r in rows
                         select new

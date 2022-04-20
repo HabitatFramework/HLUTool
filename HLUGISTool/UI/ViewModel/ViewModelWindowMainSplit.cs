@@ -105,7 +105,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
-                // FIX: 028 Only update DateTime fields to whole seconds
+                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
@@ -236,7 +236,7 @@ namespace HLU.UI.ViewModel
 
                     // Synch with the GIS selection.
                     //---------------------------------------------------------------------
-                    // FIX: 027 Force refill of Incid table after split/merge
+                    // FIXOLD: 027 Force refill of Incid table after split/merge
                     // Force the Incid table to be refilled because it has been
                     // updated directly in the database rather than via the
                     // local copy.
@@ -284,7 +284,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
-                // FIX: 028 Only update DateTime fields to whole seconds
+                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
@@ -292,7 +292,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 008 Update the incid modified columns for the current incid
+                // FIXOLD: 008 Update the incid modified columns for the current incid
                 // The incid modified columns (i.e. last modified user and date)
                 // should be updated for the active incid not the 'highest' incid
                 // which is what "_viewModelMain.CurrentIncid" represents.
@@ -353,7 +353,7 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
                 //---------------------------------------------------------------------
-                // FIX: 024 Don't update the incid modified columns again
+                // FIXOLD: 024 Don't update the incid modified columns again
                 // The incid modified columns (i.e. last modified user and date)
                 // have already been update above for the current incid.
                 //
@@ -393,7 +393,7 @@ namespace HLU.UI.ViewModel
 
                     // Synch with the GIS selection.
                     //---------------------------------------------------------------------
-                    // FIX: 027 Force refill of Incid table after split/merge
+                    // FIXOLD: 027 Force refill of Incid table after split/merge
                     // Force the Incid table to be refilled because it has been
                     // updated directly in the database rather than via the
                     // local copy.
@@ -437,7 +437,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 009 Don't update the ihs version when splitting features
+                // FIXOLD: 009 Don't update the ihs version when splitting features
                 // Previously the ihs version was set to the latest version for
                 // new (cloned) incids which meant that a feature split into 2
                 // parts could result in one with the current 'old' ihs version
@@ -452,7 +452,7 @@ namespace HLU.UI.ViewModel
 
                 // Update the created and last modified date and user fields.
                 //---------------------------------------------------------------------
-                // FIX: 028 Only update DateTime fields to whole seconds
+                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;

@@ -22,7 +22,7 @@ using System.Windows.Input;
 namespace HLU.UI.ViewModel
 {
     //---------------------------------------------------------------------
-    // FIX: 079 Display links to online guides in new 'About' window.
+    // FIXOLD: 079 Display links to online guides in new 'About' window.
     //
     class ViewModelWindowAbout : ViewModelBase
     {

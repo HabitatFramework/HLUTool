@@ -170,7 +170,7 @@ namespace HLU.UI.ViewModel
                 return false;
             else
                 //---------------------------------------------------------------------
-                // FIX: 055 Enable connection using Microsoft ACE driver.
+                // FIXOLD: 055 Enable connection using Microsoft ACE driver.
                 //
                 return (connection.Provider.ToLower().StartsWith("microsoft.jet.oledb") ||
                     (connection.Provider.ToLower().StartsWith("microsoft.ace.oledb.12.0")));
@@ -505,7 +505,7 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(_connStrBuilder.ConnectionString))
                     error.Append(", connection");
                 //---------------------------------------------------------------------
-                // FIX: 055 Enable connection using Microsoft ACE driver.
+                // FIXOLD: 055 Enable connection using Microsoft ACE driver.
                 //
                 if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                     String.IsNullOrEmpty(_defaultSchema)) error.Append(", default schema");
@@ -532,7 +532,7 @@ namespace HLU.UI.ViewModel
                         break;
                     case "DefaultSchema":
                         //---------------------------------------------------------------------
-                        // FIX: 055 Enable connection using Microsoft ACE driver.
+                        // FIXOLD: 055 Enable connection using Microsoft ACE driver.
                         //
                         if ((_connAdo != null) && !IsMsAccess(_connAdo) &&
                             String.IsNullOrEmpty(_defaultSchema)) error = "Error: You must provide a default schema";

@@ -258,7 +258,7 @@ namespace HLU
         }
 
         //---------------------------------------------------------------------
-        // FIX: 032 Enable users to select all filtered incids on map.
+        // FIXOLD: 032 Enable users to select all filtered incids on map.
         /// <summary>
         /// Break a list of items into chunks of a specific size.
         /// </summary>

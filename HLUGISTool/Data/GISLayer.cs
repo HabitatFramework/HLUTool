@@ -105,7 +105,7 @@ namespace HLU.Data
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 059 Do not display map window number with layer name
+                // FIXOLD: 059 Do not display map window number with layer name
                 // if there is only one map window.
                 // 
                 string mapName = null;

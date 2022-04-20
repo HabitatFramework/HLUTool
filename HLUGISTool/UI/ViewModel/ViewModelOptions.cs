@@ -126,7 +126,7 @@ namespace HLU.UI.ViewModel
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
 
             //---------------------------------------------------------------------
-            // FIX: 010 Don't clear the map path when cancelling option updates
+            // FIXOLD: 010 Don't clear the map path when cancelling option updates
             // Store the map path so that it can be reset if the user 
             // cancels updates to the options.
             _bakMapPath = _mapPath;
@@ -238,7 +238,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.VagueDateDelimiter = _vagueDateDelimiter;
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Bulk update options
             Settings.Default.BulkUpdateDeleteOrphanBapHabitats = _bulkDeleteOrphanBapHabitats;
@@ -397,7 +397,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 071 Add minimum auto zoom scale to options.
+        // FIXOLD: 071 Add minimum auto zoom scale to options.
         // Validate the minimum auto zoom scale.
         //
         /// <summary>
@@ -429,7 +429,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 040 Enable MapInfo users to set a default export
+        // FIXOLD: 040 Enable MapInfo users to set a default export
         // folder path.
         // 
         /// <summary>
@@ -615,7 +615,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 056 A new option to enable NVC Codes to be shown or hidden.
+        // FIXOLD: 056 A new option to enable NVC Codes to be shown or hidden.
         // 
         /// <summary>
         /// Gets or sets the preferred option to show or hide NVC Codes.
@@ -631,7 +631,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         /// <summary>
         /// Gets or sets the preferred option to show or hide group headers.
@@ -951,7 +951,7 @@ namespace HLU.UI.ViewModel
         #region Bulk Update
 
         //---------------------------------------------------------------------
-        // FIX: 078 Bulk update overhaul/improvements.
+        // FIXOLD: 078 Bulk update overhaul/improvements.
         // 
         /// <summary>
         /// Checks if the user has bulk update authority.
@@ -1146,7 +1146,7 @@ namespace HLU.UI.ViewModel
                 StringBuilder error = new StringBuilder();
 
                 //---------------------------------------------------------------------
-                // FIX: 017 Validate that mandatory values are not blank.
+                // FIXOLD: 017 Validate that mandatory values are not blank.
                 // Validate that the database timeout period, database page size and
                 // history rows to display are not null.
                 if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
@@ -1168,7 +1168,7 @@ namespace HLU.UI.ViewModel
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
                 //---------------------------------------------------------------------
-                // FIX: 071 Add minimum auto zoom scale to options.
+                // FIXOLD: 071 Add minimum auto zoom scale to options.
                 // Validate the minimum auto zoom scale.
                 if (Convert.ToInt32(MinAutoZoom) < 100 || MinAutoZoom == null)
                     error.Append("\n" + "Minimum auto zoom scale must be at least 100.");
@@ -1206,7 +1206,7 @@ namespace HLU.UI.ViewModel
                     error.Append("\n" + String.Format("Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows));
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
-                // FIX: 006 Allow the user to not display any of the history columns
+                // FIXOLD: 006 Allow the user to not display any of the history columns
                 // Remove the validation enforcing the user to display at least one
                 // of the history columns because they are all updated when creating
                 // history regardless of whether the user wants to display any of them.
@@ -1259,7 +1259,7 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 017 Validate that mandatory values are not blank
+                    // FIXOLD: 017 Validate that mandatory values are not blank
                     // Validate that the database timeout period, database page size and
                     // history rows to display are not null.
                     //---------------------------------------------------------------------
@@ -1298,7 +1298,7 @@ namespace HLU.UI.ViewModel
                             error = "Error: Select columns to be recorded in history trail.";
                         break;
                     //---------------------------------------------------------------------
-                    // FIX: 071 Add minimum auto zoom scale to options.
+                    // FIXOLD: 071 Add minimum auto zoom scale to options.
                     // Validate the minimum auto zoom scale.
                     case "MinAutoZoom":
                         if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)

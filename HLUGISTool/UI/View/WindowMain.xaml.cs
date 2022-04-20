@@ -71,7 +71,7 @@ namespace HLU
             }
 
             //---------------------------------------------------------------------
-            // FIX: 074 Save option to always keep app window on top.
+            // FIXOLD: 074 Save option to always keep app window on top.
             //
             // Get the app keep on top option default value.
             _keepOnTop = Settings.Default.AppKeepOnTop;
@@ -81,7 +81,7 @@ namespace HLU
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 097 Enable auto zoom when selecting features on map.
+            // FIXOLD: 097 Enable auto zoom when selecting features on map.
             //
             // Get the auto zoom option default value.
             _autoZoom = Settings.Default.AutoZoomSelection;
@@ -102,7 +102,7 @@ namespace HLU
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 069 Enable auto select of features on change of incid.
+            // FIXOLD: 069 Enable auto select of features on change of incid.
             //
             // Get the auto select option default value.
             _autoSelect = Settings.Default.AutoSelectOnGis;
@@ -336,7 +336,7 @@ namespace HLU
                 int caretIx = tbx.CaretIndex;
 
                 //---------------------------------------------------------------------
-                // FIX: 031 Check combobox text is not null before finding list item
+                // FIXOLD: 031 Check combobox text is not null before finding list item
                 if (!String.IsNullOrEmpty(cb.Text))
                 //---------------------------------------------------------------------
                 {
@@ -385,7 +385,7 @@ namespace HLU
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 097 Enable auto zoom when selecting features on map.
+        // FIXOLD: 097 Enable auto zoom when selecting features on map.
         /// <summary>
         /// Handles the Click event of the MenuItem_Zoom control.
         /// </summary>

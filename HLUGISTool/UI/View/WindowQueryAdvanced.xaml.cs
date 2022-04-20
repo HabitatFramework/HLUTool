@@ -62,7 +62,7 @@ namespace HLU.UI.View
                 int caretIx = tbx.CaretIndex;
 
                 //---------------------------------------------------------------------
-                // FIX: 031 Check combobox text is not null before finding list item
+                // FIXOLD: 031 Check combobox text is not null before finding list item
                 if (cb.Text != null)
                 //---------------------------------------------------------------------
                 {

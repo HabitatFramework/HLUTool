@@ -51,7 +51,7 @@ namespace HLU.UI.ViewModel
         #endregion
 
         //---------------------------------------------------------------------
-        // FIX: 059 Do not display map window number with layer name
+        // FIXOLD: 059 Do not display map window number with layer name
         // if there is only one map window.
         // 
         public ViewModelWindowSwitchGISLayer(List<GISLayer> ValidHluLayers, GISLayer SelectedHLULayer, int MapWindowsCount)

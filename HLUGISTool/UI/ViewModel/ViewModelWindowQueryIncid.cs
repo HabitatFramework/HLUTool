@@ -29,7 +29,7 @@ using HLU.Data.Model;
 namespace HLU.UI.ViewModel
 {
     //---------------------------------------------------------------------
-    // FIX: 072 Add option to filter by single INCID.
+    // FIXOLD: 072 Add option to filter by single INCID.
     // 
     class ViewModelWindowQueryIncid : ViewModelBase, IDataErrorInfo
     {
