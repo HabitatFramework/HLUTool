@@ -403,7 +403,7 @@ namespace HLU.Data
             else
             {
                 //---------------------------------------------------------------------
-                // FIX: 015 Allow 'None' habitats to be managed
+                // FIXOLD: 015 Allow 'None' habitats to be managed
                 // Validate that if this is a secondary priority habitat (i.e. in
                 // the secondary list) and the habitat is to be ignored (i.e. it equals
                 // 'None') then the determination quality can be anything except
@@ -535,7 +535,7 @@ namespace HLU.Data
                         else
                         {
                             //---------------------------------------------------------------------
-                            // FIX: 015 Allow 'None' habitats to be managed
+                            // FIXOLD: 015 Allow 'None' habitats to be managed
                             //
                             if (_secondaryPriorityHabitat)
                             {

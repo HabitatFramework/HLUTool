@@ -560,7 +560,7 @@ namespace HLU.UI.ViewModel
                 ReadMapSelection(false);
 
                 ////---------------------------------------------------------------------
-                //// FIX: 068 Enable auto zoom when selecting features on map.
+                //// FIXOLD: 068 Enable auto zoom when selecting features on map.
                 ////
                 //// If there are no selected features in the map
                 //if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
@@ -606,7 +606,7 @@ namespace HLU.UI.ViewModel
             try
             {
                 //---------------------------------------------------------------------
-                // FIX: 005 Always save all (both) of the history columns
+                // FIXOLD: 005 Always save all (both) of the history columns
                 // Make sure that all the available history columns are updated when
                 // creating history even if the user only wants to display some of them.
                 return _gisIDColumns.Concat(_hluDS.incid_mm_polygons.Columns.Cast<DataColumn>()
@@ -629,7 +629,7 @@ namespace HLU.UI.ViewModel
                 switch (s.Replace(" ", String.Empty).ToLower())
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 011 Allow the user to reset only the database settings "/d"
+                    // FIXOLD: 011 Allow the user to reset only the database settings "/d"
                     // or only the GIS settings "/g" instead of always both "/c"
                     case "/d":
                         DbFactory.ClearSettings();
@@ -693,7 +693,7 @@ namespace HLU.UI.ViewModel
                 //   "The minimum application version must be {0}.", appVersion.ToString()),
                 //   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 //---------------------------------------------------------------------
-                // FIX: 077 Trap error if database requires later application version.
+                // FIXOLD: 077 Trap error if database requires later application version.
                 throw new Exception(String.Format("The minimum application version must be {0}.", appVersion.ToString()));
                 //---------------------------------------------------------------------
             }
@@ -708,7 +708,7 @@ namespace HLU.UI.ViewModel
                 //   "The minimum database version must be {0}.",minDbVersion),
                 //   "HLU", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 //---------------------------------------------------------------------
-                // FIX: 077 Trap error if application requires later database version.
+                // FIXOLD: 077 Trap error if application requires later database version.
                 throw new Exception(String.Format("The minimum database version must be {0}.", minDbVersion));
                 //---------------------------------------------------------------------
             }
@@ -744,7 +744,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 059 Do not display map window number with layer name
+                    // FIXOLD: 059 Do not display map window number with layer name
                     // if there is only one map window.
                     // 
                     if (_mapWindowsCount > 1)
@@ -760,7 +760,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 057 Adjust window height correctly for optional areas.
+        // FIXOLD: 057 Adjust window height correctly for optional areas.
         // 
         /// <summary>
         /// Get and set the window height, adjusting it for any optional
@@ -772,7 +772,7 @@ namespace HLU.UI.ViewModel
             {
                 //---------------------------------------------------------------------
                 // FIX: 105 Trap error when unable to register Access table.
-                // FIX: 073 Add option to reset window dimensions to default.
+                // FIXOLD: 073 Add option to reset window dimensions to default.
                 // 
                 // Set the initial window height if not already set.
                 if (_windowHeight == 0)
@@ -816,7 +816,7 @@ namespace HLU.UI.ViewModel
 
         //---------------------------------------------------------------------
         // FIX: 105 Trap error when unable to register Access table.
-        // FIX: 073 Add option to reset window dimensions to default.
+        // FIXOLD: 073 Add option to reset window dimensions to default.
         // 
         /// <summary>
         /// Adjusts the window height for any optional groups/fields.
@@ -859,7 +859,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 073 Add option to reset window dimensions to default.
+        // FIXOLD: 073 Add option to reset window dimensions to default.
         // 
         /// <summary>
         /// Get and set the window width.
@@ -950,7 +950,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 096 Improve performance of reviewing OSMM updates
+        // FIXOLD: 096 Improve performance of reviewing OSMM updates
         //
         internal string OSMMUpdateWhereClause
         {
@@ -1198,7 +1198,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 063 Apply user's option database connection timeout.
+        // FIXOLD: 063 Apply user's option database connection timeout.
         internal int DBConnectionTimeout
         {
             get { return _dbConnectionTimeout; }
@@ -1737,7 +1737,7 @@ namespace HLU.UI.ViewModel
             _autoSplit = true;
 
             //---------------------------------------------------------------------
-            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // FIXOLD: 053 Check if all selected rows have unique keys to avoid
             // any potential data integrity problems.
             //
             // Check the selected rows are unique before attempting to split them.
@@ -1790,7 +1790,7 @@ namespace HLU.UI.ViewModel
                     ((_gisSelection.Rows.Count > 0) && ((_toidsSelectedMapCount > 1) || (_fragsSelectedMapCount > 0)) ||
                     (_gisSelection.Rows.Count == 1)) &&
                     //---------------------------------------------------------------------
-                    // FIX: 089 Only enable split/merge after select from map
+                    // FIXOLD: 089 Only enable split/merge after select from map
                     //
                     (_filterByMap == true); //&&
                     //---------------------------------------------------------------------
@@ -1815,7 +1815,7 @@ namespace HLU.UI.ViewModel
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     (_gisSelection != null) && (_gisSelection.Rows.Count > 1) &&
                     //---------------------------------------------------------------------
-                    // FIX: 089 Only enable split/merge after select from map
+                    // FIXOLD: 089 Only enable split/merge after select from map
                     //
                     (_filterByMap == true) &&
                     //---------------------------------------------------------------------
@@ -1868,7 +1868,7 @@ namespace HLU.UI.ViewModel
             ReadMapSelection(false);
 
             //---------------------------------------------------------------------
-            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // FIXOLD: 053 Check if all selected rows have unique keys to avoid
             // any potential data integrity problems.
             //
             // Check the selected rows are unique before attempting to merge them.
@@ -1899,7 +1899,7 @@ namespace HLU.UI.ViewModel
             ReadMapSelection(false);
 
             //---------------------------------------------------------------------
-            // FIX: 053 Check if all selected rows have unique keys to avoid
+            // FIXOLD: 053 Check if all selected rows have unique keys to avoid
             // any potential data integrity problems.
             //
             // Check the selected rows are unique before attempting to merge them.
@@ -1932,7 +1932,7 @@ namespace HLU.UI.ViewModel
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     //---------------------------------------------------------------------
-                    // FIX: 089 Only enable split/merge after select from map
+                    // FIXOLD: 089 Only enable split/merge after select from map
                     //
                     (_filterByMap == true) &&
                     //---------------------------------------------------------------------
@@ -1951,7 +1951,7 @@ namespace HLU.UI.ViewModel
                     HaveGisApp && EditMode && !String.IsNullOrEmpty(Reason) && !String.IsNullOrEmpty(Process) &&
                     _gisSelection != null && _gisSelection.Rows.Count > 1 &&
                     //---------------------------------------------------------------------
-                    // FIX: 089 Only enable split/merge after select from map
+                    // FIXOLD: 089 Only enable split/merge after select from map
                     //
                     (_filterByMap == true) &&
                     //---------------------------------------------------------------------
@@ -2047,7 +2047,7 @@ namespace HLU.UI.ViewModel
             _savingAttempted = false;
 
             //---------------------------------------------------------------------
-            // FIX: 069 Enable auto select of features on change of incid.
+            // FIXOLD: 069 Enable auto select of features on change of incid.
             //
             // If there are no features selected in the GIS (because there is no
             // active filter).
@@ -2636,7 +2636,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
                 _osmmUpdating = false;
                 //---------------------------------------------------------------------
 
@@ -2661,7 +2661,7 @@ namespace HLU.UI.ViewModel
                     if (CanBulkUpdate)
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 082 Check if any OSMM updates before enabling functionality.
+                        // FIXOLD: 082 Check if any OSMM updates before enabling functionality.
                         //
                         // Check if there are incid OSMM updates in the database
                         int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
@@ -2703,7 +2703,7 @@ namespace HLU.UI.ViewModel
                 _viewModelOSMMUpdate.CancelOSMMUpdate();
                 _viewModelOSMMUpdate = null;
                 //---------------------------------------------------------------------
-                // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
                 _osmmUpdating = false;
                 //---------------------------------------------------------------------
             }
@@ -2738,7 +2738,7 @@ namespace HLU.UI.ViewModel
         private void OSMMSkipClicked(object param)
         {
             //---------------------------------------------------------------------
-            // FIX: 099 Prevent OSMM updates being actioned too quickly.
+            // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
             // Mark the OSMM Update row as skipped
             // If there are any OSMM Updates for this incid then store the values.
             if (_osmmUpdating == false && _osmmUpdatesEmpty == false)
@@ -2779,7 +2779,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 099 Prevent OSMM updates being actioned too quickly.
+        // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
         //
         /// <summary>
         /// Can the proposed OSMM Update for the current incid
@@ -2821,7 +2821,7 @@ namespace HLU.UI.ViewModel
         private void OSMMAcceptClicked(object param)
         {
             //---------------------------------------------------------------------
-            // FIX: 099 Prevent OSMM updates being actioned too quickly.
+            // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
             if (_osmmUpdating == false)
             {
                 _osmmUpdating = true;
@@ -2870,7 +2870,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIX: 103 Accept/Reject OSMM updates in edit mode.
                 //---------------------------------------------------------------------
-                // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
                 // Check if there are no proposed OSMM Updates
                 // for the current filter.
                 return (_osmmUpdating == false && _osmmUpdatesEmpty == false &&
@@ -2903,7 +2903,7 @@ namespace HLU.UI.ViewModel
         private void OSMMRejectClicked(object param)
         {
             //---------------------------------------------------------------------
-            // FIX: 099 Prevent OSMM updates being actioned too quickly.
+            // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
             if (_osmmUpdating == false)
             {
                 _osmmUpdating = true;
@@ -3219,7 +3219,7 @@ namespace HLU.UI.ViewModel
                     if (CanBulkUpdate)
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 082 Check if any OSMM updates before enabling functionality.
+                        // FIXOLD: 082 Check if any OSMM updates before enabling functionality.
                         //
                         // Check if there are incid OSMM updates in the database
                         int incidOSMMUpdatesRowCount = (int)_db.ExecuteScalar(String.Format(
@@ -3372,7 +3372,7 @@ namespace HLU.UI.ViewModel
         #region View
 
         //---------------------------------------------------------------------
-        // FIX: 074 Save option to always keep app window on top.
+        // FIXOLD: 074 Save option to always keep app window on top.
         //
         public ICommand AppKeepOnTopCommand
         {
@@ -3400,7 +3400,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 097 Enable auto zoom when selecting features on map.
+        // FIXOLD: 097 Enable auto zoom when selecting features on map.
         //
         public ICommand AutoZoomSelectedOffCommand
         {
@@ -3475,7 +3475,7 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 069 Enable auto select of features on change of incid.
+        // FIXOLD: 069 Enable auto select of features on change of incid.
         //
         public ICommand AutoSelectOnGisCommand
         {
@@ -3550,7 +3550,7 @@ namespace HLU.UI.ViewModel
         public bool CanGisWinSideBySide { get { return HaveGisApp; } }
 
         //---------------------------------------------------------------------
-        // FIX: 073 Add option to reset window dimensions to default.
+        // FIXOLD: 073 Add option to reset window dimensions to default.
         // 
         public ICommand ResetToolWindowCommand
         {
@@ -3637,7 +3637,7 @@ namespace HLU.UI.ViewModel
             if (saveSettings)
             {
                 //---------------------------------------------------------------------
-                // FIX: 063 Apply user's option database connection timeout.
+                // FIXOLD: 063 Apply user's option database connection timeout.
                 _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
                 //---------------------------------------------------------------------
                 _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
@@ -3656,7 +3656,7 @@ namespace HLU.UI.ViewModel
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
-                // FIX: 076 New option to hide group headers to reduce window height.
+                // FIXOLD: 076 New option to hide group headers to reduce window height.
                 _showGroupHeaders = Settings.Default.ShowGroupHeaders;
                 RefreshGroupHeaders();
                 //---------------------------------------------------------------------
@@ -3717,7 +3717,7 @@ namespace HLU.UI.ViewModel
             // Show the current userid and username together with the version
             // and copyright notice in the 'About' box.
             //
-            // FIX: 058 Display database connection in 'About' dialog.
+            // FIXOLD: 058 Display database connection in 'About' dialog.
             // 
             string dbBackend;
             dbBackend = String.Format("{0}{1}{2}{3}",
@@ -3730,7 +3730,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 079 Display links to online guides in new 'About' window.
+            // FIXOLD: 079 Display links to online guides in new 'About' window.
             //
             //MessageBox.Show(App.Current.MainWindow,
             //    String.Format("App Version : {0}\nDb Version   : {1}\n\nDb Type      : {2}\nDb Settings :\n{3}\n\nUserid        : {4}\nUsername : {5}\n\n{6}",
@@ -3888,7 +3888,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 092 Enable advanced filter in OSMM mode
+        // FIXOLD: 092 Enable advanced filter in OSMM mode
         //
         /// <summary>
         /// FilterByAttributesAdvanced command.
@@ -4387,7 +4387,7 @@ namespace HLU.UI.ViewModel
         #region Filter by Incid Command
 
         //---------------------------------------------------------------------
-        // FIX: 072 Add option to filter by single INCID.
+        // FIXOLD: 072 Add option to filter by single INCID.
         // 
         /// <summary>
         /// FilterByIncid command.
@@ -4483,7 +4483,7 @@ namespace HLU.UI.ViewModel
                     // Replace any connection type specific qualifiers and delimiters.
                     string newWhereClause = null;
                     //---------------------------------------------------------------------
-                    // FIX: 083 Ensure predicted count of toids/fragment selected works with
+                    // FIXOLD: 083 Ensure predicted count of toids/fragment selected works with
                     // any query.
                     //
                     string sqlWhereClause = String.Format("[incid].incid = '{0}'", queryIncid);
@@ -4691,7 +4691,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 092 Enable advanced filter in OSMM mode
+        // FIXOLD: 092 Enable advanced filter in OSMM mode
         //
         public void OpenWindowQueryOSMMAdvanced(bool initialise)
         {
@@ -4824,7 +4824,7 @@ namespace HLU.UI.ViewModel
                             newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
                         //---------------------------------------------------------------------
-                        // FIX: 096 Improve performance of reviewing OSMM updates
+                        // FIXOLD: 096 Improve performance of reviewing OSMM updates
                         //
                         // Store the where clause for updating the OSMM updates later.
                         _osmmUpdateWhereClause = null;
@@ -5063,7 +5063,7 @@ namespace HLU.UI.ViewModel
                 newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
                 //---------------------------------------------------------------------
-                // FIX: 096 Improve performance of reviewing OSMM updates
+                // FIXOLD: 096 Improve performance of reviewing OSMM updates
                 //
                 // Store the where clause for updating the OSMM updates later.
                 _osmmUpdateWhereClause = newWhereClause;
@@ -5338,7 +5338,7 @@ namespace HLU.UI.ViewModel
             SelectOnMap(false);
 
             //---------------------------------------------------------------------
-            // FIX: 068 Enable auto zoom when selecting features on map.
+            // FIXOLD: 068 Enable auto zoom when selecting features on map.
             // Count the number of toids/fragments and refresh the status fields
             // outside of the map selection method.
             //
@@ -5382,7 +5382,7 @@ namespace HLU.UI.ViewModel
                 bool multiIncidFilter = (IsFiltered && _incidSelection.Rows.Count > 1);
 
                 //---------------------------------------------------------------------
-                // FIX: 069 Enable auto select of features on change of incid.
+                // FIXOLD: 069 Enable auto select of features on change of incid.
                 // Always save the current tables to for restoring later.
                 //
                 // Save the current table of selected incids.
@@ -5463,7 +5463,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 069 Enable auto select of features on change of incid.
+                    // FIXOLD: 069 Enable auto select of features on change of incid.
                     // Restore the previous tables and don't reset the filter
                     // after selecting features on the map.
                     //
@@ -5486,7 +5486,7 @@ namespace HLU.UI.ViewModel
                 _filterByMap = false;
 
                 //---------------------------------------------------------------------
-                // FIX: 097 Enable auto zoom when selecting features on map.
+                // FIXOLD: 097 Enable auto zoom when selecting features on map.
                 //
                 // Zoom to the GIS selection if auto zoom is on.
                 if (_gisSelection != null && _autoZoomSelection != 0)
@@ -5579,7 +5579,7 @@ namespace HLU.UI.ViewModel
                 if (_gisSelection.Rows.Count > 0)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 099 Prevent OSMM updates being actioned too quickly.
+                    // FIXOLD: 099 Prevent OSMM updates being actioned too quickly.
                     // FIX: 103 Accept/Reject OSMM updates in edit mode.
                     //---------------------------------------------------------------------
                     if (_osmmBulkUpdateMode == false && _osmmUpdateMode == true)
@@ -5737,7 +5737,7 @@ namespace HLU.UI.ViewModel
                 IncidBapHabitatsAuto = incidBapHabitatsAuto;
 
                 //---------------------------------------------------------------------
-                // FIX: 086 Clear error messages if errors have been resolved
+                // FIXOLD: 086 Clear error messages if errors have been resolved
                 // in pop-up window.
                 //
                 // Check if there are any errors in the primary BAP records to see
@@ -5821,7 +5821,7 @@ namespace HLU.UI.ViewModel
                 IncidBapHabitatsUser = incidBapHabitatsUser;
 
                 //---------------------------------------------------------------------
-                // FIX: 086 Clear error messages if errors have been resolved
+                // FIXOLD: 086 Clear error messages if errors have been resolved
                 // in pop-up window.
                 //
                 // Check if there are any errors in the secondary BAP records to see
@@ -5955,7 +5955,7 @@ namespace HLU.UI.ViewModel
         #region Select All On Map Command
 
         //---------------------------------------------------------------------
-        // FIX: 032 Enable users to select all filtered incids on map.
+        // FIXOLD: 032 Enable users to select all filtered incids on map.
         // Enable all the incids in the current filter to be selected
         // in GIS.
         //
@@ -6025,7 +6025,7 @@ namespace HLU.UI.ViewModel
                         SetFilter();
 
                         //---------------------------------------------------------------------
-                        // FIX: 097 Enable auto zoom when selecting features on map.
+                        // FIXOLD: 097 Enable auto zoom when selecting features on map.
                         //
                         // Zoom to the GIS selection if auto zoom is on.
                         if (_gisSelection != null && _autoZoomSelection != 0)
@@ -6218,7 +6218,7 @@ namespace HLU.UI.ViewModel
                         goto case 1;
                     case 1:
                         //---------------------------------------------------------------------
-                        // FIX: 022 Get the map selection in incid order
+                        // FIXOLD: 022 Get the map selection in incid order
                         // Order the incids selected in the GIS so that the filter
                         // is sorted in incid order.
                         _incidsSelectedMap = _gisSelection.AsEnumerable()
@@ -6230,7 +6230,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Update the database Incid selection only if required.
                 if ((updateIncidSelection) && (_incidsSelectedMapCount > 0))
@@ -6453,7 +6453,7 @@ namespace HLU.UI.ViewModel
                             ScratchDb.ScratchSelectionTable, _gisIDColumns);
 
                         //---------------------------------------------------------------------
-                        // FIX: 098 Fix bug when no features found when applying filter.
+                        // FIXOLD: 098 Fix bug when no features found when applying filter.
                         if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
                             return true;
                         else
@@ -6473,7 +6473,7 @@ namespace HLU.UI.ViewModel
                             whereClause);
 
                         //---------------------------------------------------------------------
-                        // FIX: 098 Fix bug when no features found when applying filter.
+                        // FIXOLD: 098 Fix bug when no features found when applying filter.
                         if ((_gisSelection != null) && (_gisSelection.Rows.Count > 0))
                             return true;
                         else
@@ -6541,7 +6541,7 @@ namespace HLU.UI.ViewModel
                 _windowSwitchGISLayer.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 //---------------------------------------------------------------------
-                // FIX: 059 Do not display map window number with layer name
+                // FIXOLD: 059 Do not display map window number with layer name
                 // if there is only one map window.
                 // 
                 // Pass the total number of map windows to the view model
@@ -6557,7 +6557,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 060 Disable the switch GIS layer button and menu item
+        // FIXOLD: 060 Disable the switch GIS layer button and menu item
         // if there is only one valid layer.
         // 
         public bool CanSwitchGISLayer
@@ -6834,7 +6834,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 069 Enable auto select of features on change of incid.
+                    // FIXOLD: 069 Enable auto select of features on change of incid.
                     //
                     // Include the total toid and fragment counts for the current Incid
                     // in the status area, and the currently select toid and fragment
@@ -7157,7 +7157,7 @@ namespace HLU.UI.ViewModel
                     _incidOSMMUpdatesSpatialFlag = null;
                     _incidOSMMUpdatesChangeFlag = null;
                     //---------------------------------------------------------------------
-                    // FIX: 095 Show OSMM XRef ID in user interface
+                    // FIXOLD: 095 Show OSMM XRef ID in user interface
                     //
                     //_incidOSMMUpdatesStatus = 0;
                     _incidOSMMUpdatesStatus = null;
@@ -7172,7 +7172,7 @@ namespace HLU.UI.ViewModel
                 HabitatType = null;
 
                 //---------------------------------------------------------------------
-                // FIX: 084 No longer find first habitat type on change in IHS habitat
+                // FIXOLD: 084 No longer find first habitat type on change in IHS habitat
                 // Disabled as this might select a habitat type that has
                 // mandatory or optional multiplex codes.
                 //
@@ -7181,7 +7181,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 069 Enable auto select of features on change of incid.
+                // FIXOLD: 069 Enable auto select of features on change of incid.
                 //
                 if (_gisApp != null && _autoSelectOnGis && _bulkUpdateMode == false && !_filterByMap)
                 {
@@ -7241,7 +7241,7 @@ namespace HLU.UI.ViewModel
             _toidsIncidDbCount = 0;
 
             //---------------------------------------------------------------------
-            // FIX: 069 Enable auto select of features on change of incid.
+            // FIXOLD: 069 Enable auto select of features on change of incid.
             // Count the number of toids and fragments in the database
             // regardless of whether a filter is currently applied.
             //
@@ -7461,7 +7461,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incidRow returnRow = _hluDS.incid.FindByincid(seekIncid);
 
             //---------------------------------------------------------------------
-            // FIX: 027 Force refill of Incid table after split/merge
+            // FIXOLD: 027 Force refill of Incid table after split/merge
             // Enable the Incid table to be forced to refill if it has been
             // updated directly in the database rather than via the
             // local copy.
@@ -7527,7 +7527,7 @@ namespace HLU.UI.ViewModel
                     else
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 023 Correctly select the first incid in filter
+                        // FIXOLD: 023 Correctly select the first incid in filter
                         // If the table has paged backwards (because the required incid
                         // is lower than the page minimum) and if the row number being
                         // sought is the first (i.e. zero) then return the lowest incid.
@@ -7918,7 +7918,7 @@ namespace HLU.UI.ViewModel
                     return true; // new row;
                 case 1:
                     //---------------------------------------------------------------------
-                    // FIX: 004 Don't flag existing invalid incid_bap rows as dirty
+                    // FIXOLD: 004 Don't flag existing invalid incid_bap rows as dirty
                     // Only flag an incid_bap row that is invalid as dirty if it has
                     // been added by the user. This allows existing records to be
                     // viewed in the user interface without warning the user that
@@ -8442,7 +8442,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 007 Display user's name instead of their user_id
+                // FIXOLD: 007 Display user's name instead of their user_id
                 // Display the created user's name from the lut_user table
                 // (if found) instead of the user_id
                 //
@@ -8461,7 +8461,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 007 Display user's name instead of their user_id
+                // FIXOLD: 007 Display user's name instead of their user_id
                 // Display the last modified user's name from the lut_user table
                 // (if found) instead of the user_id
                 //
@@ -8540,7 +8540,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 095 Show OSMM XRef ID in user interface
+                // FIXOLD: 095 Show OSMM XRef ID in user interface
                 //
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.process_flagColumn))
@@ -8566,7 +8566,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 095 Show OSMM XRef ID in user interface
+                // FIXOLD: 095 Show OSMM XRef ID in user interface
                 //
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.spatial_flagColumn))
@@ -8591,7 +8591,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 095 Show OSMM XRef ID in user interface
+                // FIXOLD: 095 Show OSMM XRef ID in user interface
                 //
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.change_flagColumn))
@@ -8615,7 +8615,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 095 Show OSMM XRef ID in user interface
+                // FIXOLD: 095 Show OSMM XRef ID in user interface
                 //
                 //if ((_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
                 //    !_incidOSMMUpdatesRows[0].IsNull(HluDataset.incid_osmm_updates.statusColumn))
@@ -8657,7 +8657,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 095 Show OSMM XRef ID in user interface
+        // FIXOLD: 095 Show OSMM XRef ID in user interface
         //
         /// <summary>
         /// Gets the OSMM XRef ID that relates to the selected Incid.
@@ -8693,7 +8693,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 095 Show OSMM XRef ID in user interface
+                // FIXOLD: 095 Show OSMM XRef ID in user interface
                 //
                 if (_incidOSMMUpdatesStatus != null)
                 //if ((_osmmUpdatesEmpty == false) && (_incidOSMMUpdatesRows.Length > 0) && (_incidOSMMUpdatesRows[0] != null) &&
@@ -8744,7 +8744,7 @@ namespace HLU.UI.ViewModel
         #region Reason and Process
 
         //---------------------------------------------------------------------
-        // FIX: 057 Adjust window height correctly for optional areas.
+        // FIXOLD: 057 Adjust window height correctly for optional areas.
         // 
         /// <summary>
         /// Only show the Reason and Process group if the data is editable
@@ -8803,7 +8803,7 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_reasonDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     _reasonCodes = HluDataset.lut_reason.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
@@ -8832,7 +8832,7 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_processDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     _processCodes = HluDataset.lut_process.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
@@ -8854,7 +8854,7 @@ namespace HLU.UI.ViewModel
         #region IHS Tab
 
         //---------------------------------------------------------------------
-        // FIX: 020 Show field errors on tab labels.
+        // FIXOLD: 020 Show field errors on tab labels.
         // Set the Ihs tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -8943,7 +8943,7 @@ namespace HLU.UI.ViewModel
                     OnPropertyChanged("HabitatTypeCodes");
 
                     //---------------------------------------------------------------------
-                    // FIX: 084 No longer find first habitat type on change in IHS habitat
+                    // FIXOLD: 084 No longer find first habitat type on change in IHS habitat
                     // Disabled as this might select a habitat type that has
                     // mandatory or optional multiplex codes.
                     //
@@ -9024,7 +9024,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
-                    // Fix: 090 Load all IHS habitats when habitat type is blank
+                    // FIXOLD: 090 Load all IHS habitats when habitat type is blank
                     // Load all IHS habitat codes that are flagged as local.
                     _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
                                        where h.is_local
@@ -9051,8 +9051,8 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 056 A new options to enable NVC Codes to be shown or hidden.
-        // FIX: 057 Adjust window height correctly for optional areas.
+        // FIXOLD: 056 A new options to enable NVC Codes to be shown or hidden.
+        // FIXOLD: 057 Adjust window height correctly for optional areas.
         // 
         /// <summary>
         /// Only show the NVC Codes if the option is set, otherwise collapse it.
@@ -9124,7 +9124,7 @@ namespace HLU.UI.ViewModel
         #region IHS Habitat
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsHabitatHeader
         {
@@ -9197,7 +9197,7 @@ namespace HLU.UI.ViewModel
                     {
                         _pasting = false;
                         //---------------------------------------------------------------------
-                        // FIX: 084 No longer find first habitat type on change in IHS habitat
+                        // FIXOLD: 084 No longer find first habitat type on change in IHS habitat
                         // Disabled as this might select a habitat type that has
                         // mandatory or optional multiplex codes.
                         //
@@ -9209,7 +9209,7 @@ namespace HLU.UI.ViewModel
                     }
 
                     //---------------------------------------------------------------------
-                    // FIX: 028 Only update DateTime fields to whole seconds
+                    // FIXOLD: 028 Only update DateTime fields to whole seconds
                     // Fractions of a second can cause rounding differences when
                     // comparing DateTime fields later in some databases.
                     DateTime currDtTm = DateTime.Now;
@@ -9327,7 +9327,7 @@ namespace HLU.UI.ViewModel
         #region IHS Matrix
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsMatrixHeader
         {
@@ -9376,7 +9376,7 @@ namespace HLU.UI.ViewModel
                             _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -9423,7 +9423,7 @@ namespace HLU.UI.ViewModel
 
                         if (q != null)
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                         else
@@ -9476,7 +9476,7 @@ namespace HLU.UI.ViewModel
 
                         if (q != null)
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                         else
@@ -9549,7 +9549,7 @@ namespace HLU.UI.ViewModel
                     {
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -9579,7 +9579,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsMatrixRows[0].matrix = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsMatrix1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -9658,7 +9658,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -9692,7 +9692,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsMatrixRows[1].matrix = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsMatrix2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -9774,7 +9774,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -9809,7 +9809,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsMatrixRows[2].matrix = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsMatrix3Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -9915,7 +9915,7 @@ namespace HLU.UI.ViewModel
         #region IHS Formation
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsFormationHeader
         {
@@ -9964,7 +9964,7 @@ namespace HLU.UI.ViewModel
                             _ihsFormation1Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsFormation1Codes = ClearRowIhsFormation(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10013,7 +10013,7 @@ namespace HLU.UI.ViewModel
                             _ihsFormation2Codes = new HluDataSet.lut_ihs_formationRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsFormation2Codes = ClearRowIhsFormation(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10074,7 +10074,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -10104,7 +10104,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsFormationRows[0].formation = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsFormation1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -10183,7 +10183,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -10217,7 +10217,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsFormationRows[1].formation = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsFormation2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -10322,7 +10322,7 @@ namespace HLU.UI.ViewModel
         #region IHS Management
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsManagementHeader
         {
@@ -10371,7 +10371,7 @@ namespace HLU.UI.ViewModel
                             _ihsManagement1Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsManagement1Codes = ClearRowIhsManagement(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10421,7 +10421,7 @@ namespace HLU.UI.ViewModel
                             _ihsManagement2Codes = new HluDataSet.lut_ihs_managementRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsManagement2Codes = ClearRowIhsManagement(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10482,7 +10482,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsManagementRows.Length > 0) && (_incidIhsManagementRows[0] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -10512,7 +10512,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsManagementRows[0].management = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsManagement1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -10592,7 +10592,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -10626,7 +10626,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsManagementRows[1].management = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsManagement2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -10732,7 +10732,7 @@ namespace HLU.UI.ViewModel
         #region IHS Complex
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string IhsComplexHeader
         {
@@ -10781,7 +10781,7 @@ namespace HLU.UI.ViewModel
                             _ihsComplex1Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsComplex1Codes = ClearRowIhsComplex(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10830,7 +10830,7 @@ namespace HLU.UI.ViewModel
                             _ihsComplex2Codes = new HluDataSet.lut_ihs_complexRow[0];
                         else
                             //---------------------------------------------------------------------
-                            // FIX: 025 Add default sort order to all lookup tables
+                            // FIXOLD: 025 Add default sort order to all lookup tables
                             _ihsComplex2Codes = ClearRowIhsComplex(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                         //---------------------------------------------------------------------
                     }
@@ -10891,7 +10891,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -10921,7 +10921,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsComplexRows[0].complex = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsComplex1Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -11002,7 +11002,7 @@ namespace HLU.UI.ViewModel
                     if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null))
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Allow codes to be cleared (but not deleted) in bulk update mode
                         if (_bulkUpdateMode == true)
@@ -11036,7 +11036,7 @@ namespace HLU.UI.ViewModel
                         _incidIhsComplexRows[1].complex = value;
 
                         //---------------------------------------------------------------------
-                        // FIX: 078 Bulk update overhaul/improvements.
+                        // FIXOLD: 078 Bulk update overhaul/improvements.
                         // 
                         // Add <clear> to the combobox list if it isn't already present
                         if (_ihsComplex2Codes.Where(r => r.code == _codeDeleteRow).Count() == 0)
@@ -11151,7 +11151,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Add default sort order to all lookup tables
+                // FIXOLD: 025 Add default sort order to all lookup tables
                 _lutIhsMatrixCodes = (from m in HluDataset.lut_ihs_matrix
                                       join h in HluDataset.lut_ihs_habitat_ihs_matrix on m.code equals h.code_matrix
                                       where h.code_habitat == IncidIhsHabitat
@@ -11167,7 +11167,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Add default sort order to all lookup tables
+                // FIXOLD: 025 Add default sort order to all lookup tables
                 _lutIhsFormationCodes = (from f in HluDataset.lut_ihs_formation
                                          join h in HluDataset.lut_ihs_habitat_ihs_formation on f.code equals h.code_formation
                                          where h.code_habitat == IncidIhsHabitat
@@ -11183,7 +11183,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Add default sort order to all lookup tables
+                // FIXOLD: 025 Add default sort order to all lookup tables
                 _lutIhsManagementCodes = (from m in HluDataset.lut_ihs_management
                                           join h in HluDataset.lut_ihs_habitat_ihs_management on m.code equals h.code_management
                                           where h.code_habitat == IncidIhsHabitat
@@ -11199,7 +11199,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Add default sort order to all lookup tables
+                // FIXOLD: 025 Add default sort order to all lookup tables
                 _lutIhsComplexCodes = (from c in HluDataset.lut_ihs_complex
                                        join h in HluDataset.lut_ihs_habitat_ihs_complex on c.code equals h.code_complex
                                        where h.code_habitat == incidIhsHabitat
@@ -11260,7 +11260,7 @@ namespace HLU.UI.ViewModel
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return HluDataset.lut_legacy_habitat.AsEnumerable().Concat(
                         new HluDataSet.lut_legacy_habitatRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
@@ -11331,7 +11331,7 @@ namespace HLU.UI.ViewModel
         #region Details Tab
 
         //---------------------------------------------------------------------
-        // FIX: 020 Show field errors on tab labels.
+        // FIXOLD: 020 Show field errors on tab labels.
         // Set the Details tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -11382,7 +11382,7 @@ namespace HLU.UI.ViewModel
             {
                 if (BapDeterminationQualityCodes != null)
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded
                         && r.code != BapEnvironment.BAPDetQltyPrevious)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
@@ -11397,14 +11397,14 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 015 Allow 'None' habitats to be managed
+                // FIXOLD: 015 Allow 'None' habitats to be managed
                 // Show all determination quality values in the drop-down list (instead
                 // of just 'Not present but close to definition') but validate the
                 // selected value later.
                 if (BapDeterminationQualityCodes != null)
                     //return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return BapDeterminationQualityCodes.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 //---------------------------------------------------------------------
                 else
@@ -11430,7 +11430,7 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_bap_quality_determinationDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     _bapDeterminationQualityCodes =
                         HluDataset.lut_bap_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
@@ -11456,7 +11456,7 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_bap_quality_interpretationDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     _bapInterpretationQualityCodes =
                         HluDataset.lut_bap_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
@@ -11667,7 +11667,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
@@ -11708,7 +11708,7 @@ namespace HLU.UI.ViewModel
                     prevBapRowsUser.ForEach(delegate(BapEnvironment be)
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 003 Allow 'None' habitats to be managed
+                        // FIXOLD: 003 Allow 'None' habitats to be managed
                         // Don't overwrite the determination quality value loaded from the
                         // database with 'Not present but close to definition' as other
                         // values may be valid and will be validated later.
@@ -11794,7 +11794,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
@@ -11836,7 +11836,7 @@ namespace HLU.UI.ViewModel
             Changed = true;
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
@@ -11861,7 +11861,7 @@ namespace HLU.UI.ViewModel
             Changed = true;
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
@@ -12160,7 +12160,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
@@ -12208,7 +12208,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 020 Show field errors on tab labels.
+            // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
             // if the Details tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
@@ -12278,7 +12278,7 @@ namespace HLU.UI.ViewModel
         #region Maps
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string DetailsMapsHeader
         {
@@ -12304,7 +12304,7 @@ namespace HLU.UI.ViewModel
                     _hluTableAdapterMgr.Fill(HluDataset,
                         new Type[] { typeof(HluDataSet.lut_boundary_mapDataTable) }, false);
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     string sortCols = String.Concat(HluDataset.lut_boundary_map.sort_orderColumn.ColumnName, ", ", HluDataset.lut_boundary_map.descriptionColumn.ColumnName);
                     HluDataset.lut_boundary_map.DefaultView.Sort = sortCols;
                     //---------------------------------------------------------------------
@@ -12366,7 +12366,7 @@ namespace HLU.UI.ViewModel
         #region Site
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string DetailsSiteHeader
         {
@@ -12439,7 +12439,7 @@ namespace HLU.UI.ViewModel
         #region Sources Tab
 
         //---------------------------------------------------------------------
-        // FIX: 020 Show field errors on tab labels.
+        // FIXOLD: 020 Show field errors on tab labels.
         // Set the Sources tab label from here so that validation can be done.
         // This will enable tooltips to be shown so that validation errors
         // in any fields in the tab can be highlighted by flagging the tab
@@ -12509,7 +12509,7 @@ namespace HLU.UI.ViewModel
                 else if ((columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal) && (newValue == null))
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 078 Bulk update overhaul/improvements.
+                    // FIXOLD: 078 Bulk update overhaul/improvements.
                     // 
                     if (_bulkUpdateMode == false)
                     {
@@ -12623,7 +12623,7 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     // CHANGED: CR32 (Local flags)
                     // Only load habitat classes that are flagged as local.
                     _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
@@ -12648,7 +12648,7 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
@@ -12661,7 +12661,7 @@ namespace HLU.UI.ViewModel
         #region Source1
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string Source1Header
         {
@@ -12701,7 +12701,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Exclude clear option from source names in bulk update mode
                 if ((IncidSource1Id != null) && (IncidSource1Id != Int32.MinValue))
@@ -12712,7 +12712,7 @@ namespace HLU.UI.ViewModel
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
@@ -12761,7 +12761,7 @@ namespace HLU.UI.ViewModel
                 else if (value != null)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 078 Bulk update overhaul/improvements.
+                    // FIXOLD: 078 Bulk update overhaul/improvements.
                     // 
                     // Check for equivalent null value when in bulk update mode
                     bool wasNull = (_incidSourcesRows[0] == null || (int)_incidSourcesRows[0]["source_id"] == Int32.MinValue);
@@ -12787,7 +12787,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 021 Disable remaining source fields when source name is blank
+        // FIXOLD: 021 Disable remaining source fields when source name is blank
         public bool IncidSource1Enabled
         {
             get { return (IncidSource1Id != null); }
@@ -12868,7 +12868,7 @@ namespace HLU.UI.ViewModel
                     }
 
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     // CHANGED: CR32 (Local flags)
                     // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
@@ -12968,7 +12968,7 @@ namespace HLU.UI.ViewModel
         #region Source2
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string Source2Header
         {
@@ -13008,7 +13008,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Exclude clear option from source names in bulk update mode
                 if ((IncidSource2Id != null) && (IncidSource2Id != Int32.MinValue))
@@ -13019,7 +13019,7 @@ namespace HLU.UI.ViewModel
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
@@ -13067,7 +13067,7 @@ namespace HLU.UI.ViewModel
                 else if (value != null)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 078 Bulk update overhaul/improvements.
+                    // FIXOLD: 078 Bulk update overhaul/improvements.
                     // 
                     // Check for equivalent null value when in bulk update mode
                     bool wasNull = (_incidSourcesRows[1] == null || (int)_incidSourcesRows[1]["source_id"] == Int32.MinValue);
@@ -13093,7 +13093,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 021 Disable remaining source fields when source name is blank
+        // FIXOLD: 021 Disable remaining source fields when source name is blank
         public bool IncidSource2Enabled
         {
             get { return (IncidSource2Id != null); }
@@ -13174,7 +13174,7 @@ namespace HLU.UI.ViewModel
                     }
 
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     // CHANGED: CR32 (Local flags)
                     // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
@@ -13274,7 +13274,7 @@ namespace HLU.UI.ViewModel
         #region Source3
 
         //---------------------------------------------------------------------
-        // FIX: 076 New option to hide group headers to reduce window height.
+        // FIXOLD: 076 New option to hide group headers to reduce window height.
         // 
         public string Source3Header
         {
@@ -13314,7 +13314,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Exclude clear option from source names in bulk update mode
                 if ((IncidSource3Id != null) && (IncidSource3Id != Int32.MinValue))
@@ -13325,7 +13325,7 @@ namespace HLU.UI.ViewModel
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     return SourceNames.Concat(
                         new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                     //---------------------------------------------------------------------
@@ -13373,7 +13373,7 @@ namespace HLU.UI.ViewModel
                 else if (value != null)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 078 Bulk update overhaul/improvements.
+                    // FIXOLD: 078 Bulk update overhaul/improvements.
                     // 
                     // Check for equivalent null value when in bulk update mode
                     bool wasNull = (_incidSourcesRows[2] == null || (int)_incidSourcesRows[2]["source_id"] == Int32.MinValue);
@@ -13399,7 +13399,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 021 Disable remaining source fields when source name is blank
+        // FIXOLD: 021 Disable remaining source fields when source name is blank
         public bool IncidSource3Enabled
         {
             get { return (IncidSource3Id != null); }
@@ -13503,7 +13503,7 @@ namespace HLU.UI.ViewModel
                     }
 
                     //---------------------------------------------------------------------
-                    // FIX: 025 Add default sort order to all lookup tables
+                    // FIXOLD: 025 Add default sort order to all lookup tables
                     // CHANGED: CR32 (Local flags)
                     // Only load habitat types that are flagged as local.
                     HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
@@ -13590,7 +13590,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 005 Always save all (both) of the history columns
+                    // FIXOLD: 005 Always save all (both) of the history columns
                     // Figure out which history columns to display based on the user options
                     // now that all the available history columns are always update when
                     // creating history even if the user only wants to display some of them.
@@ -13622,7 +13622,7 @@ namespace HLU.UI.ViewModel
                                 modified_operation = r.lut_operationRow != null ? r.lut_operationRow.description : String.Empty,
                                 modified_incid = !r.Ismodified_incidNull() ? r.modified_incid : String.Empty,
                                 //---------------------------------------------------------------------
-                                // FIX: 005 Always save all (both) of the history columns
+                                // FIXOLD: 005 Always save all (both) of the history columns
                                 modified_ihs = r.Table.Columns.Cast<DataColumn>().Where(rc =>
                                     displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
                                     _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
@@ -13644,7 +13644,7 @@ namespace HLU.UI.ViewModel
                                 String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
                                 g.Key.modified_ihs +
                                 //---------------------------------------------------------------------
-                                // FIX: 031 Show area/length in history as hectares/metres.
+                                // FIXOLD: 031 Show area/length in history as hectares/metres.
                                 // Show the area and length values in the history as hectares and metres.
                                 String.Format("\n\tModified Length: {0} [km]", g.Distinct(_histRowEqComp)
                                     .Sum(r => !r.Ismodified_lengthNull() ? Math.Round(r.modified_length / 1000, 3) : 0).ToString("f3")) +
@@ -13844,7 +13844,7 @@ namespace HLU.UI.ViewModel
         private void FixIhsMatrixCodes()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Don't move the matrix codes in bulk update mode
             if (_bulkUpdateMode == true) return;
@@ -13956,7 +13956,7 @@ namespace HLU.UI.ViewModel
         private void FixIhsFormationCodes()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Don't move the formation codes in bulk update mode
             if (_bulkUpdateMode == true) return;
@@ -13995,7 +13995,7 @@ namespace HLU.UI.ViewModel
         private void FixIhsManagementCodes()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Don't move the management codes in bulk update mode
             if (_bulkUpdateMode == true) return;
@@ -14034,7 +14034,7 @@ namespace HLU.UI.ViewModel
         private void FixIhsComplexCodes()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Don't move the complex codes in bulk update mode
             if (_bulkUpdateMode == true) return;
@@ -14194,7 +14194,7 @@ namespace HLU.UI.ViewModel
             _complexCodeWarningCount = missingCodes.Count();
 
             //---------------------------------------------------------------------
-            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
             // code is selected.
             //
             // If there are missing recommended codes (and none are already referenced)
@@ -14438,7 +14438,7 @@ namespace HLU.UI.ViewModel
             _matrixCodeWarningCount = missingCodes.Count();
 
             //---------------------------------------------------------------------
-            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
             // code is selected.
             //
             // If there are missing recommended codes (and none are already referenced)
@@ -14702,7 +14702,7 @@ namespace HLU.UI.ViewModel
             _formationCodeWarningCount = missingCodes.Count();
 
             //---------------------------------------------------------------------
-            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
             // code is selected.
             //
             // If there are missing recommended codes (and none are already referenced)
@@ -14931,7 +14931,7 @@ namespace HLU.UI.ViewModel
             _managementCodeWarningCount = missingCodes.Count();
 
             //---------------------------------------------------------------------
-            // FIX: 085 Don't show warning when at least one recommended multiplex
+            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
             // code is selected.
             //
             // If there are missing recommended codes (and none are already referenced)
@@ -15024,7 +15024,7 @@ namespace HLU.UI.ViewModel
             List<string[]> errors = new List<string[]>();
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             if (IncidSource1Id != null && IncidSource1Id != Int32.MinValue)
             //---------------------------------------------------------------------
@@ -15044,7 +15044,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource1HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Use skip value from settings rather than hard-coded value
+                // FIXOLD: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource1BoundaryImportance))
@@ -15114,7 +15114,7 @@ namespace HLU.UI.ViewModel
             List<string[]> errors = new List<string[]>();
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             if (IncidSource2Id != null && IncidSource2Id != Int32.MinValue)
             //---------------------------------------------------------------------
@@ -15134,7 +15134,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource2HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Use skip value from settings rather than hard-coded value
+                // FIXOLD: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource2BoundaryImportance))
@@ -15194,7 +15194,7 @@ namespace HLU.UI.ViewModel
             List<string[]> errors = new List<string[]>();
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             if (IncidSource3Id != null && IncidSource3Id != Int32.MinValue)
             //---------------------------------------------------------------------
@@ -15214,7 +15214,7 @@ namespace HLU.UI.ViewModel
                     errors.Add(new string[] { "IncidSource3HabitatType", "Error: Habitat type is mandatory if habitat class is filled in" });
 
                 //---------------------------------------------------------------------
-                // FIX: 025 Use skip value from settings rather than hard-coded value
+                // FIXOLD: 025 Use skip value from settings rather than hard-coded value
                 string skipVal = Settings.Default.SourceImportanceSkip;
                 //---------------------------------------------------------------------
                 if (String.IsNullOrEmpty(IncidSource3BoundaryImportance))
@@ -15421,7 +15421,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Show errors in bulk update mode.
                 if ((_incidCurrentRow == null) ||
@@ -15438,21 +15438,21 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
+                // FIXOLD: 020 Show field errors on tab labels.
                 // If there are any IHS field errors then show an error on the tab label.
                 if (IhsErrors != null && IhsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Habitats are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
+                // FIXOLD: 020 Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
                 if (DetailsErrors != null && DetailsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Details are in error");
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
+                // FIXOLD: 020 Show field errors on tab labels.
                 // If there are any Source field errors then show an error on the tab label.
                 if (((Source1Errors != null) && (Source1Errors.Count > 0)) ||
                     ((Source2Errors != null) && (Source2Errors.Count > 0)) ||
@@ -15470,7 +15470,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
+                // FIXOLD: 020 Show field errors on tab labels.
                 // Store the Source field errors so that they can be checked
                 // at the end to see if the Source tab label should also be flagged
                 // as in error.
@@ -15499,7 +15499,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Show errors in bulk update mode.
                 if ((_incidCurrentRow == null) ||
@@ -15522,7 +15522,7 @@ namespace HLU.UI.ViewModel
                 }
 
                 //---------------------------------------------------------------------
-                // FIX: 020 Show field errors on tab labels.
+                // FIXOLD: 020 Show field errors on tab labels.
                 // Check the individual field errors to see if their parent tab label
                 // should be flagged as also in error.
                 switch (columnName)
@@ -15840,7 +15840,7 @@ namespace HLU.UI.ViewModel
                         break;
                     case "DetailsTabLabel":
                         //---------------------------------------------------------------------
-                        // FIX: 080 Functionality to display warning level messages.
+                        // FIXOLD: 080 Functionality to display warning level messages.
                         //    
                         if (DetailsWarnings != null && DetailsWarnings.Count > 0)
                             error = "Warning: One or more Details have a warning";
@@ -15850,7 +15850,7 @@ namespace HLU.UI.ViewModel
                         break;
                     case "SourcesTabLabel":
                         //---------------------------------------------------------------------
-                        // FIX: 080 Functionality to display warning level messages.
+                        // FIXOLD: 080 Functionality to display warning level messages.
                         //    
                         // Check the Source field warnings to see if the Source tab label
                         // should be flagged with a warning.
@@ -15909,7 +15909,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
-                // FIX: 080 Functionality to display warning level messages.
+                // FIXOLD: 080 Functionality to display warning level messages.
                 //    
                 switch (columnName)
                 {
@@ -15931,7 +15931,7 @@ namespace HLU.UI.ViewModel
                         break;
                     case "IncidOSMMUpdateStatus":
                         //---------------------------------------------------------------------
-                        // FIX: 095 Show OSMM XRef ID in user interface
+                        // FIXOLD: 095 Show OSMM XRef ID in user interface
                         //
                         //if (IncidOSMMUpdateStatus == "Proposed" || IncidOSMMUpdateStatus == "Pending")
                         if (_incidOSMMUpdatesStatus != null & _incidOSMMUpdatesStatus >= 0)

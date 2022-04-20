@@ -187,7 +187,7 @@ namespace HLU.UI.ViewModel
                         if (i >= _lastValueCounter)
                         {
                             //---------------------------------------------------------------------
-                            // FIX: 092 Enable advanced filter in OSMM mode
+                            // FIXOLD: 092 Enable advanced filter in OSMM mode
                             //
                             // Add the key (string) and value (object) to the dictionary
                             // (if the key already exists the value will be updated).
@@ -875,7 +875,7 @@ namespace HLU.UI.ViewModel
                         //    lut.AsEnumerable();
 
                         //---------------------------------------------------------------------
-                        // FIX: 092 Enable advanced filter in OSMM mode
+                        // FIXOLD: 092 Enable advanced filter in OSMM mode
                         //
                         // If the select table is the 'incid_bap' table then only
                         // bap_priority values from the related lookup table (lut_habitat_type).

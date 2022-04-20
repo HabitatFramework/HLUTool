@@ -214,7 +214,7 @@ namespace HLU.UI.ViewModel
         #region Interface
 
         //---------------------------------------------------------------------
-        // FIX: 078 Bulk update overhaul/improvements.
+        // FIXOLD: 078 Bulk update overhaul/improvements.
         //         
         /// <summary>
         /// Gets or sets whether orphan bap habitats should be deleted.
@@ -435,7 +435,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 087 Enable bulk update options only if habitat has changed
+        // FIXOLD: 087 Enable bulk update options only if habitat has changed
         //
         /// <summary>
         /// Enable control when in OSMM Bulk Update mode and
@@ -534,7 +534,7 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     //---------------------------------------------------------------------
-                    // FIX: 088 Add warning to delete option in bulk update
+                    // FIXOLD: 088 Add warning to delete option in bulk update
                     //
                     case "DeleteMultiplexCodes":
                         if ((EnableDeleteMultiplexCodes == true) &&

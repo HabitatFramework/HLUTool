@@ -760,7 +760,7 @@ namespace HLU
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
-                    // FIX: 053 Check if all selected rows have unique keys to avoid
+                    // FIXOLD: 053 Check if all selected rows have unique keys to avoid
                     // any potential data integrity problems.
                     case "su": // selected rows unique: cmd
                         try
@@ -883,7 +883,7 @@ namespace HLU
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
-                    // FIX: 097 Enable auto zoom when selecting features on map.
+                    // FIXOLD: 097 Enable auto zoom when selecting features on map.
                     case "zs": // zoom selected: cmd [, queryFilter], minZoom, distUnits, alwaysZoom [, queryFilter]
                         try
                         {
@@ -923,7 +923,7 @@ namespace HLU
                         break;
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
-                    // FIX: 065 Prompt for the GIS layer name before starting export.
+                    // FIXOLD: 065 Prompt for the GIS layer name before starting export.
                     //
                     case "ep": // export prompt: cmd, mdbPathName, attributeDatasetName
                         if (_pipeData.Count == 3)
@@ -1119,7 +1119,7 @@ namespace HLU
                     _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
 
                     //---------------------------------------------------------------------
-                    // FIX: 067 Select features directly rather than via selection set.
+                    // FIXOLD: 067 Select features directly rather than via selection set.
                     //
                     // perform selection
                     //ISelectionSet selSet = hluDisplayTable.SelectDisplayTable(queryFilter,
@@ -1353,7 +1353,7 @@ namespace HLU
         }
 
         //---------------------------------------------------------------------
-        // FIX: 097 Enable auto zoom when selecting features on map.
+        // FIXOLD: 097 Enable auto zoom when selecting features on map.
         private void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
             if ((_hluFeatureClass == null) || (_hluView == null)) return;
@@ -1489,7 +1489,7 @@ namespace HLU
                 IScreenDisplay screenDisplay = activeView.ScreenDisplay;
                 //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
-                // FIX: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
+                // FIXOLD: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
                 FlashGeometry(geom, screenDisplay, 300, 2);
                 //---------------------------------------------------------------------
             }
@@ -1860,7 +1860,7 @@ namespace HLU
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 053 Check if all selected rows have unique keys to avoid
+        // FIXOLD: 053 Check if all selected rows have unique keys to avoid
         // any potential data integrity problems.
         //
         /// <summary>
@@ -2594,7 +2594,7 @@ namespace HLU
         #region Export
 
         //---------------------------------------------------------------------
-        // FIX: 065 Prompt for the GIS layer name before starting export.
+        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
         //
         /// <summary>
         /// Prompts the user for the export layer name.
@@ -2644,7 +2644,7 @@ namespace HLU
                 bool isShp = IsShp(outWS as IWorkspace);
 
                 //---------------------------------------------------------------------
-                // FIX: 050 Warn ArcGIS users if field names may be truncated or
+                // FIXOLD: 050 Warn ArcGIS users if field names may be truncated or
                 // renamed exporting to shapefiles.
                 //
                 // If the export layer is a shapefile check if any of
@@ -2885,7 +2885,7 @@ namespace HLU
                         attributeDataset.Name + "." + f.Name : f.Name))).ToArray();
 
                 //---------------------------------------------------------------------
-                // FIX: 038 Display the export progress bar correctly when exporting
+                // FIXOLD: 038 Display the export progress bar correctly when exporting
                 // from ArcGIS.
                 // Pass the number of features to be exported, not the number of incids,
                 // so that the export progress is displayed corectly
@@ -2986,7 +2986,7 @@ namespace HLU
             {
                 IField attributeField = exportAttributes.Fields.get_Field(i);
                 //---------------------------------------------------------------------
-                // FIX: 033 Ignore case in field names during export to avoid duplicate
+                // FIXOLD: 033 Ignore case in field names during export to avoid duplicate
                 // fields.
                 if (attributeField.Name.ToLower() != originPKJoinField.ToLower())
                 //---------------------------------------------------------------------
@@ -2997,7 +2997,7 @@ namespace HLU
             }
 
             //---------------------------------------------------------------------
-            // FIX: 037 Move the geometry length and area fields to the end.
+            // FIXOLD: 037 Move the geometry length and area fields to the end.
             // Exclude the length and area fields here so they can be moved/added
             // later at the end.
             //
@@ -3162,7 +3162,7 @@ namespace HLU
             if (restoreEditSession) CloseEditSession(true);
 
             //---------------------------------------------------------------------
-            // FIX: 064 Perform the export outside of an edit session.
+            // FIXOLD: 064 Perform the export outside of an edit session.
             //          This will commit changes during the process rather
             //          than saving them all to the end of the edit session
             //          which should (hopefully) reduce the demand on memory.
@@ -3215,7 +3215,7 @@ namespace HLU
                         if (item != DBNull.Value)
                             featureBuffer.set_Value(i, item);
                         //---------------------------------------------------------------------
-                        // FIX: 036 Clear all missing fields when exporting features from ArcGIS.
+                        // FIXOLD: 036 Clear all missing fields when exporting features from ArcGIS.
                         else
                             featureBuffer.set_Value(i, null);
                         //---------------------------------------------------------------------
@@ -3244,7 +3244,7 @@ namespace HLU
                 FlushCursor(false, ref insertCursor);
 
                 //---------------------------------------------------------------------
-                // FIX: 064 Perform the export outside of an edit session.
+                // FIXOLD: 064 Perform the export outside of an edit session.
                 // If using an edit session then stop it now.
                 if (_exportInEditSession)
                 {
@@ -3789,7 +3789,7 @@ namespace HLU
                     }
 
                     //---------------------------------------------------------------------
-                    // FIX: 059 Do not display map window number with layer name
+                    // FIXOLD: 059 Do not display map window number with layer name
                     // if there is only one map window.
                     // 
                     // Return the number of valid layers and the total number of

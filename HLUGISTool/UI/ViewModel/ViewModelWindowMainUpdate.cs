@@ -71,7 +71,7 @@ namespace HLU.UI.ViewModel
                 IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
 
                 //---------------------------------------------------------------------
-                // FIX: 028 Only update DateTime fields to whole seconds
+                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;

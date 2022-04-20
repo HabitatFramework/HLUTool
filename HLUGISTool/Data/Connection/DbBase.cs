@@ -966,7 +966,7 @@ namespace HLU.Data.Connection
                 sbCommandText.Append(WhereClause(true, true, qualifyColumns, whereConds));
 
                 //---------------------------------------------------------------------
-                // FIX: 075 Ensure that filtered records are sorted by INCID.
+                // FIXOLD: 075 Ensure that filtered records are sorted by INCID.
                 //
                 // Append an order by clause based on the primary key columns.
                 sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
@@ -1090,7 +1090,7 @@ namespace HLU.Data.Connection
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
 
                 //---------------------------------------------------------------------
-                // FIX: 075 Ensure that filtered records are sorted by INCID.
+                // FIXOLD: 075 Ensure that filtered records are sorted by INCID.
                 //
                 // Append an order by clause based on the primary key columns.
                 if (targetColumns.Length > 1)
@@ -1257,7 +1257,7 @@ namespace HLU.Data.Connection
                             dbColTypeString = dbColTypeString.Replace("(" + TextLength + ")", "(" + c.MaxLength + ")");
 
                         //---------------------------------------------------------------------
-                        // FIX: 034 Enable autoincrement fields to be included in exports
+                        // FIXOLD: 034 Enable autoincrement fields to be included in exports
                         if ((c.AutoIncrement == true) && (c.DataType == typeof(Int32)))
                             dbColTypeString = "COUNTER";
                         //---------------------------------------------------------------------

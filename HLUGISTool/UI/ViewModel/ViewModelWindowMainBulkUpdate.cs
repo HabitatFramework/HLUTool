@@ -134,7 +134,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Clear any interface warning and error messages
             _viewModelMain.ResetWarningsErrors();
@@ -157,7 +157,7 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // FIX: 078 Bulk update overhaul/improvements.
+        // FIXOLD: 078 Bulk update overhaul/improvements.
         // 
         /// <summary>
         /// Displays the bulk update window.
@@ -184,7 +184,7 @@ namespace HLU.UI.ViewModel
             }
 
             //---------------------------------------------------------------------
-            // FIX: 087 Enable bulk update options only if habitat has changed
+            // FIXOLD: 087 Enable bulk update options only if habitat has changed
             //
             // If in OSMM bulk update mode
             if (_osmmBulkUpdateMode == true)
@@ -423,7 +423,7 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Loop through each row in the incid selection
                 foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
@@ -481,7 +481,7 @@ namespace HLU.UI.ViewModel
         private void BulkUpdateResetControls()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Force the Incid table to be refilled because it has been
             // updated directly in the database rather than via the
@@ -794,7 +794,7 @@ namespace HLU.UI.ViewModel
         private void OSMMBulkUpdateResetControls()
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Force the Incid table to be refilled because it has been
             // updated directly in the database rather than via the
@@ -898,7 +898,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_matrixRow[] incidIhsMatrixRows = _viewModelMain.IncidIhsMatrixRows;
             // Store a copy of the table for the current incid
             //---------------------------------------------------------------------
-            // FIX: 091 Fix bug when applying bulk updates
+            // FIXOLD: 091 Fix bug when applying bulk updates
             //
             //HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
             //    (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
@@ -907,7 +907,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter,
@@ -919,7 +919,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_formationRow[] incidIhsFormationRows = _viewModelMain.IncidIhsFormationRows;
             // Store a copy of the table for the current incid
             //---------------------------------------------------------------------
-            // FIX: 091 Fix bug when applying bulk updates
+            // FIXOLD: 091 Fix bug when applying bulk updates
             //
             //HluDataSet.incid_ihs_formationDataTable ihsFormationTable =
             //    (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Copy();
@@ -928,7 +928,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter,
@@ -940,7 +940,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_managementRow[] incidIhsManagementRows = _viewModelMain.IncidIhsManagementRows;
             // Store a copy of the table for the current incid
             //---------------------------------------------------------------------
-            // FIX: 091 Fix bug when applying bulk updates
+            // FIXOLD: 091 Fix bug when applying bulk updates
             //
             //HluDataSet.incid_ihs_managementDataTable ihsManagementTable =
             //    (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Copy();
@@ -949,7 +949,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
@@ -961,7 +961,7 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_ihs_complexRow[] incidIhsComplexRows = _viewModelMain.IncidIhsComplexRows;
             // Store a copy of the table for the current incid
             //---------------------------------------------------------------------
-            // FIX: 091 Fix bug when applying bulk updates
+            // FIXOLD: 091 Fix bug when applying bulk updates
             //
             //HluDataSet.incid_ihs_complexDataTable ihsComplexTable =
             //    (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Copy();
@@ -970,7 +970,7 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter,
@@ -988,7 +988,7 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidIhsMatrixRows, incidIhsFormationRows,
                 incidIhsManagementRows, incidIhsComplexRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
@@ -1002,14 +1002,14 @@ namespace HLU.UI.ViewModel
             HluDataSet.incid_sourcesDataTable sourcesTable =
                 (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Clone();
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Count the non-blank rows from the user interface
             int newRows = (from nr in incidSourcesRows
                            where nr.source_id != Int32.MinValue
                            select nr).Count();
             //---------------------------------------------------------------------
-            // FIX: 093 Delete existing sources for bulk OSMM update
+            // FIXOLD: 093 Delete existing sources for bulk OSMM update
             //
             // If there are new source rows then delete the old sources
             int deleteSources = newRows > 0 ? 0 : 2;
@@ -1092,7 +1092,7 @@ namespace HLU.UI.ViewModel
                 (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter,
@@ -1106,7 +1106,7 @@ namespace HLU.UI.ViewModel
                 (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Copy();
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter,
@@ -1120,7 +1120,7 @@ namespace HLU.UI.ViewModel
                 (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Copy();
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
@@ -1135,7 +1135,7 @@ namespace HLU.UI.ViewModel
                 (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Copy();
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter,
@@ -1149,7 +1149,7 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
             // Update the rows in the database
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidIhsMatrixRows, incidIhsFormationRows,
                 incidIhsManagementRows, incidIhsComplexRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
@@ -1158,7 +1158,7 @@ namespace HLU.UI.ViewModel
             // Store the rows from the user interface
             HluDataSet.incid_sourcesRow[] incidSourcesRows = _viewModelMain.IncidSourcesRows;
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Store a copy of the table for the current incid
             HluDataSet.incid_sourcesDataTable incidSourcesTable =
@@ -1256,7 +1256,7 @@ namespace HLU.UI.ViewModel
             where R : DataRow
         {
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             List<R> newRows = new List<R>(rows.Length);
 
@@ -1437,7 +1437,7 @@ namespace HLU.UI.ViewModel
             }
 
             //---------------------------------------------------------------------
-            // FIX: 094 Insert new primary BAP habitats for bulk OSMM update
+            // FIXOLD: 094 Insert new primary BAP habitats for bulk OSMM update
             //
             // Determine if there are any primary BAP habitats that aren't
             // in the user interface (they must have come from an OSMM
@@ -1521,7 +1521,7 @@ namespace HLU.UI.ViewModel
             DataTable historyTable = null;
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // If there are no columns to update
             if ((updateColumns == null) || (updateColumns.Length == 0))
@@ -1661,7 +1661,7 @@ namespace HLU.UI.ViewModel
                 var incidRow = _viewModelMain.IncidTable.Where(r => r.incid == incid);
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 //string ihsHabitat = incidRow.Count() == 1 ? incidRow.ElementAt(0).ihs_habitat : String.Empty;
 
@@ -1683,7 +1683,7 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter, ref _ihsComplexTable);
 
                 //---------------------------------------------------------------------
-                // FIX: 078 Bulk update overhaul/improvements.
+                // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
                 // Build the IHS Summary string
                 object ihsSummaryValue = ViewModelWindowMainHelpers.IhsSummary(new string[] { ihsHabitat }
@@ -1731,8 +1731,8 @@ namespace HLU.UI.ViewModel
             List<DataColumn> updateColumnList = new List<DataColumn>();
             List<object> updateValueList = new List<object>();
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
-            // FIX: 005 Always save all (both) of the history columns
+            // FIXOLD: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 005 Always save all (both) of the history columns
             //
             // Check if a new IHS habitat has been set
             if (!_viewModelMain.IncidCurrentRow.Isihs_habitatNull())
@@ -1991,7 +1991,7 @@ namespace HLU.UI.ViewModel
             }
 
             //---------------------------------------------------------------------
-            // FIX: 078 Bulk update overhaul/improvements.
+            // FIXOLD: 078 Bulk update overhaul/improvements.
             // 
             // Get the maximum number of child rows for the current table
             int maxRowsDb = 0;
@@ -2016,7 +2016,7 @@ namespace HLU.UI.ViewModel
 
             // Re-insert any old rows not in the new rows
             //---------------------------------------------------------------------
-            // FIX: 091 Fix bug when applying bulk updates
+            // FIXOLD: 091 Fix bug when applying bulk updates
             //
             //if (deleteExistingRows != (int)DeleteMultiplexCodesAction.None)
             if (deleteExistingRows != (int)DeleteMultiplexCodesAction.All)

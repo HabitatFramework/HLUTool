@@ -774,7 +774,7 @@ namespace HLU.GISApplication.ArcGIS
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // FIX: 053 Check if all selected rows have unique keys to avoid
+        // FIXOLD: 053 Check if all selected rows have unique keys to avoid
         // any potential data integrity problems.
         //
         public override bool SelectedRowsUnique()
@@ -939,7 +939,7 @@ namespace HLU.GISApplication.ArcGIS
         public override void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
             //---------------------------------------------------------------------
-            // FIX: 097 Enable auto zoom when selecting features on map.
+            // FIXOLD: 097 Enable auto zoom when selecting features on map.
             if (alwaysZoom)
                 IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits, "always" });
             else
@@ -948,7 +948,7 @@ namespace HLU.GISApplication.ArcGIS
         }
 
         //---------------------------------------------------------------------
-        // FIX: 065 Prompt for the GIS layer name before starting export.
+        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
         //
         /// <summary>
         /// Prompts the user for the export layer name.
@@ -1426,7 +1426,7 @@ namespace HLU.GISApplication.ArcGIS
         }
 
         //---------------------------------------------------------------------
-        // FIX: 059 Do not display map window number with layer name
+        // FIXOLD: 059 Do not display map window number with layer name
         // if there is only one map window.
         // 
         /// <summary>
@@ -1822,7 +1822,7 @@ namespace HLU.GISApplication.ArcGIS
                     if (Int32.Parse(retList[0]) > 0)
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 059 Do not display map window number with layer name
+                        // FIXOLD: 059 Do not display map window number with layer name
                         // if there is only one map window.
                         // 
                         // Store the total number of map windows.
@@ -2422,7 +2422,7 @@ namespace HLU.GISApplication.ArcGIS
                         path = openFileDlg.FileName;
                         Settings.Default.MapPath = path;
                         //---------------------------------------------------------------------
-                        // FIX: 012 Ensure HLU layer displays in map after reconfiguration
+                        // FIXOLD: 012 Ensure HLU layer displays in map after reconfiguration
                         // For some reason the HLU layer does not display in the map
                         // window (although it appears in the contents list and the
                         // attribute table can be opened) if the application is not set
