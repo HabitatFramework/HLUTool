@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HluArcMapExtension")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2021 Andy Foy Consulting")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-22 GiGL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
