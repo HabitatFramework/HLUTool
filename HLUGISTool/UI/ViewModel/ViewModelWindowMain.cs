@@ -3,7 +3,7 @@
 // Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 // Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 // Copyright © 2019 London & South East Record Centres (LaSER)
-// Copyright © 2019-2020 Greenspace Information for Greater London CIC
+// Copyright © 2019-2022 Greenspace Information for Greater London CIC
 // 
 // This file is part of HLUTool.
 // 
@@ -9207,9 +9207,6 @@ namespace HLU.UI.ViewModel
                         //---------------------------------------------------------------------
                     }
 
-                    _incidIhsHabitat = value;
-                    _incidLastModifiedUser = UserID;
-
                     //---------------------------------------------------------------------
                     // FIX: 028 Only update DateTime fields to whole seconds
                     // Fractions of a second can cause rounding differences when
@@ -9217,6 +9214,9 @@ namespace HLU.UI.ViewModel
                     DateTime currDtTm = DateTime.Now;
                     DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
                     //---------------------------------------------------------------------
+
+                    _incidIhsHabitat = value;
+                    _incidLastModifiedUser = UserID;
                     _incidLastModifiedDate = nowDtTm;
                     OnPropertyChanged("IncidLastModifiedUser");
                     OnPropertyChanged("IncidLastModifiedDate");
@@ -9530,6 +9530,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -9631,6 +9640,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -9738,6 +9756,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10029,6 +10056,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10129,6 +10165,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10419,6 +10464,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10520,6 +10574,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10810,6 +10873,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -10912,6 +10984,15 @@ namespace HLU.UI.ViewModel
             }
             set
             {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Skip null values as these can only have been created by the
+                // interface in error.
+                if (value == null)
+                    return;
+                //---------------------------------------------------------------------
+
                 bool removeDeleteCode = value == _codeDeleteRow;
                 if (removeDeleteCode) value = null;
 
@@ -13776,7 +13857,13 @@ namespace HLU.UI.ViewModel
                     if (!String.IsNullOrEmpty(IncidIhsMatrix3))
                     {
                         string bak3 = IncidIhsMatrix3;
-                        IncidIhsMatrix3 = null;
+                        //---------------------------------------------------------------------
+                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                        //
+                        // Set value to delete row instead of null value to ensure
+                        // delete is processed correctly.
+                        IncidIhsMatrix3 = _codeDeleteRow;
+                        //---------------------------------------------------------------------
                         IncidIhsMatrix1 = bak3;
                     }
                 }
@@ -13785,14 +13872,26 @@ namespace HLU.UI.ViewModel
                     if (String.IsNullOrEmpty(IncidIhsMatrix3))
                     {
                         string bak2 = IncidIhsMatrix2;
-                        IncidIhsMatrix2 = null;
+                        //---------------------------------------------------------------------
+                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                        //
+                        // Set value to delete row instead of null value to ensure
+                        // delete is processed correctly.
+                        IncidIhsMatrix2 = _codeDeleteRow;
+                        //---------------------------------------------------------------------
                         IncidIhsMatrix1 = bak2;
                     }
                     else
                     {
                         string bak3 = IncidIhsMatrix3;
                         string bak2 = IncidIhsMatrix2;
-                        IncidIhsMatrix3 = null;
+                        //---------------------------------------------------------------------
+                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                        //
+                        // Set value to delete row instead of null value to ensure
+                        // delete is processed correctly.
+                        IncidIhsMatrix3 = _codeDeleteRow;
+                        //---------------------------------------------------------------------
                         IncidIhsMatrix2 = bak3;
                         IncidIhsMatrix1 = bak2;
                     }
@@ -13801,7 +13900,13 @@ namespace HLU.UI.ViewModel
             else if (String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))
             {
                 string bak3 = IncidIhsMatrix3;
-                IncidIhsMatrix3 = null;
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsMatrix3 = _codeDeleteRow;
+                //---------------------------------------------------------------------
                 IncidIhsMatrix2 = bak3;
             }
 
@@ -13810,19 +13915,37 @@ namespace HLU.UI.ViewModel
             {
                 if (String.IsNullOrEmpty(IncidIhsMatrix3))
                 {
-                    IncidIhsMatrix2 = null;
+                    //---------------------------------------------------------------------
+                    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                    //
+                    // Set value to delete row instead of null value to ensure
+                    // delete is processed correctly.
+                    IncidIhsMatrix2 = _codeDeleteRow;
+                    //---------------------------------------------------------------------
                 }
                 else
                 {
                     string bak3 = IncidIhsMatrix3;
-                    IncidIhsMatrix3 = null;
+                    //---------------------------------------------------------------------
+                    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                    //
+                    // Set value to delete row instead of null value to ensure
+                    // delete is processed correctly.
+                    IncidIhsMatrix3 = _codeDeleteRow;
+                    //---------------------------------------------------------------------
                     IncidIhsMatrix2 = bak3;
                 }
             }
             else if ((IncidIhsMatrix3 != null) &&
                 ((IncidIhsMatrix1 == IncidIhsMatrix3) || (IncidIhsMatrix2 == IncidIhsMatrix3)))
             {
-                IncidIhsMatrix3 = null;
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsMatrix3 = _codeDeleteRow;
+                //---------------------------------------------------------------------
             }
         }
 
@@ -13842,13 +13965,27 @@ namespace HLU.UI.ViewModel
             if (String.IsNullOrEmpty(IncidIhsFormation1) && !String.IsNullOrEmpty(IncidIhsFormation2))
             {
                 string bak2 = IncidIhsFormation2;
-                IncidIhsFormation2 = null;
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsFormation2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
                 IncidIhsFormation1 = bak2;
             }
 
             // check for duplicate values
             if ((IncidIhsFormation1 == IncidIhsFormation2) && (IncidIhsFormation2 != null))
-                IncidIhsFormation2 = null;
+            {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsFormation2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
+            }
         }
 
         /// <summary>
@@ -13867,13 +14004,27 @@ namespace HLU.UI.ViewModel
             if (String.IsNullOrEmpty(IncidIhsManagement1) && !String.IsNullOrEmpty(IncidIhsManagement2))
             {
                 string bak2 = IncidIhsManagement2;
-                IncidIhsManagement2 = null;
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsManagement2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
                 IncidIhsManagement1 = bak2;
             }
 
             // check for duplicate values
             if ((IncidIhsManagement1 == IncidIhsManagement2) && (IncidIhsManagement2 != null))
-                IncidIhsManagement2 = null;
+            {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsManagement2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
+            }
         }
 
         /// <summary>
@@ -13892,13 +14043,27 @@ namespace HLU.UI.ViewModel
             if (String.IsNullOrEmpty(IncidIhsComplex1) && !String.IsNullOrEmpty(IncidIhsComplex2))
             {
                 string bak2 = IncidIhsComplex2;
-                IncidIhsComplex2 = null;
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsComplex2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
                 IncidIhsComplex1 = bak2;
             }
 
             // check for duplicate values
             if ((IncidIhsComplex1 == IncidIhsComplex2) && (IncidIhsComplex2 != null))
-                IncidIhsComplex2 = null;
+            {
+                //---------------------------------------------------------------------
+                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+                //
+                // Set value to delete row instead of null value to ensure
+                // delete is processed correctly.
+                IncidIhsComplex2 = _codeDeleteRow;
+                //---------------------------------------------------------------------
+            }
         }
 
         //---------------------------------------------------------------------
