@@ -60,7 +60,11 @@ namespace HLU.UI.ViewModel
             _viewModelMain.RefreshAll();
 
             // Open the OSMM Update filter
-            _viewModelMain.OpenWindowQueryOSMM(true);
+            //---------------------------------------------------------------------
+            // FIX: 101 Enable get map selection when in OSMM update mode.
+            //
+            //_viewModelMain.OpenWindowQueryOSMM(true);
+            //---------------------------------------------------------------------
         }
 
         /// <summary>
@@ -113,8 +117,12 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.HluDataset.AcceptChanges();
                 _viewModelMain.Saved = true;
 
-                // Move to the next Incid
-                _viewModelMain.IncidCurrentRowIndex += 1;
+                //---------------------------------------------------------------------
+                // FIX: 103 Accept/Reject OSMM updates in edit mode.
+                //
+                //// Move to the next Incid
+                //_viewModelMain.IncidCurrentRowIndex += 1;
+                //---------------------------------------------------------------------
 
                 return true;
             }
