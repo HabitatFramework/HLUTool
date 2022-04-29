@@ -264,6 +264,7 @@ namespace HLU.UI.ViewModel
         private bool _pasting = false;
         private bool _changed = false;
         private bool _saving = false;
+        private bool _closing = false;
         private bool _autoSplit = true;
         private bool _splitting = false;
         private bool _filterByMap = false;
@@ -1404,7 +1405,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 if (_closeCommand == null)
-                    _closeCommand = new RelayCommand(param => this.OnRequestClose());
+                    _closeCommand = new RelayCommand(param => this.OnRequestClose(true));
 
                 return _closeCommand;
             }
@@ -1415,21 +1416,22 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public event EventHandler RequestClose;
 
-        public void OnRequestClose()
+        public void OnRequestClose(bool check)
         {
-            //---------------------------------------------------------------------
-            // FIX: 106 Check if user is sure before closing application.
-            //
-            // Check if the user is sure first
-            if (MessageBox.Show(String.Format("Close HLU Tool. Are you sure?",
-                _gisApp.ApplicationType), "HLU: Exit", MessageBoxButton.YesNo,
-                MessageBoxImage.Question) == MessageBoxResult.Yes)
+            // Set the event handler to close the application
+            EventHandler handler = this.RequestClose;
+            if (handler != null)
             {
-
-                // Set the event handler to close the application
-                EventHandler handler = this.RequestClose;
-                if (handler != null)
+                //---------------------------------------------------------------------
+                // FIX: 106 Check if user is sure before closing application.
+                //
+                if ((check == false) || (MessageBox.Show("Close HLU Tool. Are you sure?", "HLU: Exit", MessageBoxButton.YesNo,
+                        MessageBoxImage.Question) == MessageBoxResult.Yes))
                 {
+                    // Indicate the application is already closing.
+                    _closing = true;
+                    //---------------------------------------------------------------------
+
                     // Check there are no outstanding edits.
                     MessageBoxResult userResponse = CheckDirty();
 
@@ -1466,8 +1468,20 @@ namespace HLU.UI.ViewModel
                     handler(this, EventArgs.Empty);
                 }
             }
-            //---------------------------------------------------------------------
         }
+
+        //---------------------------------------------------------------------
+        // FIX: 106 Check if user is sure before closing application.
+        //
+        /// <summary>
+        /// Is the application already in the process of closing.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsClosing
+        {
+            get { return _closing; }
+        }
+        //---------------------------------------------------------------------
 
         #endregion
 
@@ -5121,15 +5135,16 @@ namespace HLU.UI.ViewModel
                         {
                             // Indicate there are more OSMM updates to review.
                             _osmmUpdatesEmpty = false;
+
+                            // Set the filter to the first incid.
+                            SetFilter();
+
                             //---------------------------------------------------------------------
                             // FIX: 103 Accept/Reject OSMM updates in edit mode.
                             //
                             OnPropertyChanged("CanOSMMAccept");
                             OnPropertyChanged("CanOSMMSkip");
                             //---------------------------------------------------------------------
-
-                            // Set the filter to the first incid.
-                            SetFilter();
                         }
 
                         // Refresh all the controls
@@ -6125,47 +6140,48 @@ namespace HLU.UI.ViewModel
             else
             //---------------------------------------------------------------------
             {
-                if (IsFiltered)
+                //if (IsFiltered)
+                //{
+                _incidSelection = null;
+                _incidSelectionWhereClause = null;
+                _gisSelection = null;
+                _incidsSelectedDBCount = 0;
+                _toidsSelectedDBCount = 0;
+                _fragsSelectedDBCount = 0;
+                _incidsSelectedMapCount = 0;
+                _toidsSelectedMapCount = 0;
+                _fragsSelectedMapCount = 0;
+                _incidPageRowNoMax = -1;
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR10 (Attribute updates for incid subsets)
+                // Only move to the first incid in the index if required, to save
+                // changing the index here and then again immediately after from
+                // the calling method.
+                if (resetRowIndex)
                 {
-                    _incidSelection = null;
-                    _incidSelectionWhereClause = null;
-                    _gisSelection = null;
-                    _incidsSelectedDBCount = 0;
-                    _toidsSelectedDBCount = 0;
-                    _fragsSelectedDBCount = 0;
-                    _incidsSelectedMapCount = 0;
-                    _toidsSelectedMapCount = 0;
-                    _fragsSelectedMapCount = 0;
-                    _incidPageRowNoMax = -1;
-
                     //---------------------------------------------------------------------
-                    // FIX: 107 Reset filter when no map features selected.
-                    // 
-                    //// Indicate the selection didn't come from the map.
-                    //_filterByMap = false;
-                    //---------------------------------------------------------------------
+                    // CHANGED: CR22 (Record selectors)
+                    // Show the wait cursor and processing message in the status area
+                    // whilst moving to the new Incid.
+                    //ChangeCursor(Cursors.Wait, "Processing ...");
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
-                    // Only move to the first incid in the index if required, to save
-                    // changing the index here and then again immediately after from
-                    // the calling method.
-                    if (resetRowIndex)
-                    {
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR22 (Record selectors)
-                        // Show the wait cursor and processing message in the status area
-                        // whilst moving to the new Incid.
-                        //ChangeCursor(Cursors.Wait, "Processing ...");
+                    _incidCurrentRowIndex = 1;
+                    //IncidCurrentRowIndex = 1;
 
-                        _incidCurrentRowIndex = 1;
-                        //IncidCurrentRowIndex = 1;
-
-                        //ChangeCursor(Cursors.Arrow, null);
-                        //---------------------------------------------------------------------
-                    }
+                    //ChangeCursor(Cursors.Arrow, null);
                     //---------------------------------------------------------------------
                 }
+                //---------------------------------------------------------------------
+                //}
+
+                //---------------------------------------------------------------------
+                // FIX: 107 Reset filter when no map features selected.
+                // 
+                // Suggest the selection came from the map so that
+                // the map doesn't auto zoom to the first incid.
+                _filterByMap = true;
+                //---------------------------------------------------------------------
 
                 // Re-retrieve the current record
                 if (resetRowIndex)
@@ -6177,6 +6193,13 @@ namespace HLU.UI.ViewModel
 
                 // Refresh all the status type fields.
                 RefreshStatus();
+
+                //---------------------------------------------------------------------
+                // FIX: 107 Reset filter when no map features selected.
+                // 
+                // Indicate the selection didn't come from the map.
+                _filterByMap = false;
+                //---------------------------------------------------------------------
             }
         }
 

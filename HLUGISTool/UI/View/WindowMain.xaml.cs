@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.ComponentModel;
 using HLU.UI.UserControls;
 using Microsoft.Windows.Controls;
 using HLU.Properties;
@@ -435,6 +436,24 @@ namespace HLU
                         mItem.IsChecked = true;
                     else
                         mItem.IsChecked = false;
+                }
+            }
+        }
+        //---------------------------------------------------------------------
+
+        //---------------------------------------------------------------------
+        // FIX: 106 Check if user is sure before closing application.
+        //
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            // Check if the application is already in the process of closing.
+            if (!((dynamic)DataContext).IsClosing)
+            {
+                // Check if the user is sure and cancel the close request if not.
+                if (MessageBox.Show("Close HLU Tool. Are you sure?", "HLU: Exit", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes)
+                {
+                    e.Cancel = true;
                 }
             }
         }

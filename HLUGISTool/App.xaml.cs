@@ -73,7 +73,7 @@ namespace HLU
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             if (_mainViewModel != null)
-                _mainViewModel.OnRequestClose();
+                _mainViewModel.OnRequestClose(false);
         }
 
         private void Application_Activated(object sender, System.EventArgs e)
