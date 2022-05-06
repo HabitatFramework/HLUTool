@@ -120,7 +120,7 @@ namespace HLU
             Control focusedControl = focusedElement as Control;
 
             // Ignore keyup if focus is on a data grid cell
-            if ((focusedControl != null) && (focusedControl.Parent is DataGridCell))
+            if ((focusedControl != null) && (focusedControl.Parent is Microsoft.Windows.Controls.DataGridCell))
                 return;
 
             // Ignore keyup if any comboboxes are currently open
