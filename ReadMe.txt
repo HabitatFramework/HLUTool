@@ -4,9 +4,10 @@ Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
 Copyright © 2014, 2018 Sussex Biodiversity Record Centre
 Copyright © 2019 London & South East Record Centres (LaSER)
-Copyright © 2019-2020 Greenspace Information for Greater London CIC
-Copyright © 2022 Andy Foy Consulting
+Copyright © 2019-2022 Greenspace Information for Greater London CIC
+Copyright © 2021-2022 Andy Foy Consulting
 
+--------
 Overview
 --------
 The HLU Tool provides a user interface for maintaining habitat & Land Use
