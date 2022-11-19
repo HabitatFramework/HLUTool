@@ -345,7 +345,7 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
                 _viewModelMain.DataBase.QuoteValue(incid)),
                 _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
-                throw new Exception("Failed to update incid table.");
+                throw new Exception("Failed to update incid table modified details.");
         }
     }
 }

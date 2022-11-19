@@ -373,6 +373,9 @@
     <Page Include="UI\View\WindowQueryBuilder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    <Page Include="UI\View\WindowSelectGIS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -529,7 +532,6 @@
     <Compile Include="UI\ViewModel\ViewModelMessageWindow.cs" />
     <Compile Include="UI\ViewModel\ViewModelOptions.cs" />
     <Compile Include="UI\ViewModel\ViewModelPassword.cs" />
-    <Compile Include="UI\ViewModel\ViewModelWindowQueryBuilder.cs" />
     <Compile Include="UI\ViewModel\ViewModelSelectConnection.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowMain.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowMainBulkUpdate.cs" />
@@ -577,6 +579,8 @@
     </Compile>
     <Compile Include="UI\View\WindowQueryBuilder.xaml.cs">
       <DependentUpon>WindowQueryBuilder.xaml</DependentUpon>
+    <Compile Include="UI\View\WindowSelectGIS.xaml.cs">
+      <DependentUpon>WindowSelectGIS.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\View\WindowSplash.xaml.cs">
       <DependentUpon>WindowSplash.xaml</DependentUpon>
