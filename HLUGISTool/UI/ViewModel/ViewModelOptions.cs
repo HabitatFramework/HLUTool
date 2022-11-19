@@ -75,7 +75,6 @@ namespace HLU.UI.ViewModel
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
 
-        private bool _useAdvancedSQL = Settings.Default.UseAdvancedSQL;
         private int? _getValueRows = Settings.Default.GetValueRows;
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private string _sqlPath = Settings.Default.SqlPath;
@@ -225,7 +224,6 @@ namespace HLU.UI.ViewModel
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
 
             // Filter options
-            Settings.Default.UseAdvancedSQL = _useAdvancedSQL;
             Settings.Default.GetValueRows = (int)_getValueRows;
             Settings.Default.WarnBeforeGISSelect = (int)_warnBeforeGISSelect;
             Settings.Default.SqlPath = _sqlPath;
@@ -734,31 +732,6 @@ namespace HLU.UI.ViewModel
         #region Filter
 
         //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by Attributes Interface)
-        // A new option to enable the user to use the new
-        // (advanced) 'Select by Attributes' form or the
-        // old (original) form.
-        //
-        /// <summary>
-        /// Gets or sets the choice of whether the user will
-        /// use the advanced 'Select by Attributes' form.
-        /// </summary>
-        /// <value>
-        /// If the user will use the advanced 'Select by Attributes'
-        /// form.
-        /// </value>
-        public bool UseAdvancedSQL
-        {
-            get { return _useAdvancedSQL; }
-            set
-            {
-                _useAdvancedSQL = value;
-                OnPropertyChanged("CanBrowseSqlPath");
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
         // CHANGED: CR5 (Select by attributes interface)
         // A new option to enable the user to select how many rows
         // to retrieve when getting values for a data column when
@@ -833,23 +806,11 @@ namespace HLU.UI.ViewModel
                 if (_browseSqlPathCommand == null)
                 {
                     Action<object> browseSqlPathAction = new Action<object>(this.BrowseSqlPathClicked);
-                    _browseSqlPathCommand = new RelayCommand(browseSqlPathAction, param => this.CanBrowseSqlPath);
+                    _browseSqlPathCommand = new RelayCommand(browseSqlPathAction);
                 }
 
                 return _browseSqlPathCommand;
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the user can browse for
-        /// the default SQL path.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if the user can browse for the default SQL path; otherwise, <c>false</c>.
-        /// </value>
-        public bool CanBrowseSqlPath
-        {
-            get { return _useAdvancedSQL == true; }
         }
 
         /// <summary>

@@ -158,8 +158,6 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowAbout _viewModelAbout;
         private WindowOptions _windowOptions;
         private ViewModelOptions _viewModelOptions;
-        private WindowQueryBuilder _windowQueryBuilder;
-        private ViewModelWindowQueryBuilder _viewModelWinQueryBuilder;
         private WindowQueryIncid _windowQueryIncid;
         private ViewModelWindowQueryIncid _viewModelWinQueryIncid;
         private WindowQueryAdvanced _windowQueryAdvanced;
@@ -3866,16 +3864,8 @@ namespace HLU.UI.ViewModel
                 OpenWindowQueryOSMM(false);
             else
             {
-                //---------------------------------------------------------------------
-                // CHANGED: CR5 (Select by attributes interface)
-                // Open the required interface depending upon the user's
-                // options preferrence.
-                //
-                if (Settings.Default.UseAdvancedSQL)
-                    OpenWindowQueryAdvanced();
-                else
-                    OpenWindowQueryBuilder();
-                //---------------------------------------------------------------------
+                // Open the select by attributes interface
+                OpenWindowQueryAdvanced();
             }
             //---------------------------------------------------------------------
         }
@@ -3952,195 +3942,6 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Opens the standard query builder window.
-        /// </summary>
-        /// <exception cref="Exception">No parent window loaded</exception>
-        private void OpenWindowQueryBuilder()
-        {
-            try
-            {
-                _windowQueryBuilder = new WindowQueryBuilder();
-                if ((_windowQueryBuilder.Owner = App.GetActiveWindow()) == null)
-                    throw (new Exception("No parent window loaded"));
-                _windowQueryBuilder.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-                // create ViewModel to which main window binds
-                _viewModelWinQueryBuilder = new ViewModelWindowQueryBuilder(HluDataset);
-                _viewModelWinQueryBuilder.DisplayName = "Query Builder";
-
-                // when ViewModel asks to be closed, close window
-                _viewModelWinQueryBuilder.RequestClose +=
-                    new ViewModelWindowQueryBuilder.RequestCloseEventHandler(_viewModelWinQueryBuilder_RequestClose);
-
-                // allow all controls in window to bind to ViewModel by setting DataContext
-                _windowQueryBuilder.DataContext = _viewModelWinQueryBuilder;
-
-                // show window
-                _windowQueryBuilder.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Process the sql when the standard query builder window is closed.
-        /// </summary>
-        /// <param name="queryItems">The query items.</param>
-        protected void _viewModelWinQueryBuilder_RequestClose(ObservableCollection<QueryItem> queryItems)
-        {
-            _viewModelWinQueryBuilder.RequestClose -= _viewModelWinQueryBuilder_RequestClose;
-            _windowQueryBuilder.Close();
-
-            if (queryItems != null)
-            {
-                try
-                {
-                    ChangeCursor(Cursors.Wait, "Validating ...");
-
-                    // extract where conditions from query items
-                    _incidSelectionWhereClause = new List<List<SqlFilterCondition>>();
-                    int i = 0;
-                    while (i < queryItems.Count)
-                    {
-                        List<SqlFilterCondition> whereBlock = new List<SqlFilterCondition>();
-                        int openParenths = 0;
-                        int closeParenths = 0;
-                        int j = i;
-                        while (j < queryItems.Count)
-                        {
-                            QueryItem qi = queryItems.ElementAt(j);
-                            if (!String.IsNullOrEmpty(qi.OpenParentheses))
-                                openParenths += qi.OpenParentheses.Trim().Length;
-                            if (!String.IsNullOrEmpty(qi.CloseParentheses))
-                                closeParenths += qi.CloseParentheses.Trim().Length;
-                            if (qi.IsComplete)
-                            {
-                                if ((whereBlock.Count >= IncidPageSize) &&
-                                    (qi.WhereCondition.BooleanOperator.ToUpper() == "OR") &&
-                                    (closeParenths == openParenths))
-                                {
-                                    _incidSelectionWhereClause.Add(whereBlock);
-                                    break;
-                                }
-                                else
-                                {
-                                    whereBlock.Add(qi.WhereCondition);
-                                    if (j == queryItems.Count - 1)
-                                        _incidSelectionWhereClause.Add(whereBlock);
-                                    j++;
-                                }
-                            }
-                        }
-                        i = j;
-                    }
-
-                    // Backup the current selection (filter).
-                    DataTable incidSelectionBackup = _incidSelection;
-
-                    // create a selection DataTable of PK values of IncidTable
-                    if (_incidSelectionWhereClause.Count > 0)
-                    {
-
-                        _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, _incidSelectionWhereClause[0]);
-                        for (i = 1; i < _incidSelectionWhereClause.Count; i++)
-                        {
-                            DataTable tSel = _db.SqlSelect(true, IncidTable.PrimaryKey, _incidSelectionWhereClause[i]);
-                            foreach (DataRow r in tSel.Rows)
-                                _incidSelection.ImportRow(r);
-                        }
-                    }
-                    else
-                    {
-                        _incidSelectionWhereClause = null;
-                        _incidSelection = null;
-                    }
-
-                    // If there are any records in the selection (and the tool is
-                    // not currently in bulk update mode).
-                    if (IsFiltered)
-                    {
-                        // Find the expected number of features to be selected in GIS.
-                        _toidsSelectedDBCount = 0;
-                        _fragsSelectedDBCount = 0;
-                        ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
-
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR12 (Select by attribute performance)
-                        // Store the number of incids found in the database
-                        _incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
-                        //---------------------------------------------------------------------
-
-                        ChangeCursor(Cursors.Wait, "Filtering ...");
-                        // Select the required incid(s) in GIS.
-                        if (PerformGisSelection(true, _fragsSelectedDBCount, _incidsSelectedDBCount))
-                        {
-                            //---------------------------------------------------------------------
-                            // CHANGED: CR21 (Select current incid in map)
-                            // Analyse the results, set the filter and reset the cursor AFTER
-                            // returning from performing the GIS selection so that other calls
-                            // to the PerformGisSelection method can control if/when these things
-                            // are done.
-                            //
-                            // Analyse the results of the GIS selection by counting the number of
-                            // incids, toids and fragments selected.
-                            AnalyzeGisSelectionSet(true);
-
-                            // Indicate the selection didn't come from the map.
-                            _filterByMap = false;
-
-                            // Set the filter back to the first incid.
-                            SetFilter();
-
-                            // Reset the cursor back to normal.
-                            ChangeCursor(Cursors.Arrow, null);
-
-                            // Warn the user that no records were found.
-                            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
-                            //---------------------------------------------------------------------
-                        }
-                        else
-                        {
-                            // Restore the previous selection (filter).
-                            _incidSelection = incidSelectionBackup;
-
-                            // Reset the cursor back to normal.
-                            ChangeCursor(Cursors.Arrow, null);
-                        }
-                    }
-                    else
-                    {
-                        // Restore the previous selection (filter).
-                        _incidSelection = incidSelectionBackup;
-
-                        // Reset the cursor back to normal
-                        ChangeCursor(Cursors.Arrow, null);
-
-                        // Warn the user that no records were found
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _incidSelection = null;
-                    ChangeCursor(Cursors.Arrow, null);
-                    MessageBox.Show(App.Current.MainWindow, ex.Message, "HLU Query",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                finally { RefreshStatus(); }
-            }
-        }
-
-        //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by attributes interface)
-        // Open the new advanced query interface.
-        //
-        /// <summary>
         /// Opens the new advanced query window.
         /// </summary>
         /// <exception cref="System.Exception">No parent window loaded</exception>
@@ -4173,12 +3974,7 @@ namespace HLU.UI.ViewModel
                 //throw;
             }
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by attributes interface)
-        // Process the new advanced query.
-        //
         /// <summary>
         /// Process the sql when the advanced query window is closed.
         /// </summary>
@@ -4323,7 +4119,6 @@ namespace HLU.UI.ViewModel
                 finally { RefreshStatus(); }
             }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Opens the warning on gis selection window to prompt the user
@@ -6390,11 +6185,6 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // CHANGED: CR5 (Select by attributes interface)
-        // Calculate the expected number of GIS features to be selected
-        // when using the new advanced interface.
-        //
         /// <summary>
         /// Calculates the expected number of GIS features to be selected
         /// by the sql query based upon a list of data tables and a sql
@@ -6429,7 +6219,6 @@ namespace HLU.UI.ViewModel
                 catch { }
             }
         }
-        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR21 (Select current incid in map)

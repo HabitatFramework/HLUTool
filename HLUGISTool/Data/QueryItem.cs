@@ -30,350 +30,350 @@ using HLU.UI.ViewModel;
 
 namespace HLU.Data
 {
-    public class QueryItem : ViewModelBase, IDataErrorInfo
-    {
-        #region Fields
+    //public class QueryItem : ViewModelBase, IDataErrorInfo
+    //{
+    //    #region Fields
 
-        private string _displayName;
-        private SqlFilterCondition _sqlCond;
-        private bool _isComplete;
-        private DataTable _table;
-        private DataColumn _column;
-        private string _queryValueText;
-        private Dictionary<string, DataTable> _tables;
-        private string[] _booleanOperators;
-        private string[] _comparisonOperators;
-        private Cursor _cursorType = Cursors.Arrow;
-        private string _descriptionFieldName = Settings.Default.LutDescriptionFieldName;
-        private int _descriptionFieldOrdinal = Settings.Default.LutDescriptionFieldOrdinal;
-        private Regex _queryValueRegex = new Regex(@"\s+:\s+", RegexOptions.IgnoreCase); // @"\A(?<code>[^:\s]+)\s+:\s+(?<desc>[^:]+)\z", RegexOptions.IgnoreCase);
+    //    private string _displayName;
+    //    private SqlFilterCondition _sqlCond;
+    //    private bool _isComplete;
+    //    private DataTable _table;
+    //    private DataColumn _column;
+    //    private string _queryValueText;
+    //    private Dictionary<string, DataTable> _tables;
+    //    private string[] _booleanOperators;
+    //    private string[] _comparisonOperators;
+    //    private Cursor _cursorType = Cursors.Arrow;
+    //    private string _descriptionFieldName = Settings.Default.LutDescriptionFieldName;
+    //    private int _descriptionFieldOrdinal = Settings.Default.LutDescriptionFieldOrdinal;
+    //    private Regex _queryValueRegex = new Regex(@"\s+:\s+", RegexOptions.IgnoreCase); // @"\A(?<code>[^:\s]+)\s+:\s+(?<desc>[^:]+)\z", RegexOptions.IgnoreCase);
         
-        #endregion
+    //    #endregion
 
-        #region Constructor
+    //    #region Constructor
 
-        public QueryItem()
-        {
-            _sqlCond = new SqlFilterCondition();
-            _sqlCond.OpenParentheses = "(";
-            _sqlCond.CloseParentheses = ")";
-        }
+    //    public QueryItem()
+    //    {
+    //        _sqlCond = new SqlFilterCondition();
+    //        _sqlCond.OpenParentheses = "(";
+    //        _sqlCond.CloseParentheses = ")";
+    //    }
 
-        #endregion
+    //    #endregion
 
-        #region ViewModelBase Members
+    //    #region ViewModelBase Members
 
-        public override string DisplayName
-        {
-            get { return _displayName; }
-            set { _displayName = value; }
-        }
+    //    public override string DisplayName
+    //    {
+    //        get { return _displayName; }
+    //        set { _displayName = value; }
+    //    }
 
-        public override string WindowTitle
-        {
-            get { return DisplayName; }
-        }
+    //    public override string WindowTitle
+    //    {
+    //        get { return DisplayName; }
+    //    }
 
-        #endregion
+    //    #endregion
 
-        #region Properties
+    //    #region Properties
 
-        #region Dropdown Lists
+    //    #region Dropdown Lists
 
-        public string[] BooleanOperators
-        {
-            get
-            {
-                if (_booleanOperators == null)
-                    _booleanOperators = new string[] { "AND", "AND NOT", "OR", "OR NOT" };
-                return _booleanOperators;
-            }
-        }
+    //    public string[] BooleanOperators
+    //    {
+    //        get
+    //        {
+    //            if (_booleanOperators == null)
+    //                _booleanOperators = new string[] { "AND", "AND NOT", "OR", "OR NOT" };
+    //            return _booleanOperators;
+    //        }
+    //    }
 
-        public Dictionary<string, DataTable> Tables
-        {
-            get
-            {
-                if ((_tables == null) && ((ViewModelWindowQueryBuilder.HluDatasetStatic != null) &&
-                    (ViewModelWindowQueryBuilder.HluDatasetStatic.incid != null)))
-                {
-                    _tables = ViewModelWindowQueryBuilder.HluDatasetStatic.incid.ChildRelations
-                        .Cast<DataRelation>().ToDictionary(r => r.ChildTable.TableName, r => r.ChildTable);
-                    _tables.Add("incid", ViewModelWindowQueryBuilder.HluDatasetStatic.incid);
-                }
-                return _tables;
-            }
-            set { }
-        }
+    //    public Dictionary<string, DataTable> Tables
+    //    {
+    //        get
+    //        {
+    //            if ((_tables == null) && ((ViewModelWindowQueryBuilder.HluDatasetStatic != null) &&
+    //                (ViewModelWindowQueryBuilder.HluDatasetStatic.incid != null)))
+    //            {
+    //                _tables = ViewModelWindowQueryBuilder.HluDatasetStatic.incid.ChildRelations
+    //                    .Cast<DataRelation>().ToDictionary(r => r.ChildTable.TableName, r => r.ChildTable);
+    //                _tables.Add("incid", ViewModelWindowQueryBuilder.HluDatasetStatic.incid);
+    //            }
+    //            return _tables;
+    //        }
+    //        set { }
+    //    }
 
-        public Dictionary<string, DataColumn> Columns
-        {
-            get
-            {
-                if (Table != null)
-                    return Table.Columns.Cast<DataColumn>().ToDictionary(c => c.ColumnName, c => c);
-                else
-                    return null;
-            }
-            set { }
-        }
+    //    public Dictionary<string, DataColumn> Columns
+    //    {
+    //        get
+    //        {
+    //            if (Table != null)
+    //                return Table.Columns.Cast<DataColumn>().ToDictionary(c => c.ColumnName, c => c);
+    //            else
+    //                return null;
+    //        }
+    //        set { }
+    //    }
 
-        public string[] ComparisonOperators
-        {
-            get 
-            {
-                if (_comparisonOperators == null)
-                {
-                    _comparisonOperators = new string[] { "=", "<", ">", "<=", ">=", "<>", 
-                        "contains", "begins with", "ends with", "IS NULL", "IS NOT NULL", "LIKE", "IN ()", "NOT IN ()" };
-                }
-                return _comparisonOperators;
-            }
-        }
+    //    public string[] ComparisonOperators
+    //    {
+    //        get 
+    //        {
+    //            if (_comparisonOperators == null)
+    //            {
+    //                _comparisonOperators = new string[] { "=", "<", ">", "<=", ">=", "<>", 
+    //                    "contains", "begins with", "ends with", "IS NULL", "IS NOT NULL", "LIKE", "IN ()", "NOT IN ()" };
+    //            }
+    //            return _comparisonOperators;
+    //        }
+    //    }
 
-        public Dictionary<string, object> Values
-        {
-            get
-            {
-                // Return null if there is no table or column selected.
-                if ((Table == null) || (Column == null) || (!String.IsNullOrEmpty(_sqlCond.Operator) &&
-                    _sqlCond.Operator.ToUpper().EndsWith("NULL"))) return null;
+    //    public Dictionary<string, object> Values
+    //    {
+    //        get
+    //        {
+    //            // Return null if there is no table or column selected.
+    //            if ((Table == null) || (Column == null) || (!String.IsNullOrEmpty(_sqlCond.Operator) &&
+    //                _sqlCond.Operator.ToUpper().EndsWith("NULL"))) return null;
 
-                _cursorType = Cursors.Wait;
-                OnPropertyChanged("CursorType");
+    //            _cursorType = Cursors.Wait;
+    //            OnPropertyChanged("CursorType");
 
-                // Find the related lookup tables for the selected table and column
-                IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
-                IEnumerable<DataRelation> lutRelations = parentRelations.Where(r => r.ChildTable == Table &&
-                    r.ParentTable.TableName.StartsWith("lut_", StringComparison.CurrentCultureIgnoreCase) && 
-                    r.ChildColumns.Length == 1 && r.ChildColumns.Contains(Column));
+    //            // Find the related lookup tables for the selected table and column
+    //            IEnumerable<DataRelation> parentRelations = Table.ParentRelations.Cast<DataRelation>();
+    //            IEnumerable<DataRelation> lutRelations = parentRelations.Where(r => r.ChildTable == Table &&
+    //                r.ParentTable.TableName.StartsWith("lut_", StringComparison.CurrentCultureIgnoreCase) && 
+    //                r.ChildColumns.Length == 1 && r.ChildColumns.Contains(Column));
 
-                DataRelation lutRelation;
+    //            DataRelation lutRelation;
 
-                // If there is only one related lookup table then load the
-                // column and description values.
-                if (lutRelations.Count() == 1)
-                {
-                    lutRelation = lutRelations.ElementAt(0);
-                    DataTable lut = lutRelation.ParentTable;
-                    DataColumn lutColumn = lutRelation.ParentColumns[0];
-                    DataColumn testColumn = null;
-                    DataColumn descriptionColumn = lut.Columns.Contains(_descriptionFieldName) ? 
-                        lut.Columns[_descriptionFieldName] : (testColumn = 
-                        lut.Columns.Cast<DataColumn>().FirstOrDefault(c => c.ColumnName.IndexOf("_name", 
-                            StringComparison.CurrentCultureIgnoreCase) != -1)) != null ? testColumn :
-                        _descriptionFieldOrdinal < lut.Columns.Count ? 
-                        lut.Columns[_descriptionFieldOrdinal] : lutColumn.Ordinal < lut.Columns.Count - 1 ? 
-                        lut.Columns[lutColumn.Ordinal + 1] : lutColumn;
+    //            // If there is only one related lookup table then load the
+    //            // column and description values.
+    //            if (lutRelations.Count() == 1)
+    //            {
+    //                lutRelation = lutRelations.ElementAt(0);
+    //                DataTable lut = lutRelation.ParentTable;
+    //                DataColumn lutColumn = lutRelation.ParentColumns[0];
+    //                DataColumn testColumn = null;
+    //                DataColumn descriptionColumn = lut.Columns.Contains(_descriptionFieldName) ? 
+    //                    lut.Columns[_descriptionFieldName] : (testColumn = 
+    //                    lut.Columns.Cast<DataColumn>().FirstOrDefault(c => c.ColumnName.IndexOf("_name", 
+    //                        StringComparison.CurrentCultureIgnoreCase) != -1)) != null ? testColumn :
+    //                    _descriptionFieldOrdinal < lut.Columns.Count ? 
+    //                    lut.Columns[_descriptionFieldOrdinal] : lutColumn.Ordinal < lut.Columns.Count - 1 ? 
+    //                    lut.Columns[lutColumn.Ordinal + 1] : lutColumn;
 
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR52 Enable support for multiple priority habitat classifications
-                    // Enable multiple priority habitat types (from the same or different
-                    // classifications) to be assigned
-                    //
-                    //// If the select table is the 'incid_bap' table then only
-                    //// 'PHAP' values from the related lookup table (lut_habitat_type).
-                    //var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
-                    //    lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
-                    //    lut.AsEnumerable();
-                    //
-                    // If the select table is the 'incid_bap' table then only get
-                    // bap_priority values from the related lookup table (lut_habitat_type).
-                    var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
-                        lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true)) :
-                        lut.AsEnumerable();
-                    //---------------------------------------------------------------------
+    //                //---------------------------------------------------------------------
+    //                // CHANGED: CR52 Enable support for multiple priority habitat classifications
+    //                // Enable multiple priority habitat types (from the same or different
+    //                // classifications) to be assigned
+    //                //
+    //                //// If the select table is the 'incid_bap' table then only
+    //                //// 'PHAP' values from the related lookup table (lut_habitat_type).
+    //                //var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
+    //                //    lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
+    //                //    lut.AsEnumerable();
+    //                //
+    //                // If the select table is the 'incid_bap' table then only get
+    //                // bap_priority values from the related lookup table (lut_habitat_type).
+    //                var q = lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable ?
+    //                    lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true)) :
+    //                    lut.AsEnumerable();
+    //                //---------------------------------------------------------------------
 
-                    return q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ? 
-                        " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
-                }
-                return null;
-            }
-        }
+    //                return q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ? 
+    //                    " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
+    //            }
+    //            return null;
+    //        }
+    //    }
         
-        #endregion
+    //    #endregion
 
-        public Cursor CursorType
-        {
-            get { return _cursorType; }
-        }
+    //    public Cursor CursorType
+    //    {
+    //        get { return _cursorType; }
+    //    }
 
-        #region SQLFilterCondition Values
+    //    #region SQLFilterCondition Values
 
-        public SqlFilterCondition WhereCondition { get { return _sqlCond; } }
+    //    public SqlFilterCondition WhereCondition { get { return _sqlCond; } }
 
-        public bool IsComplete { get { return _isComplete; } }
+    //    public bool IsComplete { get { return _isComplete; } }
 
-        public string BooleanOperator
-        {
-            get { return _sqlCond.BooleanOperator; }
-            set { _sqlCond.BooleanOperator = value; }
-        }
+    //    public string BooleanOperator
+    //    {
+    //        get { return _sqlCond.BooleanOperator; }
+    //        set { _sqlCond.BooleanOperator = value; }
+    //    }
 
-        public string OpenParentheses
-        {
-            get { return _sqlCond.OpenParentheses; }
-            set { _sqlCond.OpenParentheses = value; }
-        }
+    //    public string OpenParentheses
+    //    {
+    //        get { return _sqlCond.OpenParentheses; }
+    //        set { _sqlCond.OpenParentheses = value; }
+    //    }
 
-        public DataTable Table
-        {
-            get { return _table; }
-            set
-            {
-                _sqlCond.Table = value;
-                if ((_sqlCond.Table != null) && (ViewModelWindowQueryBuilder.HluDatasetStatic != null) && 
-                    ViewModelWindowQueryBuilder.HluDatasetStatic.Tables.Contains(_sqlCond.Table.TableName))
-                {
-                    _table = _sqlCond.Table;
-                    OnPropertyChanged("Table");
-                    OnPropertyChanged("Columns");
-                    OnPropertyChanged("ColumnIsEnabled");
-                }
-            }
-        }
+    //    public DataTable Table
+    //    {
+    //        get { return _table; }
+    //        set
+    //        {
+    //            _sqlCond.Table = value;
+    //            if ((_sqlCond.Table != null) && (ViewModelWindowQueryBuilder.HluDatasetStatic != null) && 
+    //                ViewModelWindowQueryBuilder.HluDatasetStatic.Tables.Contains(_sqlCond.Table.TableName))
+    //            {
+    //                _table = _sqlCond.Table;
+    //                OnPropertyChanged("Table");
+    //                OnPropertyChanged("Columns");
+    //                OnPropertyChanged("ColumnIsEnabled");
+    //            }
+    //        }
+    //    }
 
-        public DataColumn Column
-        {
-            get { return _column; }
-            set
-            { 
-                _sqlCond.Column = value;
-                if ((Table != null) && (_sqlCond.Column != null) && 
-                    Table.Columns.Contains(_sqlCond.Column.ColumnName))
-                {
-                    _column = _sqlCond.Column;
-                    OnPropertyChanged("Column");
-                    OnPropertyChanged("Values");
-                    OnPropertyChanged("ComparisonOperatorIsEnabled");
-                }
-            }
-        }
+    //    public DataColumn Column
+    //    {
+    //        get { return _column; }
+    //        set
+    //        { 
+    //            _sqlCond.Column = value;
+    //            if ((Table != null) && (_sqlCond.Column != null) && 
+    //                Table.Columns.Contains(_sqlCond.Column.ColumnName))
+    //            {
+    //                _column = _sqlCond.Column;
+    //                OnPropertyChanged("Column");
+    //                OnPropertyChanged("Values");
+    //                OnPropertyChanged("ComparisonOperatorIsEnabled");
+    //            }
+    //        }
+    //    }
 
-        public bool ColumnIsEnabled
-        {
-            get { return Table != null; }
-        }
+    //    public bool ColumnIsEnabled
+    //    {
+    //        get { return Table != null; }
+    //    }
 
-        public string ComparisonOperator
-        {
-            get { return _sqlCond.Operator; }
-            set
-            {
-                _sqlCond.Operator = value;
-                OnPropertyChanged("ComparisonOperator");
-                OnPropertyChanged("Values");
-                OnPropertyChanged("QueryValueIsEnabled");
-            }
-        }
+    //    public string ComparisonOperator
+    //    {
+    //        get { return _sqlCond.Operator; }
+    //        set
+    //        {
+    //            _sqlCond.Operator = value;
+    //            OnPropertyChanged("ComparisonOperator");
+    //            OnPropertyChanged("Values");
+    //            OnPropertyChanged("QueryValueIsEnabled");
+    //        }
+    //    }
 
-        public bool ComparisonOperatorIsEnabled
-        {
-            get { return Column != null; }
-        }
+    //    public bool ComparisonOperatorIsEnabled
+    //    {
+    //        get { return Column != null; }
+    //    }
 
-        public string QueryValue
-        {
-            get { return _sqlCond.Value != null ? _sqlCond.Value.ToString() : null; }
-            set
-            {
-                if (String.IsNullOrEmpty(_queryValueText) || (_queryValueRegex.Split(_queryValueText).Length > 1))
-                    _sqlCond.Value = value;
-                _cursorType = Cursors.Arrow;
-                OnPropertyChanged("CursorType");
-                OnPropertyChanged("QueryValue");
-                OnPropertyChanged("QueryValueText");
-            }
-        }
+    //    public string QueryValue
+    //    {
+    //        get { return _sqlCond.Value != null ? _sqlCond.Value.ToString() : null; }
+    //        set
+    //        {
+    //            if (String.IsNullOrEmpty(_queryValueText) || (_queryValueRegex.Split(_queryValueText).Length > 1))
+    //                _sqlCond.Value = value;
+    //            _cursorType = Cursors.Arrow;
+    //            OnPropertyChanged("CursorType");
+    //            OnPropertyChanged("QueryValue");
+    //            OnPropertyChanged("QueryValueText");
+    //        }
+    //    }
 
-        public string QueryValueText
-        {
-            get { return _sqlCond.Value != null ? _sqlCond.Value.ToString() : null; }
-            set
-            {
-                _cursorType = Cursors.Arrow;
-                OnPropertyChanged("CursorType");
+    //    public string QueryValueText
+    //    {
+    //        get { return _sqlCond.Value != null ? _sqlCond.Value.ToString() : null; }
+    //        set
+    //        {
+    //            _cursorType = Cursors.Arrow;
+    //            OnPropertyChanged("CursorType");
 
-                if ((_queryValueText == null) || !_queryValueText.Equals(value))
-                {
-                    if (!String.IsNullOrEmpty(value))
-                        _queryValueText = _queryValueRegex.Split(value)[0];
-                    else
-                        _queryValueText = value;
+    //            if ((_queryValueText == null) || !_queryValueText.Equals(value))
+    //            {
+    //                if (!String.IsNullOrEmpty(value))
+    //                    _queryValueText = _queryValueRegex.Split(value)[0];
+    //                else
+    //                    _queryValueText = value;
 
-                    _sqlCond.Value = _queryValueText;
-                    OnPropertyChanged("QueryValueText");
-                }
-            }
-        }
+    //                _sqlCond.Value = _queryValueText;
+    //                OnPropertyChanged("QueryValueText");
+    //            }
+    //        }
+    //    }
 
-        public bool QueryValueIsEnabled
-        {
-            get
-            {
-                return Column != null && !String.IsNullOrEmpty(ComparisonOperator) &&
-                    !_sqlCond.Operator.ToUpper().EndsWith("NULL");
-            }
-        }
+    //    public bool QueryValueIsEnabled
+    //    {
+    //        get
+    //        {
+    //            return Column != null && !String.IsNullOrEmpty(ComparisonOperator) &&
+    //                !_sqlCond.Operator.ToUpper().EndsWith("NULL");
+    //        }
+    //    }
 
-        public string CloseParentheses
-        {
-            get { return _sqlCond.CloseParentheses; }
-            set { _sqlCond.CloseParentheses = value; }
-        }
+    //    public string CloseParentheses
+    //    {
+    //        get { return _sqlCond.CloseParentheses; }
+    //        set { _sqlCond.CloseParentheses = value; }
+    //    }
 
-        #endregion
+    //    #endregion
 
-        #endregion
+    //    #endregion
 
-        #region IDataErrorInfo Members
+    //    #region IDataErrorInfo Members
 
-        public string Error
-        {
-            get
-            {
-                if ((_sqlCond.Table == null) || (_sqlCond.Column == null) ||
-                    (_sqlCond.ColumnSystemType == null) || String.IsNullOrEmpty(_sqlCond.Operator) ||
-                    (_sqlCond.Operator.ToUpper().EndsWith("NULL") != ((_sqlCond.Value == null) ||
-                    _sqlCond.Value.ToString().Equals(String.Empty))))
-                {
-                    _isComplete = false;
-                    return "Error: A table, column, operator and (except for the IS NULL operators) a value are required";
-                }
-                else
-                {
-                    _isComplete = true;
-                    return String.Empty;
-                }
-            }
-        }
+    //    public string Error
+    //    {
+    //        get
+    //        {
+    //            if ((_sqlCond.Table == null) || (_sqlCond.Column == null) ||
+    //                (_sqlCond.ColumnSystemType == null) || String.IsNullOrEmpty(_sqlCond.Operator) ||
+    //                (_sqlCond.Operator.ToUpper().EndsWith("NULL") != ((_sqlCond.Value == null) ||
+    //                _sqlCond.Value.ToString().Equals(String.Empty))))
+    //            {
+    //                _isComplete = false;
+    //                return "Error: A table, column, operator and (except for the IS NULL operators) a value are required";
+    //            }
+    //            else
+    //            {
+    //                _isComplete = true;
+    //                return String.Empty;
+    //            }
+    //        }
+    //    }
 
-        public string this[string columnName]
-        {
-            get
-            {
-                string error = null;
+    //    public string this[string columnName]
+    //    {
+    //        get
+    //        {
+    //            string error = null;
 
-                switch (columnName)
-                {
-                    case "Table":
-                        //error = "Please select a table name";
-                        break;
-                    case "Column":
-                        //error = "Please select a column name";
-                        break;
-                    case "ComparisonOperator":
-                        //error = "Please select an operator";
-                        break;
-                    case "QueryValue":
-                        //error = "Please select or enter a query value";
-                        break;
-                }
+    //            switch (columnName)
+    //            {
+    //                case "Table":
+    //                    //error = "Please select a table name";
+    //                    break;
+    //                case "Column":
+    //                    //error = "Please select a column name";
+    //                    break;
+    //                case "ComparisonOperator":
+    //                    //error = "Please select an operator";
+    //                    break;
+    //                case "QueryValue":
+    //                    //error = "Please select or enter a query value";
+    //                    break;
+    //            }
 
-                return error;
-            }
-        }
-
-        #endregion
-    }
+    //            return error;
+    //        }
+    //    }
+    //
+    //    #endregion
+    //}
 }
