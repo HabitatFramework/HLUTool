@@ -25,17 +25,6 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDeveloper2016;Initial Catalog=HLUData;Integrated Security=Tru" +
-            "e")]
-        public string HluConnectionString {
-            get {
-                return ((string)(this["HluConnectionString"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>esriDataSourcesGDB.AccessWorkspaceFactory</string>
@@ -1112,6 +1101,27 @@ namespace HLU.Properties {
         public string HLUDataConnectionString {
             get {
                 return ((string)(this["HLUDataConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLEXPRESS2016;Initial Catalog=HLUData;Integrated Security=True")]
+        public string HluConnectionString {
+            get {
+                return ((string)(this["HluConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2016;Initial Catalog=HLUData_v400;Integrated Securit" +
+            "y=True")]
+        public string HLUData_v400ConnectionString {
+            get {
+                return ((string)(this["HLUData_v400ConnectionString"]));
             }
         }
     }
