@@ -37,11 +37,8 @@ namespace HLU.Data
         TableAdapterManager _hluTableAdapterMgr;
         private string _habitatVersion;
         private int _incidCurrentNumber = -1;
-        //TODO: Replace with Condition and Secondary
-        //int _nextIncidIhsMatrixId = -1;
-        //int _nextIncidIhsFormationId = -1;
-        //int _nextIncidIhsManagementId = -1;
-        //int _nextIncidIhsComplexId = -1;
+        int _nextIncidSecondaryId = -1;
+        int _nextIncidConditionId = -1;
         int _nextIncidBapId = -1;
         int _nextIncidSourcesId = -1;
 
@@ -227,6 +224,26 @@ namespace HLU.Data
             {
                 return NextID(_nextIncidBapId, _hluDataset.incid_bap, 
                     _hluDataset.incid_bap.bap_idColumn.Ordinal) - 1;
+            }
+        }
+
+        public int NextIncidSecondaryId
+        {
+            get
+            {
+                _nextIncidSecondaryId = NextID(_nextIncidSecondaryId, _hluDataset.incid_secondary,
+                    _hluDataset.incid_secondary.secondary_idColumn.Ordinal);
+                return _nextIncidSecondaryId;
+            }
+        }
+
+        public int NextIncidConditionId
+        {
+            get
+            {
+                _nextIncidConditionId = NextID(_nextIncidConditionId, _hluDataset.incid_condition,
+                    _hluDataset.incid_condition.incid_condition_idColumn.Ordinal);
+                return _nextIncidBapId;
             }
         }
 
