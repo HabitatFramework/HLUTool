@@ -53,6 +53,7 @@ namespace HLU.UI.ViewModel
             _viewModelMain.OSMMUpdateMode = true;
 
             // Disable all the tabs
+            _viewModelMain.TabHabitatControlsEnabled = false;
             _viewModelMain.TabIhsControlsEnabled = false;
             _viewModelMain.TabDetailsControlsEnabled = false;
             _viewModelMain.TabSourcesControlsEnabled = false;
@@ -277,6 +278,7 @@ namespace HLU.UI.ViewModel
             _viewModelMain.OSMMUpdateMode = false;
 
             // Enable all the tabs
+            _viewModelMain.TabHabitatControlsEnabled = true;
             _viewModelMain.TabIhsControlsEnabled = true;
             _viewModelMain.TabDetailsControlsEnabled = true;
             _viewModelMain.TabSourcesControlsEnabled = true;

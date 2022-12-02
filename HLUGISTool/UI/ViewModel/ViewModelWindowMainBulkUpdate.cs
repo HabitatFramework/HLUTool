@@ -113,8 +113,8 @@ namespace HLU.UI.ViewModel
             // will be disabled.
             if (_osmmBulkUpdateMode == true)
             {
-                // Disable the IHS tab
-                _viewModelMain.TabItemIhsEnabled = false;
+                // Disable the Habitat tab
+                _viewModelMain.TabItemHabitatEnabled = false;
 
                 // Clear the selection (filter).
                 _viewModelMain.IncidSelection = null;
@@ -535,10 +535,10 @@ namespace HLU.UI.ViewModel
 
                 // Build the SELECT statement based on the incid where clause
                 string selectCommandIncid = String.Format("SELECT {0} FROM {1}{2}",
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.ihs_habitatColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.habitat_primaryColumn.ColumnName),
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName), incidWhereClause);
 
-                // Update the last modified date & user fields and the ihs version on
+                // Update the last modified date & user fields and the habitat version on
                 // the incid table
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
@@ -547,41 +547,23 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
                 _viewModelMain.IncidCurrentRow.habitat_version = _viewModelMain.HabitatVersion;
 
-                // Set the ihs habitat on the incid table to a non-null value to
+                // Set the primary habitat on the incid table to a non-null value to
                 // indicate that the column has/will change
-                _viewModelMain.IncidCurrentRow.ihs_habitat = "";
+                _viewModelMain.IncidCurrentRow.habitat_primary = "";
 
                 // Build a collection of the updated columns in the incid table
                 var incidUpdateVals = _viewModelMain.HluDataset.incid.Columns.Cast<DataColumn>()
                     .Where(c => c.Ordinal != _viewModelMain.HluDataset.incid.incidColumn.Ordinal &&
                         !_viewModelMain.IncidCurrentRow.IsNull(c.Ordinal));
 
-                // Build DELETE statements for all IHS multiplex rows
-                List<string> ihsMultiplexDelStatements = new List<string>();
+                // Build DELETE statements for all secondary habitat rows
+                List<string> secondaryDelStatements = new List<string>();
 
-                // Always assume all existing multiplex codes are to be deleted
-                ihsMultiplexDelStatements.Add(
+                // Always assume all existing secondary codes are to be deleted
+                secondaryDelStatements.Add(
                     String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                ihsMultiplexDelStatements.Add(
-                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.incidColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                ihsMultiplexDelStatements.Add(
-                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_management.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.incidColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue("{0}")));
-
-                ihsMultiplexDelStatements.Add(
-                    String.Format("DELETE FROM {0} WHERE {1} = {2}",
-                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_complex.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.incidColumn.ColumnName),
+                    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_secondary.TableName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_secondary.incidColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue("{0}")));
 
                 // Build an UPDATE statement for the incid_osmm_updates table
@@ -621,12 +603,12 @@ namespace HLU.UI.ViewModel
                     // Continue if a row is found
                     if (osmmHabitatXref != null)
                     {
-                        //TODO: OSMM primary
-                        // Get the new IHS habitat code from the lut_osmm_habitat_xref table
-                        string newIncidIhsHabitatCode = osmmHabitatXref.ElementAt(0).ihs_habitat;
+                        //TODO: OSMM primary - to check
+                        // Get the new primary habitat code from the lut_osmm_habitat_xref table
+                        string newIncidPrimaryCode = osmmHabitatXref.ElementAt(0).habitat_primary;
 
-                        // Set the ihs habitat on the incid table
-                        _viewModelMain.IncidCurrentRow.ihs_habitat = newIncidIhsHabitatCode;
+                        // Set the primary habitat on the incid table
+                        _viewModelMain.IncidCurrentRow.habitat_primary = newIncidPrimaryCode;
 
                         // Build an UPDATE statement for the incid table
                         string updateCommandIncid = incidUpdateVals.Count() == 0 ? String.Empty :
@@ -640,109 +622,29 @@ namespace HLU.UI.ViewModel
                                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidCurrentRow[c.Ordinal]))))
                                 .Remove(0, 2)).Append(incidWhereClause).ToString();
 
-                        // Create new rows in the matrix table from the lut_osmm_habitat_xref table
-                        string newMultiplexCode;
-                        int multiplexRow = 0;
-                        _viewModelMain.IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
-                            .Select(mr => _viewModelMain.HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
-                        //TODO@ OSMM secondaries
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_matrix1Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_matrix1;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix_id = multiplexRow;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix = (string)newMultiplexCode;
-                            multiplexRow += 1;
-                        }
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_matrix2Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_matrix2;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix_id = multiplexRow;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix = (string)newMultiplexCode;
-                            multiplexRow += 1;
-                        }
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_matrix3Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_matrix3;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix_id = multiplexRow;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix = (string)newMultiplexCode;
-                        }
+                        //TODO: OSMM secondaries
+                        // Split secondaries string into list of secondary codes
 
-                        // Create new rows in the formation table from the lut_osmm_habitat_xref table
-                        multiplexRow = 0;
-                        _viewModelMain.IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
-                            .Select(mr => _viewModelMain.HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_formation1Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_formation1;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].formation_id = multiplexRow;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].formation = (string)newMultiplexCode;
-                            multiplexRow += 1;
-                        }
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_formation2Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_formation2;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].formation_id = multiplexRow;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsFormationRows[multiplexRow].formation = (string)newMultiplexCode;
-                        }
+                        //TODO: OSMM secondaries
+                        // Create new rows in the secondary table from the lut_osmm_habitat_xref table
+                        string newSecondaryCode;
+                        int secondaryRow = 0;
+                        //_viewModelMain.IncidSecondaryRows = new HluDataSet.incid_secondaryRow[15]
+                        //    .Select(mr => _viewModelMain.HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
+                        //if (!osmmHabitatXref.ElementAt(0).Isihs_matrix1Null())
+                        //{
+                        //    newSecondaryCode = ihsOSMMXref.ElementAt(0).ihs_matrix1;
+                        //    _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix_id = multiplexRow;
+                        //    _viewModelMain.IncidIhsMatrixRows[multiplexRow].incid = currIncid;
+                        //    _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix = (string)newMultiplexCode;
+                        //    secondaryRow += 1;
+                        //}
 
-                        // Create new rows in the management table from the lut_osmm_habitat_xref table
-                        multiplexRow = 0;
-                        _viewModelMain.IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
-                            .Select(mr => _viewModelMain.HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_management1Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_management1;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].management_id = multiplexRow;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].management = (string)newMultiplexCode;
-                            multiplexRow += 1;
-                        }
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_management2Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_management2;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].management_id = multiplexRow;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsManagementRows[multiplexRow].management = (string)newMultiplexCode;
-                        }
-
-                        // Create new rows in the complex table from the lut_osmm_habitat_xref table
-                        multiplexRow = 0;
-                        _viewModelMain.IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
-                            .Select(mr => _viewModelMain.HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_complex1Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_complex1;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].complex_id = multiplexRow;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].complex = (string)newMultiplexCode;
-                            multiplexRow += 1;
-                        }
-                        if (!ihsOSMMXref.ElementAt(0).Isihs_complex2Null())
-                        {
-                            newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_complex2;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].complex_id = multiplexRow;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].incid = currIncid;
-                            _viewModelMain.IncidIhsComplexRows[multiplexRow].complex = (string)newMultiplexCode;
-                        }
-
+                        //TODO: OSMM secondaries
                         // Filter out any rows not set (because the maximum number of blank rows are
                         // created above so any not used need to be removed)
-                        _viewModelMain.IncidIhsMatrixRows = FilterUpdateRows<HluDataSet.incid_ihs_matrixDataTable,
-                            HluDataSet.incid_ihs_matrixRow>(_viewModelMain.IncidIhsMatrixRows);
-
-                        _viewModelMain.IncidIhsFormationRows = FilterUpdateRows<HluDataSet.incid_ihs_formationDataTable,
-                            HluDataSet.incid_ihs_formationRow>(_viewModelMain.IncidIhsFormationRows);
-
-                        _viewModelMain.IncidIhsManagementRows = FilterUpdateRows<HluDataSet.incid_ihs_managementDataTable,
-                            HluDataSet.incid_ihs_managementRow>(_viewModelMain.IncidIhsManagementRows);
-
-                        _viewModelMain.IncidIhsComplexRows = FilterUpdateRows<HluDataSet.incid_ihs_complexDataTable,
-                            HluDataSet.incid_ihs_complexRow>(_viewModelMain.IncidIhsComplexRows);
+                        _viewModelMain.IncidSecondaryRows = FilterUpdateRows<HluDataSet.incid_secondaryDataTable,
+                            HluDataSet.incid_secondaryRow>(_viewModelMain.IncidSecondaryRows);
 
                         _viewModelMain.IncidSourcesRows = FilterUpdateRows<HluDataSet.incid_sourcesDataTable,
                             HluDataSet.incid_sourcesRow>(_viewModelMain.IncidSourcesRows);
@@ -750,10 +652,10 @@ namespace HLU.UI.ViewModel
                         // Perform the bulk updates on the data tables
                         if (Settings.Default.BulkUpdateUsesAdo)
                             BulkUpdateAdo(currIncid, selectCommandIncid, updateCommandIncid, updateCommandIncidOSMMUpdates,
-                                ihsMultiplexDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                                secondaryDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                         else
                             BulkUpdateDb(currIncid, selectCommandIncid, updateCommandIncid, updateCommandIncidOSMMUpdates,
-                                ihsMultiplexDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                                secondaryDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                     }
                 }
 
@@ -816,8 +718,8 @@ namespace HLU.UI.ViewModel
             // Stop the bulk update mode
             _viewModelMain.BulkUpdateMode = false;
 
-            // Enable the ihs and history tabs
-            _viewModelMain.TabItemIhsEnabled = true;
+            // Enable the habitat and history tabs
+            _viewModelMain.TabItemHabitatEnabled = true;
             _viewModelMain.TabItemHistoryEnabled = true;
 
             // Select the ihs tab
@@ -898,131 +800,42 @@ namespace HLU.UI.ViewModel
             object[] relValues = new object[] { currIncid };
 
             // Store the rows from the user interface
-            HluDataSet.incid_ihs_matrixRow[] incidIhsMatrixRows = _viewModelMain.IncidIhsMatrixRows;
+            HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
             // Store a copy of the table for the current incid
-            //---------------------------------------------------------------------
-            // FIXOLD: 091 Fix bug when applying bulk updates
-            //
-            //HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
-            //    (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
-            HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
-                (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Clone();
-            //---------------------------------------------------------------------
+            HluDataSet.incid_secondaryDataTable secondaryTable =
+                (HluDataSet.incid_secondaryDataTable)_viewModelMain.HluDataset.incid_secondary.Clone();
             // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter,
-                ihsMatrixTable, ref incidIhsMatrixRows);
-            //---------------------------------------------------------------------
-            //_viewModelMain.IncidIhsMatrixRows = incidIhsMatrixRows;
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_formationRow[] incidIhsFormationRows = _viewModelMain.IncidIhsFormationRows;
-            // Store a copy of the table for the current incid
-            //---------------------------------------------------------------------
-            // FIXOLD: 091 Fix bug when applying bulk updates
-            //
-            //HluDataSet.incid_ihs_formationDataTable ihsFormationTable =
-            //    (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Copy();
-            HluDataSet.incid_ihs_formationDataTable ihsFormationTable =
-                (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Clone();
-            //---------------------------------------------------------------------
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter,
-                ihsFormationTable, ref incidIhsFormationRows);
-            //---------------------------------------------------------------------
-            //_viewModelMain.IncidIhsFormationRows = incidIhsFormationRows;
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_managementRow[] incidIhsManagementRows = _viewModelMain.IncidIhsManagementRows;
-            // Store a copy of the table for the current incid
-            //---------------------------------------------------------------------
-            // FIXOLD: 091 Fix bug when applying bulk updates
-            //
-            //HluDataSet.incid_ihs_managementDataTable ihsManagementTable =
-            //    (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Copy();
-            HluDataSet.incid_ihs_managementDataTable ihsManagementTable =
-                (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Clone();
-            //---------------------------------------------------------------------
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
-                ihsManagementTable, ref incidIhsManagementRows);
-            //---------------------------------------------------------------------
-            //_viewModelMain.IncidIhsManagementRows = incidIhsManagementRows;
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_complexRow[] incidIhsComplexRows = _viewModelMain.IncidIhsComplexRows;
-            // Store a copy of the table for the current incid
-            //---------------------------------------------------------------------
-            // FIXOLD: 091 Fix bug when applying bulk updates
-            //
-            //HluDataSet.incid_ihs_complexDataTable ihsComplexTable =
-            //    (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Copy();
-            HluDataSet.incid_ihs_complexDataTable ihsComplexTable =
-                (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Clone();
-            //---------------------------------------------------------------------
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateAdoMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter,
-                ihsComplexTable, ref incidIhsComplexRows);
-            //---------------------------------------------------------------------
-            //_viewModelMain.IncidIhsComplexRows = incidIhsComplexRows;
+            BulkUpdateAdoSecondarySourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
+                _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter,
+                secondaryTable, ref incidSecondaryRows);
 
             // Store a copy of the table for the current incid
-            //HluDataSet.incid_bapDataTable bapTable =
-            //    (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Copy();
             HluDataSet.incid_bapDataTable bapTable =
                 (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Clone();
             // Load the child rows for the bap table for the supplied incid
             _viewModelMain.GetIncidChildRowsDb(relValues,
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
             // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidIhsMatrixRows, incidIhsFormationRows,
-                incidIhsManagementRows, incidIhsComplexRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
-            //---------------------------------------------------------------------
+            BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidSecondaryRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
 
             // Store the rows from the user interface
             HluDataSet.incid_sourcesRow[] incidSourcesRows = _viewModelMain.IncidSourcesRows;
             // Store a copy of the table for the current incid
-            //HluDataSet.incid_sourcesDataTable sourcesTable =
-            //    (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Copy();
             HluDataSet.incid_sourcesDataTable sourcesTable =
                 (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Clone();
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
+
             // Count the non-blank rows from the user interface
             int newRows = (from nr in incidSourcesRows
                            where nr.source_id != Int32.MinValue
                            select nr).Count();
-            //---------------------------------------------------------------------
-            // FIXOLD: 093 Delete existing sources for bulk OSMM update
-            //
+
             // If there are new source rows then delete the old sources
             int deleteSources = newRows > 0 ? 0 : 2;
-            //---------------------------------------------------------------------
             // Update the rows in the database
-            BulkUpdateAdoMultiplexSourceTable(deleteSources, currIncid, relValues,
+            BulkUpdateAdoSecondarySourceTable(deleteSources, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
                 sourcesTable, ref incidSourcesRows);
             //_viewModelMain.IncidSourcesRows = incidSourcesRows;
-            //---------------------------------------------------------------------
 
         }
 
@@ -1088,62 +901,18 @@ namespace HLU.UI.ViewModel
             // Create an array of the value of the current incid
             object[] relValues = new object[] { currIncid };
 
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_matrixRow[] incidIhsMatrixRows = _viewModelMain.IncidIhsMatrixRows;
-            // Store a copy of the table for the current incid
-            HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
-                (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter,
-                ihsMatrixTable, ref incidIhsMatrixRows);
-            //---------------------------------------------------------------------
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_formationRow[] incidIhsFormationRows = _viewModelMain.IncidIhsFormationRows;
-            // Store a copy of the table for the current incid
-            HluDataSet.incid_ihs_formationDataTable ihsFormationTable =
-                (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.Copy();
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter,
-                ihsFormationTable, ref incidIhsFormationRows);
-            //---------------------------------------------------------------------
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_managementRow[] incidIhsManagementRows = _viewModelMain.IncidIhsManagementRows;
-            // Store a copy of the table for the current incid
-            HluDataSet.incid_ihs_managementDataTable ihsManagementTable =
-                (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.Copy();
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter,
-                ihsManagementTable, ref incidIhsManagementRows);
-            //---------------------------------------------------------------------
-            //_viewModelMain.IncidIhsManagementRows = incidIhsManagementRows;
-
-            // Store the rows from the user interface
-            HluDataSet.incid_ihs_complexRow[] incidIhsComplexRows = _viewModelMain.IncidIhsComplexRows;
-            // Store a copy of the table for the current incid
-            HluDataSet.incid_ihs_complexDataTable ihsComplexTable =
-                (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.Copy();
-            // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter,
-                ihsComplexTable, ref incidIhsComplexRows);
-            //---------------------------------------------------------------------
+            //TODO: Secondary rows
+            ////---------------------------------------------------------------------
+            //// Store the rows from the user interface
+            //HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
+            //// Store a copy of the table for the current incid
+            //HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable =
+            //    (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.Copy();
+            //// Update the rows in the database
+            //BulkUpdateDbMultiplexSourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
+            //    _viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter,
+            //    ihsMatrixTable, ref incidIhsMatrixRows);
+            ////---------------------------------------------------------------------
 
             // Store a copy of the table for the current incid
             HluDataSet.incid_bapDataTable bapTable = (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Copy();
@@ -1151,18 +920,13 @@ namespace HLU.UI.ViewModel
             _viewModelMain.GetIncidChildRowsDb(relValues,
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
             // Update the rows in the database
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidIhsMatrixRows, incidIhsFormationRows,
-                incidIhsManagementRows, incidIhsComplexRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
-            //---------------------------------------------------------------------
+            //TODO: Secondary rows
+            ////---------------------------------------------------------------------
+            //BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidSecondaryRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
+            ////---------------------------------------------------------------------
 
             // Store the rows from the user interface
             HluDataSet.incid_sourcesRow[] incidSourcesRows = _viewModelMain.IncidSourcesRows;
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Store a copy of the table for the current incid
             HluDataSet.incid_sourcesDataTable incidSourcesTable =
                 (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Copy();
@@ -1176,7 +940,7 @@ namespace HLU.UI.ViewModel
             BulkUpdateDbMultiplexSourceTable(deleteSources, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
                 incidSourcesTable, ref incidSourcesRows);
-            //---------------------------------------------------------------------
+
         }
 
         /// <summary>
@@ -1345,28 +1109,23 @@ namespace HLU.UI.ViewModel
         /// <param name="deleteOrphanBapRows">if set to <c>true</c> delete any orphan primary bap rows.</param>
         /// <param name="deletePotentialBapRows">if set to <c>true</c> delete any potential bap rows.</param>
         /// <exception cref="Exception"></exception>
-        private void BulkUpdateBap(string currIncid, string ihsHabitat,
+        private void BulkUpdateBap(string currIncid, string primaryHabitat,
             HluDataSet.incid_bapDataTable incidBapTable,
-            HluDataSet.incid_ihs_matrixRow[] ihsMatrixRows,
-            HluDataSet.incid_ihs_formationRow[] ihsFormationRows,
-            HluDataSet.incid_ihs_managementRow[] ihsManagementRows,
-            HluDataSet.incid_ihs_complexRow[] ihsComplexRows,
+            HluDataSet.incid_secondaryRow[] incidsecondaryRows,
             bool deleteOrphanBapRows,
             bool deletePotentialBapRows)
         {
-            var mx = ihsMatrixRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.matrix);
-            string[] ihsMatrixVals = mx.Concat(new string[3 - mx.Count()]).ToArray();
-            var fo = ihsFormationRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.formation);
-            string[] ihsFormationVals = fo.Concat(new string[2 - fo.Count()]).ToArray();
-            var mg = ihsManagementRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.management);
-            string[] ihsManagementVals = mg.Concat(new string[2 - mg.Count()]).ToArray();
-            var cx = ihsComplexRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.complex);
-            string[] ihsComplexVals = cx.Concat(new string[2 - cx.Count()]).ToArray();
+            //TODO: to check
+            var sr = incidsecondaryRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.secondary);
+            string[] ihsMatrixVals = sr.Concat(new string[15 - sr.Count()]).ToArray();
 
-            // Get a list of all the primary (mandatory) bap habitats
-            IEnumerable<string> primaryBap = _viewModelMain.PrimaryBapEnvironments(ihsHabitat, 
-                ihsMatrixVals[0], ihsMatrixVals[1], ihsMatrixVals[2], ihsFormationVals[0], ihsFormationVals[1],
-                ihsManagementVals[0], ihsManagementVals[1], ihsComplexVals[0], ihsComplexVals[1]);
+            //TODO: Pass array of secondary rows
+            ////---------------------------------------------------------------------
+            //// Get a list of all the primary (mandatory) bap habitats
+            IEnumerable<string> primaryBap = null;
+            //IEnumerable<string> primaryBap = _viewModelMain.PrimaryBapEnvironments(primaryHabitat,
+            //    secondaryRows);
+            ////---------------------------------------------------------------------
 
             // Get an array of the columns not be updated in the table
             int[] skipOrdinals = new int[3] { 
@@ -1523,9 +1282,6 @@ namespace HLU.UI.ViewModel
             List<List<SqlFilterCondition>> incidWhereClause;
             DataTable historyTable = null;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // If there are no columns to update
             if ((updateColumns == null) || (updateColumns.Length == 0))
             {
@@ -1561,88 +1317,90 @@ namespace HLU.UI.ViewModel
             }
             else
             {
-                // Check if the IHS Summary is one of the columns to update (it should always be)
-                int ixIhsSummary = System.Array.IndexOf(updateColumns, _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
+                //TODO: Set primary and secondaries (and other fields?
+                ////---------------------------------------------------------------------
+                //// Check if the IHS Summary is one of the columns to update (it should always be)
+                //int ixIhsSummary = System.Array.IndexOf(updateColumns, _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
 
-                // If the IHS Summary is NOT one of the columns to update then use a
-                // scratch database table to update the GIS features
-                if (ixIhsSummary == -1)
-                {
-                    // Build an UPDATE statement for the DB shadow copy of GIS layer
-                    incidMMPolygonsUpdateCmdTemplate = String.Format("UPDATE {0} SET {1} WHERE {2}",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
-                        updateColumns.Select((c, index) => new string[] { _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue(updateValues[index]) }).Aggregate(new StringBuilder(), (sb, a) =>
-                                sb.Append(String.Format(", {0} = {1}", a[0], a[1]))).Remove(0, 2), "{0}");
+                //// If the IHS Summary is NOT one of the columns to update then use a
+                //// scratch database table to update the GIS features
+                //if (ixIhsSummary == -1)
+                //{
+                //    // Build an UPDATE statement for the DB shadow copy of GIS layer
+                //    incidMMPolygonsUpdateCmdTemplate = String.Format("UPDATE {0} SET {1} WHERE {2}",
+                //        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
+                //        updateColumns.Select((c, index) => new string[] { _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
+                //    _viewModelMain.DataBase.QuoteValue(updateValues[index]) }).Aggregate(new StringBuilder(), (sb, a) =>
+                //                sb.Append(String.Format(", {0} = {1}", a[0], a[1]))).Remove(0, 2), "{0}");
 
-                    // Build a scratch table of the GIS rows to update
-                    ScratchDb.WriteSelectionScratchTable(_viewModelMain.GisIDColumns, _viewModelMain.IncidSelection);
+                //    // Build a scratch table of the GIS rows to update
+                //    ScratchDb.WriteSelectionScratchTable(_viewModelMain.GisIDColumns, _viewModelMain.IncidSelection);
 
-                    // Update the GIS layer using the scratch table
-                    historyTable = _viewModelMain.GISApplication.UpdateFeatures(updateColumns, updateValues,
-                        _viewModelMain.HistoryColumns, ScratchDb.ScratchMdbPath, ScratchDb.ScratchSelectionTable);
+                //    // Update the GIS layer using the scratch table
+                //    historyTable = _viewModelMain.GISApplication.UpdateFeatures(updateColumns, updateValues,
+                //        _viewModelMain.HistoryColumns, ScratchDb.ScratchMdbPath, ScratchDb.ScratchSelectionTable);
 
-                    // No need to update the DB shadow copy of GIS layer as no changes to the fields
-                    // have been made.
-                }
-                // Otherwise, loop through each incid to individually update the GIS features
-                else
-                {
-                    //
-                    //
-                    // TODO: Replace this with using scratch table to not only select incids
-                    // but also supply columns/values to update
-                    //
-                    //
+                //    // No need to update the DB shadow copy of GIS layer as no changes to the fields
+                //    // have been made.
+                //}
+                //// Otherwise, loop through each incid to individually update the GIS features
+                //else
+                //{
+                //    //
+                //    //
+                //    // TODO: Replace this with using scratch table to not only select incids
+                //    // but also supply columns/values to update
+                //    //
+                //    //
 
-                    // Build an UPDATE statement for the DB shadow copy of GIS layer
-                    incidMMPolygonsUpdateCmdTemplate = String.Format("UPDATE {0} SET {1} WHERE {2}",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
-                        updateColumns.Select((c, index) => new string[] { _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
-                    c.ColumnName == _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn.ColumnName ?
-                    "{0}" : _viewModelMain.DataBase.QuoteValue(updateValues[index]) }).Aggregate(new StringBuilder(),
-                            (sb, a) => sb.Append(String.Format(", {0} = {1}", a[0], a[1]))).Remove(0, 2), "{1}");
+                //    // Build an UPDATE statement for the DB shadow copy of GIS layer
+                //    incidMMPolygonsUpdateCmdTemplate = String.Format("UPDATE {0} SET {1} WHERE {2}",
+                //        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
+                //        updateColumns.Select((c, index) => new string[] { _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
+                //    c.ColumnName == _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn.ColumnName ?
+                //    "{0}" : _viewModelMain.DataBase.QuoteValue(updateValues[index]) }).Aggregate(new StringBuilder(),
+                //            (sb, a) => sb.Append(String.Format(", {0} = {1}", a[0], a[1]))).Remove(0, 2), "{1}");
 
-                    // Build a WHERE clause for the rows to update in the DB shadow copy of GIS layer
-                    incidWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(1,
-                        _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal, _viewModelMain.HluDataset.incid_mm_polygons,
-                        incidSelection.AsEnumerable().Select(r => r.Field<string>(incidOrdinal)));
+                //    // Build a WHERE clause for the rows to update in the DB shadow copy of GIS layer
+                //    incidWhereClause = ViewModelWindowMainHelpers.IncidSelectionToWhereClause(1,
+                //        _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal, _viewModelMain.HluDataset.incid_mm_polygons,
+                //        incidSelection.AsEnumerable().Select(r => r.Field<string>(incidOrdinal)));
 
-                    // Execute the UPDATE statement for each incid in the DB shadow copy of GIS layer
-                    foreach (List<SqlFilterCondition> w in incidWhereClause)
-                    {
-                        updateValues[ixIhsSummary] = BuildIhsSummary(w[0].Value.ToString());
+                //    // Execute the UPDATE statement for each incid in the DB shadow copy of GIS layer
+                //    foreach (List<SqlFilterCondition> w in incidWhereClause)
+                //    {
+                //        updateValues[ixIhsSummary] = BuildIhsSummary(w[0].Value.ToString());
 
-                        if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(incidMMPolygonsUpdateCmdTemplate,
-                            _viewModelMain.DataBase.QuoteValue(updateValues[ixIhsSummary]),
-                            _viewModelMain.DataBase.WhereClause(false, true, true, w)),
-                            _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
-                            throw new Exception("Failed to update GIS layer shadow copy");
+                //        if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(incidMMPolygonsUpdateCmdTemplate,
+                //            _viewModelMain.DataBase.QuoteValue(updateValues[ixIhsSummary]),
+                //            _viewModelMain.DataBase.WhereClause(false, true, true, w)),
+                //            _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                //            throw new Exception("Failed to update GIS layer shadow copy");
 
-                        // Update GIS layer row by row; no need for a joined scratch table
-                        DataTable historyTmp = _viewModelMain.GISApplication.UpdateFeatures(updateColumns,
-                            updateValues, _viewModelMain.HistoryColumns, w);
+                //        // Update GIS layer row by row; no need for a joined scratch table
+                //        DataTable historyTmp = _viewModelMain.GISApplication.UpdateFeatures(updateColumns,
+                //            updateValues, _viewModelMain.HistoryColumns, w);
 
-                        if (historyTmp == null)
-                            throw new Exception(String.Format("Failed to update GIS layer for incid '{0}'", w[0].Value));
+                //        if (historyTmp == null)
+                //            throw new Exception(String.Format("Failed to update GIS layer for incid '{0}'", w[0].Value));
 
-                        // Append history rows to the history table
-                        if (createHistory)
-                        {
-                            if (historyTable == null)
-                            {
-                                historyTable = historyTmp;
-                            }
-                            else
-                            {
-                                foreach (DataRow r in historyTmp.Rows)
-                                    historyTable.ImportRow(r);
-                            }
-                        }
-                    }
-                }
+                //        // Append history rows to the history table
+                //        if (createHistory)
+                //        {
+                //            if (historyTable == null)
+                //            {
+                //                historyTable = historyTmp;
+                //            }
+                //            else
+                //            {
+                //                foreach (DataRow r in historyTmp.Rows)
+                //                    historyTable.ImportRow(r);
+                //            }
+                //        }
+                //    }
+                //}
+                //---------------------------------------------------------------------
             }
-            //---------------------------------------------------------------------
 
             // Write history for the affected incids
             if (createHistory && (historyTable != null))
@@ -1733,22 +1491,21 @@ namespace HLU.UI.ViewModel
         {
             List<DataColumn> updateColumnList = new List<DataColumn>();
             List<object> updateValueList = new List<object>();
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // FIXOLD: 005 Always save all (both) of the history columns
-            //
-            // Check if a new IHS habitat has been set
-            if (!_viewModelMain.IncidCurrentRow.Isihs_habitatNull())
-            {
-                // Add the IHS Category column and value
-                updateColumnList.Add(_viewModelMain.HluDataset.incid_mm_polygons.ihs_categoryColumn);
-                updateValueList.Add(_viewModelMain.HluDataset.lut_ihs_habitat
-                    .Single(h => h.code == _viewModelMain.IncidCurrentRow.ihs_habitat).category);
 
-                // Add the IHS Summary column and a null value (to be set later)
-                updateColumnList.Add(_viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
-                updateValueList.Add(null);
-            }
+            //TODO ...
+            ////---------------------------------------------------------------------
+            //// Check if a new IHS habitat has been set
+            //if (!_viewModelMain.IncidCurrentRow.Isihs_habitatNull())
+            //{
+            //    // Add the IHS Category column and value
+            //    updateColumnList.Add(_viewModelMain.HluDataset.incid_mm_polygons.ihs_categoryColumn);
+            //    updateValueList.Add(_viewModelMain.HluDataset.lut_ihs_habitat
+            //        .Single(h => h.code == _viewModelMain.IncidCurrentRow.ihs_habitat).category);
+
+            //    // Add the IHS Summary column and a null value (to be set later)
+            //    updateColumnList.Add(_viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
+            //    updateValueList.Add(null);
+            //}
             //---------------------------------------------------------------------
 
             // Add any other history columns to be updated

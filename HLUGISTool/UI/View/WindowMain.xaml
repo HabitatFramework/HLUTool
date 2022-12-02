@@ -928,36 +928,55 @@
             		<Grid Margin="0" Grid.Row="1">
             			<Grid.ColumnDefinitions>
             				<ColumnDefinition Width="Auto" MinWidth="75"/>
+            				<ColumnDefinition Width="100"/>
+            				<ColumnDefinition Width="Auto" MinWidth="40" />
             				<ColumnDefinition MinWidth="100"/>
             				<ColumnDefinition Width="Auto" MinWidth="40" />
             				<ColumnDefinition Width="55"/>
             			</Grid.ColumnDefinitions>
-            			<Label x:Name="LabelOSMMIhsSummary"
+            			<Label x:Name="LabelOSMMPrimary"
 							Grid.Column="0"
             				Margin="0,0,0,2"
             				HorizontalAlignment="Right"
             				VerticalAlignment="Center"
-            				Content="IHS Summary">
+            				Content="Primary">
             			</Label>
-            			<TextBox x:Name="TextBoxOSMMIhsSummary"
+            			<TextBox x:Name="TextBoxOSMMPrimary"
 							Grid.Column="1"
             				Margin="8,0,8,2"
             				VerticalAlignment="Center"
             				IsEnabled="False"
             				IsReadOnly="True"
             				TextAlignment="Left"
-							Text="{Binding IncidOSMMIhsSummary,
+							Text="{Binding IncidOSMMPrimary,
+								  Mode=OneWay,
+								  ValidatesOnDataErrors=False}" />
+            			<Label x:Name="LabelOSMMSecondaries"
+							Grid.Column="2"
+            				Margin="0,0,0,2"
+            				HorizontalAlignment="Right"
+            				VerticalAlignment="Center"
+            				Content="Secondaries">
+            			</Label>
+            			<TextBox x:Name="TextBoxOSMMSecondaries"
+							Grid.Column="3"
+            				Margin="8,0,8,2"
+            				VerticalAlignment="Center"
+            				IsEnabled="False"
+            				IsReadOnly="True"
+            				TextAlignment="Left"
+							Text="{Binding IncidOSMMSecondaries,
 								  Mode=OneWay,
 								  ValidatesOnDataErrors=False}" />
             			<Label x:Name="LabelOSMMXRefID"
-							Grid.Column="2"
+							Grid.Column="4"
             				Margin="0,0,0,2"
             				HorizontalAlignment="Right"
             				VerticalAlignment="Center"
             				Content="XRef ID">
             			</Label>
             			<TextBox x:Name="TextBoxOSMMXRefID"
-							Grid.Column="3"
+							Grid.Column="5"
             				Margin="8,0,8,2"
             				VerticalAlignment="Center"
             				IsEnabled="False"
@@ -977,19 +996,19 @@
                         Margin="0,2,0,0"
                         IsEnabled="{Binding TabControlDataEnabled}"
 						SelectedIndex="{Binding TabItemSelected, Mode=TwoWay}">
-                <!--  TabItemIhs  -->
 
-                <TabItem x:Name="TabItemIhs"
+                <!--  TabItemHabitat  -->
+                <TabItem x:Name="TabItemHabitat"
                          Height="29.29"
                          VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabItemIhsEnabled}">
+                         IsEnabled="{Binding TabItemHabitatEnabled}">
 
                     <TabItem.Header>
                         <StackPanel>
-                            <Label x:Name="IhsTabLabel"
+                            <Label x:Name="HabitatTabLabel"
                                    Margin="2,0,2,0"
                                    VerticalAlignment="Bottom"
-                                   Content="{Binding IhsTabLabel,
+                                   Content="{Binding HabitatTabLabel,
                                                      ValidatesOnDataErrors=True}"
                                    FontSize="13"
                                    Padding="4,2,4,4"
@@ -1000,7 +1019,7 @@
 
                     <AdornerDecorator>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <Grid x:Name="GridTabItemIhs">
+                            <Grid x:Name="GridTabItemHabitat">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="3.5*" MinHeight="11" />
                                     <RowDefinition Height="4*" MinHeight="11" />
@@ -1016,14 +1035,14 @@
                                     <ColumnDefinition Width="20" />
                                 </Grid.ColumnDefinitions>
 
-                                <!--  GroupBoxIhsCategories  -->
-                                <GroupBox x:Name="GroupBoxIhsCategories"
+                                <!--  GroupBoxHabitatCategories  -->
+                                <GroupBox x:Name="GroupBoxHabitatCategories"
                                           Grid.Row="0"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
                                           VerticalAlignment="Stretch"
-										  IsEnabled="{Binding TabIhsControlsEnabled}"
-                                          Header="{Binding IhsHabitatHeader}">
+										  IsEnabled="{Binding TabHabitatControlsEnabled}"
+                                          Header="{Binding HabitatHeader}">
                                     <Grid x:Name="GridCategories" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1089,42 +1108,42 @@
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
 
-                                        <Label x:Name="LabelIhsHabitat"
+                                        <Label x:Name="LabelPrimary"
                                                Grid.Row="2"
                                                Grid.Column="0"
                                                Margin="0,0,0,4"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
-                                               Content="IHS Habitat" />
-                                        <ComboBox x:Name="ComboBoxIhsHabitat"
+                                               Content="Primary" />
+                                        <ComboBox x:Name="ComboBoxPrimary"
                                                   Grid.Row="2"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,4"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
-                                                  IsEnabled="{Binding IhsHabitatListEnabled,
+                                                  IsEnabled="{Binding PrimaryListEnabled,
                                                                       Mode=OneWay}"
                                                   IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsHabitatCodes,
+                                                  ItemsSource="{Binding PrimaryCodes,
                                                                         ConverterParameter=code^description^sort_order,
                                                                         Converter={StaticResource codeDescriptionConverter},
                                                                         UpdateSourceTrigger=PropertyChanged}"
                                                   KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsHabitat,
+                                                  SelectedValue="{Binding IncidPrimary,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsHabitat"
+                                        <CheckBox x:Name="CheckBoxCopyPrimary"
                                                   Grid.Row="2"
                                                   Grid.Column="2"
                                                   Margin="0,0,0,4"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsHabitat,
+                                                  IsChecked="{Binding CopySwitches.CopyIncidPrimary,
                                                                       Mode=TwoWay,
                                                                       UpdateSourceTrigger=PropertyChanged}" />
 
@@ -1150,6 +1169,89 @@
                                     </Grid>
                                 </GroupBox>
 
+                            </Grid>
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+                </TabItem>
+
+                <!--  TabItemIHS  -->
+                <TabItem x:Name="TabItemIHS"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="{Binding TabItemIHSEnabled}">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="IHSTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="{Binding IHSTabLabel}"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid x:Name="GridTabItemIHS">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1.5*" MinHeight="4" />
+                                    <RowDefinition Height="4*" MinHeight="11" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="3*" MinHeight="8" />
+                                    <RowDefinition Height="1.5*" MinHeight="4" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="19*" />
+                                    <ColumnDefinition Width="439*" />
+                                    <ColumnDefinition Width="6*" />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  GroupBoxIhsCategories  -->
+                                <GroupBox x:Name="GroupBoxIhsHabitat"
+                                          Grid.Row="0"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="4"
+                                          VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabIhsControlsEnabled}"
+                                          Header="{Binding IhsHabitatHeader}">
+									
+                                    <Grid x:Name="GridIHSHabitat" Margin="0,2,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80*" />
+                                            <ColumnDefinition Width="378*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label x:Name="LabelIhsHabitat"
+                                               Grid.Row="2"
+                                               Grid.Column="0"
+                                               Margin="0,0,0,4"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Content="IHS Habitat" />
+                                        <TextBox x:Name="TextBoxIhsHabitat"
+                                                  Grid.Row="2"
+                                                  Grid.Column="1"
+                                                  Margin="8,0,8,4"
+                                                  VerticalAlignment="Center"
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsHabitat,
+                                                                          ConverterParameter=code^description^sort_order,
+                                                                          Converter={StaticResource codeDescriptionConverter},
+                                                                          ValidatesOnDataErrors=True}"
+                                                  ToolTipService.ShowOnDisabled="True" />
+                                    </Grid>
+                                </GroupBox>
+
                                 <!--  GroupBoxIhsMatrix  -->
                                 <GroupBox x:Name="GroupBoxIhsMatrix"
                                           Grid.Row="1"
@@ -1166,8 +1268,7 @@
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80*" />
-                                            <ColumnDefinition Width="358*" />
-                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="378*" />
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="LabelIhsMatrix1"
@@ -1177,40 +1278,18 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Matrix 1" />
-                                        <ComboBox x:Name="ComboBoxIhsMatrix1"
+                                        <TextBox x:Name="TextBoxIhsMatrix1"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
                                                   Margin="8,2,8,4"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsMatrix1Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsMatrix1Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsMatrix1,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsMatrix1,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsMatrix1"
-                                                  Grid.Row="0"
-                                                  Grid.Column="2"
-                                                  Margin="0,2,0,4"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsMatrix1,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsMatrix1Enabled,
-                                                                      Mode=OneWay}" />
 
                                         <Label x:Name="LabelIhsMatrix2"
                                                Grid.Row="1"
@@ -1219,40 +1298,18 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Matrix 2" />
-                                        <ComboBox x:Name="ComboBoxIhsMatrix2"
+                                        <TextBox x:Name="TextBoxIhsMatrix2"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,4"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsMatrix2Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsMatrix2Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsMatrix2,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsMatrix2,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsMatrix2"
-                                                  Grid.Row="1"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,4"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsMatrix2,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsMatrix2Enabled,
-                                                                      Mode=OneWay}" />
 
                                         <Label x:Name="LabelIhsMatrix3"
                                                Grid.Row="2"
@@ -1261,40 +1318,19 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Matrix 3" />
-                                        <ComboBox x:Name="ComboBoxIhsMatrix3"
+                                        <TextBox x:Name="TextBoxIhsMatrix3"
                                                   Grid.Row="2"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsMatrix3Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsMatrix3Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsMatrix3,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsMatrix3,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsMatrix3"
-                                                  Grid.Row="2"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,2"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsMatrix3,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsMatrix3Enabled,
-                                                                      Mode=OneWay}" />
+
                                     </Grid>
                                 </GroupBox>
 
@@ -1313,8 +1349,7 @@
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80*" />
-                                            <ColumnDefinition Width="358*" />
-                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="378*" />
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="LabelIhsFormation1"
@@ -1324,40 +1359,18 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Formation 1" />
-                                        <ComboBox x:Name="ComboBoxIhsFormation1"
+                                        <TextBox x:Name="TextBoxIhsFormation1"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
                                                   Margin="8,2,8,4"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsFormation1Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsFormation1Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsFormation1,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsFormation1,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsFormation1"
-                                                  Grid.Row="0"
-                                                  Grid.Column="2"
-                                                  Margin="0,2,0,4"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsFormation1,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsFormation1Enabled,
-                                                                      Mode=OneWay}" />
 
                                         <Label x:Name="LabelIhsFormation2"
                                                Grid.Row="1"
@@ -1366,40 +1379,19 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Formation 2" />
-                                        <ComboBox x:Name="ComboBoxIhsFormation2"
+                                        <TextBox x:Name="TextBoxIhsFormation2"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsFormation2Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsFormation2Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsFormation2,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsFormation2,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsFormation2"
-                                                  Grid.Row="1"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,2"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsFormation2,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsFormation2Enabled,
-                                                                      Mode=OneWay}" />
+
                                     </Grid>
                                 </GroupBox>
 
@@ -1418,8 +1410,7 @@
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80*" />
-                                            <ColumnDefinition Width="358*" />
-                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="378*" />
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="LabelIhsManagement1"
@@ -1429,41 +1420,18 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Management 1" />
-                                        <ComboBox x:Name="ComboBoxIhsManagement1"
+                                        <TextBox x:Name="TextBoxIhsManagement1"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
                                                   Margin="8,2,8,4"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsManagement1Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsManagement1Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  Padding="4,3"
-                                                  SelectedValue="{Binding IncidIhsManagement1,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsManagement1,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsManagement1"
-                                                  Grid.Row="0"
-                                                  Grid.Column="2"
-                                                  Margin="0,2,0,4"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsManagement1,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsManagement1Enabled,
-                                                                      Mode=OneWay}" />
 
                                         <Label x:Name="LabelIhsManagement2"
                                                Grid.Row="1"
@@ -1472,40 +1440,19 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Management 2" />
-                                        <ComboBox x:Name="ComboBoxIhsManagement2"
+                                        <TextBox x:Name="TextBoxIhsManagement2"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsManagement2Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsManagement2Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsManagement2,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsManagement2,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsManagement2"
-                                                  Grid.Row="1"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,2"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsManagement2,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsManagement2Enabled,
-                                                                      Mode=OneWay}" />
+
                                     </Grid>
                                 </GroupBox>
 
@@ -1524,8 +1471,7 @@
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="80*" />
-                                            <ColumnDefinition Width="358*" />
-                                            <ColumnDefinition Width="20" />
+                                            <ColumnDefinition Width="378*" />
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="LabelIhsComplex1"
@@ -1535,40 +1481,18 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Complex 1" />
-                                        <ComboBox x:Name="ComboBoxIhsComplex1"
+                                        <TextBox x:Name="TextBoxIhsComplex1"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
                                                   Margin="8,2,8,4"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsComplex1Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsComplex1Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsComplex1,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsComplex1,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsComplex1"
-                                                  Grid.Row="0"
-                                                  Grid.Column="2"
-                                                  Margin="0,2,0,4"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsComplex1,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsComplex1Enabled,
-                                                                      Mode=OneWay}" />
 
                                         <Label x:Name="LabelIhsComplex2"
                                                Grid.Row="1"
@@ -1577,40 +1501,19 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Complex 2" />
-                                        <ComboBox x:Name="ComboBoxIhsComplex2"
+                                        <TextBox x:Name="TextBoxIhsComplex2"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
                                                   Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  DropDownClosed="ComboBox_DropDownClosed"
-                                                  IsEditable="True"
-                                                  IsEnabled="{Binding IhsComplex2Enabled,
-                                                                      Mode=OneWay}"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding IhsComplex2Codes,
-                                                                        ConverterParameter=code^description^sort_order,
-                                                                        Converter={StaticResource codeDescriptionConverter},
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidIhsComplex2,
+                                                  IsEnabled="False"
+                                                  IsReadOnly="True"
+                                                  Text="{Binding IncidIhsComplex2,
                                                                           ConverterParameter=code^description^sort_order,
                                                                           Converter={StaticResource codeDescriptionConverter},
                                                                           ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyIhsComplex2"
-                                                  Grid.Row="1"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,2"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidIhsComplex2,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding IhsComplex2Enabled,
-                                                                      Mode=OneWay}" />
+
                                     </Grid>
                                 </GroupBox>
 
@@ -1625,7 +1528,6 @@
                                     <!--  Header="Summary">  -->
                                     <Grid x:Name="GridSummary" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -1648,9 +1550,7 @@
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  IsReadOnly="True"
-                                                 Text="{Binding IncidIhsSummary,
-                                                                Mode=OneWay,
-                                                                ValidatesOnDataErrors=False}" />
+                                                 Text="{Binding IncidIhsSummary}" />
                                         <Label x:Name="LabelLegacyHabitat"
                                                Grid.Row="1"
                                                Grid.Column="0"
@@ -1658,33 +1558,6 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Legacy Habitat" />
-                                        <ComboBox x:Name="ComboBoxLegacyHabitat"
-                                                  Grid.Row="1"
-                                                  Grid.Column="1"
-                                                  Margin="8,0,8,2"
-                                                  VerticalAlignment="Center"
-                                                  DisplayMemberPath="description"
-                                                  IsEditable="True"
-                                                  IsReadOnly="False"
-                                                  ItemsSource="{Binding LegacyHabitatCodes,
-                                                                        UpdateSourceTrigger=PropertyChanged}"
-                                                  KeyUp="EditableComboBox_KeyUp"
-                                                  SelectedValue="{Binding IncidLegacyHabitat,
-                                                                          ValidatesOnDataErrors=True}"
-                                                  SelectedValuePath="code"
-                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-                                                  ToolTipService.ShowOnDisabled="True" />
-                                        <CheckBox x:Name="CheckBoxCopyLegacyHabitat"
-                                                  Grid.Row="1"
-                                                  Grid.Column="2"
-                                                  Margin="0,0,0,2"
-                                                  HorizontalAlignment="Right"
-                                                  VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyIncidLegacyHabitat,
-                                                                      Mode=TwoWay,
-                                                                      UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEnabled="{Binding ProcessEnabled,
-                                                                      Mode=OneWay}" />
                                     </Grid>
                                 </GroupBox>
                             </Grid>
