@@ -302,11 +302,11 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The primary bap determination quality codes.
         /// </value>
-        public HluDataSet.lut_bap_quality_determinationRow[] DeterminationQualityCodes
+        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodes
         {
             get
             {
-                return _viewModelMain.BapDeterminationQualityCodesAuto;
+                return _viewModelMain.DeterminationQualityCodesAuto;
             }
         }
 
@@ -333,11 +333,11 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The primary bap interpretation quality codes.
         /// </value>
-        public HluDataSet.lut_bap_quality_interpretationRow[] InterpretationQualityCodes
+        public HluDataSet.lut_quality_interpretationRow[] InterpretationQualityCodes
         {
             get
             {
-                return _viewModelMain.BapInterpretationQualityCodes;
+                return _viewModelMain.InterpretationQualityCodes;
             }
         }
 

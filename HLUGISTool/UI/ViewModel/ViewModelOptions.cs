@@ -1008,9 +1008,9 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The list of determination qualities.
         /// </value>
-        public HluDataSet.lut_bap_quality_determinationRow[] BulkDeterminationQualityCodes
+        public HluDataSet.lut_quality_determinationRow[] BulkDeterminationQualityCodes
         {
-            get { return _viewModelMain.BapDeterminationQualityCodesAuto; }
+            get { return _viewModelMain.DeterminationQualityCodesAuto; }
         }
 
         /// <summary>
@@ -1035,9 +1035,9 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The list of interpretation qualities.
         /// </value>
-        public HluDataSet.lut_bap_quality_interpretationRow[] BulkInterpretationQualityCodes
+        public HluDataSet.lut_quality_interpretationRow[] BulkInterpretationQualityCodes
         {
-            get { return _viewModelMain.BapInterpretationQualityCodes; }
+            get { return _viewModelMain.InterpretationQualityCodes; }
         }
 
         /// <summary>

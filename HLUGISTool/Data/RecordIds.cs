@@ -35,12 +35,13 @@ namespace HLU.Data
         HluDataSet _hluDataset;
         ViewModelWindowMain.GeometryTypes _gisLayerType;
         TableAdapterManager _hluTableAdapterMgr;
-        private string _ihsVersion;
+        private string _habitatVersion;
         private int _incidCurrentNumber = -1;
-        int _nextIncidIhsMatrixId = -1;
-        int _nextIncidIhsFormationId = -1;
-        int _nextIncidIhsManagementId = -1;
-        int _nextIncidIhsComplexId = -1;
+        //TODO: Replace with Condition and Secondary
+        //int _nextIncidIhsMatrixId = -1;
+        //int _nextIncidIhsFormationId = -1;
+        //int _nextIncidIhsManagementId = -1;
+        //int _nextIncidIhsComplexId = -1;
         int _nextIncidBapId = -1;
         int _nextIncidSourcesId = -1;
 
@@ -73,29 +74,31 @@ namespace HLU.Data
 
         public void InitializeIncidChildRecordIds()
         {
-            object retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
-                _db.QuoteIdentifier(_hluDataset.incid_ihs_matrix.matrix_idColumn.ColumnName),
-                _db.QualifyTableName(_hluDataset.incid_ihs_matrix.TableName)),
-                _db.Connection.ConnectionTimeout, CommandType.Text);
-            _nextIncidIhsMatrixId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
+            //TODO: Replace with Condition and Secondary
+            object retVal;
+            //object retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
+            //    _db.QuoteIdentifier(_hluDataset.incid_ihs_matrix.matrix_idColumn.ColumnName),
+            //    _db.QualifyTableName(_hluDataset.incid_ihs_matrix.TableName)),
+            //    _db.Connection.ConnectionTimeout, CommandType.Text);
+            //_nextIncidIhsMatrixId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
 
-            retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
-                _db.QuoteIdentifier(_hluDataset.incid_ihs_formation.formation_idColumn.ColumnName),
-                _db.QualifyTableName(_hluDataset.incid_ihs_formation.TableName)),
-                _db.Connection.ConnectionTimeout, CommandType.Text);
-            _nextIncidIhsFormationId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
+            //retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
+            //    _db.QuoteIdentifier(_hluDataset.incid_ihs_formation.formation_idColumn.ColumnName),
+            //    _db.QualifyTableName(_hluDataset.incid_ihs_formation.TableName)),
+            //    _db.Connection.ConnectionTimeout, CommandType.Text);
+            //_nextIncidIhsFormationId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
 
-            retVal=_db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
-                _db.QuoteIdentifier(_hluDataset.incid_ihs_management.management_idColumn.ColumnName),
-                _db.QualifyTableName(_hluDataset.incid_ihs_management.TableName)),
-                _db.Connection.ConnectionTimeout, CommandType.Text);
-            _nextIncidIhsManagementId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
+            //retVal=_db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
+            //    _db.QuoteIdentifier(_hluDataset.incid_ihs_management.management_idColumn.ColumnName),
+            //    _db.QualifyTableName(_hluDataset.incid_ihs_management.TableName)),
+            //    _db.Connection.ConnectionTimeout, CommandType.Text);
+            //_nextIncidIhsManagementId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
 
-            retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
-                _db.QuoteIdentifier(_hluDataset.incid_ihs_complex.complex_idColumn.ColumnName),
-                _db.QualifyTableName(_hluDataset.incid_ihs_complex.TableName)),
-                _db.Connection.ConnectionTimeout, CommandType.Text);
-            _nextIncidIhsComplexId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
+            //retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
+            //    _db.QuoteIdentifier(_hluDataset.incid_ihs_complex.complex_idColumn.ColumnName),
+            //    _db.QualifyTableName(_hluDataset.incid_ihs_complex.TableName)),
+            //    _db.Connection.ConnectionTimeout, CommandType.Text);
+            //_nextIncidIhsComplexId = retVal != DBNull.Value && retVal != null ? (int)retVal : 1;
 
             retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) + 1 FROM {1}",
                 _db.QuoteIdentifier(_hluDataset.incid_bap.bap_idColumn.ColumnName),
@@ -114,29 +117,18 @@ namespace HLU.Data
 
         #region Public Properties
 
-        public string IhsVersion
+        public string HabitatVersion
         {
             get
             {
-                //---------------------------------------------------------------------
-                // CHANGED: CR30 (Database validation on start-up)
-                // Get the ihs_version from the lut_version table instead of the
-                // lut_ihs_version table.
-                //
-                //var q = _hluDataset.lut_ihs_version.Where(r => r.ihs_version.ToLower() != "unknown");
-                //if (q.Count() > 0)
-                //    _ihsVersion = q.Max(r => r.ihs_version);
-                //if (String.IsNullOrEmpty(_ihsVersion))
-                //    _ihsVersion = "000.000.000";
-                //
-                if (String.IsNullOrEmpty(_ihsVersion))
+                // Get the habitat_version from the lut_version table.
+                if (String.IsNullOrEmpty(_habitatVersion))
                     if (_hluDataset.lut_version.Count > 0)
-                        _ihsVersion = _hluDataset.lut_version.ElementAt(_hluDataset.lut_version.Count - 1).ihs_version;
+                        _habitatVersion = _hluDataset.lut_version.ElementAt(_hluDataset.lut_version.Count - 1).habitat_version;
                     else
-                        _ihsVersion = "000.000.000";
-                //---------------------------------------------------------------------
+                        _habitatVersion = "0";
 
-                return _ihsVersion;
+                return _habitatVersion;
             }
         }
 
@@ -188,45 +180,46 @@ namespace HLU.Data
             get { return SiteID + ":" + _incidCurrentNumber.ToString("D7"); }
         }
 
-        public int NextIncidIhsMatrixId
-        {
-            get
-            {
-                _nextIncidIhsMatrixId = NextID(_nextIncidIhsMatrixId, _hluDataset.incid_ihs_matrix,
-                    _hluDataset.incid_ihs_matrix.matrix_idColumn.Ordinal);
-                return _nextIncidIhsMatrixId;
-            }
-        }
+        //TODO: Replace with Condition and Secondary
+        //public int NextIncidIhsMatrixId
+        //{
+        //    get
+        //    {
+        //        _nextIncidIhsMatrixId = NextID(_nextIncidIhsMatrixId, _hluDataset.incid_ihs_matrix,
+        //            _hluDataset.incid_ihs_matrix.matrix_idColumn.Ordinal);
+        //        return _nextIncidIhsMatrixId;
+        //    }
+        //}
 
-        public int NextIncidIhsFormationId
-        {
-            get
-            {
-                _nextIncidIhsFormationId = NextID(_nextIncidIhsFormationId, _hluDataset.incid_ihs_formation,
-                    _hluDataset.incid_ihs_formation.formation_idColumn.Ordinal);
-                return _nextIncidIhsFormationId;
-            }
-        }
+        //public int NextIncidIhsFormationId
+        //{
+        //    get
+        //    {
+        //        _nextIncidIhsFormationId = NextID(_nextIncidIhsFormationId, _hluDataset.incid_ihs_formation,
+        //            _hluDataset.incid_ihs_formation.formation_idColumn.Ordinal);
+        //        return _nextIncidIhsFormationId;
+        //    }
+        //}
 
-        public int NextIncidIhsManagementId
-        {
-            get
-            {
-                _nextIncidIhsManagementId = NextID(_nextIncidIhsManagementId, _hluDataset.incid_ihs_management,
-                    _hluDataset.incid_ihs_management.management_idColumn.Ordinal);
-                return _nextIncidIhsManagementId;
-            }
-        }
+        //public int NextIncidIhsManagementId
+        //{
+        //    get
+        //    {
+        //        _nextIncidIhsManagementId = NextID(_nextIncidIhsManagementId, _hluDataset.incid_ihs_management,
+        //            _hluDataset.incid_ihs_management.management_idColumn.Ordinal);
+        //        return _nextIncidIhsManagementId;
+        //    }
+        //}
 
-        public int NextIncidIhsComplexId
-        {
-            get
-            {
-                _nextIncidIhsComplexId = NextID(_nextIncidIhsComplexId, _hluDataset.incid_ihs_complex,
-                    _hluDataset.incid_ihs_complex.complex_idColumn.Ordinal);
-                return _nextIncidIhsComplexId;
-            }
-        }
+        //public int NextIncidIhsComplexId
+        //{
+        //    get
+        //    {
+        //        _nextIncidIhsComplexId = NextID(_nextIncidIhsComplexId, _hluDataset.incid_ihs_complex,
+        //            _hluDataset.incid_ihs_complex.complex_idColumn.Ordinal);
+        //        return _nextIncidIhsComplexId;
+        //    }
+        //}
 
         public int CurrentIncidBapId
         {

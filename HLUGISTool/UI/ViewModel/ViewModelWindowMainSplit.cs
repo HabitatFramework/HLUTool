@@ -447,7 +447,7 @@ namespace HLU.UI.ViewModel
                 // validated by the tool and the user) and not as a result of a
                 // logical split.
                 //
-                //newIncidRow.ihs_version = _viewModelMain.RecIDs.IhsVersion;
+                //newIncidRow.habitat_version = _viewModelMain.RecIDs.HabitatVersion;
                 //---------------------------------------------------------------------
 
                 // Update the created and last modified date and user fields.
