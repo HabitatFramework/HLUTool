@@ -653,28 +653,28 @@ namespace HLU.UI.ViewModel
                         "SELECT DISTINCT {0} FROM {1} GROUP BY {3} ORDER BY {3}",
                         sqlColumns,
                         _db.QualifyTableName(_hluDataset.incid_osmm_updates.TableName),
-                        _db.QualifyTableName(_hluDataset.lut_osmm_ihs_xref.TableName),
+                        _db.QualifyTableName(_hluDataset.lut_osmm_habitat_xref.TableName),
                         sqlGroupBy);
                     //string sqlColumns = String.Format("{0}, {1}, {2}, {3}, {4}, COUNT(*) As RecCount",
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.process_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.spatial_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.change_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName),
-                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.ihs_summaryColumn.ColumnName));
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_habitat_xref.ihs_summaryColumn.ColumnName));
                     //string sqlGroupBy = String.Format("{0}, {1}, {2}, {3}, {4}",
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.process_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.spatial_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.change_flagColumn.ColumnName),
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.statusColumn.ColumnName),
-                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.ihs_summaryColumn.ColumnName));
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_habitat_xref.ihs_summaryColumn.ColumnName));
                     //String sql = String.Format(
                     //    "SELECT DISTINCT {0} FROM {1},{2} WHERE {1}.{4} = {2}.{5} GROUP BY {3} ORDER BY {3}",
                     //    sqlColumns,
                     //    _db.QualifyTableName(_hluDataset.incid_osmm_updates.TableName),
-                    //    _db.QualifyTableName(_hluDataset.lut_osmm_ihs_xref.TableName),
+                    //    _db.QualifyTableName(_hluDataset.lut_osmm_habitat_xref.TableName),
                     //    sqlGroupBy,
                     //    _db.QuoteIdentifier(_hluDataset.incid_osmm_updates.osmm_xref_idColumn.ColumnName),
-                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_ihs_xref.osmm_xref_idColumn.ColumnName));
+                    //    _db.QuoteIdentifier(_hluDataset.lut_osmm_habitat_xref.osmm_xref_idColumn.ColumnName));
 
                     dataReader = _db.ExecuteReader(sql,
                         _db.Connection.ConnectionTimeout, CommandType.Text);

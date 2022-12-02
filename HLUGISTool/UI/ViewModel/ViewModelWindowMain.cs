@@ -216,30 +216,39 @@ namespace HLU.UI.ViewModel
         private HluDataSet.incid_sourcesRow[] _incidSourcesRows;
         private HluDataSet.incid_osmm_updatesRow[] _incidOSMMUpdatesRows;
         private HluDataSet.historyRow[] _incidHistoryRows;
+        private HluDataSet.incid_conditionRow[] _incidConditionRows;
+        private HluDataSet.incid_secondaryRow[] _incidSecondaryRows;
+
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
         private HluDataSet.lut_ihs_matrixRow[] _lutIhsMatrixCodes;
         private HluDataSet.lut_ihs_formationRow[] _lutIhsFormationCodes;
         private HluDataSet.lut_ihs_managementRow[] _lutIhsManagementCodes;
         private HluDataSet.lut_ihs_complexRow[] _lutIhsComplexCodes;
-        private HluDataSet.lut_bap_quality_determinationRow[] _bapDeterminationQualityCodes;
-        private HluDataSet.lut_bap_quality_interpretationRow[] _bapInterpretationQualityCodes;
+        private HluDataSet.lut_quality_determinationRow[] _DeterminationQualityCodes;
+        private HluDataSet.lut_quality_interpretationRow[] _InterpretationQualityCodes;
         private HluDataSet.lut_sourcesRow[] _sourceNames;
         private HluDataSet.lut_habitat_classRow[] _sourceHabitatClassCodes;
         private HluDataSet.lut_importanceRow[] _sourceImportanceCodes;
         private HluDataSet.lut_habitat_typeRow[] _bapHabitatCodes;
+        private HluDataSet.lut_secondaryRow[] _lutSecondaryCodes;
+
+        private HluDataSet.lut_conditionRow[] _conditionCodes;
+        private HluDataSet.lut_condition_qualifierRow[] _conditionQualifierCodes;
+        private HluDataSet.lut_primary_categoryRow[] _primaryCategoryCodes;
+        private HluDataSet.lut_secondary_groupRow[] _secondaryGroupCodes;
+
         private ObservableCollection<BapEnvironment> _incidBapRowsAuto;
         private ObservableCollection<BapEnvironment> _incidBapRowsUser;
         private IEnumerable<HluDataSet.lut_ihs_habitatRow> _ihsHabitatCodes;
+        private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses;
-        private IEnumerable<HluDataSet.lut_osmm_ihs_xrefRow> _ihsOSMMXrefIds;
-        private IEnumerable<HluDataSet.lut_habitat_type_ihs_matrixRow> _xrefHabitatTypeMatrixCodes;
-        private IEnumerable<HluDataSet.lut_habitat_type_ihs_formationRow> _xrefHabitatTypeFormationCodes;
-        private IEnumerable<HluDataSet.lut_habitat_type_ihs_managementRow> _xrefHabitatTypeManagementCodes;
-        private IEnumerable<HluDataSet.lut_habitat_type_ihs_complexRow> _xrefHabitatTypeComplexCodes;
+        private IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> _osmmHabitatXrefIds;
+        private IEnumerable<HluDataSet.lut_habitat_type_primaryRow> _xrefHabitatTypePrimaryCodes;
+        private IEnumerable<HluDataSet.lut_habitat_type_secondaryRow> _xrefHabitatTypeSecondaryCodes;
 
         private double _incidArea;
         private double _incidLength;
@@ -329,15 +338,15 @@ namespace HLU.UI.ViewModel
         private bool _osmmUpdateCreateHistory;
         private string _codeAnyRow = Settings.Default.CodeAnyRow;
 
-        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix1Codes;
-        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix2Codes;
-        private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix3Codes;
-        private HluDataSet.lut_ihs_formationRow[] _ihsFormation1Codes;
-        private HluDataSet.lut_ihs_formationRow[] _ihsFormation2Codes;
-        private HluDataSet.lut_ihs_managementRow[] _ihsManagement1Codes;
-        private HluDataSet.lut_ihs_managementRow[] _ihsManagement2Codes;
-        private HluDataSet.lut_ihs_complexRow[] _ihsComplex1Codes;
-        private HluDataSet.lut_ihs_complexRow[] _ihsComplex2Codes;
+        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix1Codes;
+        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix2Codes;
+        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix3Codes;
+        //private HluDataSet.lut_ihs_formationRow[] _ihsFormation1Codes;
+        //private HluDataSet.lut_ihs_formationRow[] _ihsFormation2Codes;
+        //private HluDataSet.lut_ihs_managementRow[] _ihsManagement1Codes;
+        //private HluDataSet.lut_ihs_managementRow[] _ihsManagement2Codes;
+        //private HluDataSet.lut_ihs_complexRow[] _ihsComplex1Codes;
+        //private HluDataSet.lut_ihs_complexRow[] _ihsComplex2Codes;
 
         private VagueDateInstance _incidSource1DateEntered;
         private VagueDateInstance _incidSource2DateEntered;
@@ -346,12 +355,12 @@ namespace HLU.UI.ViewModel
         private string _processingMsg = "Processing ...";
         private bool _saved = false;
         private bool _savingAttempted;
-        private List<string> _ihsWarnings = new List<string>();
+        private List<string> _habitatWarnings = new List<string>();
         private List<string> _detailsWarnings = new List<string>();
         private List<string[]> _source1Warnings = null;
         private List<string[]> _source2Warnings = null;
         private List<string[]> _source3Warnings = null;
-        private List<string> _ihsErrors = new List<string>();
+        private List<string> _habitatErrors = new List<string>();
         private List<string> _detailsErrors = new List<string>();
         private List<string[]> _source1Errors = null;
         private List<string[]> _source2Errors = null;
@@ -1020,6 +1029,18 @@ namespace HLU.UI.ViewModel
             set { _incidIhsComplexRows = value; }
         }
 
+        internal HluDataSet.incid_secondaryRow[] IncidSecondaryRows
+        {
+            get { return _incidSecondaryRows; }
+            set { _incidSecondaryRows = value; }
+        }
+
+        internal HluDataSet.incid_conditionRow[] IncidConditionRows
+        {
+            get { return _incidConditionRows; }
+            set { _incidConditionRows = value; }
+        }
+
         internal HluDataSet.incid_bapRow[] IncidBapRows
         {
             get { return _incidBapRows; }
@@ -1130,10 +1151,10 @@ namespace HLU.UI.ViewModel
             get { return _viewModelUpd; }
         }
 
-        internal List<string> IhsWarnings
+        internal List<string> HabitatWarnings
         {
-            get { return _ihsWarnings; }
-            set { _ihsWarnings = value; }
+            get { return _habitatWarnings; }
+            set { _habitatWarnings = value; }
         }
 
         internal List<string> DetailsWarnings
@@ -1160,10 +1181,10 @@ namespace HLU.UI.ViewModel
             set { _source3Warnings = value; }
         }
 
-        internal List<string> IhsErrors
+        internal List<string> HabitatErrors
         {
-            get { return _ihsErrors; }
-            set { _ihsErrors = value; }
+            get { return _habitatErrors; }
+            set { _habitatErrors = value; }
         }
 
         internal List<string> DetailsErrors
@@ -1257,9 +1278,9 @@ namespace HLU.UI.ViewModel
             {
                 // Get the user added ('NP' = not present) description
                 object result = _db.ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2} = {3}",
-                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.descriptionColumn.ColumnName),
-                    _db.QualifyTableName(_hluDS.lut_bap_quality_determination.TableName),
-                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.codeColumn.ColumnName),
+                    _db.QuoteIdentifier(_hluDS.lut_quality_determination.descriptionColumn.ColumnName),
+                    _db.QualifyTableName(_hluDS.lut_quality_determination.TableName),
+                    _db.QuoteIdentifier(_hluDS.lut_quality_determination.codeColumn.ColumnName),
                     _db.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded)), _db.Connection.ConnectionTimeout, CommandType.Text);
                 if (result != null)
                 {
@@ -1269,9 +1290,9 @@ namespace HLU.UI.ViewModel
 
                 // Get the previous ('PP' = previously present) description
                 result = _db.ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2} = {3}",
-                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.descriptionColumn.ColumnName),
-                    _db.QualifyTableName(_hluDS.lut_bap_quality_determination.TableName),
-                    _db.QuoteIdentifier(_hluDS.lut_bap_quality_determination.codeColumn.ColumnName),
+                    _db.QuoteIdentifier(_hluDS.lut_quality_determination.descriptionColumn.ColumnName),
+                    _db.QualifyTableName(_hluDS.lut_quality_determination.TableName),
+                    _db.QuoteIdentifier(_hluDS.lut_quality_determination.codeColumn.ColumnName),
                     _db.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious)), _db.Connection.ConnectionTimeout, CommandType.Text);
                 if (result != null)
                 {
@@ -5091,6 +5112,19 @@ namespace HLU.UI.ViewModel
                 IncidIhsComplexRows[i].incid = RecIDs.CurrentIncid;
             }
 
+            IncidSecondaryRows = new HluDataSet.incid_secondaryRow[0]
+                .Select(r => HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
+            //TODO: Secondary
+            //IncidSecondaryRows = new ObservableCollection<BapEnvironment>();
+            //for (int i = 0; i < IncidSecondaryRows.Length; i++)
+            //{
+            //    IncidIhsMatrixRows[i].matrix_id = i;
+            //    IncidIhsMatrixRows[i].incid = RecIDs.CurrentIncid;
+            //}
+
+            IncidConditionRows = new HluDataSet.incid_conditionRow[0]
+                .Select(r => HluDataset.incid_condition.Newincid_conditionRow()).ToArray();
+
             IncidBapRows = new HluDataSet.incid_bapRow[0]
                 .Select(r => HluDataset.incid_bap.Newincid_bapRow()).ToArray();
             IncidBapRowsAuto = new ObservableCollection<BapEnvironment>();
@@ -6955,7 +6989,7 @@ namespace HLU.UI.ViewModel
                 // If there are any OSMM Updates for this incid then store the values.
                 if (_incidOSMMUpdatesRows.Length > 0)
                 {
-                    _incidOSMMUpdatesOSMMXref = _incidOSMMUpdatesRows[0].osmm_xref_id;
+                    _incidOSMMUpdatesOSMMXref = _incidOSMMUpdatesRows[0].osmm_habitat_xref_id;
                     _incidOSMMUpdatesProcessFlag = _incidOSMMUpdatesRows[0].process_flag;
                     _incidOSMMUpdatesSpatialFlag = _incidOSMMUpdatesRows[0].Isspatial_flagNull() ? null : _incidOSMMUpdatesRows[0].spatial_flag;
                     _incidOSMMUpdatesChangeFlag = _incidOSMMUpdatesRows[0].Ischange_flagNull() ? null : _incidOSMMUpdatesRows[0].change_flag;
@@ -8439,29 +8473,56 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets the OSMM Update proposed IHS Summary that relates to the
-        /// selected incid. It is used to show how the latest OSMM translates
-        /// directly to IHS.
+        /// Gets the OSMM Update proposed Habitat Primary that relates to the
+        /// selected incid. It is used to show how the latest OSMM translates.
         /// </summary>
         /// <value>
-        /// The string of OSMM IHS Summary related to the current incid.
+        /// The string of OSMM Habitat Primary related to the current incid.
         /// </value>
-        public string IncidOSMMIhsSummary
+        public string IncidOSMMHabitatPrimary
         {
             get
             {
-                if (_ihsOSMMXrefIds == null)
+                if (_osmmHabitatXrefIds == null)
                 {
-                    _ihsOSMMXrefIds = from x in HluDataset.lut_osmm_ihs_xref
+                    _osmmHabitatXrefIds = from x in HluDataset.lut_osmm_habitat_xref
                                       where x.is_local
                                       select x;
                 }
 
                 if (_osmmUpdatesEmpty == true || _incidOSMMUpdatesOSMMXref <= 0) return null;
 
-                var q = _ihsOSMMXrefIds.Where(h => h.osmm_xref_id == _incidOSMMUpdatesOSMMXref);
+                var q = _osmmHabitatXrefIds.Where(h => h.osmm_habitat_xref_id == _incidOSMMUpdatesOSMMXref);
                 if (q.Count() > 0)
-                    return q.ElementAt(0).ihs_summary;
+                    return q.ElementAt(0).habitat_primary;
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the OSMM Update proposed Habitat Secondaries that relates to the
+        /// selected incid. It is used to show how the latest OSMM translates.
+        /// </summary>
+        /// <value>
+        /// The string of OSMM Habitat Secondaries related to the current incid.
+        /// </value>
+        public string IncidOSMMHabitatSecondaries
+        {
+            get
+            {
+                if (_osmmHabitatXrefIds == null)
+                {
+                    _osmmHabitatXrefIds = from x in HluDataset.lut_osmm_habitat_xref
+                                          where x.is_local
+                                          select x;
+                }
+
+                if (_osmmUpdatesEmpty == true || _incidOSMMUpdatesOSMMXref <= 0) return null;
+
+                var q = _osmmHabitatXrefIds.Where(h => h.osmm_habitat_xref_id == _incidOSMMUpdatesOSMMXref);
+                if (q.Count() > 0)
+                    return q.ElementAt(0).habitat_secondaries;
                 else
                     return null;
             }
@@ -8708,6 +8769,7 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // CHANGED: CR32 (Local flags)
                     // Only load habitat classes that are flagged as local.
+                    //TODO: HabitatClassCodes - lut_habitat_type_ihs_habitat needed?
                     _habitatClassCodes = (from c in HluDataset.lut_habitat_class
                                           join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
                                           join i in HluDataset.lut_habitat_type_ihs_habitat on t.code equals i.code_habitat_type
@@ -8827,6 +8889,7 @@ namespace HLU.UI.ViewModel
                     // CHANGED: CR32 (Local flags)
                     // Load all IHS habitat codes that are flagged as local and
                     // relate to the current habitat type.
+                    //TODO: HabitatType - lut_habitat_type_ihs_habitat needed?
                     _ihsHabitatCodes = from h in HluDataset.lut_ihs_habitat
                                        join t in HluDataset.lut_habitat_type_ihs_habitat on h.code equals t.code_habitat
                                        where h.is_local && t.code_habitat_type == HabitatType
@@ -9152,183 +9215,185 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        public HluDataSet.lut_ihs_matrixRow[] IhsMatrix1Codes
-        {
-            get
-            {
-                IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
+        //TODO: Replace with string field
+        //public HluDataSet.lut_ihs_matrixRow[] IhsMatrix1Codes
+        //{
+        //    get
+        //    {
+        //        IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
 
-                if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
-                {
-                    _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                }
-                //---------------------------------------------------------------------
-                // FIXED: KI105 (Mandatory multiplex codes)
-                // Don't automatically select the first matrix code if there
-                // is only one in the list.
-                //
-                //else if (_lutIhsMatrixCodes.Length == 1)
-                //{
-                //    ihsMatrix1Codes = _lutIhsMatrixCodes;
-                //    IncidIhsMatrix1 = _lutIhsMatrixCodes[0].code;
-                //    OnPropertyChanged("IncidIhsMatrix1");
-                //}
-                //---------------------------------------------------------------------
-                else
-                {
-                    if (!String.IsNullOrEmpty(IncidIhsMatrix1))
-                    {
-                        if (_lutIhsMatrixCodes != null)
-                            q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix2 && r.code != IncidIhsMatrix3);
-                        else
-                            q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix1);
+        //        if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
+        //        {
+        //            _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //        }
+        //        //---------------------------------------------------------------------
+        //        // FIXED: KI105 (Mandatory multiplex codes)
+        //        // Don't automatically select the first matrix code if there
+        //        // is only one in the list.
+        //        //
+        //        //else if (_lutIhsMatrixCodes.Length == 1)
+        //        //{
+        //        //    ihsMatrix1Codes = _lutIhsMatrixCodes;
+        //        //    IncidIhsMatrix1 = _lutIhsMatrixCodes[0].code;
+        //        //    OnPropertyChanged("IncidIhsMatrix1");
+        //        //}
+        //        //---------------------------------------------------------------------
+        //        else
+        //        {
+        //            if (!String.IsNullOrEmpty(IncidIhsMatrix1))
+        //            {
+        //                if (_lutIhsMatrixCodes != null)
+        //                    q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix2 && r.code != IncidIhsMatrix3);
+        //                else
+        //                    q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix1);
 
-                        if (q == null)
-                            _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                        else
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 025 Add default sort order to all lookup tables
-                            _ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                        //---------------------------------------------------------------------
-                    }
-                    else
-                    {
-                        _ihsMatrix1Codes = _lutIhsMatrixCodes;
-                    }
-                }
-                return _ihsMatrix1Codes;
-            }
-            set { }
-        }
+        //                if (q == null)
+        //                    _ihsMatrix1Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //                else
+        //                    //---------------------------------------------------------------------
+        //                    // FIXOLD: 025 Add default sort order to all lookup tables
+        //                    _ihsMatrix1Codes = ClearRowIhsMatrix(-3).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+        //                //---------------------------------------------------------------------
+        //            }
+        //            else
+        //            {
+        //                _ihsMatrix1Codes = _lutIhsMatrixCodes;
+        //            }
+        //        }
+        //        return _ihsMatrix1Codes;
+        //    }
+        //    set { }
+        //}
 
-        public HluDataSet.lut_ihs_matrixRow[] IhsMatrix2Codes
-        {
-            get
-            {
-                IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
+        //public HluDataSet.lut_ihs_matrixRow[] IhsMatrix2Codes
+        //{
+        //    get
+        //    {
+        //        IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
 
-                if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
-                {
-                    _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                }
-                //---------------------------------------------------------------------
-                // FIXED: KI105 (Mandatory multiplex codes)
-                // Don't automatically select the first matrix code if there
-                // is only one in the list.
-                //
-                //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1))
-                //{
-                //    ihsMatrix2Codes = _lutIhsMatrixCodes;
-                //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
-                //    OnPropertyChanged("IncidIhsMatrix2");
-                //}
-                //---------------------------------------------------------------------
-                else
-                {
-                    if (!String.IsNullOrEmpty(IncidIhsMatrix2))
-                    {
-                        if (_lutIhsMatrixCodes != null)
-                            q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3);
-                        else
-                            q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix2);
+        //        if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
+        //        {
+        //            _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //        }
+        //        //---------------------------------------------------------------------
+        //        // FIXED: KI105 (Mandatory multiplex codes)
+        //        // Don't automatically select the first matrix code if there
+        //        // is only one in the list.
+        //        //
+        //        //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1))
+        //        //{
+        //        //    ihsMatrix2Codes = _lutIhsMatrixCodes;
+        //        //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
+        //        //    OnPropertyChanged("IncidIhsMatrix2");
+        //        //}
+        //        //---------------------------------------------------------------------
+        //        else
+        //        {
+        //            if (!String.IsNullOrEmpty(IncidIhsMatrix2))
+        //            {
+        //                if (_lutIhsMatrixCodes != null)
+        //                    q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3);
+        //                else
+        //                    q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix2);
 
-                        if (q != null)
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 025 Add default sort order to all lookup tables
-                            _ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                        //---------------------------------------------------------------------
-                        else
-                            _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                    }
-                    else
-                    {
-                        if (_lutIhsMatrixCodes != null)
-                            _ihsMatrix2Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3).ToArray();
-                        else
-                            _ihsMatrix2Codes = _lutIhsMatrixCodes;
-                    }
-                }
-                return _ihsMatrix2Codes;
-            }
-            set { }
-        }
+        //                if (q != null)
+        //                    //---------------------------------------------------------------------
+        //                    // FIXOLD: 025 Add default sort order to all lookup tables
+        //                    _ihsMatrix2Codes = ClearRowIhsMatrix(-2).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+        //                //---------------------------------------------------------------------
+        //                else
+        //                    _ihsMatrix2Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //            }
+        //            else
+        //            {
+        //                if (_lutIhsMatrixCodes != null)
+        //                    _ihsMatrix2Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix3).ToArray();
+        //                else
+        //                    _ihsMatrix2Codes = _lutIhsMatrixCodes;
+        //            }
+        //        }
+        //        return _ihsMatrix2Codes;
+        //    }
+        //    set { }
+        //}
 
-        public HluDataSet.lut_ihs_matrixRow[] IhsMatrix3Codes
-        {
-            get
-            {
-                IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
+        //public HluDataSet.lut_ihs_matrixRow[] IhsMatrix3Codes
+        //{
+        //    get
+        //    {
+        //        IEnumerable<HluDataSet.lut_ihs_matrixRow> q = null;
 
-                if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
-                {
-                    _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                }
-                //---------------------------------------------------------------------
-                // FIXED: KI105 (Mandatory multiplex codes)
-                // Don't automatically select the first matrix code if there
-                // is only one in the list.
-                //
-                //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1) && 
-                //    (_lutIhsMatrixCodes[0].code != IncidIhsMatrix2))
-                //{
-                //    ihsMatrix3Codes = _lutIhsMatrixCodes;
-                //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
-                //    OnPropertyChanged("IncidIhsMatrix2");
-                //}
-                //---------------------------------------------------------------------
-                else
-                {
-                    if (!String.IsNullOrEmpty(IncidIhsMatrix3))
-                    {
-                        if (_lutIhsMatrixCodes != null)
-                            q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2);
-                        else
-                            q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix3);
+        //        if ((_lutIhsMatrixCodes == null) || (_lutIhsMatrixCodes.Length == 0))
+        //        {
+        //            _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //        }
+        //        //---------------------------------------------------------------------
+        //        // FIXED: KI105 (Mandatory multiplex codes)
+        //        // Don't automatically select the first matrix code if there
+        //        // is only one in the list.
+        //        //
+        //        //else if ((_lutIhsMatrixCodes.Length == 1) && (_lutIhsMatrixCodes[0].code != IncidIhsMatrix1) && 
+        //        //    (_lutIhsMatrixCodes[0].code != IncidIhsMatrix2))
+        //        //{
+        //        //    ihsMatrix3Codes = _lutIhsMatrixCodes;
+        //        //    IncidIhsMatrix2 = _lutIhsMatrixCodes[0].code;
+        //        //    OnPropertyChanged("IncidIhsMatrix2");
+        //        //}
+        //        //---------------------------------------------------------------------
+        //        else
+        //        {
+        //            if (!String.IsNullOrEmpty(IncidIhsMatrix3))
+        //            {
+        //                if (_lutIhsMatrixCodes != null)
+        //                    q = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2);
+        //                else
+        //                    q = _hluDS.lut_ihs_matrix.Where(r => r.code == IncidIhsMatrix3);
 
-                        if (q != null)
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 025 Add default sort order to all lookup tables
-                            _ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                        //---------------------------------------------------------------------
-                        else
-                            _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
-                    }
-                    else
-                    {
-                        if (_lutIhsMatrixCodes != null)
-                            _ihsMatrix3Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2).ToArray();
-                        else
-                            _ihsMatrix3Codes = _lutIhsMatrixCodes;
-                    }
-                }
-                return _ihsMatrix3Codes;
-            }
-            set { }
-        }
+        //                if (q != null)
+        //                    //---------------------------------------------------------------------
+        //                    // FIXOLD: 025 Add default sort order to all lookup tables
+        //                    _ihsMatrix3Codes = ClearRowIhsMatrix(-1).Concat(q).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+        //                //---------------------------------------------------------------------
+        //                else
+        //                    _ihsMatrix3Codes = new HluDataSet.lut_ihs_matrixRow[0];
+        //            }
+        //            else
+        //            {
+        //                if (_lutIhsMatrixCodes != null)
+        //                    _ihsMatrix3Codes = _lutIhsMatrixCodes.Where(r => r.code != IncidIhsMatrix1 && r.code != IncidIhsMatrix2).ToArray();
+        //                else
+        //                    _ihsMatrix3Codes = _lutIhsMatrixCodes;
+        //            }
+        //        }
+        //        return _ihsMatrix3Codes;
+        //    }
+        //    set { }
+        //}
 
-        public bool IhsMatrix1Enabled
-        {
-            get { return IhsMatrix1Codes.Count() > 0; }
-        }
+        //public bool IhsMatrix1Enabled
+        //{
+        //    get { return IhsMatrix1Codes.Count() > 0; }
+        //}
 
-        public bool IhsMatrix2Enabled
-        {
-            get
-            {
-                return (!String.IsNullOrEmpty(IncidIhsMatrix1) || IncidIhsMatrix2 != null) &&
-                    IhsMatrix2Codes.Count() > 0;
-            }
-        }
+        //public bool IhsMatrix2Enabled
+        //{
+        //    get
+        //    {
+        //        return (!String.IsNullOrEmpty(IncidIhsMatrix1) || IncidIhsMatrix2 != null) &&
+        //            IhsMatrix2Codes.Count() > 0;
+        //    }
+        //}
 
-        public bool IhsMatrix3Enabled
-        {
-            get
-            {
-                return (!String.IsNullOrEmpty(IncidIhsMatrix2) || IncidIhsMatrix3 != null) &&
-                  IhsMatrix3Codes.Count() > 0;
-            }
-        }
+        //public bool IhsMatrix3Enabled
+        //{
+        //    get
+        //    {
+        //        return (!String.IsNullOrEmpty(IncidIhsMatrix2) || IncidIhsMatrix3 != null) &&
+        //          IhsMatrix3Codes.Count() > 0;
+        //    }
+        //}
 
+        //TODO: Replace with string field
         public string IncidIhsMatrix1
         {
             get
@@ -9439,6 +9504,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //TODO: Replace with string field
         public string IncidIhsMatrix2
         {
             get
@@ -9555,6 +9621,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        //TODO: Replace with string field
         public string IncidIhsMatrix3
         {
             get
@@ -9663,63 +9730,64 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private bool CheckIhsMatrix()
-        {
-            if (_bulkUpdateMode == true) return true;
+        //TODO: Replace with string field
+        //private bool CheckIhsMatrix()
+        //{
+        //    if (_bulkUpdateMode == true) return true;
 
-            if (_incidIhsMatrixRows == null)
-            {
-                HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable = _hluDS.incid_ihs_matrix;
-                GetIncidChildRowsDb(new object[] { Incid },
-                    _hluTableAdapterMgr.incid_ihs_matrixTableAdapter, ref ihsMatrixTable);
-            }
+        //    if (_incidIhsMatrixRows == null)
+        //    {
+        //        HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable = _hluDS.incid_ihs_matrix;
+        //        GetIncidChildRowsDb(new object[] { Incid },
+        //            _hluTableAdapterMgr.incid_ihs_matrixTableAdapter, ref ihsMatrixTable);
+        //    }
 
-            return _incidIhsMatrixRows != null;
-        }
+        //    return _incidIhsMatrixRows != null;
+        //}
 
-        private HluDataSet.lut_ihs_matrixRow[] ClearRowIhsMatrix(int sortOrder)
-        {
-            HluDataSet.lut_ihs_matrixRow clearRow = _hluDS.lut_ihs_matrix.Newlut_ihs_matrixRow();
-            clearRow.code = _codeDeleteRow;
-            clearRow.sort_order = sortOrder;
-            clearRow.description = String.Empty;
-            return new HluDataSet.lut_ihs_matrixRow[] { clearRow };
-        }
+        //private HluDataSet.lut_ihs_matrixRow[] ClearRowIhsMatrix(int sortOrder)
+        //{
+        //    HluDataSet.lut_ihs_matrixRow clearRow = _hluDS.lut_ihs_matrix.Newlut_ihs_matrixRow();
+        //    clearRow.code = _codeDeleteRow;
+        //    clearRow.sort_order = sortOrder;
+        //    clearRow.description = String.Empty;
+        //    return new HluDataSet.lut_ihs_matrixRow[] { clearRow };
+        //}
 
-        private void AddIncidIhsMatrixRow(string newMatrixCode, int ix)
-        {
-            if (newMatrixCode != null)
-            {
-                HluDataSet.incid_ihs_matrixRow newRow = IncidIhsMatrixTable.Newincid_ihs_matrixRow();
-                if ((_bulkUpdateMode == false))
-                {
-                    newRow.matrix_id = NextIncidIhsMatrixId;
-                    newRow.incid = IncidCurrentRow.incid;
-                    newRow.matrix = newMatrixCode;
-                    IncidIhsMatrixTable.Addincid_ihs_matrixRow(newRow);
-                    _incidIhsMatrixRows = GetIncidChildRows<HluDataSet.incidDataTable,
-                        HluDataSet.incid_ihs_matrixDataTable, HluDataSet.incid_ihs_matrixRow>(
-                        IncidTable, IncidIhsMatrixTable);
-                }
-                else
-                {
-                    newRow.matrix_id = ix;
-                    newRow.matrix = newMatrixCode;
-                    _incidIhsMatrixRows[ix] = newRow;
-                }
-                OnPropertyChanged("IncidIhsMatrix1");
-                OnPropertyChanged("IncidIhsMatrix2");
-                OnPropertyChanged("IncidIhsMatrix3");
-                OnPropertyChanged("IncidIhsSummary");
-            }
-        }
+        //private void AddIncidIhsMatrixRow(string newMatrixCode, int ix)
+        //{
+        //    if (newMatrixCode != null)
+        //    {
+        //        HluDataSet.incid_ihs_matrixRow newRow = IncidIhsMatrixTable.Newincid_ihs_matrixRow();
+        //        if ((_bulkUpdateMode == false))
+        //        {
+        //            newRow.matrix_id = NextIncidIhsMatrixId;
+        //            newRow.incid = IncidCurrentRow.incid;
+        //            newRow.matrix = newMatrixCode;
+        //            IncidIhsMatrixTable.Addincid_ihs_matrixRow(newRow);
+        //            _incidIhsMatrixRows = GetIncidChildRows<HluDataSet.incidDataTable,
+        //                HluDataSet.incid_ihs_matrixDataTable, HluDataSet.incid_ihs_matrixRow>(
+        //                IncidTable, IncidIhsMatrixTable);
+        //        }
+        //        else
+        //        {
+        //            newRow.matrix_id = ix;
+        //            newRow.matrix = newMatrixCode;
+        //            _incidIhsMatrixRows[ix] = newRow;
+        //        }
+        //        OnPropertyChanged("IncidIhsMatrix1");
+        //        OnPropertyChanged("IncidIhsMatrix2");
+        //        OnPropertyChanged("IncidIhsMatrix3");
+        //        OnPropertyChanged("IncidIhsSummary");
+        //    }
+        //}
 
-        private void RemoveIncidIhsMatrixRow(int rowNumber)
-        {
-            if (_incidIhsMatrixRows[rowNumber].RowState != DataRowState.Detached)
-                _incidIhsMatrixRows[rowNumber].Delete();
-            _incidIhsMatrixRows[rowNumber] = null;
-        }
+        //private void RemoveIncidIhsMatrixRow(int rowNumber)
+        //{
+        //    if (_incidIhsMatrixRows[rowNumber].RowState != DataRowState.Detached)
+        //        _incidIhsMatrixRows[rowNumber].Delete();
+        //    _incidIhsMatrixRows[rowNumber] = null;
+        //}
 
         #endregion
 
@@ -10949,6 +11017,7 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
+        //TODO: IhsMultiplexCodes needed?
         private void IhsMultiplexCodes(string incidIhsHabitat)
         {
             if (!String.IsNullOrEmpty(incidIhsHabitat))
@@ -11030,6 +11099,7 @@ namespace HLU.UI.ViewModel
 
         #region Summary
 
+        //TODO: IncidIhsSummary - chage to IncidSecondaries
         public string IncidIhsSummary
         {
             get
@@ -11187,14 +11257,14 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_bap_quality_determinationRow[] BapDeterminationQualityCodesAuto
+        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodesAuto
         {
             get
             {
-                if (BapDeterminationQualityCodes != null)
+                if (DeterminationQualityCodes != null)
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    return BapDeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded
+                    return DeterminationQualityCodes.Where(r => r.code != BapEnvironment.BAPDetQltyUserAdded
                         && r.code != BapEnvironment.BAPDetQltyPrevious)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 //---------------------------------------------------------------------
@@ -11203,7 +11273,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_bap_quality_determinationRow[] BapDeterminationQualityCodesUser
+        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodesUser
         {
             get
             {
@@ -11212,11 +11282,11 @@ namespace HLU.UI.ViewModel
                 // Show all determination quality values in the drop-down list (instead
                 // of just 'Not present but close to definition') but validate the
                 // selected value later.
-                if (BapDeterminationQualityCodes != null)
+                if (DeterminationQualityCodes != null)
                     //return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    return BapDeterminationQualityCodes.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    return DeterminationQualityCodes.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 //---------------------------------------------------------------------
                 else
                     return null;
@@ -11224,55 +11294,55 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_bap_quality_determinationRow[] BapDeterminationQualityCodes
+        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodes
         {
             get
             {
-                if (_bapDeterminationQualityCodes == null)
+                if (_DeterminationQualityCodes == null)
                 {
-                    if (HluDataset.lut_bap_quality_determination.IsInitialized &&
-                        HluDataset.lut_bap_quality_determination.Count == 0)
+                    if (HluDataset.lut_quality_determination.IsInitialized &&
+                        HluDataset.lut_quality_determination.Count == 0)
                     {
-                        if (_hluTableAdapterMgr.lut_bap_quality_determinationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_bap_quality_determinationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_bap_quality_determinationDataTable,
-                                    HluDataSet.lut_bap_quality_determinationRow>(_db);
+                        if (_hluTableAdapterMgr.lut_quality_determinationTableAdapter == null)
+                            _hluTableAdapterMgr.lut_quality_determinationTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_quality_determinationDataTable,
+                                    HluDataSet.lut_quality_determinationRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_bap_quality_determinationDataTable) }, false);
+                            new Type[] { typeof(HluDataSet.lut_quality_determinationDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    _bapDeterminationQualityCodes =
-                        HluDataset.lut_bap_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _DeterminationQualityCodes =
+                        HluDataset.lut_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
-                return _bapDeterminationQualityCodes;
+                return _DeterminationQualityCodes;
             }
         }
 
-        public HluDataSet.lut_bap_quality_interpretationRow[] BapInterpretationQualityCodes
+        public HluDataSet.lut_quality_interpretationRow[] InterpretationQualityCodes
         {
             get
             {
-                if (_bapInterpretationQualityCodes == null)
+                if (_InterpretationQualityCodes == null)
                 {
-                    if (HluDataset.lut_bap_quality_interpretation.IsInitialized &&
-                        HluDataset.lut_bap_quality_interpretation.Count == 0)
+                    if (HluDataset.lut_quality_interpretation.IsInitialized &&
+                        HluDataset.lut_quality_interpretation.Count == 0)
                     {
-                        if (_hluTableAdapterMgr.lut_bap_quality_interpretationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_bap_quality_interpretationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_bap_quality_interpretationDataTable,
-                                    HluDataSet.lut_bap_quality_interpretationRow>(_db);
+                        if (_hluTableAdapterMgr.lut_quality_interpretationTableAdapter == null)
+                            _hluTableAdapterMgr.lut_quality_interpretationTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_quality_interpretationDataTable,
+                                    HluDataSet.lut_quality_interpretationRow>(_db);
                         _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_bap_quality_interpretationDataTable) }, false);
+                            new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    _bapInterpretationQualityCodes =
-                        HluDataset.lut_bap_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _InterpretationQualityCodes =
+                        HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
-                return _bapInterpretationQualityCodes;
+                return _InterpretationQualityCodes;
             }
         }
 
@@ -11702,6 +11772,7 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        //TODO: PrimaryBapEnvironments - change to use primary and secondary
         /// <summary>
         /// Build a enumerable of the primary (mandatory) bap habitats
         /// based on the habitat and all the multiplex codes.
@@ -13392,6 +13463,7 @@ namespace HLU.UI.ViewModel
 
         # region History Tab
 
+        //TODO: IncidHistory - display new history fields and labels
         public IEnumerable<string> IncidHistory
         {
             get
@@ -13476,25 +13548,21 @@ namespace HLU.UI.ViewModel
 
         public string SiteID { get { return _recIDs.SiteID; } }
 
-        public string IhsVersion { get { return _recIDs.IhsVersion; } }
+        public string HabitatVersion { get { return _recIDs.HabitatVersion; } }
 
         public string CurrentIncid { get { return _recIDs.CurrentIncid; } }
 
         public string NextIncid { get { return _recIDs.NextIncid; } }
-
-        private int NextIncidIhsMatrixId { get { return _recIDs.NextIncidIhsMatrixId; } }
-
-        private int NextIncidIhsFormationId { get { return _recIDs.NextIncidIhsFormationId; } }
-
-        private int NextIncidIhsManagementId { get { return _recIDs.NextIncidIhsManagementId; } }
-
-        private int NextIncidIhsComplexId { get { return _recIDs.NextIncidIhsComplexId; } }
 
         private int CurrentIncidBapId { get { return _recIDs.CurrentIncidBapId; } }
 
         private int NextIncidBapId { get { return _recIDs.NextIncidBapId; } }
 
         private int NextIncidSourcesId { get { return _recIDs.NextIncidSourcesId; } }
+
+        private int NextIncidSecondaryId { get { return _recIDs.NextIncidSsecondaryId; } }
+
+        private int NextIncidConditionId { get { return _recIDs.NextIncidConditionId; } }
 
         #endregion
 
@@ -13649,235 +13717,240 @@ namespace HLU.UI.ViewModel
             return true;
         }
 
+        //TODO: Mutiplex - remove
         /// <summary>
         /// Shuffle the ihs matrix codes up if there are gaps.
         /// </summary>
         private void FixIhsMatrixCodes()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            // Don't move the matrix codes in bulk update mode
-            if (_bulkUpdateMode == true) return;
-            //---------------------------------------------------------------------
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 078 Bulk update overhaul/improvements.
+            //// 
+            //// Don't move the matrix codes in bulk update mode
+            //if (_bulkUpdateMode == true) return;
+            ////---------------------------------------------------------------------
 
-            // check for null values
-            if (String.IsNullOrEmpty(IncidIhsMatrix1))
-            {
-                if (String.IsNullOrEmpty(IncidIhsMatrix2))
-                {
-                    if (!String.IsNullOrEmpty(IncidIhsMatrix3))
-                    {
-                        string bak3 = IncidIhsMatrix3;
-                        //---------------------------------------------------------------------
-                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                        //
-                        // Set value to delete row instead of null value to ensure
-                        // delete is processed correctly.
-                        IncidIhsMatrix3 = _codeDeleteRow;
-                        //---------------------------------------------------------------------
-                        IncidIhsMatrix1 = bak3;
-                    }
-                }
-                else
-                {
-                    if (String.IsNullOrEmpty(IncidIhsMatrix3))
-                    {
-                        string bak2 = IncidIhsMatrix2;
-                        //---------------------------------------------------------------------
-                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                        //
-                        // Set value to delete row instead of null value to ensure
-                        // delete is processed correctly.
-                        IncidIhsMatrix2 = _codeDeleteRow;
-                        //---------------------------------------------------------------------
-                        IncidIhsMatrix1 = bak2;
-                    }
-                    else
-                    {
-                        string bak3 = IncidIhsMatrix3;
-                        string bak2 = IncidIhsMatrix2;
-                        //---------------------------------------------------------------------
-                        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                        //
-                        // Set value to delete row instead of null value to ensure
-                        // delete is processed correctly.
-                        IncidIhsMatrix3 = _codeDeleteRow;
-                        //---------------------------------------------------------------------
-                        IncidIhsMatrix2 = bak3;
-                        IncidIhsMatrix1 = bak2;
-                    }
-                }
-            }
-            else if (String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))
-            {
-                string bak3 = IncidIhsMatrix3;
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsMatrix3 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-                IncidIhsMatrix2 = bak3;
-            }
+            //// check for null values
+            //if (String.IsNullOrEmpty(IncidIhsMatrix1))
+            //{
+            //    if (String.IsNullOrEmpty(IncidIhsMatrix2))
+            //    {
+            //        if (!String.IsNullOrEmpty(IncidIhsMatrix3))
+            //        {
+            //            string bak3 = IncidIhsMatrix3;
+            //            //---------------------------------------------------------------------
+            //            // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //            //
+            //            // Set value to delete row instead of null value to ensure
+            //            // delete is processed correctly.
+            //            IncidIhsMatrix3 = _codeDeleteRow;
+            //            //---------------------------------------------------------------------
+            //            IncidIhsMatrix1 = bak3;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (String.IsNullOrEmpty(IncidIhsMatrix3))
+            //        {
+            //            string bak2 = IncidIhsMatrix2;
+            //            //---------------------------------------------------------------------
+            //            // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //            //
+            //            // Set value to delete row instead of null value to ensure
+            //            // delete is processed correctly.
+            //            IncidIhsMatrix2 = _codeDeleteRow;
+            //            //---------------------------------------------------------------------
+            //            IncidIhsMatrix1 = bak2;
+            //        }
+            //        else
+            //        {
+            //            string bak3 = IncidIhsMatrix3;
+            //            string bak2 = IncidIhsMatrix2;
+            //            //---------------------------------------------------------------------
+            //            // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //            //
+            //            // Set value to delete row instead of null value to ensure
+            //            // delete is processed correctly.
+            //            IncidIhsMatrix3 = _codeDeleteRow;
+            //            //---------------------------------------------------------------------
+            //            IncidIhsMatrix2 = bak3;
+            //            IncidIhsMatrix1 = bak2;
+            //        }
+            //    }
+            //}
+            //else if (String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))
+            //{
+            //    string bak3 = IncidIhsMatrix3;
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsMatrix3 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //    IncidIhsMatrix2 = bak3;
+            //}
 
-            // check for duplicate values
-            if ((IncidIhsMatrix2 != null) && (IncidIhsMatrix1 == IncidIhsMatrix2))
-            {
-                if (String.IsNullOrEmpty(IncidIhsMatrix3))
-                {
-                    //---------------------------------------------------------------------
-                    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                    //
-                    // Set value to delete row instead of null value to ensure
-                    // delete is processed correctly.
-                    IncidIhsMatrix2 = _codeDeleteRow;
-                    //---------------------------------------------------------------------
-                }
-                else
-                {
-                    string bak3 = IncidIhsMatrix3;
-                    //---------------------------------------------------------------------
-                    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                    //
-                    // Set value to delete row instead of null value to ensure
-                    // delete is processed correctly.
-                    IncidIhsMatrix3 = _codeDeleteRow;
-                    //---------------------------------------------------------------------
-                    IncidIhsMatrix2 = bak3;
-                }
-            }
-            else if ((IncidIhsMatrix3 != null) &&
-                ((IncidIhsMatrix1 == IncidIhsMatrix3) || (IncidIhsMatrix2 == IncidIhsMatrix3)))
-            {
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsMatrix3 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-            }
+            //// check for duplicate values
+            //if ((IncidIhsMatrix2 != null) && (IncidIhsMatrix1 == IncidIhsMatrix2))
+            //{
+            //    if (String.IsNullOrEmpty(IncidIhsMatrix3))
+            //    {
+            //        //---------------------------------------------------------------------
+            //        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //        //
+            //        // Set value to delete row instead of null value to ensure
+            //        // delete is processed correctly.
+            //        IncidIhsMatrix2 = _codeDeleteRow;
+            //        //---------------------------------------------------------------------
+            //    }
+            //    else
+            //    {
+            //        string bak3 = IncidIhsMatrix3;
+            //        //---------------------------------------------------------------------
+            //        // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //        //
+            //        // Set value to delete row instead of null value to ensure
+            //        // delete is processed correctly.
+            //        IncidIhsMatrix3 = _codeDeleteRow;
+            //        //---------------------------------------------------------------------
+            //        IncidIhsMatrix2 = bak3;
+            //    }
+            //}
+            //else if ((IncidIhsMatrix3 != null) &&
+            //    ((IncidIhsMatrix1 == IncidIhsMatrix3) || (IncidIhsMatrix2 == IncidIhsMatrix3)))
+            //{
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsMatrix3 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //}
         }
 
+        //TODO: Mutiplex - remove
         /// <summary>
         /// Shuffle the ihs formation codes up if there are gaps.
         /// </summary>
         private void FixIhsFormationCodes()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            // Don't move the formation codes in bulk update mode
-            if (_bulkUpdateMode == true) return;
-            //---------------------------------------------------------------------
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 078 Bulk update overhaul/improvements.
+            //// 
+            //// Don't move the formation codes in bulk update mode
+            //if (_bulkUpdateMode == true) return;
+            ////---------------------------------------------------------------------
 
-            // check for null values
-            if (String.IsNullOrEmpty(IncidIhsFormation1) && !String.IsNullOrEmpty(IncidIhsFormation2))
-            {
-                string bak2 = IncidIhsFormation2;
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsFormation2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-                IncidIhsFormation1 = bak2;
-            }
+            //// check for null values
+            //if (String.IsNullOrEmpty(IncidIhsFormation1) && !String.IsNullOrEmpty(IncidIhsFormation2))
+            //{
+            //    string bak2 = IncidIhsFormation2;
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsFormation2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //    IncidIhsFormation1 = bak2;
+            //}
 
-            // check for duplicate values
-            if ((IncidIhsFormation1 == IncidIhsFormation2) && (IncidIhsFormation2 != null))
-            {
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsFormation2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-            }
+            //// check for duplicate values
+            //if ((IncidIhsFormation1 == IncidIhsFormation2) && (IncidIhsFormation2 != null))
+            //{
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsFormation2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //}
         }
 
+        //TODO: Mutiplex - remove
         /// <summary>
         /// Shuffle the ihs management codes up if there are gaps.
         /// </summary>
         private void FixIhsManagementCodes()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            // Don't move the management codes in bulk update mode
-            if (_bulkUpdateMode == true) return;
-            //---------------------------------------------------------------------
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 078 Bulk update overhaul/improvements.
+            //// 
+            //// Don't move the management codes in bulk update mode
+            //if (_bulkUpdateMode == true) return;
+            ////---------------------------------------------------------------------
 
-            // check for null values
-            if (String.IsNullOrEmpty(IncidIhsManagement1) && !String.IsNullOrEmpty(IncidIhsManagement2))
-            {
-                string bak2 = IncidIhsManagement2;
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsManagement2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-                IncidIhsManagement1 = bak2;
-            }
+            //// check for null values
+            //if (String.IsNullOrEmpty(IncidIhsManagement1) && !String.IsNullOrEmpty(IncidIhsManagement2))
+            //{
+            //    string bak2 = IncidIhsManagement2;
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsManagement2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //    IncidIhsManagement1 = bak2;
+            //}
 
-            // check for duplicate values
-            if ((IncidIhsManagement1 == IncidIhsManagement2) && (IncidIhsManagement2 != null))
-            {
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsManagement2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-            }
+            //// check for duplicate values
+            //if ((IncidIhsManagement1 == IncidIhsManagement2) && (IncidIhsManagement2 != null))
+            //{
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsManagement2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //}
         }
 
+        //TODO: Mutiplex - remove
         /// <summary>
         /// Shuffle the ihs complex codes up if there are gaps.
         /// </summary>
         private void FixIhsComplexCodes()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
-            // Don't move the complex codes in bulk update mode
-            if (_bulkUpdateMode == true) return;
-            //---------------------------------------------------------------------
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 078 Bulk update overhaul/improvements.
+            //// 
+            //// Don't move the complex codes in bulk update mode
+            //if (_bulkUpdateMode == true) return;
+            ////---------------------------------------------------------------------
 
-            // check for null values
-            if (String.IsNullOrEmpty(IncidIhsComplex1) && !String.IsNullOrEmpty(IncidIhsComplex2))
-            {
-                string bak2 = IncidIhsComplex2;
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsComplex2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-                IncidIhsComplex1 = bak2;
-            }
+            //// check for null values
+            //if (String.IsNullOrEmpty(IncidIhsComplex1) && !String.IsNullOrEmpty(IncidIhsComplex2))
+            //{
+            //    string bak2 = IncidIhsComplex2;
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsComplex2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //    IncidIhsComplex1 = bak2;
+            //}
 
-            // check for duplicate values
-            if ((IncidIhsComplex1 == IncidIhsComplex2) && (IncidIhsComplex2 != null))
-            {
-                //---------------------------------------------------------------------
-                // FIX: 108 Prevent existing mulitplex codes from not being displayed.
-                //
-                // Set value to delete row instead of null value to ensure
-                // delete is processed correctly.
-                IncidIhsComplex2 = _codeDeleteRow;
-                //---------------------------------------------------------------------
-            }
+            //// check for duplicate values
+            //if ((IncidIhsComplex1 == IncidIhsComplex2) && (IncidIhsComplex2 != null))
+            //{
+            //    //---------------------------------------------------------------------
+            //    // FIX: 108 Prevent existing mulitplex codes from not being displayed.
+            //    //
+            //    // Set value to delete row instead of null value to ensure
+            //    // delete is processed correctly.
+            //    IncidIhsComplex2 = _codeDeleteRow;
+            //    //---------------------------------------------------------------------
+            //}
         }
 
+        //TODO: Mutiplex - remove
         //---------------------------------------------------------------------
         // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
         // Check that any mandatory or recommended multiplex codes
@@ -13885,945 +13958,948 @@ namespace HLU.UI.ViewModel
         //
         private string ValidateIhsComplexCodes(int complexNum)
         {
-            // Skip validation when there is no incid, habitat code or complex xrefs
-            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
-                (IhsHabitatCodes == null) || (_xrefHabitatTypeComplexCodes == null) || (_xrefHabitatTypeComplexCodes.Count() == 0))
-                return null;
+            //// Skip validation when there is no incid, habitat code or complex xrefs
+            //if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+            //    (IhsHabitatCodes == null) || (_xrefHabitatTypeComplexCodes == null) || (_xrefHabitatTypeComplexCodes.Count() == 0))
+            //    return null;
 
-            // Store the previous complex code in error
-            int oldComplexCodeErrorNum = _complexCodeErrorNum;
-            int oldComplexCodeErrorCount = _complexCodeErrorCount;
+            //// Store the previous complex code in error
+            //int oldComplexCodeErrorNum = _complexCodeErrorNum;
+            //int oldComplexCodeErrorCount = _complexCodeErrorCount;
 
-            // Store the previous complex code with a warning
-            int oldComplexCodeWarningNum = _complexCodeWarningNum;
-            int oldComplexCodeWarningCount = _complexCodeWarningCount;
+            //// Store the previous complex code with a warning
+            //int oldComplexCodeWarningNum = _complexCodeWarningNum;
+            //int oldComplexCodeWarningCount = _complexCodeWarningCount;
 
-            // Get the habitat type row for the selected habitat type
-            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
-                r.code == HabitatType);
+            //// Get the habitat type row for the selected habitat type
+            //var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+            //    r.code == HabitatType);
 
-            // Get the mandatory habitat type to complex codes xrefs
-            var mandatoryCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
-                r.mandatory == 1);
+            //// Get the mandatory habitat type to complex codes xrefs
+            //var mandatoryCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
+            //    r.mandatory == 1);
 
-            // Get the mandatory habitat type to complex codes xrefs that
-            // aren't referenced by any of the complex code fields
-            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
-                (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsComplex2) ||
-                (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
+            //// Get the mandatory habitat type to complex codes xrefs that
+            //// aren't referenced by any of the complex code fields
+            //var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
+            //    (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsComplex2) ||
+            //    (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
 
-            // Count the number of missing mandatory xrefs
-            _complexCodeErrorCount = missingCodes.Count();
+            //// Count the number of missing mandatory xrefs
+            //_complexCodeErrorCount = missingCodes.Count();
 
-            // If there are missing mandatory codes
-            if (_complexCodeErrorCount > 0)
-            {
-                // Clear the complex code number with a warning
-                _complexCodeWarningNum = 0;
+            //// If there are missing mandatory codes
+            //if (_complexCodeErrorCount > 0)
+            //{
+            //    // Clear the complex code number with a warning
+            //    _complexCodeWarningNum = 0;
 
-                // Set the error message to return
-                string errorMsg = null;
-                if (_complexCodeErrorCount == 1)
-                    errorMsg = String.Format("Error: Complex code {0} is mandatory for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_complex,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    errorMsg = String.Format("Error: Complex codes {0} are mandatory for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_complex,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            //    // Set the error message to return
+            //    string errorMsg = null;
+            //    if (_complexCodeErrorCount == 1)
+            //        errorMsg = String.Format("Error: Complex code {0} is mandatory for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_complex,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        errorMsg = String.Format("Error: Complex codes {0} are mandatory for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_complex,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If complex code 1 is blank, or doesn't match a mandatory code
-                // and complex codes 2 and 3 are non-blank
-                if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
-                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsComplex2))))
-                {
-                    _complexCodeErrorNum = 1;
+            //    // If complex code 1 is blank, or doesn't match a mandatory code
+            //    // and complex codes 2 and 3 are non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
+            //        ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsComplex2))))
+            //    {
+            //        _complexCodeErrorNum = 1;
 
-                    if (complexNum == 1)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsComplex2");
+            //        if (complexNum == 1)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsComplex2");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldComplexCodeErrorNum != 1 || _complexCodeErrorCount != oldComplexCodeErrorCount)
-                            OnPropertyChanged("IncidIhsComplex1");
-                        return null;
-                    }
-                }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldComplexCodeErrorNum != 1 || _complexCodeErrorCount != oldComplexCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsComplex1");
+            //            return null;
+            //        }
+            //    }
 
-                // If complex code 2 is blank, or doesn't match a mandatory code
-                if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
-                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))))
-                {
-                    _complexCodeErrorNum = 2;
+            //    // If complex code 2 is blank, or doesn't match a mandatory code
+            //    if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
+            //        ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))))
+            //    {
+            //        _complexCodeErrorNum = 2;
 
-                    if (complexNum == 2)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
-                            OnPropertyChanged("IncidIhsComplex1");
+            //        if (complexNum == 2)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
+            //                OnPropertyChanged("IncidIhsComplex1");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldComplexCodeErrorNum != 2 || _complexCodeErrorCount != oldComplexCodeErrorCount)
-                            OnPropertyChanged("IncidIhsComplex2");
-                        return null;
-                    }
-                }
-            }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldComplexCodeErrorNum != 2 || _complexCodeErrorCount != oldComplexCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsComplex2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the complex code number with an error
-            _complexCodeErrorNum = 0;
+            //// Clear the complex code number with an error
+            //_complexCodeErrorNum = 0;
 
-            // Get the recommended habitat type to complex codes xrefs
-            var recommendedCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
-                r.mandatory == 0);
+            //// Get the recommended habitat type to complex codes xrefs
+            //var recommendedCodes = _xrefHabitatTypeComplexCodes.Where(r => !String.IsNullOrEmpty(r.code_complex) &&
+            //    r.mandatory == 0);
 
-            // Get the recommended habitat type to complex codes xrefs that
-            // aren't referenced by any of the complex code fields
-            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
-                (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsComplex2) ||
-                (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
+            //// Get the recommended habitat type to complex codes xrefs that
+            //// aren't referenced by any of the complex code fields
+            //missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsComplex1) ||
+            //    (r.code_complex != IncidIhsComplex1) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsComplex2) ||
+            //    (r.code_complex != IncidIhsComplex2) && !(r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)));
 
-            // Count the total number of recommended xrefs
-            int complexCodeCount = recommendedCodes.Count();
+            //// Count the total number of recommended xrefs
+            //int complexCodeCount = recommendedCodes.Count();
 
-            // Count the number of missing recommended xrefs
-            _complexCodeWarningCount = missingCodes.Count();
+            //// Count the number of missing recommended xrefs
+            //_complexCodeWarningCount = missingCodes.Count();
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
-            // code is selected.
-            //
-            // If there are missing recommended codes (and none are already referenced)
-            if ((_complexCodeWarningCount > 0) && (_complexCodeWarningCount == complexCodeCount))
-            //---------------------------------------------------------------------
-            {
-                // Set the error message to return
-                string warningMsg = null;
-                if (_complexCodeWarningCount == 1)
-                    warningMsg = String.Format("Warning: Complex code {0} is recommended for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_complex,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    warningMsg = String.Format("Warning: Complex codes {0} are recommended for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_complex,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 085 Don't show warning when at least one recommended multiplex
+            //// code is selected.
+            ////
+            //// If there are missing recommended codes (and none are already referenced)
+            //if ((_complexCodeWarningCount > 0) && (_complexCodeWarningCount == complexCodeCount))
+            ////---------------------------------------------------------------------
+            //{
+            //    // Set the error message to return
+            //    string warningMsg = null;
+            //    if (_complexCodeWarningCount == 1)
+            //        warningMsg = String.Format("Warning: Complex code {0} is recommended for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_complex,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        warningMsg = String.Format("Warning: Complex codes {0} are recommended for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_complex), 0, _complexCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_complex,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If complex code 1 is blank, or doesn't match a recommended code
-                // and complex codes 2 and 3 are non-blank, and isn't a mandatory
-                // code
-                if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
-                    ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsComplex2))) &&
-                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _complexCodeWarningNum = 1;
+            //    // If complex code 1 is blank, or doesn't match a recommended code
+            //    // and complex codes 2 and 3 are non-blank, and isn't a mandatory
+            //    // code
+            //    if ((String.IsNullOrEmpty(IncidIhsComplex1) ||
+            //        ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsComplex2))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex1) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex1, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _complexCodeWarningNum = 1;
 
-                    if (complexNum == 1)
-                    {
-                        // Clear any old errors
-                        if (oldComplexCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsComplex2");
+            //        if (complexNum == 1)
+            //        {
+            //            // Clear any old errors
+            //            if (oldComplexCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsComplex2");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldComplexCodeWarningNum != 1 || _complexCodeWarningCount != oldComplexCodeWarningCount)
-                            OnPropertyChanged("IncidIhsComplex1");
-                        return null;
-                    }
-                }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldComplexCodeWarningNum != 1 || _complexCodeWarningCount != oldComplexCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsComplex1");
+            //            return null;
+            //        }
+            //    }
 
-                // If complex code 2 is blank, or doesn't match a recommended code
-                if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
-                    ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))) &&
-                    ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
-                    (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _complexCodeWarningNum = 2;
+            //    // If complex code 2 is blank, or doesn't match a recommended code
+            //    if ((String.IsNullOrEmpty(IncidIhsComplex2) ||
+            //        ((recommendedCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_complex == IncidIhsComplex2) ||
+            //        (r.code_complex.EndsWith("*") && Regex.IsMatch(IncidIhsComplex2, @"\A" + r.code_complex.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _complexCodeWarningNum = 2;
 
-                    if (complexNum == 2)
-                    {
-                        // Clear any old errors
-                        if (oldComplexCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsComplex1");
+            //        if (complexNum == 2)
+            //        {
+            //            // Clear any old errors
+            //            if (oldComplexCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsComplex1");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldComplexCodeWarningNum != 2 || _complexCodeWarningCount != oldComplexCodeWarningCount)
-                            OnPropertyChanged("IncidIhsComplex2");
-                        return null;
-                    }
-                }
-            }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldComplexCodeWarningNum != 2 || _complexCodeWarningCount != oldComplexCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsComplex2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the complex code number with a warning
-            _complexCodeWarningNum = 0;
+            //// Clear the complex code number with a warning
+            //_complexCodeWarningNum = 0;
 
-            // Clear any old error or warning messages
-            if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
-                OnPropertyChanged("IncidIhsComplex1");
-            if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
-                OnPropertyChanged("IncidIhsComplex2");
+            //// Clear any old error or warning messages
+            //if (oldComplexCodeErrorNum == 1 || oldComplexCodeWarningNum == 1)
+            //    OnPropertyChanged("IncidIhsComplex1");
+            //if (oldComplexCodeErrorNum == 2 || oldComplexCodeWarningNum == 2)
+            //    OnPropertyChanged("IncidIhsComplex2");
 
             return null;
 
         }
 
+        //TODO: Mutiplex - remove
         private string ValidateIhsMatrixCodes(int matrixNum)
         {
-            // Skip validation when there is no incid, habitat code or matrix xrefs
-            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
-                (IhsHabitatCodes == null) || (_xrefHabitatTypeMatrixCodes == null) || (_xrefHabitatTypeMatrixCodes.Count() == 0))
-                return null;
+            //// Skip validation when there is no incid, habitat code or matrix xrefs
+            //if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+            //    (IhsHabitatCodes == null) || (_xrefHabitatTypeMatrixCodes == null) || (_xrefHabitatTypeMatrixCodes.Count() == 0))
+            //    return null;
 
-            // Store the previous matrix code in error
-            int oldMatrixCodeErrorNum = _matrixCodeErrorNum;
-            int oldMatrixCodeErrorCount = _matrixCodeErrorCount;
+            //// Store the previous matrix code in error
+            //int oldMatrixCodeErrorNum = _matrixCodeErrorNum;
+            //int oldMatrixCodeErrorCount = _matrixCodeErrorCount;
 
-            // Store the previous matrix code with a warning
-            int oldMatrixCodeWarningNum = _matrixCodeWarningNum;
-            int oldMatrixCodeWarningCount = _matrixCodeWarningCount;
+            //// Store the previous matrix code with a warning
+            //int oldMatrixCodeWarningNum = _matrixCodeWarningNum;
+            //int oldMatrixCodeWarningCount = _matrixCodeWarningCount;
 
-            // Get the habitat type row for the selected habitat type
-            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
-                r.code == HabitatType);
+            //// Get the habitat type row for the selected habitat type
+            //var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+            //    r.code == HabitatType);
 
-            // Get the mandatory habitat type to matrix codes xrefs
-            var mandatoryCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
-                r.mandatory == 1);
+            //// Get the mandatory habitat type to matrix codes xrefs
+            //var mandatoryCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
+            //    r.mandatory == 1);
 
-            // Get the mandatory habitat type to matrix codes xrefs that
-            // aren't referenced by any of the matrix code fields
-            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
-                (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsMatrix2) ||
-                (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsMatrix3) ||
-                (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
+            //// Get the mandatory habitat type to matrix codes xrefs that
+            //// aren't referenced by any of the matrix code fields
+            //var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
+            //    (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsMatrix2) ||
+            //    (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsMatrix3) ||
+            //    (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
 
-            // Count the number of missing mandatory xrefs
-            _matrixCodeErrorCount = missingCodes.Count();
+            //// Count the number of missing mandatory xrefs
+            //_matrixCodeErrorCount = missingCodes.Count();
 
-            // If there are missing mandatory codes
-            if (_matrixCodeErrorCount > 0)
-            {
-                // Clear the matrix code number with a warning
-                _matrixCodeWarningNum = 0;
+            //// If there are missing mandatory codes
+            //if (_matrixCodeErrorCount > 0)
+            //{
+            //    // Clear the matrix code number with a warning
+            //    _matrixCodeWarningNum = 0;
 
-                // Set the error message to return
-                string errorMsg = null;
-                if (_matrixCodeErrorCount == 1)
-                    errorMsg = String.Format("Error: Matrix code {0} is mandatory for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_matrix,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    errorMsg = String.Format("Error: Matrix codes {0} are mandatory for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_matrix,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            //    // Set the error message to return
+            //    string errorMsg = null;
+            //    if (_matrixCodeErrorCount == 1)
+            //        errorMsg = String.Format("Error: Matrix code {0} is mandatory for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_matrix,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        errorMsg = String.Format("Error: Matrix codes {0} are mandatory for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_matrix,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If matrix code 1 is blank, or doesn't match a mandatory code
-                // and matrix codes 2 and 3 are non-blank
-                if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
-                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))))
-                {
-                    _matrixCodeErrorNum = 1;
+            //    // If matrix code 1 is blank, or doesn't match a mandatory code
+            //    // and matrix codes 2 and 3 are non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
+            //        ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))))
+            //    {
+            //        _matrixCodeErrorNum = 1;
 
-                    if (matrixNum == 1)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsMatrix2");
-                        if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
-                            OnPropertyChanged("IncidIhsMatrix3");
+            //        if (matrixNum == 1)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsMatrix2");
+            //            if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+            //                OnPropertyChanged("IncidIhsMatrix3");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeErrorNum != 1 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        return null;
-                    }
-                }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeErrorNum != 1 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            return null;
+            //        }
+            //    }
 
-                // If matrix code 2 is blank, or doesn't match a mandatory code
-                // and matrix code 3 is non-blank
-                if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
-                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    !String.IsNullOrEmpty(IncidIhsMatrix3)))
-                {
-                    _matrixCodeErrorNum = 2;
+            //    // If matrix code 2 is blank, or doesn't match a mandatory code
+            //    // and matrix code 3 is non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
+            //        ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        !String.IsNullOrEmpty(IncidIhsMatrix3)))
+            //    {
+            //        _matrixCodeErrorNum = 2;
 
-                    if (matrixNum == 2)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
-                            OnPropertyChanged("IncidIhsMatrix3");
+            //        if (matrixNum == 2)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+            //                OnPropertyChanged("IncidIhsMatrix3");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeErrorNum != 2 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
-                            OnPropertyChanged("IncidIhsMatrix2");
-                        return null;
-                    }
-                }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeErrorNum != 2 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsMatrix2");
+            //            return null;
+            //        }
+            //    }
 
-                // If matrix code 3 is blank or doesn't match a mandatory code
-                if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
-                    (mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _matrixCodeErrorNum = 3;
+            //    // If matrix code 3 is blank or doesn't match a mandatory code
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
+            //        (mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _matrixCodeErrorNum = 3;
 
-                    if (matrixNum == 3)
-                    {
-                        // Clear any old errors
-                        if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsMatrix2");
+            //        if (matrixNum == 3)
+            //        {
+            //            // Clear any old errors
+            //            if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsMatrix2");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeErrorNum != 3 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
-                            OnPropertyChanged("IncidIhsMatrix3");
-                        return null;
-                    }
-                }
-            }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeErrorNum != 3 || _matrixCodeErrorCount != oldMatrixCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsMatrix3");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the matrix code number with an error
-            _matrixCodeErrorNum = 0;
+            //// Clear the matrix code number with an error
+            //_matrixCodeErrorNum = 0;
 
-            // Get the recommended habitat type to matrix codes xrefs
-            var recommendedCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
-                r.mandatory == 0);
+            //// Get the recommended habitat type to matrix codes xrefs
+            //var recommendedCodes = _xrefHabitatTypeMatrixCodes.Where(r => !String.IsNullOrEmpty(r.code_matrix) &&
+            //    r.mandatory == 0);
 
-            // Get the recommended habitat type to matrix codes xrefs that
-            // aren't referenced by any of the matrix code fields
-            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
-                (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsMatrix2) ||
-                (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsMatrix3) ||
-                (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
+            //// Get the recommended habitat type to matrix codes xrefs that
+            //// aren't referenced by any of the matrix code fields
+            //missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsMatrix1) ||
+            //    (r.code_matrix != IncidIhsMatrix1) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsMatrix2) ||
+            //    (r.code_matrix != IncidIhsMatrix2) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsMatrix3) ||
+            //    (r.code_matrix != IncidIhsMatrix3) && !(r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)));
 
-            // Count the total number of recommended xrefs
-            int matrixCodeCount = recommendedCodes.Count();
+            //// Count the total number of recommended xrefs
+            //int matrixCodeCount = recommendedCodes.Count();
 
-            // Count the number of missing recommended xrefs
-            _matrixCodeWarningCount = missingCodes.Count();
+            //// Count the number of missing recommended xrefs
+            //_matrixCodeWarningCount = missingCodes.Count();
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
-            // code is selected.
-            //
-            // If there are missing recommended codes (and none are already referenced)
-            if ((_matrixCodeWarningCount > 0) && (_matrixCodeWarningCount == matrixCodeCount))
-            //---------------------------------------------------------------------
-            {
-                // Set the error message to return
-                string warningMsg = null;
-                if (_matrixCodeWarningCount == 1)
-                    warningMsg = String.Format("Warning: Matrix code {0} is recommended for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_matrix,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    warningMsg = String.Format("Warning: Matrix codes {0} are recommended for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_matrix,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 085 Don't show warning when at least one recommended multiplex
+            //// code is selected.
+            ////
+            //// If there are missing recommended codes (and none are already referenced)
+            //if ((_matrixCodeWarningCount > 0) && (_matrixCodeWarningCount == matrixCodeCount))
+            ////---------------------------------------------------------------------
+            //{
+            //    // Set the error message to return
+            //    string warningMsg = null;
+            //    if (_matrixCodeWarningCount == 1)
+            //        warningMsg = String.Format("Warning: Matrix code {0} is recommended for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_matrix,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        warningMsg = String.Format("Warning: Matrix codes {0} are recommended for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_matrix), 0, _matrixCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_matrix,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If matrix code 1 is blank, or doesn't match a recommended code
-                // and matrix codes 2 and 3 are non-blank, and isn't a mandatory
-                // code
-                if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
-                    ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))) &&
-                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _matrixCodeWarningNum = 1;
+            //    // If matrix code 1 is blank, or doesn't match a recommended code
+            //    // and matrix codes 2 and 3 are non-blank, and isn't a mandatory
+            //    // code
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix1) ||
+            //        ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsMatrix2) && !String.IsNullOrEmpty(IncidIhsMatrix3))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix1) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix1, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _matrixCodeWarningNum = 1;
 
-                    if (matrixNum == 1)
-                    {
-                        // Clear any old errors
-                        if (oldMatrixCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsMatrix2");
-                        if (oldMatrixCodeWarningNum == 3)
-                            OnPropertyChanged("IncidIhsMatrix3");
+            //        if (matrixNum == 1)
+            //        {
+            //            // Clear any old errors
+            //            if (oldMatrixCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsMatrix2");
+            //            if (oldMatrixCodeWarningNum == 3)
+            //                OnPropertyChanged("IncidIhsMatrix3");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeWarningNum != 1 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        return null;
-                    }
-                }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeWarningNum != 1 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            return null;
+            //        }
+            //    }
 
-                // If matrix code 2 is blank, or doesn't match a recommended code
-                // and matrix code 3 is non-blank
-                if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
-                    ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    !String.IsNullOrEmpty(IncidIhsMatrix3)) &&
-                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _matrixCodeWarningNum = 2;
+            //    // If matrix code 2 is blank, or doesn't match a recommended code
+            //    // and matrix code 3 is non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix2) ||
+            //        ((recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        !String.IsNullOrEmpty(IncidIhsMatrix3)) &&
+            //        ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix2) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix2, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _matrixCodeWarningNum = 2;
 
-                    if (matrixNum == 2)
-                    {
-                        // Clear any old errors
-                        if (oldMatrixCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        if (oldMatrixCodeWarningNum == 3)
-                            OnPropertyChanged("IncidIhsMatrix3");
+            //        if (matrixNum == 2)
+            //        {
+            //            // Clear any old errors
+            //            if (oldMatrixCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            if (oldMatrixCodeWarningNum == 3)
+            //                OnPropertyChanged("IncidIhsMatrix3");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeWarningNum != 2 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
-                            OnPropertyChanged("IncidIhsMatrix2");
-                        return null;
-                    }
-                }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeWarningNum != 2 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsMatrix2");
+            //            return null;
+            //        }
+            //    }
 
-                // If matrix code 3 is blank or doesn't match a recommended code
-                if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
-                    (recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
-                    (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _matrixCodeWarningNum = 3;
+            //    // If matrix code 3 is blank or doesn't match a recommended code
+            //    if ((String.IsNullOrEmpty(IncidIhsMatrix3) ||
+            //        (recommendedCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        ((mandatoryCodes.Where(r => (r.code_matrix == IncidIhsMatrix3) ||
+            //        (r.code_matrix.EndsWith("*") && Regex.IsMatch(IncidIhsMatrix3, @"\A" + r.code_matrix.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _matrixCodeWarningNum = 3;
 
-                    if (matrixNum == 3)
-                    {
-                        // Clear any old errors
-                        if (oldMatrixCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsMatrix1");
-                        if (oldMatrixCodeWarningNum == 3)
-                            OnPropertyChanged("IncidIhsMatrix2");
+            //        if (matrixNum == 3)
+            //        {
+            //            // Clear any old errors
+            //            if (oldMatrixCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsMatrix1");
+            //            if (oldMatrixCodeWarningNum == 3)
+            //                OnPropertyChanged("IncidIhsMatrix2");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldMatrixCodeWarningNum != 3 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
-                            OnPropertyChanged("IncidIhsMatrix3");
-                        return null;
-                    }
-                }
-            }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldMatrixCodeWarningNum != 3 || _matrixCodeWarningCount != oldMatrixCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsMatrix3");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the matrix code number with a warning
-            _matrixCodeWarningNum = 0;
+            //// Clear the matrix code number with a warning
+            //_matrixCodeWarningNum = 0;
 
-            // Clear any old error or warning messages
-            if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
-                OnPropertyChanged("IncidIhsMatrix1");
-            if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
-                OnPropertyChanged("IncidIhsMatrix2");
-            if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
-                OnPropertyChanged("IncidIhsMatrix3");
+            //// Clear any old error or warning messages
+            //if (oldMatrixCodeErrorNum == 1 || oldMatrixCodeWarningNum == 1)
+            //    OnPropertyChanged("IncidIhsMatrix1");
+            //if (oldMatrixCodeErrorNum == 2 || oldMatrixCodeWarningNum == 2)
+            //    OnPropertyChanged("IncidIhsMatrix2");
+            //if (oldMatrixCodeErrorNum == 3 || oldMatrixCodeWarningNum == 3)
+            //    OnPropertyChanged("IncidIhsMatrix3");
 
             return null;
 
         }
 
+        //TODO: Mutiplex - remove
         private string ValidateIhsFormationCodes(int formationNum)
         {
-            // Skip validation when there is no incid or habitat code
-            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
-                (IhsHabitatCodes == null))
-                return null;
+            //// Skip validation when there is no incid or habitat code
+            //if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+            //    (IhsHabitatCodes == null))
+            //    return null;
 
-            // Store the previous formation code in error
-            int oldFormationCodeErrorNum = _formationCodeErrorNum;
-            int oldFormationCodeErrorCount = _formationCodeErrorCount;
+            //// Store the previous formation code in error
+            //int oldFormationCodeErrorNum = _formationCodeErrorNum;
+            //int oldFormationCodeErrorCount = _formationCodeErrorCount;
 
-            // Store the previous formation code with a warning
-            int oldFormationCodeWarningNum = _formationCodeWarningNum;
-            int oldFormationCodeWarningCount = _formationCodeWarningCount;
+            //// Store the previous formation code with a warning
+            //int oldFormationCodeWarningNum = _formationCodeWarningNum;
+            //int oldFormationCodeWarningCount = _formationCodeWarningCount;
 
-            // Check if at least one formation code has been selected
-            // if they are mandatory for the current habitat type
-            if (formationNum == 1)
-            {
-                var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
-                    !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
+            //// Check if at least one formation code has been selected
+            //// if they are mandatory for the current habitat type
+            //if (formationNum == 1)
+            //{
+            //    var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
+            //        !r.IsNull(HluDataset.lut_ihs_habitat.man_formationColumn));
 
-                if ((q.Count() > 0) && (q.ElementAt(0).man_formation == 1) && String.IsNullOrEmpty(IncidIhsFormation1))
-                {
-                    _formationCodeErrorNum = 1;
-                    _formationCodeErrorCount = 1;
-                    return String.Format("Error: IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
-                        q.ElementAt(0).description);
-                }
-            }
+            //    if ((q.Count() > 0) && (q.ElementAt(0).man_formation == 1) && String.IsNullOrEmpty(IncidIhsFormation1))
+            //    {
+            //        _formationCodeErrorNum = 1;
+            //        _formationCodeErrorCount = 1;
+            //        return String.Format("Error: IHS formation code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+            //            q.ElementAt(0).description);
+            //    }
+            //}
 
-            // Skip remaining validation when there are no formation xrefs
-            if ((_xrefHabitatTypeFormationCodes == null) || (_xrefHabitatTypeFormationCodes.Count() == 0))
-                return null;
+            //// Skip remaining validation when there are no formation xrefs
+            //if ((_xrefHabitatTypeFormationCodes == null) || (_xrefHabitatTypeFormationCodes.Count() == 0))
+            //    return null;
 
-            // Get the habitat type row for the selected habitat type
-            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
-                r.code == HabitatType);
+            //// Get the habitat type row for the selected habitat type
+            //var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+            //    r.code == HabitatType);
 
-            // Get the mandatory habitat type to formation codes xrefs
-            var mandatoryCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
-                r.mandatory == 1);
+            //// Get the mandatory habitat type to formation codes xrefs
+            //var mandatoryCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
+            //    r.mandatory == 1);
 
-            // Get the mandatory habitat type to formation codes xrefs that
-            // aren't referenced by any of the formation code fields
-            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
-                (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsFormation2) ||
-                (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
+            //// Get the mandatory habitat type to formation codes xrefs that
+            //// aren't referenced by any of the formation code fields
+            //var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
+            //    (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsFormation2) ||
+            //    (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
 
-            // Count the number of missing mandatory xrefs
-            _formationCodeErrorCount = missingCodes.Count();
+            //// Count the number of missing mandatory xrefs
+            //_formationCodeErrorCount = missingCodes.Count();
 
-            // If there are missing mandatory codes
-            if (_formationCodeErrorCount > 0)
-            {
-                // Clear the formation code number with a warning
-                _formationCodeWarningNum = 0;
+            //// If there are missing mandatory codes
+            //if (_formationCodeErrorCount > 0)
+            //{
+            //    // Clear the formation code number with a warning
+            //    _formationCodeWarningNum = 0;
 
-                // Set the error message to return
-                string errorMsg = null;
-                if (_formationCodeErrorCount == 1)
-                    errorMsg = String.Format("Error: Formation code {0} is mandatory for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_formation,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    errorMsg = String.Format("Error: Formation codes {0} are mandatory for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_formation,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            //    // Set the error message to return
+            //    string errorMsg = null;
+            //    if (_formationCodeErrorCount == 1)
+            //        errorMsg = String.Format("Error: Formation code {0} is mandatory for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_formation,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        errorMsg = String.Format("Error: Formation codes {0} are mandatory for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_formation,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If formation code 1 is blank, or doesn't match a mandatory code
-                // and formation codes 2 and 3 are non-blank
-                if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
-                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsFormation2))))
-                {
-                    _formationCodeErrorNum = 1;
+            //    // If formation code 1 is blank, or doesn't match a mandatory code
+            //    // and formation codes 2 and 3 are non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
+            //        ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsFormation2))))
+            //    {
+            //        _formationCodeErrorNum = 1;
 
-                    if (formationNum == 1)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsFormation2");
+            //        if (formationNum == 1)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsFormation2");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldFormationCodeErrorNum != 1 || _formationCodeErrorCount != oldFormationCodeErrorCount)
-                            OnPropertyChanged("IncidIhsFormation1");
-                        return null;
-                    }
-                }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldFormationCodeErrorNum != 1 || _formationCodeErrorCount != oldFormationCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsFormation1");
+            //            return null;
+            //        }
+            //    }
 
-                // If formation code 2 is blank, or doesn't match a mandatory code
-                if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
-                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))))
-                {
-                    _formationCodeErrorNum = 2;
+            //    // If formation code 2 is blank, or doesn't match a mandatory code
+            //    if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
+            //        ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))))
+            //    {
+            //        _formationCodeErrorNum = 2;
 
-                    if (formationNum == 2)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
-                            OnPropertyChanged("IncidIhsFormation1");
+            //        if (formationNum == 2)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
+            //                OnPropertyChanged("IncidIhsFormation1");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldFormationCodeErrorNum != 2 || _formationCodeErrorCount != oldFormationCodeErrorCount)
-                            OnPropertyChanged("IncidIhsFormation2");
-                        return null;
-                    }
-                }
-            }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldFormationCodeErrorNum != 2 || _formationCodeErrorCount != oldFormationCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsFormation2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the formation code number with an error
-            _formationCodeErrorNum = 0;
+            //// Clear the formation code number with an error
+            //_formationCodeErrorNum = 0;
 
-            // Get the recommended habitat type to formation codes xrefs
-            var recommendedCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
-                r.mandatory == 0);
+            //// Get the recommended habitat type to formation codes xrefs
+            //var recommendedCodes = _xrefHabitatTypeFormationCodes.Where(r => !String.IsNullOrEmpty(r.code_formation) &&
+            //    r.mandatory == 0);
 
-            // Get the recommended habitat type to formation codes xrefs that
-            // aren't referenced by any of the formation code fields
-            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
-                (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsFormation2) ||
-                (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
+            //// Get the recommended habitat type to formation codes xrefs that
+            //// aren't referenced by any of the formation code fields
+            //missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsFormation1) ||
+            //    (r.code_formation != IncidIhsFormation1) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsFormation2) ||
+            //    (r.code_formation != IncidIhsFormation2) && !(r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)));
 
-            // Count the total number of recommended xrefs
-            int formationCodeCount = recommendedCodes.Count();
+            //// Count the total number of recommended xrefs
+            //int formationCodeCount = recommendedCodes.Count();
 
-            // Count the number of missing recommended xrefs
-            _formationCodeWarningCount = missingCodes.Count();
+            //// Count the number of missing recommended xrefs
+            //_formationCodeWarningCount = missingCodes.Count();
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
-            // code is selected.
-            //
-            // If there are missing recommended codes (and none are already referenced)
-            if ((_formationCodeWarningCount > 0) && (_formationCodeWarningCount == formationCodeCount))
-            //---------------------------------------------------------------------
-            {
-                // Set the error message to return
-                string warningMsg = null;
-                if (_formationCodeWarningCount == 1)
-                    warningMsg = String.Format("Warning: Formation code {0} is recommended for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_formation,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    warningMsg = String.Format("Warning: Formation codes {0} are recommended for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_formation,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 085 Don't show warning when at least one recommended multiplex
+            //// code is selected.
+            ////
+            //// If there are missing recommended codes (and none are already referenced)
+            //if ((_formationCodeWarningCount > 0) && (_formationCodeWarningCount == formationCodeCount))
+            ////---------------------------------------------------------------------
+            //{
+            //    // Set the error message to return
+            //    string warningMsg = null;
+            //    if (_formationCodeWarningCount == 1)
+            //        warningMsg = String.Format("Warning: Formation code {0} is recommended for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_formation,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        warningMsg = String.Format("Warning: Formation codes {0} are recommended for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_formation), 0, _formationCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_formation,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If formation code 1 is blank, or doesn't match a recommended code
-                // and formation codes 2 and 3 are non-blank, and isn't a mandatory
-                // code
-                if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
-                    ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsFormation2))) &&
-                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _formationCodeWarningNum = 1;
+            //    // If formation code 1 is blank, or doesn't match a recommended code
+            //    // and formation codes 2 and 3 are non-blank, and isn't a mandatory
+            //    // code
+            //    if ((String.IsNullOrEmpty(IncidIhsFormation1) ||
+            //        ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsFormation2))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation1) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation1, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _formationCodeWarningNum = 1;
 
-                    if (formationNum == 1)
-                    {
-                        // Clear any old errors
-                        if (oldFormationCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsFormation2");
+            //        if (formationNum == 1)
+            //        {
+            //            // Clear any old errors
+            //            if (oldFormationCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsFormation2");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldFormationCodeWarningNum != 1 || _formationCodeWarningCount != oldFormationCodeWarningCount)
-                            OnPropertyChanged("IncidIhsFormation1");
-                        return null;
-                    }
-                }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldFormationCodeWarningNum != 1 || _formationCodeWarningCount != oldFormationCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsFormation1");
+            //            return null;
+            //        }
+            //    }
 
-                // If formation code 2 is blank, or doesn't match a recommended code
-                if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
-                    ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))) &&
-                    ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
-                    (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _formationCodeWarningNum = 2;
+            //    // If formation code 2 is blank, or doesn't match a recommended code
+            //    if ((String.IsNullOrEmpty(IncidIhsFormation2) ||
+            //        ((recommendedCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_formation == IncidIhsFormation2) ||
+            //        (r.code_formation.EndsWith("*") && Regex.IsMatch(IncidIhsFormation2, @"\A" + r.code_formation.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _formationCodeWarningNum = 2;
 
-                    if (formationNum == 2)
-                    {
-                        // Clear any old errors
-                        if (oldFormationCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsFormation1");
+            //        if (formationNum == 2)
+            //        {
+            //            // Clear any old errors
+            //            if (oldFormationCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsFormation1");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldFormationCodeWarningNum != 2 || _formationCodeWarningCount != oldFormationCodeWarningCount)
-                            OnPropertyChanged("IncidIhsFormation2");
-                        return null;
-                    }
-                }
-            }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldFormationCodeWarningNum != 2 || _formationCodeWarningCount != oldFormationCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsFormation2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the formation code number with a warning
-            _formationCodeWarningNum = 0;
+            //// Clear the formation code number with a warning
+            //_formationCodeWarningNum = 0;
 
-            // Clear any old error or warning messages
-            if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
-                OnPropertyChanged("IncidIhsFormation1");
-            if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
-                OnPropertyChanged("IncidIhsFormation2");
+            //// Clear any old error or warning messages
+            //if (oldFormationCodeErrorNum == 1 || oldFormationCodeWarningNum == 1)
+            //    OnPropertyChanged("IncidIhsFormation1");
+            //if (oldFormationCodeErrorNum == 2 || oldFormationCodeWarningNum == 2)
+            //    OnPropertyChanged("IncidIhsFormation2");
 
             return null;
 
         }
 
+        //TODO: Mutiplex - remove
         private string ValidateIhsManagementCodes(int managementNum)
         {
-            // Skip validation when there is no incid or habitat code
-            if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
-                (IhsHabitatCodes == null))
-                return null;
+            //// Skip validation when there is no incid or habitat code
+            //if ((_incidCurrentRow == null) || String.IsNullOrEmpty(IncidIhsHabitat) ||
+            //    (IhsHabitatCodes == null))
+            //    return null;
 
-            // Store the previous management code in error
-            int oldManagementCodeErrorNum = _managementCodeErrorNum;
-            int oldManagementCodeErrorCount = _managementCodeErrorCount;
+            //// Store the previous management code in error
+            //int oldManagementCodeErrorNum = _managementCodeErrorNum;
+            //int oldManagementCodeErrorCount = _managementCodeErrorCount;
 
-            // Store the previous management code with a warning
-            int oldManagementCodeWarningNum = _managementCodeWarningNum;
-            int oldManagementCodeWarningCount = _managementCodeWarningCount;
+            //// Store the previous management code with a warning
+            //int oldManagementCodeWarningNum = _managementCodeWarningNum;
+            //int oldManagementCodeWarningCount = _managementCodeWarningCount;
 
-            // Check if at least one management code has been selected
-            // if they are mandatory for the current habitat type
-            if (managementNum == 1)
-            {
-                var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
-                    !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
+            //// Check if at least one management code has been selected
+            //// if they are mandatory for the current habitat type
+            //if (managementNum == 1)
+            //{
+            //    var q = IhsHabitatCodes.Where(r => !String.IsNullOrEmpty(IncidIhsHabitat) && r.code == IncidIhsHabitat &&
+            //        !r.IsNull(HluDataset.lut_ihs_habitat.man_managementColumn));
 
-                if ((q.Count() > 0) && (q.ElementAt(0).man_management == 1) && String.IsNullOrEmpty(IncidIhsManagement1))
-                {
-                    _managementCodeErrorNum = 1;
-                    _managementCodeErrorCount = 1;
-                    return String.Format("Error: IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
-                        q.ElementAt(0).description);
-                }
-            }
+            //    if ((q.Count() > 0) && (q.ElementAt(0).man_management == 1) && String.IsNullOrEmpty(IncidIhsManagement1))
+            //    {
+            //        _managementCodeErrorNum = 1;
+            //        _managementCodeErrorCount = 1;
+            //        return String.Format("Error: IHS management code is mandatory for IHS habitat '{0} : {1}'", q.ElementAt(0).code,
+            //            q.ElementAt(0).description);
+            //    }
+            //}
 
-            // Skip remaining validation when there are no management xrefs
-            if ((_xrefHabitatTypeManagementCodes == null) || (_xrefHabitatTypeManagementCodes.Count() == 0))
-                return null;
+            //// Skip remaining validation when there are no management xrefs
+            //if ((_xrefHabitatTypeManagementCodes == null) || (_xrefHabitatTypeManagementCodes.Count() == 0))
+            //    return null;
 
-            // Get the habitat type row for the selected habitat type
-            var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
-                r.code == HabitatType);
+            //// Get the habitat type row for the selected habitat type
+            //var habitatTypes = _habitatTypeCodes.Where(r => !String.IsNullOrEmpty(HabitatType) &&
+            //    r.code == HabitatType);
 
-            // Get the mandatory habitat type to management codes xrefs
-            var mandatoryCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
-                r.mandatory == 1);
+            //// Get the mandatory habitat type to management codes xrefs
+            //var mandatoryCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
+            //    r.mandatory == 1);
 
-            // Get the mandatory habitat type to management codes xrefs that
-            // aren't referenced by any of the management code fields
-            var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
-                (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsManagement2) ||
-                (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
+            //// Get the mandatory habitat type to management codes xrefs that
+            //// aren't referenced by any of the management code fields
+            //var missingCodes = mandatoryCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
+            //    (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsManagement2) ||
+            //    (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
 
-            // Count the number of missing mandatory xrefs
-            _managementCodeErrorCount = missingCodes.Count();
+            //// Count the number of missing mandatory xrefs
+            //_managementCodeErrorCount = missingCodes.Count();
 
-            // If there are missing mandatory codes
-            if (_managementCodeErrorCount > 0)
-            {
-                // Clear the management code number with a warning
-                _managementCodeWarningNum = 0;
+            //// If there are missing mandatory codes
+            //if (_managementCodeErrorCount > 0)
+            //{
+            //    // Clear the management code number with a warning
+            //    _managementCodeWarningNum = 0;
 
-                // Set the error message to return
-                string errorMsg = null;
-                if (_managementCodeErrorCount == 1)
-                    errorMsg = String.Format("Error: Management code {0} is mandatory for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_management,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    errorMsg = String.Format("Error: Management codes {0} are mandatory for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_management,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            //    // Set the error message to return
+            //    string errorMsg = null;
+            //    if (_managementCodeErrorCount == 1)
+            //        errorMsg = String.Format("Error: Management code {0} is mandatory for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_management,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        errorMsg = String.Format("Error: Management codes {0} are mandatory for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeErrorCount - 1) + " and " + missingCodes.LastOrDefault().code_management,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If management code 1 is blank, or doesn't match a mandatory code
-                // and management codes 2 and 3 are non-blank
-                if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
-                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsManagement2))))
-                {
-                    _managementCodeErrorNum = 1;
+            //    // If management code 1 is blank, or doesn't match a mandatory code
+            //    // and management codes 2 and 3 are non-blank
+            //    if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
+            //        ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsManagement2))))
+            //    {
+            //        _managementCodeErrorNum = 1;
 
-                    if (managementNum == 1)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsManagement2");
+            //        if (managementNum == 1)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsManagement2");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldManagementCodeErrorNum != 1 || _managementCodeErrorCount != oldManagementCodeErrorCount)
-                            OnPropertyChanged("IncidIhsManagement1");
-                        return null;
-                    }
-                }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldManagementCodeErrorNum != 1 || _managementCodeErrorCount != oldManagementCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsManagement1");
+            //            return null;
+            //        }
+            //    }
 
-                // If management code 2 is blank, or doesn't match a mandatory code
-                if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
-                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))))
-                {
-                    _managementCodeErrorNum = 2;
+            //    // If management code 2 is blank, or doesn't match a mandatory code
+            //    if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
+            //        ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))))
+            //    {
+            //        _managementCodeErrorNum = 2;
 
-                    if (managementNum == 2)
-                    {
-                        // Clear any old error & warning messages
-                        if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
-                            OnPropertyChanged("IncidIhsManagement1");
+            //        if (managementNum == 2)
+            //        {
+            //            // Clear any old error & warning messages
+            //            if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
+            //                OnPropertyChanged("IncidIhsManagement1");
 
-                        return errorMsg;
-                    }
-                    else
-                    {
-                        if (oldManagementCodeErrorNum != 2 || _managementCodeErrorCount != oldManagementCodeErrorCount)
-                            OnPropertyChanged("IncidIhsManagement2");
-                        return null;
-                    }
-                }
-            }
+            //            return errorMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldManagementCodeErrorNum != 2 || _managementCodeErrorCount != oldManagementCodeErrorCount)
+            //                OnPropertyChanged("IncidIhsManagement2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the management code number with an error
-            _managementCodeErrorNum = 0;
+            //// Clear the management code number with an error
+            //_managementCodeErrorNum = 0;
 
-            // Get the recommended habitat type to management codes xrefs
-            var recommendedCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
-                r.mandatory == 0);
+            //// Get the recommended habitat type to management codes xrefs
+            //var recommendedCodes = _xrefHabitatTypeManagementCodes.Where(r => !String.IsNullOrEmpty(r.code_management) &&
+            //    r.mandatory == 0);
 
-            // Get the recommended habitat type to management codes xrefs that
-            // aren't referenced by any of the management code fields
-            missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
-                (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
-                (String.IsNullOrEmpty(IncidIhsManagement2) ||
-                (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
+            //// Get the recommended habitat type to management codes xrefs that
+            //// aren't referenced by any of the management code fields
+            //missingCodes = recommendedCodes.Where(r => (String.IsNullOrEmpty(IncidIhsManagement1) ||
+            //    (r.code_management != IncidIhsManagement1) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)) &&
+            //    (String.IsNullOrEmpty(IncidIhsManagement2) ||
+            //    (r.code_management != IncidIhsManagement2) && !(r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)));
 
-            // Count the total number of recommended xrefs
-            int managementCodeCount = recommendedCodes.Count();
+            //// Count the total number of recommended xrefs
+            //int managementCodeCount = recommendedCodes.Count();
 
-            // Count the number of missing recommended xrefs
-            _managementCodeWarningCount = missingCodes.Count();
+            //// Count the number of missing recommended xrefs
+            //_managementCodeWarningCount = missingCodes.Count();
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 085 Don't show warning when at least one recommended multiplex
-            // code is selected.
-            //
-            // If there are missing recommended codes (and none are already referenced)
-            if ((_managementCodeWarningCount > 0) && (_managementCodeWarningCount == managementCodeCount))
-            //---------------------------------------------------------------------
-            {
-                // Set the error message to return
-                string warningMsg = null;
-                if (_managementCodeWarningCount == 1)
-                    warningMsg = String.Format("Warning: Management code {0} is recommended for habitat type '{1} : {2}'",
-                        missingCodes.ElementAt(0).code_management,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
-                else
-                    warningMsg = String.Format("Warning: Management codes {0} are recommended for habitat type '{1} : {2}'",
-                        String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_management,
-                        habitatTypes.ElementAt(0).name,
-                        habitatTypes.ElementAt(0).description);
+            ////---------------------------------------------------------------------
+            //// FIXOLD: 085 Don't show warning when at least one recommended multiplex
+            //// code is selected.
+            ////
+            //// If there are missing recommended codes (and none are already referenced)
+            //if ((_managementCodeWarningCount > 0) && (_managementCodeWarningCount == managementCodeCount))
+            ////---------------------------------------------------------------------
+            //{
+            //    // Set the error message to return
+            //    string warningMsg = null;
+            //    if (_managementCodeWarningCount == 1)
+            //        warningMsg = String.Format("Warning: Management code {0} is recommended for habitat type '{1} : {2}'",
+            //            missingCodes.ElementAt(0).code_management,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
+            //    else
+            //        warningMsg = String.Format("Warning: Management codes {0} are recommended for habitat type '{1} : {2}'",
+            //            String.Join(", ", Array.ConvertAll(missingCodes.ToArray(), x => x.code_management), 0, _managementCodeWarningCount - 1) + " or " + missingCodes.LastOrDefault().code_management,
+            //            habitatTypes.ElementAt(0).name,
+            //            habitatTypes.ElementAt(0).description);
 
-                // If management code 1 is blank, or doesn't match a recommended code
-                // and management codes 2 and 3 are non-blank, and isn't a mandatory
-                // code
-                if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
-                    ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
-                    (!String.IsNullOrEmpty(IncidIhsManagement2))) &&
-                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _managementCodeWarningNum = 1;
+            //    // If management code 1 is blank, or doesn't match a recommended code
+            //    // and management codes 2 and 3 are non-blank, and isn't a mandatory
+            //    // code
+            //    if ((String.IsNullOrEmpty(IncidIhsManagement1) ||
+            //        ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)) &&
+            //        (!String.IsNullOrEmpty(IncidIhsManagement2))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement1) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement1, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _managementCodeWarningNum = 1;
 
-                    if (managementNum == 1)
-                    {
-                        // Clear any old errors
-                        if (oldManagementCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsManagement2");
+            //        if (managementNum == 1)
+            //        {
+            //            // Clear any old errors
+            //            if (oldManagementCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsManagement2");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldManagementCodeWarningNum != 1 || _managementCodeWarningCount != oldManagementCodeWarningCount)
-                            OnPropertyChanged("IncidIhsManagement1");
-                        return null;
-                    }
-                }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldManagementCodeWarningNum != 1 || _managementCodeWarningCount != oldManagementCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsManagement1");
+            //            return null;
+            //        }
+            //    }
 
-                // If management code 2 is blank, or doesn't match a recommended code
-                if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
-                    ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))) &&
-                    ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
-                    (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
-                {
-                    _managementCodeWarningNum = 2;
+            //    // If management code 2 is blank, or doesn't match a recommended code
+            //    if ((String.IsNullOrEmpty(IncidIhsManagement2) ||
+            //        ((recommendedCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0))) &&
+            //        ((mandatoryCodes.Where(r => (r.code_management == IncidIhsManagement2) ||
+            //        (r.code_management.EndsWith("*") && Regex.IsMatch(IncidIhsManagement2, @"\A" + r.code_management.TrimEnd('*') + @"") == true)).Count() == 0)))
+            //    {
+            //        _managementCodeWarningNum = 2;
 
-                    if (managementNum == 2)
-                    {
-                        // Clear any old errors
-                        if (oldManagementCodeWarningNum == 2)
-                            OnPropertyChanged("IncidIhsManagement1");
+            //        if (managementNum == 2)
+            //        {
+            //            // Clear any old errors
+            //            if (oldManagementCodeWarningNum == 2)
+            //                OnPropertyChanged("IncidIhsManagement1");
 
-                        return warningMsg;
-                    }
-                    else
-                    {
-                        if (oldManagementCodeWarningNum != 2 || _managementCodeWarningCount != oldManagementCodeWarningCount)
-                            OnPropertyChanged("IncidIhsManagement2");
-                        return null;
-                    }
-                }
-            }
+            //            return warningMsg;
+            //        }
+            //        else
+            //        {
+            //            if (oldManagementCodeWarningNum != 2 || _managementCodeWarningCount != oldManagementCodeWarningCount)
+            //                OnPropertyChanged("IncidIhsManagement2");
+            //            return null;
+            //        }
+            //    }
+            //}
 
-            // Clear the management code number with a warning
-            _managementCodeWarningNum = 0;
+            //// Clear the management code number with a warning
+            //_managementCodeWarningNum = 0;
 
-            // Clear any old error or warning messages
-            if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
-                OnPropertyChanged("IncidIhsManagement1");
-            if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
-                OnPropertyChanged("IncidIhsManagement2");
+            //// Clear any old error or warning messages
+            //if (oldManagementCodeErrorNum == 1 || oldManagementCodeWarningNum == 1)
+            //    OnPropertyChanged("IncidIhsManagement1");
+            //if (oldManagementCodeErrorNum == 2 || oldManagementCodeWarningNum == 2)
+            //    OnPropertyChanged("IncidIhsManagement2");
 
             return null;
 
@@ -15251,7 +15327,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 // FIXOLD: 020 Show field errors on tab labels.
                 // If there are any IHS field errors then show an error on the tab label.
-                if (IhsErrors != null && IhsErrors.Count > 0)
+                if (HabitatErrors != null && HabitatErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Habitats are in error");
                 //---------------------------------------------------------------------
 
@@ -15341,314 +15417,316 @@ namespace HLU.UI.ViewModel
                     case "Incid":
                         break;
                     case "IhsTabLabel":
-                        if (IhsWarnings != null && IhsWarnings.Count > 0)
+                        if (HabitatWarnings != null && HabitatWarnings.Count > 0)
                             error = "Warning: One or more Habitat fields have a warning";
                         //---------------------------------------------------------------------
-                        if (IhsErrors != null && IhsErrors.Count > 0)
+                        if (HabitatErrors != null && HabitatErrors.Count > 0)
                             error = "Error: One or more Habitat fields are in error";
                         break;
+                    //TODO: IHS change to primary & secondary
                     case "IncidIhsHabitat":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.
                         if (String.IsNullOrEmpty(IncidIhsHabitat) && _bulkUpdateMode == false)
                         {
                             error = "Error: IHS Habitat is mandatory for every INCID";
-                            AddErrorList(ref _ihsErrors, columnName);
+                            AddErrorList(ref _habitatErrors, columnName);
                         }
                         else
                         {
-                            DelErrorList(ref _ihsErrors, columnName);
+                            DelErrorList(ref _habitatErrors, columnName);
                         }
                         OnPropertyChanged("IhsTabLabel");
                         break;
-                    case "IncidIhsMatrix1":
-                        FixIhsMatrixCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) &&
-                            (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
-                        {
-                            error = "Error: Matrix code 1 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsMatrixCodes(1);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsMatrix2":
-                        FixIhsMatrixCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) &&
-                            (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
-                        {
-                            error = "Error: Matrix code 2 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsMatrixCodes(2);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsMatrix3":
-                        FixIhsMatrixCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) &&
-                            (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
-                        {
-                            error = "Error: Matrix code 3 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsMatrixCodes(3);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsFormation1":
-                        FixIhsFormationCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) &&
-                            (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
-                        {
-                            error = "Error: Formation code 1 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsFormationCodes(1);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsFormation2":
-                        FixIhsFormationCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) &&
-                            (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
-                        {
-                            error = "Error: Formation code 2 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsFormationCodes(2);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsManagement1":
-                        FixIhsManagementCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) &&
-                            (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
-                        {
-                            error = "Error: Management code 1 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsManagementCodes(1);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsManagement2":
-                        FixIhsManagementCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) &&
-                            (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
-                        {
-                            error = "Error: Management code 2 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsManagementCodes(2);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsComplex1":
-                        FixIhsComplexCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) &&
-                            (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
-                        {
-                            error = "Error: Complex code 1 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsComplexCodes(1);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
-                    case "IncidIhsComplex2":
-                        FixIhsComplexCodes();
-                        // If the field is in error add the field name to the list of errors
-                        // for the parent tab. Otherwise remove the field from the list.
-                        if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) &&
-                            (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
-                        {
-                            error = "Error: Complex code 2 does not correspond to chosen IHS habitat";
-                            //AddErrorList(ref _ihsErrors, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
-                        // Check that any mandatory or recommended multiplex codes
-                        // relating to the current habitat type have been selected
-                        //
-                        else
-                            error = ValidateIhsComplexCodes(2);
-                        if (error != null)
-                        {
-                            if (error.StartsWith("Error", true, null))
-                                AddErrorList(ref _ihsErrors, columnName);
-                            else
-                                AddErrorList(ref _ihsWarnings, columnName);
-                        }
-                        else
-                        {
-                            DelErrorList(ref _ihsErrors, columnName);
-                            DelErrorList(ref _ihsWarnings, columnName);
-                        }
-                        //---------------------------------------------------------------------
-                        OnPropertyChanged("IhsTabLabel");
-                        break;
+                    //TODO: Mutiplex - remove
+                    //case "IncidIhsMatrix1":
+                    //    FixIhsMatrixCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsMatrix1) && (_lutIhsMatrixCodes != null) &&
+                    //        (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix1) == 0))
+                    //    {
+                    //        error = "Error: Matrix code 1 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsMatrixCodes(1);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsMatrix2":
+                    //    FixIhsMatrixCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsMatrix2) && (_lutIhsMatrixCodes != null) &&
+                    //        (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix2) == 0))
+                    //    {
+                    //        error = "Error: Matrix code 2 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsMatrixCodes(2);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsMatrix3":
+                    //    FixIhsMatrixCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsMatrix3) && (_lutIhsMatrixCodes != null) &&
+                    //        (_lutIhsMatrixCodes.Count(c => c.code == IncidIhsMatrix3) == 0))
+                    //    {
+                    //        error = "Error: Matrix code 3 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsMatrixCodes(3);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsFormation1":
+                    //    FixIhsFormationCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsFormation1) && (_lutIhsFormationCodes != null) &&
+                    //        (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation1) == 0))
+                    //    {
+                    //        error = "Error: Formation code 1 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsFormationCodes(1);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsFormation2":
+                    //    FixIhsFormationCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsFormation2) && (_lutIhsFormationCodes != null) &&
+                    //        (_lutIhsFormationCodes.Count(c => c.code == IncidIhsFormation2) == 0))
+                    //    {
+                    //        error = "Error: Formation code 2 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsFormationCodes(2);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsManagement1":
+                    //    FixIhsManagementCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsManagement1) && (_lutIhsManagementCodes != null) &&
+                    //        (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement1) == 0))
+                    //    {
+                    //        error = "Error: Management code 1 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsManagementCodes(1);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsManagement2":
+                    //    FixIhsManagementCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsManagement2) && (_lutIhsManagementCodes != null) &&
+                    //        (_lutIhsManagementCodes.Count(c => c.code == IncidIhsManagement2) == 0))
+                    //    {
+                    //        error = "Error: Management code 2 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsManagementCodes(2);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsComplex1":
+                    //    FixIhsComplexCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsComplex1) && (_lutIhsComplexCodes != null) &&
+                    //        (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex1) == 0))
+                    //    {
+                    //        error = "Error: Complex code 1 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsComplexCodes(1);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
+                    //case "IncidIhsComplex2":
+                    //    FixIhsComplexCodes();
+                    //    // If the field is in error add the field name to the list of errors
+                    //    // for the parent tab. Otherwise remove the field from the list.
+                    //    if (!String.IsNullOrEmpty(IncidIhsComplex2) && (_lutIhsComplexCodes != null) &&
+                    //        (_lutIhsComplexCodes.Count(c => c.code == IncidIhsComplex2) == 0))
+                    //    {
+                    //        error = "Error: Complex code 2 does not correspond to chosen IHS habitat";
+                    //        //AddErrorList(ref _habitatErrors, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    // CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //    // Check that any mandatory or recommended multiplex codes
+                    //    // relating to the current habitat type have been selected
+                    //    //
+                    //    else
+                    //        error = ValidateIhsComplexCodes(2);
+                    //    if (error != null)
+                    //    {
+                    //        if (error.StartsWith("Error", true, null))
+                    //            AddErrorList(ref _habitatErrors, columnName);
+                    //        else
+                    //            AddErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    else
+                    //    {
+                    //        DelErrorList(ref _habitatErrors, columnName);
+                    //        DelErrorList(ref _habitatWarnings, columnName);
+                    //    }
+                    //    //---------------------------------------------------------------------
+                    //    OnPropertyChanged("IhsTabLabel");
+                    //    break;
                     case "DetailsTabLabel":
                         //---------------------------------------------------------------------
                         // FIXOLD: 080 Functionality to display warning level messages.
@@ -15814,8 +15892,8 @@ namespace HLU.UI.ViewModel
 
         public void ResetWarningsErrors()
         {
-            _ihsWarnings = new List<string>();
-            _ihsErrors = new List<string>();
+            _habitatWarnings = new List<string>();
+            _habitatErrors = new List<string>();
             _detailsWarnings = new List<string>();
             _detailsErrors = new List<string>();
             _source1Warnings = null;

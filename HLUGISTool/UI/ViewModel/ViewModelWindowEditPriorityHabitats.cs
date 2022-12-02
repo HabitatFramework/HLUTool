@@ -191,19 +191,19 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_bap_quality_determinationRow[] BapDeterminationQualityCodesAuto
+        public HluDataSet.lut_quality_determinationRow[] BapDeterminationQualityCodesAuto
         {
             get
             {
-                return _viewModelMain.BapDeterminationQualityCodesAuto;
+                return _viewModelMain.DeterminationQualityCodesAuto;
             }
         }
 
-        public HluDataSet.lut_bap_quality_interpretationRow[] BapInterpretationQualityCodes
+        public HluDataSet.lut_quality_interpretationRow[] BapInterpretationQualityCodes
         {
             get
             {
-                return _viewModelMain.BapInterpretationQualityCodes;
+                return _viewModelMain.InterpretationQualityCodes;
             }
         }
 

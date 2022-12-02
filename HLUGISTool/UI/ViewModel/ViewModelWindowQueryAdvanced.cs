@@ -887,7 +887,7 @@ namespace HLU.UI.ViewModel
                             _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
                                 " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
                         }
-                        else if (lut is HluDataSet.lut_osmm_ihs_xrefDataTable && Table is HluDataSet.incid_osmm_updatesDataTable)
+                        else if (lut is HluDataSet.lut_osmm_habitat_xrefDataTable && Table is HluDataSet.incid_osmm_updatesDataTable)
                         {
                             DataColumn summaryColumn = lut.Columns["ihs_summary"];
                             _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + " : " + r[summaryColumn].ToString(), r => r[lutColumn]);

@@ -79,7 +79,7 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
-                _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
+                _viewModelMain.IncidCurrentRow.habitat_version = _viewModelMain.HabitatVersion;
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR49 Process proposed OSMM Updates
@@ -171,8 +171,8 @@ namespace HLU.UI.ViewModel
                 string ihsHabitatCategory = q.Count() == 1 ? q.ElementAt(0).category : null;
 
                 DataTable historyTable = _viewModelMain.GISApplication.UpdateFeatures(new DataColumn[] { 
-                    _viewModelMain.HluDataset.incid_mm_polygons.ihs_categoryColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn },
+                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn },
                     new object[] { ihsHabitatCategory, _viewModelMain.IncidIhsSummary },
                     _viewModelMain.HistoryColumns, incidCond);
 
@@ -185,9 +185,9 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {3}, {2} = {4} WHERE {5}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     _viewModelMain.DataBase.QuoteIdentifier(
-                        _viewModelMain.HluDataset.incid_mm_polygons.ihs_categoryColumn.ColumnName),
+                        _viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteIdentifier(
-                        _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn.ColumnName),
+                        _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(ihsHabitatCategory),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidIhsSummary),
                     _viewModelMain.DataBase.WhereClause(false, true, true, incidCond)),

@@ -204,8 +204,6 @@ namespace HLU.Data.Model {
         
         private global::System.Data.DataRelation relationfk_lut_osmm_updates_spatial_incid_osmm_updates;
         
-        private global::System.Data.DataRelation relationfk_lut_osmm_updates_process_incid_osmm_updates;
-        
         private global::System.Data.DataRelation relationfk_lut_osmm_updates_change_incid_osmm_updates;
         
         private global::System.Data.DataRelation relationfk_incid_lut_primary;
@@ -1565,7 +1563,6 @@ namespace HLU.Data.Model {
             this.relationfk_incid_condition_lut_condition = this.Relations["fk_incid_condition_lut_condition"];
             this.relationfk_incid_condition_lut_condition_qualifier = this.Relations["fk_incid_condition_lut_condition_qualifier"];
             this.relationfk_lut_osmm_updates_spatial_incid_osmm_updates = this.Relations["fk_lut_osmm_updates_spatial_incid_osmm_updates"];
-            this.relationfk_lut_osmm_updates_process_incid_osmm_updates = this.Relations["fk_lut_osmm_updates_process_incid_osmm_updates"];
             this.relationfk_lut_osmm_updates_change_incid_osmm_updates = this.Relations["fk_lut_osmm_updates_change_incid_osmm_updates"];
             this.relationfk_incid_lut_primary = this.Relations["fk_incid_lut_primary"];
             this.relationfk_incid_mm_polygons_lut_primary = this.Relations["fk_incid_mm_polygons_lut_primary"];
@@ -1872,10 +1869,6 @@ namespace HLU.Data.Model {
                         this.tablelut_osmm_updates_spatial.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_osmm_updates.spatial_flagColumn}, false);
             this.Relations.Add(this.relationfk_lut_osmm_updates_spatial_incid_osmm_updates);
-            this.relationfk_lut_osmm_updates_process_incid_osmm_updates = new global::System.Data.DataRelation("fk_lut_osmm_updates_process_incid_osmm_updates", new global::System.Data.DataColumn[] {
-                        this.tablelut_osmm_updates_process.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tableincid_osmm_updates.process_flagColumn}, false);
-            this.Relations.Add(this.relationfk_lut_osmm_updates_process_incid_osmm_updates);
             this.relationfk_lut_osmm_updates_change_incid_osmm_updates = new global::System.Data.DataRelation("fk_lut_osmm_updates_change_incid_osmm_updates", new global::System.Data.DataColumn[] {
                         this.tablelut_osmm_updates_change.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_osmm_updates.change_flagColumn}, false);
@@ -12209,7 +12202,6 @@ namespace HLU.Data.Model {
                                 this.columncode}, true));
                 this.columncode.AllowDBNull = false;
                 this.columncode.Unique = true;
-                this.columncode.MaxLength = 1;
                 this.columndescription.AllowDBNull = false;
                 this.columndescription.MaxLength = 50;
                 this.columnsort_order.AllowDBNull = false;
@@ -13106,13 +13098,13 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_osmm_updatesRow Addincid_osmm_updatesRow(int incid_osmm_update_id, incidRow parentincidRowByfk_incid_osmm_updates_incid, lut_osmm_updates_spatialRow parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates, lut_osmm_updates_processRow parentlut_osmm_updates_processRowByfk_lut_osmm_updates_process_incid_osmm_updates, lut_osmm_updates_changeRow parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates, int status, System.DateTime created_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_created, System.DateTime last_modified_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_modified, lut_osmm_habitat_xrefRow parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref) {
+            public incid_osmm_updatesRow Addincid_osmm_updatesRow(int incid_osmm_update_id, incidRow parentincidRowByfk_incid_osmm_updates_incid, lut_osmm_updates_spatialRow parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates, int process_flag, lut_osmm_updates_changeRow parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates, int status, System.DateTime created_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_created, System.DateTime last_modified_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_modified, lut_osmm_habitat_xrefRow parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref) {
                 incid_osmm_updatesRow rowincid_osmm_updatesRow = ((incid_osmm_updatesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         incid_osmm_update_id,
                         null,
                         null,
-                        null,
+                        process_flag,
                         null,
                         status,
                         created_date,
@@ -13125,9 +13117,6 @@ namespace HLU.Data.Model {
                 }
                 if ((parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates != null)) {
                     columnValuesArray[2] = parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates[0];
-                }
-                if ((parentlut_osmm_updates_processRowByfk_lut_osmm_updates_process_incid_osmm_updates != null)) {
-                    columnValuesArray[3] = parentlut_osmm_updates_processRowByfk_lut_osmm_updates_process_incid_osmm_updates[0];
                 }
                 if ((parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates != null)) {
                     columnValuesArray[4] = parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates[0];
@@ -13192,7 +13181,7 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnincid);
                 this.columnspatial_flag = new global::System.Data.DataColumn("spatial_flag", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnspatial_flag);
-                this.columnprocess_flag = new global::System.Data.DataColumn("process_flag", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnprocess_flag = new global::System.Data.DataColumn("process_flag", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnprocess_flag);
                 this.columnchange_flag = new global::System.Data.DataColumn("change_flag", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnchange_flag);
@@ -22733,17 +22722,6 @@ namespace HLU.Data.Model {
                     this[this.tablelut_osmm_updates_process.sort_orderColumn] = value;
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_osmm_updatesRow[] Getincid_osmm_updatesRows() {
-                if ((this.Table.ChildRelations["fk_lut_osmm_updates_process_incid_osmm_updates"] == null)) {
-                    return new incid_osmm_updatesRow[0];
-                }
-                else {
-                    return ((incid_osmm_updatesRow[])(base.GetChildRows(this.Table.ChildRelations["fk_lut_osmm_updates_process_incid_osmm_updates"])));
-                }
-            }
         }
         
         /// <summary>
@@ -22918,10 +22896,10 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string process_flag {
+            public int process_flag {
                 get {
                     try {
-                        return ((string)(this[this.tableincid_osmm_updates.process_flagColumn]));
+                        return ((int)(this[this.tableincid_osmm_updates.process_flagColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'process_flag\' in table \'incid_osmm_updates\' is DBNull.", e);
@@ -23066,17 +23044,6 @@ namespace HLU.Data.Model {
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["fk_lut_osmm_updates_spatial_incid_osmm_updates"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_osmm_updates_processRow lut_osmm_updates_processRow {
-                get {
-                    return ((lut_osmm_updates_processRow)(this.GetParentRow(this.Table.ParentRelations["fk_lut_osmm_updates_process_incid_osmm_updates"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["fk_lut_osmm_updates_process_incid_osmm_updates"]);
                 }
             }
             
@@ -37967,9 +37934,9 @@ SELECT code, description, sort_order FROM lut_legacy_habitat WHERE (code = @code
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "lut_osmm_updates_process";
-            tableMapping.ColumnMappings.Add("code", "code");
             tableMapping.ColumnMappings.Add("description", "description");
             tableMapping.ColumnMappings.Add("sort_order", "sort_order");
+            tableMapping.ColumnMappings.Add("code", "code");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
@@ -38070,129 +38037,6 @@ SELECT code, description, sort_order FROM lut_osmm_updates_process WHERE (code =
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         public virtual int Update(global::System.Data.DataRow[] dataRows) {
             return this.Adapter.Update(dataRows);
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_code, string Original_description, int Original_sort_order) {
-            if ((Original_code == null)) {
-                throw new global::System.ArgumentNullException("Original_code");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_code));
-            }
-            if ((Original_description == null)) {
-                throw new global::System.ArgumentNullException("Original_description");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_description));
-            }
-            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.DeleteCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.DeleteCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string code, string description, int sort_order) {
-            if ((code == null)) {
-                throw new global::System.ArgumentNullException("code");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(code));
-            }
-            if ((description == null)) {
-                throw new global::System.ArgumentNullException("description");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(description));
-            }
-            this.Adapter.InsertCommand.Parameters[2].Value = ((int)(sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
-            if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.InsertCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.InsertCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string code, string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            if ((code == null)) {
-                throw new global::System.ArgumentNullException("code");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(code));
-            }
-            if ((description == null)) {
-                throw new global::System.ArgumentNullException("description");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(description));
-            }
-            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(sort_order));
-            if ((Original_code == null)) {
-                throw new global::System.ArgumentNullException("Original_code");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code));
-            }
-            if ((Original_description == null)) {
-                throw new global::System.ArgumentNullException("Original_description");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_description));
-            }
-            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_sort_order));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.UpdateCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.UpdateCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            return this.Update(Original_code, description, sort_order, Original_code, Original_description, Original_sort_order);
         }
     }
     
@@ -38954,7 +38798,7 @@ SELECT code, description, sort_order FROM lut_osmm_updates_change WHERE (code = 
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_spatial_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_spatial_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_status", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "status", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
@@ -38973,7 +38817,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@spatial_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@status", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "status", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@created_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -39007,7 +38851,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@spatial_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@change_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@status", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "status", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@created_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -39020,7 +38864,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_spatial_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_spatial_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_process_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "process_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_change_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_change_flag", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "change_flag", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_status", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "status", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
@@ -39109,7 +38953,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_incid_osmm_update_id, string Original_incid, string Original_spatial_flag, string Original_process_flag, string Original_change_flag, global::System.Nullable<int> Original_status, System.DateTime Original_created_date, string Original_created_user_id, System.DateTime Original_last_modified_date, string Original_last_modified_user_id, global::System.Nullable<int> Original_osmm_habitat_xref_id) {
+        public virtual int Delete(int Original_incid_osmm_update_id, string Original_incid, string Original_spatial_flag, global::System.Nullable<int> Original_process_flag, string Original_change_flag, global::System.Nullable<int> Original_status, System.DateTime Original_created_date, string Original_created_user_id, System.DateTime Original_last_modified_date, string Original_last_modified_user_id, global::System.Nullable<int> Original_osmm_habitat_xref_id) {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_incid_osmm_update_id));
             if ((Original_incid == null)) {
                 throw new global::System.ArgumentNullException("Original_incid");
@@ -39125,13 +38969,13 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                 this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
                 this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_spatial_flag));
             }
-            if ((Original_process_flag == null)) {
-                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[5].Value = global::System.DBNull.Value;
+            if ((Original_process_flag.HasValue == true)) {
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((int)(Original_process_flag.Value));
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_process_flag));
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
             if ((Original_change_flag == null)) {
                 this.Adapter.DeleteCommand.Parameters[6].Value = ((object)(1));
@@ -39191,7 +39035,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int incid_osmm_update_id, string incid, string spatial_flag, string process_flag, string change_flag, global::System.Nullable<int> status, System.DateTime created_date, string created_user_id, System.DateTime last_modified_date, string last_modified_user_id, global::System.Nullable<int> osmm_habitat_xref_id) {
+        public virtual int Insert(int incid_osmm_update_id, string incid, string spatial_flag, global::System.Nullable<int> process_flag, string change_flag, global::System.Nullable<int> status, System.DateTime created_date, string created_user_id, System.DateTime last_modified_date, string last_modified_user_id, global::System.Nullable<int> osmm_habitat_xref_id) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(incid_osmm_update_id));
             if ((incid == null)) {
                 throw new global::System.ArgumentNullException("incid");
@@ -39205,11 +39049,11 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             else {
                 this.Adapter.InsertCommand.Parameters[2].Value = ((string)(spatial_flag));
             }
-            if ((process_flag == null)) {
-                this.Adapter.InsertCommand.Parameters[3].Value = global::System.DBNull.Value;
+            if ((process_flag.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[3].Value = ((int)(process_flag.Value));
             }
             else {
-                this.Adapter.InsertCommand.Parameters[3].Value = ((string)(process_flag));
+                this.Adapter.InsertCommand.Parameters[3].Value = global::System.DBNull.Value;
             }
             if ((change_flag == null)) {
                 this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
@@ -39267,7 +39111,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     int incid_osmm_update_id, 
                     string incid, 
                     string spatial_flag, 
-                    string process_flag, 
+                    global::System.Nullable<int> process_flag, 
                     string change_flag, 
                     global::System.Nullable<int> status, 
                     System.DateTime created_date, 
@@ -39278,7 +39122,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     int Original_incid_osmm_update_id, 
                     string Original_incid, 
                     string Original_spatial_flag, 
-                    string Original_process_flag, 
+                    global::System.Nullable<int> Original_process_flag, 
                     string Original_change_flag, 
                     global::System.Nullable<int> Original_status, 
                     System.DateTime Original_created_date, 
@@ -39299,11 +39143,11 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             else {
                 this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(spatial_flag));
             }
-            if ((process_flag == null)) {
-                this.Adapter.UpdateCommand.Parameters[3].Value = global::System.DBNull.Value;
+            if ((process_flag.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((int)(process_flag.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(process_flag));
+                this.Adapter.UpdateCommand.Parameters[3].Value = global::System.DBNull.Value;
             }
             if ((change_flag == null)) {
                 this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
@@ -39352,13 +39196,13 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                 this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(0));
                 this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_spatial_flag));
             }
-            if ((Original_process_flag == null)) {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
+            if ((Original_process_flag.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((int)(Original_process_flag.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((string)(Original_process_flag));
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
             }
             if ((Original_change_flag == null)) {
                 this.Adapter.UpdateCommand.Parameters[17].Value = ((object)(1));
@@ -39421,7 +39265,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
         public virtual int Update(
                     string incid, 
                     string spatial_flag, 
-                    string process_flag, 
+                    global::System.Nullable<int> process_flag, 
                     string change_flag, 
                     global::System.Nullable<int> status, 
                     System.DateTime created_date, 
@@ -39432,7 +39276,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     int Original_incid_osmm_update_id, 
                     string Original_incid, 
                     string Original_spatial_flag, 
-                    string Original_process_flag, 
+                    global::System.Nullable<int> Original_process_flag, 
                     string Original_change_flag, 
                     global::System.Nullable<int> Original_status, 
                     System.DateTime Original_created_date, 

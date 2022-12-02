@@ -296,7 +296,7 @@ namespace HLU.UI.ViewModel
 
                 _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
-                _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
+                _viewModelMain.IncidCurrentRow.habitat_version = _viewModelMain.HabitatVersion;
                 _viewModelMain.IncidCurrentRow.ihs_habitat = _viewModelMain.IncidIhsHabitat;
 
                 // Build a collection of the updated columns in the incid table
@@ -356,49 +356,50 @@ namespace HLU.UI.ViewModel
                     string newIncidIhsHabitatCode = _viewModelMain.IncidCurrentRow[_viewModelMain.HluDataset.incid.ihs_habitatColumn.Ordinal].ToString();
 
                     // Build DELETE statements for IHS multiplex rows rendered obsolete by new IHS habitat
-                    ihsMultiplexDelStatements.Add(
-                        String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue("{0}"),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.code_matrixColumn.ColumnName),
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.matrixColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.code_habitatColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
+                    //TODO: Bulk Update mulitplex
+                    //ihsMultiplexDelStatements.Add(
+                    //    String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.incidColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue("{0}"),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.code_matrixColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_matrix.matrixColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_matrix.code_habitatColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
 
-                    ihsMultiplexDelStatements.Add(
-                        String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.incidColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue("{0}"),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.code_formationColumn.ColumnName),
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.formationColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.code_habitatColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
+                    //ihsMultiplexDelStatements.Add(
+                    //    String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_formation.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.incidColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue("{0}"),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.code_formationColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_formation.formationColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_formation.code_habitatColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
 
-                    ihsMultiplexDelStatements.Add(
-                        String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_management.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.incidColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue("{0}"),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.code_managementColumn.ColumnName),
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.managementColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.code_habitatColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
+                    //ihsMultiplexDelStatements.Add(
+                    //    String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_management.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.incidColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue("{0}"),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.code_managementColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_management.managementColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_management.code_habitatColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
 
-                    ihsMultiplexDelStatements.Add(
-                        String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_complex.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.incidColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue("{0}"),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.code_complexColumn.ColumnName),
-                        _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.TableName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.complexColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.code_habitatColumn.ColumnName),
-                        _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
+                    //ihsMultiplexDelStatements.Add(
+                    //    String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_complex.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.incidColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue("{0}"),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.code_complexColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.TableName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_ihs_complex.complexColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.lut_ihs_habitat_ihs_complex.code_habitatColumn.ColumnName),
+                    //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
                 }
 
                 // Filter out any rows not set (because the maximum number of blank rows are
@@ -544,7 +545,7 @@ namespace HLU.UI.ViewModel
 
                 _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
-                _viewModelMain.IncidCurrentRow.ihs_version = _viewModelMain.IhsVersion;
+                _viewModelMain.IncidCurrentRow.habitat_version = _viewModelMain.HabitatVersion;
 
                 // Set the ihs habitat on the incid table to a non-null value to
                 // indicate that the column has/will change
@@ -609,19 +610,20 @@ namespace HLU.UI.ViewModel
                     HluDataSet.incid_osmm_updatesRow[] incidOSMMUpdatesRows = _viewModelMain.GetIncidChildRowsDb(relValues,
                         _viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter, ref incidOSMMUpdatesTable);
 
-                    // Get the osmm_xref_id
-                    int incidOSMMXrefId = incidOSMMUpdatesRows[0].osmm_xref_id;
+                    // Get the osmm_habitat_xref_id
+                    int incidOSMMXrefId = incidOSMMUpdatesRows[0].osmm_habitat_xref_id;
 
-                    // Get the lut_osmm_ihs_xref row for the current osmm_xref_id
-                    IEnumerable<HluDataSet.lut_osmm_ihs_xrefRow> ihsOSMMXref = from x in _viewModelMain.HluDataset.lut_osmm_ihs_xref
-                                                                               where x.is_local && x.osmm_xref_id == incidOSMMXrefId
+                    // Get the lut_osmm_habitat_xref row for the current osmm_habitat_xref_id
+                    IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> osmmHabitatXref = from x in _viewModelMain.HluDataset.lut_osmm_habitat_xref
+                                                                                   where x.is_local && x.osmm_habitat_xref_id == incidOSMMXrefId
                                                                                select x;
 
                     // Continue if a row is found
-                    if (ihsOSMMXref != null)
+                    if (osmmHabitatXref != null)
                     {
-                        // Get the new IHS habitat code from the lut_osmm_ihs_xref table
-                        string newIncidIhsHabitatCode = ihsOSMMXref.ElementAt(0).ihs_habitat;
+                        //TODO: OSMM primary
+                        // Get the new IHS habitat code from the lut_osmm_habitat_xref table
+                        string newIncidIhsHabitatCode = osmmHabitatXref.ElementAt(0).ihs_habitat;
 
                         // Set the ihs habitat on the incid table
                         _viewModelMain.IncidCurrentRow.ihs_habitat = newIncidIhsHabitatCode;
@@ -638,11 +640,12 @@ namespace HLU.UI.ViewModel
                                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidCurrentRow[c.Ordinal]))))
                                 .Remove(0, 2)).Append(incidWhereClause).ToString();
 
-                        // Create new rows in the matrix table from the lut_osmm_ihs_xref table
+                        // Create new rows in the matrix table from the lut_osmm_habitat_xref table
                         string newMultiplexCode;
                         int multiplexRow = 0;
                         _viewModelMain.IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
                             .Select(mr => _viewModelMain.HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
+                        //TODO@ OSMM secondaries
                         if (!ihsOSMMXref.ElementAt(0).Isihs_matrix1Null())
                         {
                             newMultiplexCode = ihsOSMMXref.ElementAt(0).ihs_matrix1;
@@ -667,7 +670,7 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsMatrixRows[multiplexRow].matrix = (string)newMultiplexCode;
                         }
 
-                        // Create new rows in the formation table from the lut_osmm_ihs_xref table
+                        // Create new rows in the formation table from the lut_osmm_habitat_xref table
                         multiplexRow = 0;
                         _viewModelMain.IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
                             .Select(mr => _viewModelMain.HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
@@ -687,7 +690,7 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsFormationRows[multiplexRow].formation = (string)newMultiplexCode;
                         }
 
-                        // Create new rows in the management table from the lut_osmm_ihs_xref table
+                        // Create new rows in the management table from the lut_osmm_habitat_xref table
                         multiplexRow = 0;
                         _viewModelMain.IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
                             .Select(mr => _viewModelMain.HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
@@ -707,7 +710,7 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsManagementRows[multiplexRow].management = (string)newMultiplexCode;
                         }
 
-                        // Create new rows in the complex table from the lut_osmm_ihs_xref table
+                        // Create new rows in the complex table from the lut_osmm_habitat_xref table
                         multiplexRow = 0;
                         _viewModelMain.IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
                             .Select(mr => _viewModelMain.HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
