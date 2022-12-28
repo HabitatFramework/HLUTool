@@ -380,9 +380,9 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
 
         private HluTableAdapter<HluDataSet.exportsDataTable, HluDataSet.exportsRow> _exportsTableAdapter;
 
-        private HluTableAdapter<HluDataSet.exports_field_typesDataTable, HluDataSet.exports_field_typesRow> _exports_Field_TypesTableAdapter;
+        private HluTableAdapter<HluDataSet.exports_field_typesDataTable, HluDataSet.exports_field_typesRow> _exports_field_typesTableAdapter;
 
-        private HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow> _exports_FieldsTableAdapter;
+        private HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow> _exports_fieldsTableAdapter;
 
         private HluTableAdapter<HluDataSet.historyDataTable, HluDataSet.historyRow> _historyTableAdapter;
 
@@ -562,14 +562,25 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
             }
         }
 
-        public HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow> exports_FieldsTableAdapter
+        public HluTableAdapter<HluDataSet.exports_field_typesDataTable, HluDataSet.exports_field_typesRow> exports_field_typesTableAdapter
         {
-            get { return this._exports_FieldsTableAdapter; }
+            get { return this._exports_field_typesTableAdapter; }
             set
             {
                 if (!this.MatchTableAdapterConnection(value.Connection))
                     throw new ArgumentException(_sameConnErrorMsg);
-                this._exports_FieldsTableAdapter = value;
+                this._exports_field_typesTableAdapter = value;
+            }
+        }
+
+        public HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow> exports_fieldsTableAdapter
+        {
+            get { return this._exports_fieldsTableAdapter; }
+            set
+            {
+                if (!this.MatchTableAdapterConnection(value.Connection))
+                    throw new ArgumentException(_sameConnErrorMsg);
+                this._exports_fieldsTableAdapter = value;
             }
         }
 
@@ -1127,7 +1138,9 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
 
                 if (this._exportsTableAdapter != null) count++;
 
-                if (this._exports_FieldsTableAdapter != null) count++;
+                if (this._exports_field_typesTableAdapter != null) count++;
+
+                if (this._exports_fieldsTableAdapter != null) count++;
 
                 if (this._historyTableAdapter != null) count++;
 
@@ -1372,7 +1385,8 @@ namespace HLU.Data.Model.HluDataSetTableAdapters
             try
             {
                 _exportsTableAdapter = new HluTableAdapter<HluDataSet.exportsDataTable, HluDataSet.exportsRow>(_db);
-                _exports_FieldsTableAdapter = new HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow>(_db);
+                _exports_field_typesTableAdapter = new HluTableAdapter<HluDataSet.exports_field_typesDataTable, HluDataSet.exports_field_typesRow>(_db);
+                _exports_fieldsTableAdapter = new HluTableAdapter<HluDataSet.exports_fieldsDataTable, HluDataSet.exports_fieldsRow>(_db);
                 _lut_quality_determinationTableAdapter = new HluTableAdapter<HluDataSet.lut_quality_determinationDataTable, HluDataSet.lut_quality_determinationRow>(_db);
                 _lut_quality_interpretationTableAdapter = new HluTableAdapter<HluDataSet.lut_quality_interpretationDataTable, HluDataSet.lut_quality_interpretationRow>(_db);
                 _lut_boundary_mapTableAdapter = new HluTableAdapter<HluDataSet.lut_boundary_mapDataTable, HluDataSet.lut_boundary_mapRow>(_db);

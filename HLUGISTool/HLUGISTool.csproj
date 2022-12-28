@@ -288,6 +288,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\View\WindowEditSecondaryHabitats.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\View\WindowEditPotentialHabitats.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -443,9 +447,11 @@
     <Compile Include="Data\ExportField.cs" />
     <Compile Include="Data\GISLayer.cs" />
     <Compile Include="Data\HistoryRowEqualityComparer.cs" />
+    <Compile Include="Data\SecondaryHabitat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UI\UserControls\UniformGrid.cs" />
+    <Compile Include="UI\ViewModel\ViewModelWindowEditSecondaryHabitats.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowEditPotentialHabitats.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowEditPriorityHabitats.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowAbout.cs" />
@@ -458,6 +464,9 @@
     <Compile Include="UI\ViewModel\ViewModelWindowWarnOnSubsetUpdate.cs" />
     <Compile Include="UI\ViewModel\ViewModelWindowSwitchGISLayer.cs" />
     <Compile Include="UI\ViewModel\ViewModelCompletePhysicalSplit.cs" />
+    <Compile Include="UI\View\WindowEditSecondaryHabitats.xaml.cs">
+      <DependentUpon>WindowEditSecondaryHabitats.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\View\WindowEditPotentialHabitats.xaml.cs">
       <DependentUpon>WindowEditPotentialHabitats.xaml</DependentUpon>
     </Compile>

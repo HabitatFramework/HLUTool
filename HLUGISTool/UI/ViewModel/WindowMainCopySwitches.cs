@@ -35,6 +35,7 @@ namespace HLU.UI.ViewModel
 
         #region Switches
 
+        //TODO: copy switches
         private bool _copyIncidIhsHabitat;
         private bool _copyIncidIhsMatrix1;
         private bool _copyIncidIhsMatrix2;

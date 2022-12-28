@@ -268,6 +268,25 @@ namespace HLU
             }
         }
 
+        // Pop-out window to view and edit secondary habitats more clearly.
+        //
+        private void ButtonEditSecondaryHabitats_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditSecondaryHabitats.IsEnabled)
+            {
+                this.ButtonEditSecondaryHabitats.Width *= 1.1;
+                this.ButtonEditSecondaryHabitats.Height *= 1.1;
+            }
+        }
+
+        private void ButtonEditSecondaryHabitats_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonEditSecondaryHabitats.IsEnabled)
+            {
+                this.ButtonEditSecondaryHabitats.Width = this.ButtonEditSecondaryHabitats.Width / 11 * 10;
+                this.ButtonEditSecondaryHabitats.Height = this.ButtonEditSecondaryHabitats.Width / 11 * 10;
+            }
+        }
         //---------------------------------------------------------------------
         // CHANGED: CR54 Add pop-out windows to show/edit priority habitats
         // New pop-out windows to view and edit priority and potential
