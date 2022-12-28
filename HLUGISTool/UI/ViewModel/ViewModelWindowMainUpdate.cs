@@ -106,37 +106,40 @@ namespace HLU.UI.ViewModel
                 //}
                 //---------------------------------------------------------------------
 
-                if ((_viewModelMain.IncidIhsMatrixRows != null) && _viewModelMain.IsDirtyIncidIhsMatrix())
-                {
-                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter.Update(
-                        (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update '{0}' table.",
-                            _viewModelMain.HluDataset.incid_ihs_matrix.TableName));
-                }
+                //TODO: Replace with secondary and condition rows
+                ////---------------------------------------------------------------------
+                //if ((_viewModelMain.IncidIhsMatrixRows != null) && _viewModelMain.IsDirtyIncidIhsMatrix())
+                //{
+                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter.Update(
+                //        (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.GetChanges()) == -1)
+                //        throw new Exception(String.Format("Failed to update '{0}' table.",
+                //            _viewModelMain.HluDataset.incid_ihs_matrix.TableName));
+                //}
 
-                if ((_viewModelMain.IncidIhsFormationRows != null) && _viewModelMain.IsDirtyIncidIhsFormation())
-                {
-                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter.Update(
-                        (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update '{0}' table.",
-                            _viewModelMain.HluDataset.incid_ihs_formation.TableName));
-                }
+                //if ((_viewModelMain.IncidIhsFormationRows != null) && _viewModelMain.IsDirtyIncidIhsFormation())
+                //{
+                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter.Update(
+                //        (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.GetChanges()) == -1)
+                //        throw new Exception(String.Format("Failed to update '{0}' table.",
+                //            _viewModelMain.HluDataset.incid_ihs_formation.TableName));
+                //}
 
-                if ((_viewModelMain.IncidIhsManagementRows != null) && _viewModelMain.IsDirtyIncidIhsManagement())
-                {
-                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter.Update(
-                        (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update '{0}' table.",
-                            _viewModelMain.HluDataset.incid_ihs_management.TableName));
-                }
+                //if ((_viewModelMain.IncidIhsManagementRows != null) && _viewModelMain.IsDirtyIncidIhsManagement())
+                //{
+                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter.Update(
+                //        (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.GetChanges()) == -1)
+                //        throw new Exception(String.Format("Failed to update '{0}' table.",
+                //            _viewModelMain.HluDataset.incid_ihs_management.TableName));
+                //}
 
-                if ((_viewModelMain.IncidIhsComplexRows != null) && _viewModelMain.IsDirtyIncidIhsComplex())
-                {
-                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter.Update(
-                        (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update '{0}' table.",
-                            _viewModelMain.HluDataset.incid_ihs_complex.TableName));
-                }
+                //if ((_viewModelMain.IncidIhsComplexRows != null) && _viewModelMain.IsDirtyIncidIhsComplex())
+                //{
+                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter.Update(
+                //        (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.GetChanges()) == -1)
+                //        throw new Exception(String.Format("Failed to update '{0}' table.",
+                //            _viewModelMain.HluDataset.incid_ihs_complex.TableName));
+                //}
+                ////---------------------------------------------------------------------
 
                 if (_viewModelMain.IsDirtyIncidBap()) UpdateBap();
 

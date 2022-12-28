@@ -164,8 +164,8 @@ namespace HLU.UI.ViewModel
 
                 // Retrieve the export fields for the export format
                 // selected by the user from the database.
-                _viewModelMain.HluTableAdapterManager.exports_FieldsTableAdapter.ClearBeforeFill = true;
-                _viewModelMain.HluTableAdapterManager.exports_FieldsTableAdapter.Fill(
+                _viewModelMain.HluTableAdapterManager.exports_fieldsTableAdapter.ClearBeforeFill = true;
+                _viewModelMain.HluTableAdapterManager.exports_fieldsTableAdapter.Fill(
                     _viewModelMain.HluDataset.exports_fields, String.Format("{0} = {1} ORDER BY {2}, {3}",
                     _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.exports_fields.export_idColumn.ColumnName),
                     userExportId, 

@@ -352,8 +352,9 @@ namespace HLU.UI.ViewModel
                 else if ((incidUpdateVals.Contains(_viewModelMain.HluDataset.incid.ihs_habitatColumn)) &&
                     (_bulkDeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.Invalid))
                 {
-                    // Get the new IHS habitat code
-                    string newIncidIhsHabitatCode = _viewModelMain.IncidCurrentRow[_viewModelMain.HluDataset.incid.ihs_habitatColumn.Ordinal].ToString();
+                    //TODO: Replace with secondary code?
+                    //// Get the new IHS habitat code
+                    //string newIncidIhsHabitatCode = _viewModelMain.IncidCurrentRow[_viewModelMain.HluDataset.incid.ihs_habitatColumn.Ordinal].ToString();
 
                     // Build DELETE statements for IHS multiplex rows rendered obsolete by new IHS habitat
                     //TODO: Bulk Update mulitplex
@@ -402,19 +403,22 @@ namespace HLU.UI.ViewModel
                     //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
                 }
 
-                // Filter out any rows not set (because the maximum number of blank rows are
-                // created at the start of the bulk process so any not used need to be removed)
-                _viewModelMain.IncidIhsMatrixRows = FilterUpdateRows<HluDataSet.incid_ihs_matrixDataTable,
-                    HluDataSet.incid_ihs_matrixRow>(_viewModelMain.IncidIhsMatrixRows);
+                //TODO: Replace with secondary and condition rows
+                ////---------------------------------------------------------------------
+                //// Filter out any rows not set (because the maximum number of blank rows are
+                //// created at the start of the bulk process so any not used need to be removed)
+                //_viewModelMain.IncidIhsMatrixRows = FilterUpdateRows<HluDataSet.incid_ihs_matrixDataTable,
+                //    HluDataSet.incid_ihs_matrixRow>(_viewModelMain.IncidIhsMatrixRows);
 
-                _viewModelMain.IncidIhsFormationRows = FilterUpdateRows<HluDataSet.incid_ihs_formationDataTable,
-                    HluDataSet.incid_ihs_formationRow>(_viewModelMain.IncidIhsFormationRows);
+                //_viewModelMain.IncidIhsFormationRows = FilterUpdateRows<HluDataSet.incid_ihs_formationDataTable,
+                //    HluDataSet.incid_ihs_formationRow>(_viewModelMain.IncidIhsFormationRows);
 
-                _viewModelMain.IncidIhsManagementRows = FilterUpdateRows<HluDataSet.incid_ihs_managementDataTable,
-                    HluDataSet.incid_ihs_managementRow>(_viewModelMain.IncidIhsManagementRows);
+                //_viewModelMain.IncidIhsManagementRows = FilterUpdateRows<HluDataSet.incid_ihs_managementDataTable,
+                //    HluDataSet.incid_ihs_managementRow>(_viewModelMain.IncidIhsManagementRows);
 
-                _viewModelMain.IncidIhsComplexRows = FilterUpdateRows<HluDataSet.incid_ihs_complexDataTable,
-                    HluDataSet.incid_ihs_complexRow>(_viewModelMain.IncidIhsComplexRows);
+                //_viewModelMain.IncidIhsComplexRows = FilterUpdateRows<HluDataSet.incid_ihs_complexDataTable,
+                //    HluDataSet.incid_ihs_complexRow>(_viewModelMain.IncidIhsComplexRows);
+                ////---------------------------------------------------------------------
 
                 _viewModelMain.IncidSourcesRows = FilterUpdateRows<HluDataSet.incid_sourcesDataTable,
                     HluDataSet.incid_sourcesRow>(_viewModelMain.IncidSourcesRows);
@@ -799,24 +803,30 @@ namespace HLU.UI.ViewModel
             // Create an array of the value of the current incid
             object[] relValues = new object[] { currIncid };
 
-            // Store the rows from the user interface
-            HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
-            // Store a copy of the table for the current incid
-            HluDataSet.incid_secondaryDataTable secondaryTable =
-                (HluDataSet.incid_secondaryDataTable)_viewModelMain.HluDataset.incid_secondary.Clone();
-            // Update the rows in the database
-            BulkUpdateAdoSecondarySourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter,
-                secondaryTable, ref incidSecondaryRows);
+            //TODO: Secondary rows
+            ////---------------------------------------------------------------------
+            //// Store the rows from the user interface
+            //HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
+            //// Store a copy of the table for the current incid
+            //HluDataSet.incid_secondaryDataTable secondaryTable =
+            //    (HluDataSet.incid_secondaryDataTable)_viewModelMain.HluDataset.incid_secondary.Clone();
+            //// Update the rows in the database
+            //BulkUpdateAdoSecondarySourceTable(bulkDeleteMultiplexCodes, currIncid, relValues,
+            //    _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter,
+            //    secondaryTable, ref incidSecondaryRows);
+            ////---------------------------------------------------------------------
 
+            //TODO: Secondary rows
+            ////---------------------------------------------------------------------
             // Store a copy of the table for the current incid
-            HluDataSet.incid_bapDataTable bapTable =
-                (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Clone();
-            // Load the child rows for the bap table for the supplied incid
-            _viewModelMain.GetIncidChildRowsDb(relValues,
-                _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
-            // Update the rows in the database
-            BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidSecondaryRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
+            //HluDataSet.incid_bapDataTable bapTable =
+            //    (HluDataSet.incid_bapDataTable)_viewModelMain.HluDataset.incid_bap.Clone();
+            //// Load the child rows for the bap table for the supplied incid
+            //_viewModelMain.GetIncidChildRowsDb(relValues,
+            //    _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
+            //// Update the rows in the database
+            //BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidSecondaryRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
+            ////---------------------------------------------------------------------
 
             // Store the rows from the user interface
             HluDataSet.incid_sourcesRow[] incidSourcesRows = _viewModelMain.IncidSourcesRows;
@@ -829,13 +839,16 @@ namespace HLU.UI.ViewModel
                            where nr.source_id != Int32.MinValue
                            select nr).Count();
 
-            // If there are new source rows then delete the old sources
-            int deleteSources = newRows > 0 ? 0 : 2;
-            // Update the rows in the database
-            BulkUpdateAdoSecondarySourceTable(deleteSources, currIncid, relValues,
-                _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
-                sourcesTable, ref incidSourcesRows);
-            //_viewModelMain.IncidSourcesRows = incidSourcesRows;
+            //TODO: Source rows
+            ////---------------------------------------------------------------------
+            //// If there are new source rows then delete the old sources
+            //int deleteSources = newRows > 0 ? 0 : 2;
+            //// Update the rows in the database
+            //BulkUpdateAdoSecondarySourceTable(deleteSources, currIncid, relValues,
+            //    _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
+            //    sourcesTable, ref incidSourcesRows);
+            ////_viewModelMain.IncidSourcesRows = incidSourcesRows;
+            ////---------------------------------------------------------------------
 
         }
 

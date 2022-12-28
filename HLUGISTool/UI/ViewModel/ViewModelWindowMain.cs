@@ -121,6 +121,7 @@ namespace HLU.UI.ViewModel
         private ICommand _readMapSelectionCommand;
         private ICommand _editPriorityHabitatsCommand;
         private ICommand _editPotentialHabitatsCommand;
+        private ICommand _editSecondaryHabitatsCommand;
         private ICommand _selectByIncidCommand;
         private ICommand _switchGISLayerCommand;
         private ICommand _logicalSplitCommand;
@@ -181,6 +182,8 @@ namespace HLU.UI.ViewModel
         private ViewModelWindowEditPriorityHabitats _viewModelWinEditPriorityHabitats;
         private WindowEditPotentialHabitats _windowEditPotentialHabitats;
         private ViewModelWindowEditPotentialHabitats _viewModelWinEditPotentialHabitats;
+        private WindowEditSecondaryHabitats _windowEditSecondaryHabitats;
+        private ViewModelWindowEditSecondaryHabitats _viewModelWinEditSecondaryHabitats;
 
         private bool haveSplashWin;
         private string _displayName = "HLU Tool";
@@ -221,26 +224,31 @@ namespace HLU.UI.ViewModel
 
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
-        private HluDataSet.lut_ihs_matrixRow[] _lutIhsMatrixCodes;
-        private HluDataSet.lut_ihs_formationRow[] _lutIhsFormationCodes;
-        private HluDataSet.lut_ihs_managementRow[] _lutIhsManagementCodes;
-        private HluDataSet.lut_ihs_complexRow[] _lutIhsComplexCodes;
+        private IEnumerable<HluDataSet.lut_ihs_habitatRow> _lutIhsHabitatCodes;
+        private IEnumerable<HluDataSet.lut_ihs_matrixRow> _lutIhsMatrixCodes;
+        private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormationCodes;
+        private IEnumerable<HluDataSet.lut_ihs_managementRow> _lutIhsManagementCodes;
+        private IEnumerable<HluDataSet.lut_ihs_complexRow> _lutIhsComplexCodes;
         private HluDataSet.lut_quality_determinationRow[] _DeterminationQualityCodes;
         private HluDataSet.lut_quality_interpretationRow[] _InterpretationQualityCodes;
         private HluDataSet.lut_sourcesRow[] _sourceNames;
         private HluDataSet.lut_habitat_classRow[] _sourceHabitatClassCodes;
         private HluDataSet.lut_importanceRow[] _sourceImportanceCodes;
         private HluDataSet.lut_habitat_typeRow[] _bapHabitatCodes;
-        private HluDataSet.lut_secondaryRow[] _lutSecondaryCodes;
 
         private HluDataSet.lut_conditionRow[] _conditionCodes;
         private HluDataSet.lut_condition_qualifierRow[] _conditionQualifierCodes;
         private HluDataSet.lut_primary_categoryRow[] _primaryCategoryCodes;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroupCodes;
+        //private HluDataSet.lut_primaryRow[] _primaryCodes;
+        private HluDataSet.lut_secondaryRow[] _secondaryCodes;
+
+        private ObservableCollection<SecondaryHabitat> _incidSecondaryHabitats;
 
         private ObservableCollection<BapEnvironment> _incidBapRowsAuto;
         private ObservableCollection<BapEnvironment> _incidBapRowsUser;
-        private IEnumerable<HluDataSet.lut_primaryRow> _primaryHabitatCodes;
+
+        private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
@@ -298,6 +306,7 @@ namespace HLU.UI.ViewModel
         private int _fragsIncidGisCount = 0;
         private int _toidsIncidDbCount = 0;
         private int _fragsIncidDbCount = 0;
+        private int _origIncidSecondaryCount = 0;
         private int _origIncidIhsMatrixCount = 0;
         private int _origIncidIhsFormationCount = 0;
         private int _origIncidIhsManagementCount = 0;
@@ -311,8 +320,8 @@ namespace HLU.UI.ViewModel
         private int _incidPageRowNoMin = 0;
         private int _incidPageRowNoMax = 0;
         private string _incidIhsHabitat;
-        private string _incidHabitatPrimary;
-        private string _incidHabitatSecondaries;
+        private string _incidPrimary;
+        private string _incidSecondaries;
         private string _incidLastModifiedUser;
         private DateTime _incidLastModifiedDate;
         private string _incidLegacyHabitat;
@@ -368,22 +377,22 @@ namespace HLU.UI.ViewModel
         private List<string[]> _source1Errors = null;
         private List<string[]> _source2Errors = null;
         private List<string[]> _source3Errors = null;
-        private int _matrixCodeErrorNum;
-        private int _matrixCodeErrorCount;
-        private int _matrixCodeWarningNum;
-        private int _matrixCodeWarningCount;
-        private int _formationCodeErrorNum;
-        private int _formationCodeErrorCount;
-        private int _formationCodeWarningNum;
-        private int _formationCodeWarningCount;
-        private int _managementCodeErrorNum;
-        private int _managementCodeErrorCount;
-        private int _managementCodeWarningNum;
-        private int _managementCodeWarningCount;
-        private int _complexCodeErrorNum;
-        private int _complexCodeErrorCount;
-        private int _complexCodeWarningNum;
-        private int _complexCodeWarningCount;
+        //private int _matrixCodeErrorNum;
+        //private int _matrixCodeErrorCount;
+        //private int _matrixCodeWarningNum;
+        //private int _matrixCodeWarningCount;
+        //private int _formationCodeErrorNum;
+        //private int _formationCodeErrorCount;
+        //private int _formationCodeWarningNum;
+        //private int _formationCodeWarningCount;
+        //private int _managementCodeErrorNum;
+        //private int _managementCodeErrorCount;
+        //private int _managementCodeWarningNum;
+        //private int _managementCodeWarningCount;
+        //private int _complexCodeErrorNum;
+        //private int _complexCodeErrorCount;
+        //private int _complexCodeWarningNum;
+        //private int _complexCodeWarningCount;
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
         private bool _refillIncidTable = false;
@@ -988,49 +997,49 @@ namespace HLU.UI.ViewModel
             set { if ((IncidCurrentRow != null) && (value != null)) _incidLastModifiedUser = value; }
         }
 
-        internal HluDataSet.lut_ihs_matrixRow[] IhsMatrixCodes
-        {
-            get { return _lutIhsMatrixCodes; }
-        }
+        //internal HluDataSet.lut_ihs_matrixRow[] IhsMatrixCodes
+        //{
+        //    get { return _lutIhsMatrixCodes; }
+        //}
 
-        internal HluDataSet.lut_ihs_formationRow[] IhsFormationCodes
-        {
-            get { return _lutIhsFormationCodes; }
-        }
+        //internal HluDataSet.lut_ihs_formationRow[] IhsFormationCodes
+        //{
+        //    get { return _lutIhsFormationCodes; }
+        //}
 
-        internal HluDataSet.lut_ihs_managementRow[] IhsManagementCodes
-        {
-            get { return _lutIhsManagementCodes; }
-        }
+        //internal HluDataSet.lut_ihs_managementRow[] IhsManagementCodes
+        //{
+        //    get { return _lutIhsManagementCodes; }
+        //}
 
-        internal HluDataSet.lut_ihs_complexRow[] IhsComplexCodes
-        {
-            get { return _lutIhsComplexCodes; }
-        }
+        //internal HluDataSet.lut_ihs_complexRow[] IhsComplexCodes
+        //{
+        //    get { return _lutIhsComplexCodes; }
+        //}
 
-        internal HluDataSet.incid_ihs_matrixRow[] IncidIhsMatrixRows
-        {
-            get { return _incidIhsMatrixRows; }
-            set { _incidIhsMatrixRows = value; }
-        }
+        //internal HluDataSet.incid_ihs_matrixRow[] IncidIhsMatrixRows
+        //{
+        //    get { return _incidIhsMatrixRows; }
+        //    set { _incidIhsMatrixRows = value; }
+        //}
 
-        internal HluDataSet.incid_ihs_formationRow[] IncidIhsFormationRows
-        {
-            get { return _incidIhsFormationRows; }
-            set { _incidIhsFormationRows = value; }
-        }
+        //internal HluDataSet.incid_ihs_formationRow[] IncidIhsFormationRows
+        //{
+        //    get { return _incidIhsFormationRows; }
+        //    set { _incidIhsFormationRows = value; }
+        //}
 
-        internal HluDataSet.incid_ihs_managementRow[] IncidIhsManagementRows
-        {
-            get { return _incidIhsManagementRows; }
-            set { _incidIhsManagementRows = value; }
-        }
+        //internal HluDataSet.incid_ihs_managementRow[] IncidIhsManagementRows
+        //{
+        //    get { return _incidIhsManagementRows; }
+        //    set { _incidIhsManagementRows = value; }
+        //}
 
-        internal HluDataSet.incid_ihs_complexRow[] IncidIhsComplexRows
-        {
-            get { return _incidIhsComplexRows; }
-            set { _incidIhsComplexRows = value; }
-        }
+        //internal HluDataSet.incid_ihs_complexRow[] IncidIhsComplexRows
+        //{
+        //    get { return _incidIhsComplexRows; }
+        //    set { _incidIhsComplexRows = value; }
+        //}
 
         internal HluDataSet.incid_secondaryRow[] IncidSecondaryRows
         {
@@ -5076,43 +5085,50 @@ namespace HLU.UI.ViewModel
             TabItemHistoryEnabled = false;
 
             // Clear the habitat fields
-            IncidIhsHabitat = null;
+            //TODO: To check
+            ////---------------------------------------------------------------------
+            _incidIhsHabitat = null;
+            //IncidIhsHabitat = null;
+            ////---------------------------------------------------------------------
             HabitatClass = null;
             HabitatType = null;
 
             IncidCurrentRow = HluDataset.incid.NewincidRow();
 
-            IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
-                .Select(r => HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
-            for (int i = 0; i < IncidIhsMatrixRows.Length; i++)
-            {
-                IncidIhsMatrixRows[i].matrix_id = i;
-                IncidIhsMatrixRows[i].incid = RecIDs.CurrentIncid;
-            }
+            //TODO: Remove and just set multiplex fields to null?
+            ////---------------------------------------------------------------------
+            //IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
+            //    .Select(r => HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
+            //for (int i = 0; i < IncidIhsMatrixRows.Length; i++)
+            //{
+            //    IncidIhsMatrixRows[i].matrix_id = i;
+            //    IncidIhsMatrixRows[i].incid = RecIDs.CurrentIncid;
+            //}
 
-            IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
-                .Select(r => HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
-            for (int i = 0; i < IncidIhsFormationRows.Length; i++)
-            {
-                IncidIhsFormationRows[i].formation_id = i;
-                IncidIhsFormationRows[i].incid = RecIDs.CurrentIncid;
-            }
+            //IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
+            //    .Select(r => HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
+            //for (int i = 0; i < IncidIhsFormationRows.Length; i++)
+            //{
+            //    IncidIhsFormationRows[i].formation_id = i;
+            //    IncidIhsFormationRows[i].incid = RecIDs.CurrentIncid;
+            //}
 
-            IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
-                .Select(r => HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
-            for (int i = 0; i < IncidIhsManagementRows.Length; i++)
-            {
-                IncidIhsManagementRows[i].management_id = i;
-                IncidIhsManagementRows[i].incid = RecIDs.CurrentIncid;
-            }
+            //IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
+            //    .Select(r => HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
+            //for (int i = 0; i < IncidIhsManagementRows.Length; i++)
+            //{
+            //    IncidIhsManagementRows[i].management_id = i;
+            //    IncidIhsManagementRows[i].incid = RecIDs.CurrentIncid;
+            //}
 
-            IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
-                .Select(r => HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
-            for (int i = 0; i < IncidIhsComplexRows.Length; i++)
-            {
-                IncidIhsComplexRows[i].complex_id = i;
-                IncidIhsComplexRows[i].incid = RecIDs.CurrentIncid;
-            }
+            //IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
+            //    .Select(r => HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
+            //for (int i = 0; i < IncidIhsComplexRows.Length; i++)
+            //{
+            //    IncidIhsComplexRows[i].complex_id = i;
+            //    IncidIhsComplexRows[i].incid = RecIDs.CurrentIncid;
+            //}
+            ////---------------------------------------------------------------------
 
             IncidSecondaryRows = new HluDataSet.incid_secondaryRow[0]
                 .Select(r => HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
@@ -5688,6 +5704,158 @@ namespace HLU.UI.ViewModel
         }
 
         private bool CanEditPotentialHabitats
+        {
+            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && BapHabitatsUserEnabled; }
+        }
+        //---------------------------------------------------------------------
+
+        #endregion
+
+        #region Secondary Habitats Command
+
+        /// <summary>
+        /// EditSecondaryHabitats command.
+        /// </summary>
+        public ICommand EditSecondaryHabitatsCommand
+        {
+            get
+            {
+                if (_editSecondaryHabitatsCommand == null)
+                {
+                    Action<object> editSecondaryHabitatsAction = new Action<object>(this.EditSecondaryHabitatsClicked);
+                    _editSecondaryHabitatsCommand = new RelayCommand(editSecondaryHabitatsAction, param => this.CanEditSecondaryHabitats);
+                }
+                return _editSecondaryHabitatsCommand;
+            }
+        }
+
+        private void EditSecondaryHabitatsClicked(object param)
+        {
+            try
+            {
+                _windowEditSecondaryHabitats = new WindowEditSecondaryHabitats();
+                _windowEditSecondaryHabitats.Owner = App.Current.MainWindow;
+                _windowEditSecondaryHabitats.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                // create ViewModel to which main window binds
+                _viewModelWinEditSecondaryHabitats = new ViewModelWindowEditSecondaryHabitats(this, IncidSecondaryHabitats);
+                _viewModelWinEditSecondaryHabitats.DisplayName = "Secondary Habitats";
+
+                // when ViewModel asks to be closed, close window
+                _viewModelWinEditSecondaryHabitats.RequestClose += new ViewModelWindowEditSecondaryHabitats
+                    .RequestCloseEventHandler(_viewModelWinEditSecondaryHabitats_RequestClose);
+
+                // allow all controls in window to bind to ViewModel by setting DataContext
+                _windowEditSecondaryHabitats.DataContext = _viewModelWinEditSecondaryHabitats;
+
+                // show window
+                _windowEditSecondaryHabitats.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "HLU Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //throw;
+            }
+        }
+
+        protected void _viewModelWinEditSecondaryHabitats_RequestClose(ObservableCollection<SecondaryHabitat> incidSecondaryHabitats)
+        {
+            _viewModelWinEditSecondaryHabitats.RequestClose -= _viewModelWinEditSecondaryHabitats_RequestClose;
+            _windowEditSecondaryHabitats.Close();
+
+            if (incidSecondaryHabitats != null)
+            {
+                IncidSecondaryHabitats = incidSecondaryHabitats;
+
+                // Check if there are any errors in the secondary habitat records to see
+                // if the Habitats tab label should be flagged as also in error.
+                if (_incidSecondaryHabitats != null && _incidSecondaryHabitats.Count > 0)
+                {
+                    int countInvalid = _incidSecondaryHabitats.Count(sh => !sh.IsValid());
+                    if (countInvalid > 0)
+                        AddErrorList(ref _habitatErrors, "SecondaryHabitat");
+                    else
+                        DelErrorList(ref _habitatErrors, "SecondaryHabitat");
+                }
+
+                OnPropertyChanged("IncidSecondaryHabitats");
+                OnPropertyChanged("HabitatTabLabel");
+            }
+        }
+
+        /// <summary>
+        /// Gets the secondary habitats.
+        /// </summary>
+        public void GetSecondaryHabitats()
+        {
+            // Remove any existing handlers before assigning a new collection.
+            if (_incidSecondaryHabitats != null)
+                _incidSecondaryHabitats.CollectionChanged -= _incidSecondaryHabitats_CollectionChanged;
+
+            // Identify any secondary habitat rows that have not been marked as deleted.
+            IEnumerable<HluDataSet.incid_secondaryRow> incidSecondaryRowsUndel =
+                _incidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted);
+
+            if (incidSecondaryRowsUndel != null)
+            {
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidSecondaryHabitats != null)
+                {
+                    foreach (SecondaryHabitat sh in _incidSecondaryHabitats)
+                    {
+                        sh.DataChanged -= _incidSecondaryHabitats_DataChanged;
+                    }
+                }
+
+                _incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>(
+                   incidSecondaryRowsUndel.Select(r => new SecondaryHabitat(_bulkUpdateMode == true, r)));
+            }
+            else
+            {
+                // Remove any existing handlers before assigning a new collection.
+                if (_incidSecondaryHabitats != null)
+                {
+                    foreach (SecondaryHabitat sh in _incidSecondaryHabitats)
+                    {
+                        sh.DataChanged -= _incidSecondaryHabitats_DataChanged;
+                    }
+                }
+
+                // Otherwise there can't be any secondary habitat rows.
+                _incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>();
+            }
+
+            // Track any changes to the user rows collection.
+            _incidSecondaryHabitats.CollectionChanged += _incidSecondaryHabitats_CollectionChanged;
+
+            // Set the new list of secondary habitat rows.
+            SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
+
+            // Track when the secondary habitat data has been changed so that the apply button
+            // will appear.
+            foreach (SecondaryHabitat sh in _incidSecondaryHabitats)
+            {
+                sh.DataChanged += _incidSecondaryHabitats_DataChanged;
+            };
+
+            // Check if there are any errors in the secondary habitat records to see
+            // if the Habitats tab label should be flagged as also in error.
+            if (_incidSecondaryHabitats != null && _incidSecondaryHabitats.Count > 0)
+            {
+                int countInvalid = _incidSecondaryHabitats.Count(sh => !sh.IsValid());
+                if (countInvalid > 0)
+                    AddErrorList(ref _habitatErrors, "SecondaryHabitat");
+                else
+                    DelErrorList(ref _habitatErrors, "SecondaryHabitat");
+            }
+            else
+                DelErrorList(ref _detailsErrors, "SecondaryHabitat");
+
+            OnPropertyChanged("IncidSecondaryHabitats");
+            OnPropertyChanged("HabitatTabLabel");
+        }
+
+        private bool CanEditSecondaryHabitats
         {
             get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && BapHabitatsUserEnabled; }
         }
@@ -6434,7 +6602,6 @@ namespace HLU.UI.ViewModel
                 }
                 else
                     return false;
-
             }
         }
         //---------------------------------------------------------------------
@@ -6925,8 +7092,11 @@ namespace HLU.UI.ViewModel
                     return false;
                 }
 
-                return IsDirtyIncid() || IsDirtyIncidIhsMatrix() || IsDirtyIncidIhsFormation() ||
-                    IsDirtyIncidIhsManagement() || IsDirtyIncidIhsComplex() || IsDirtyIncidBap() ||
+                //TODO: Replace with primary and secondary
+                //return IsDirtyIncid() || IsDirtyIncidIhsMatrix() || IsDirtyIncidIhsFormation() ||
+                //    IsDirtyIncidIhsManagement() || IsDirtyIncidIhsComplex() || IsDirtyIncidBap() ||
+                //    IsDirtyIncidSources();
+                return IsDirtyIncid() || IsDirtyIncidSecondary() || IsDirtyIncidBap() ||
                     IsDirtyIncidSources();
             }
         }
@@ -7052,6 +7222,7 @@ namespace HLU.UI.ViewModel
                 RefreshHeader();
                 RefreshOSMMUpdate();
                 RefreshHabitatTab();
+                RefreshIHSTab();
                 RefreshDetailsTab();
                 RefreshSource1();
                 RefreshSource2();
@@ -7522,6 +7693,11 @@ namespace HLU.UI.ViewModel
 
             string[] relValues = new string[] { incidRow.incid };
 
+            HluDataSet.incid_secondaryDataTable secondaryTable = _hluDS.incid_secondary;
+            _incidSecondaryRows = GetIncidChildRowsDb(relValues,
+               _hluTableAdapterMgr.incid_secondaryTableAdapter, ref secondaryTable);
+            GetSecondaryHabitats();
+
             HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable = _hluDS.incid_ihs_matrix;
             _incidIhsMatrixRows = GetIncidChildRowsDb(relValues,
                _hluTableAdapterMgr.incid_ihs_matrixTableAdapter, ref ihsMatrixTable);
@@ -7645,7 +7821,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //TODO
+        //TODO: Replace with primary
         internal bool IsDirtyIncid()
         {
             return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) && ((_incidCurrentRow.Isihs_habitatNull() &&
@@ -7653,6 +7829,25 @@ namespace HLU.UI.ViewModel
                 !CompareIncidCurrentRowClone()));
         }
 
+        //TODO: Check
+        internal bool IsDirtyIncidSecondary()
+        {
+            if (_incidSecondaryRows.Count(r => r.RowState == DataRowState.Deleted) > 0) return true;
+
+            if (_incidSecondaryHabitats != null)
+            {
+                if (_incidSecondaryHabitats.Count(sh => IncidSecondaryRowDirty(sh)) > 0) return true;
+            }
+
+            if (_incidSecondaryRows != null)
+            {
+                foreach (DataRow r in _incidSecondaryRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+            }
+            return false;
+        }
+
+        //TODO: Needed?
         internal bool IsDirtyIncidIhsMatrix()
         {
             if (_incidIhsMatrixRows != null)
@@ -7760,6 +7955,36 @@ namespace HLU.UI.ViewModel
             return false;
         }
 
+        private bool IncidSecondaryRowDirty(SecondaryHabitat sh)
+        {
+            // deleted secondary habitat row
+            var q = _incidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted && r.secondary_id == sh.secondary_id);
+            switch (q.Count())
+            {
+                case 0:
+                    return true; // new row;
+                case 1:
+                    if (!sh.IsValid() && sh.IsAdded) return true;
+
+                    HluDataSet.incid_secondaryRow oldRow = q.ElementAt(0);
+                    object[] itemArray = sh.ToItemArray();
+                    for (int i = 0; i < itemArray.Length; i++)
+                    {
+                        if (oldRow.IsNull(i))
+                        {
+                            if (itemArray[i] != null) return true;
+                        }
+                        else if (!oldRow[i].Equals(itemArray[i]))
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                default:
+                    return true; // duplicate row must be new or altered
+            }
+        }
+
         private bool IncidBapRowDirty(BapEnvironment be)
         {
             // deleted user BAP row
@@ -7811,6 +8036,7 @@ namespace HLU.UI.ViewModel
             RefreshHeader();
             RefreshOSMMUpdate();
             RefreshHabitatTab();
+            RefreshIHSTab();
             RefreshDetailsTab();
             RefreshSources();
             RefreshHistory();
@@ -7888,23 +8114,30 @@ namespace HLU.UI.ViewModel
         private void RefreshGroupHeaders()
         {
             OnPropertyChanged("TopControlsGroupHeader");
-            //TODO: Add primary and secondary headers
+
+            OnPropertyChanged("HabitatHeader");
             OnPropertyChanged("PrimaryHeader");
-            OnPropertyChanged("SecondaryHeader");
+            OnPropertyChanged("SecondaryHabitatsHeader");
+            OnPropertyChanged("SecondariesHeader");
+            OnPropertyChanged("LegacyHeader");
 
             OnPropertyChanged("IhsHabitatHeader");
             OnPropertyChanged("IhsMatrixHeader");
             OnPropertyChanged("IhsFormationHeader");
             OnPropertyChanged("IhsManagementHeader");
             OnPropertyChanged("IhsComplexHeader");
+            OnPropertyChanged("IhsSummaryHeader");
+
             OnPropertyChanged("DetailsSiteHeader");
             OnPropertyChanged("DetailsMapsHeader");
+
             OnPropertyChanged("ShowSource1Number");
             OnPropertyChanged("Source1Header");
             OnPropertyChanged("ShowSource2Number");
             OnPropertyChanged("Source2Header");
             OnPropertyChanged("ShowSource3Number");
             OnPropertyChanged("Source3Header");
+
             WindowHeight = 0;
             OnPropertyChanged("WindowHeight");
         }
@@ -7912,8 +8145,10 @@ namespace HLU.UI.ViewModel
         private void RefreshOSMMUpdate()
         {
             OnPropertyChanged("ShowIncidOSMMPendingGroup");
-            OnPropertyChanged("IncidOSMMIhsSummary");
-            OnPropertyChanged("IncidOSMMXRefID");
+            //TODO: Replace with primary?
+            //OnPropertyChanged("IncidOSMMIhsSummary");
+            //OnPropertyChanged("IncidOSMMXRefID");
+            
             OnPropertyChanged("IncidOSMMProcessFlag");
             OnPropertyChanged("IncidOSMMSpatialFlag");
             OnPropertyChanged("IncidOSMMChangeFlag");
@@ -7923,19 +8158,16 @@ namespace HLU.UI.ViewModel
         private void RefreshHabitatTab()
         {
             OnPropertyChanged("TabItemHabitatEnabled");
-            //TODO: Create TabHabitatControlsEnabled
             OnPropertyChanged("TabHabitatControlsEnabled");
             OnPropertyChanged("HabitatTabLabel");
             OnPropertyChanged("HabitatClassCodes");
             OnPropertyChanged("HabitatTypeCodes");
             OnPropertyChanged("HabitatType");
             OnPropertyChanged("HabitatClass");
-            //TODO: Replace with primary
-            OnPropertyChanged("IncidIhsHabitat");
+            OnPropertyChanged("IncidPrimary");
             OnPropertyChanged("NvcCodes");
-            //TODO: Replace with secondaries
-            //RefreshIhsMultiplexCodes();
-
+            OnPropertyChanged("IncidSecondaryHabitats");
+            OnPropertyChanged("IncidSecondaries");
             OnPropertyChanged("IncidLegacyHabitat");
         }
 
@@ -7944,25 +8176,22 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("TabItemIHSEnabled");
             OnPropertyChanged("TabIhsControlsEnabled");
             OnPropertyChanged("IHSTabLabel");
-            OnPropertyChanged("HabitatClassCodes");
-            OnPropertyChanged("HabitatTypeCodes");
-            OnPropertyChanged("HabitatType");
-            OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidIhsHabitat");
             RefreshIhsMultiplexValues();
         }
 
         private void RefreshIhsMultiplexValues()
         {
-            OnPropertyChanged("IncidIhsMatrix1");
-            OnPropertyChanged("IncidIhsMatrix2");
-            OnPropertyChanged("IncidIhsMatrix3");
-            OnPropertyChanged("IncidIhsFormation1");
-            OnPropertyChanged("IncidIhsFormation2");
-            OnPropertyChanged("IncidIhsManagement1");
-            OnPropertyChanged("IncidIhsManagement2");
-            OnPropertyChanged("IncidIhsComplex1");
-            OnPropertyChanged("IncidIhsComplex2");
+            OnPropertyChanged("IncidIhsHabitatText");
+            OnPropertyChanged("IncidIhsMatrix1Text");
+            OnPropertyChanged("IncidIhsMatrix2Text");
+            OnPropertyChanged("IncidIhsMatrix3Text");
+            OnPropertyChanged("IncidIhsFormation1Text");
+            OnPropertyChanged("IncidIhsFormation2Text");
+            OnPropertyChanged("IncidIhsManagement1Text");
+            OnPropertyChanged("IncidIhsManagement2Text");
+            OnPropertyChanged("IncidIhsComplex1Text");
+            OnPropertyChanged("IncidIhsComplex2Text");
             OnPropertyChanged("IncidIhsSummary");
         }
 
@@ -8122,6 +8351,12 @@ namespace HLU.UI.ViewModel
         {
             get { return _tabItemDetailsEnabled; }
             set { _tabItemDetailsEnabled = value; }
+        }
+
+        public bool TabItemIHSEnabled
+        {
+            get { return _tabItemIHSEnabled; }
+            set { _tabItemIHSEnabled = value; }
         }
 
         public bool TabItemSourcesEnabled
@@ -8324,6 +8559,8 @@ namespace HLU.UI.ViewModel
             }
             set { if ((IncidCurrentRow != null) && (value != null)) _incidLastModifiedUser = value; }
         }
+
+        #endregion
 
         #region OSMM Updates
 
@@ -8726,8 +8963,6 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #endregion
-
         #region Habitat Tab
 
         //---------------------------------------------------------------------
@@ -8778,10 +9013,10 @@ namespace HLU.UI.ViewModel
                     _habitatClassCodes = HluDataset.lut_habitat_class.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
                     // Only load habitat classes that are flagged as local.
-                    //TODO: HabitatClassCodes
+                    //TODO: join to lut_habitat_type_primary to only load codes with a primary habitat type
                     _habitatClassCodes = (from c in HluDataset.lut_habitat_class
                                           join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
-                                          join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
+                                          //join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
                                           where c.is_local
                                           select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
@@ -8866,8 +9101,10 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
                     }
 
+                    // Only load habitat classes that are flagged as local.
+                    //TODO: join to lut_habitat_type_primary to only load codes with a primary habitat type
                     _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
-                                         join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
+                                         //join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
                                          where t.is_local && t.habitat_class_code == HabitatClass
                                          select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
@@ -8879,7 +9116,7 @@ namespace HLU.UI.ViewModel
 
         /// <summary>
         /// Gets or sets the habitat type which will then load the list
-        /// of ihs habitats related to that type.
+        /// of primary habitats related to that type.
         /// </summary>
         /// <value>
         /// The habitat type.
@@ -8895,23 +9132,21 @@ namespace HLU.UI.ViewModel
                 {
                     // Load all primary habitat codes that are flagged as local and
                     // relate to the current habitat type.
-                    _primaryHabitatCodes = from h in HluDataset.lut_primary
-                                       join t in HluDataset.lut_habitat_type_primary on h.code equals t.code_primary
-                                       where h.is_local && t.code_habitat_type == HabitatType
-                                       select h;
+                    _primaryCodes = from h in HluDataset.lut_primary
+                                    join t in HluDataset.lut_habitat_type_primary on h.code equals t.code_primary
+                                    where h.is_local && t.code_habitat_type == _habitatType
+                                    select h;
                 }
                 else
                 {
                     // Load all primary habitat codes that are flagged as local.
-                    _primaryHabitatCodes = from h in HluDataset.lut_primary
-                                       where h.is_local
-                                       select h;
+                    _primaryCodes = from h in HluDataset.lut_primary
+                                    where h.is_local
+                                    select h;
                 }
 
-                OnPropertyChanged("IhsHabitatCodes");
-
-                //TODO
-                OnPropertyChanged("PrimaryListEnabled");
+                OnPropertyChanged("PrimaryCodes");
+                OnPropertyChanged("PrimaryEnabled");
                 OnPropertyChanged("NvcCodes");
             }
         }
@@ -8947,6 +9182,88 @@ namespace HLU.UI.ViewModel
                 }
             }
             return null;
+        }
+
+        #endregion
+
+        #region Primary Habitat
+
+        public string PrimaryHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Primary Habitat";
+                else
+                    return null;
+            }
+        }
+
+        public bool PrimaryEnabled
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public HluDataSet.lut_primaryRow[] PrimaryCodes
+        {
+            get
+            {
+                if (HluDataset.lut_primary.IsInitialized && HluDataset.lut_primary.Count == 0)
+                {
+                    if (_hluTableAdapterMgr.lut_primaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_primaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_primaryDataTable, HluDataSet.lut_primaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primaryDataTable) }, false);
+                }
+
+                if (_primaryCodes != null)
+                {
+                    //TODO: Needed?
+                    ////---------------------------------------------------------------------
+                    //// CHANGED: CR56 Enable habitat translations to IHS non-habitat codes
+                    //// Check that any mandatory or recommended multiplex codes
+                    //// relating to the current habitat type have been selected
+                    ////
+                    //// The first, and only, code is now selected when the
+                    //// habitat type is selected, rather than here!
+                    ////if ((IncidCurrentRow != null) && (_ihsHabitatCodes.Count() == 1) &&
+                    ////    (IncidIhsHabitat != _ihsHabitatCodes.First().code))
+                    ////    IncidIhsHabitat = _ihsHabitatCodes.ElementAt(0).code;
+
+                    ////OnPropertyChanged("IncidIhsHabitat");
+                    ////---------------------------------------------------------------------
+                    return _primaryCodes.ToArray();
+                }
+                else if (!String.IsNullOrEmpty(IncidPrimary))
+                {
+                    _primaryCodes = HluDataset.lut_primary.Where(r => r.code == IncidPrimary);
+                    return _primaryCodes.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set { }
+        }
+
+        public string IncidPrimary
+        {
+            get { return _incidPrimary; }
+            set
+            {
+                if (IncidCurrentRow != null)
+                {
+                    if (_pasting && (_primaryCodes == null || _primaryCodes.Count(r => r.code == value) == 0))
+                    {
+                        _pasting = false;
+                    }
+                    _incidPrimary = value;
+                }
+            }
         }
 
         //---------------------------------------------------------------------
@@ -9002,10 +9319,10 @@ namespace HLU.UI.ViewModel
             get
             {
                 //TODO
-                if (String.IsNullOrEmpty(_incidHabitatPrimary)) return null;
+                if (String.IsNullOrEmpty(_incidPrimary)) return null;
 
                 // Select NVC codes based on current IHS habitat
-                var q = _primaryHabitatCodes.Where(h => h.code == _incidHabitatPrimary);
+                var q = _primaryCodes.Where(h => h.code == _incidPrimary);
                 if (q.Count() > 0)
                     return q.ElementAt(0).nvc_codes;
                 else
@@ -9014,6 +9331,204 @@ namespace HLU.UI.ViewModel
         }
 
         #endregion
+
+        #region Secondary Habitats
+
+        public string SecondaryHabitatsHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Secondary Habitats";
+                else
+                    return null;
+            }
+        }
+
+        public bool SecondaryHabitatsEnabled
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public HluDataSet.lut_secondary_groupRow[] SecondaryGroupCodes
+        {
+            get
+            {
+                if (_secondaryGroupCodes == null)
+                {
+                    if (HluDataset.lut_secondary_group.IsInitialized && HluDataset.lut_secondary_group.Count == 0)
+                    {
+                        if (_hluTableAdapterMgr.lut_secondary_groupTableAdapter == null)
+                            _hluTableAdapterMgr.lut_secondary_groupTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_secondary_groupDataTable,
+                                    HluDataSet.lut_secondary_groupRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, 
+                            new Type[] { typeof(HluDataSet.lut_secondary_groupDataTable) }, false);
+                    }
+                    _secondaryGroupCodes =
+                        HluDataset.lut_secondary_group.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                }
+                return _secondaryGroupCodes;
+            }
+        }
+
+        public HluDataSet.lut_secondaryRow[] SecondaryCodes
+        {
+            get
+            {
+                if (_secondaryCodes == null)
+                {
+                    if (HluDataset.lut_secondary.IsInitialized && (HluDataset.lut_secondary.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_secondaryTableAdapter == null)
+                            _hluTableAdapterMgr.lut_secondaryTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_secondaryDataTable,
+                                    HluDataSet.lut_secondaryRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, 
+                            new Type[] { typeof(HluDataSet.lut_secondaryDataTable) }, false);
+                    }
+
+                    //TODO: Load based on secondary group selected
+                    //if (!String.IsNullOrEmpty(_secondaryGroup))
+                    //{
+                    //    // Load all secondary habitat codes that are flagged as local and
+                    //    // relate to the current secondary group.
+                    //    _secondaryCodes = (from h in HluDataset.lut_secondary
+                    //                       where h.is_local //&& h.code_group == _secondaryGroup
+                    //                       select h).ToArray();
+                    //}
+                    //else
+                    //{
+                        // Load all secondary habitat codes that are flagged as local.
+                        _secondaryCodes = (from h in HluDataset.lut_secondary
+                                           where h.is_local
+                                           select h).ToArray();
+                   // }
+                }
+
+                return _secondaryCodes;
+            }
+        }
+
+        /// <summary>
+        /// The collection of secondary habitats.
+        /// </summary>
+        public ObservableCollection<SecondaryHabitat> IncidSecondaryHabitats
+        {
+            get { return _incidSecondaryHabitats; }
+            set
+            {
+                _incidSecondaryHabitats = value;
+
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+            }
+        }
+
+        public string SecondariesHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Secondary Habitats Summary";
+                else
+                    return null;
+            }
+        }
+
+        public string IncidSecondaries
+        {
+            get { return _incidSecondaries; }
+            set
+            {
+                if (IncidCurrentRow != null)
+                {
+                    _incidSecondaries = value;
+                }
+            }
+        }
+
+        // Track when the secondary habitat records have changed so that the apply
+        // button will appear.
+        private void _incidSecondaryHabitats_DataChanged(bool SecondaryChanged)
+        {
+            Changed = true;
+
+            // Check if there are any errors in the secondary BAP records to see
+            // if the Habitats tab label should be flagged as also in error.
+            if (_incidSecondaryHabitats != null && _incidSecondaryHabitats.Count > 0)
+            {
+                int countInvalid = _incidSecondaryHabitats.Count(sh => !sh.IsValid());
+                if (countInvalid > 0)
+                    AddErrorList(ref _habitatErrors, "SecondaryHabitat");
+                else
+                    DelErrorList(ref _habitatErrors, "SecondaryHabitat");
+
+                //TODO: Needed???
+                //// Check if there are any duplicates secondary habitat records.
+                //if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
+                //{
+                //    StringBuilder beDups = (from be in _incidBapRowsAuto.Concat(_incidBapRowsUser)
+                //                            group be by be.bap_habitat into g
+                //                            where g.Count() > 1
+                //                            select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
+                //    if (beDups.Length > 2)
+                //        AddErrorList(ref _habitatErrors, "SecondaryHabitat");
+                //    else
+                //        DelErrorList(ref _habitatErrors, "SecondaryHabitat");
+                //}
+            }
+            OnPropertyChanged("HabitatTabLabel");
+        }
+
+        private void _incidSecondaryHabitats_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged("Error");
+
+            // Track when the secondary habitat records have changed so that the apply
+            // button will appear.
+            Changed = true;
+
+            // Check if there are any errors in the secondary habitat records to see
+            // if the Habitats tab label should be flagged as also in error.
+            if (_incidSecondaryHabitats != null && _incidSecondaryHabitats.Count > 0)
+            {
+                int countInvalid = _incidSecondaryHabitats.Count(sh => !sh.IsValid());
+                if (countInvalid > 0)
+                    AddErrorList(ref _habitatErrors, "SecondaryHabitat");
+                else
+                    DelErrorList(ref _habitatErrors, "SecondaryHabitat");
+            }
+            OnPropertyChanged("HabitatTabLabel");
+
+            foreach (SecondaryHabitat sh in _incidSecondaryHabitats)
+            {
+                if (sh == null)
+                    sh.DataChanged -= _incidSecondaryHabitats_DataChanged;
+                else
+                    sh.DataChanged += _incidSecondaryHabitats_DataChanged;
+            }
+            //---------------------------------------------------------------------
+        }
+
+        #endregion
+
+        #region Legacy
+
+        public string LegacyHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Legacy";
+                else
+                    return null;
+            }
+        }
 
         //---------------------------------------------------------------------
         // CHANGED: CR44 (Editable Legacy Habitat field)
@@ -9111,6 +9626,8 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
+        #endregion
+
         #region IHS Tab
 
         //---------------------------------------------------------------------
@@ -9140,47 +9657,47 @@ namespace HLU.UI.ViewModel
         public string IncidIhsHabitat
         {
             get { return _incidIhsHabitat; }
-            set
-            {
-                if (IncidCurrentRow != null)
-                {
-                    _incidIhsHabitat = value;
-                }
-            }
         }
 
-        public string IncidHabitatPrimary
+        /// <summary>
+        /// Gets the incid ihs habitat code and description.
+        /// </summary>
+        /// <value>
+        /// The incid ihs habitat code and description.
+        /// </value>
+        public string IncidIhsHabitatText
         {
-            get { return _incidHabitatPrimary; }
-            set
+            get
             {
-                if (IncidCurrentRow != null)
+                if (_lutIhsHabitatCodes == null)
                 {
-                    if (_pasting && (_primaryHabitatCodes == null || _primaryHabitatCodes.Count(r => r.code == value) == 0))
+                    if (HluDataset.lut_ihs_habitat.IsInitialized && (HluDataset.lut_ihs_habitat.Rows.Count == 0))
                     {
-                        _pasting = false;
+                        if (_hluTableAdapterMgr.lut_ihs_habitatTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_habitatTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_habitatDataTable, HluDataSet.lut_ihs_habitatRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_habitatDataTable) }, false);
                     }
-                    _incidHabitatPrimary = value;
-                }
-            }
-        }
 
-        //TODO: To check
-        public string IncidHabitatSecondaries
-        {
-            get { return _incidHabitatSecondaries; }
-            set
-            {
-                if (IncidCurrentRow != null)
+                    _lutIhsHabitatCodes = from x in HluDataset.lut_ihs_habitat
+                                          //where x.is_local
+                                          select x;
+                }
+
+                if (_incidIhsHabitat == null)
+                    return null;
+                else
                 {
-                    _incidHabitatSecondaries = value;
+                    var q = _lutIhsHabitatCodes.Where(h => h.code == _incidIhsHabitat);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
                 }
             }
         }
 
         #endregion
-
-        #region IHS Multiplex Codes
 
         #region IHS Matrix
 
@@ -9200,10 +9717,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsMatrix())
+                if (!CheckIhsMatrix()) return null;
+                if ((_incidIhsMatrixRows.Length > 0) && (_incidIhsMatrixRows[0] != null) &&
+                    !_incidIhsMatrixRows[0].IsNull(_hluDS.incid_ihs_matrix.matrixColumn.Ordinal))
                     return _incidIhsMatrixRows[0].matrix;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsMatrix1Text
+        {
+            get
+            {
+                if (_lutIhsMatrixCodes == null)
+                {
+                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
+                    }
+
+                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
+                                            //where x.is_local
+                                            select x;
+                }
+
+                if (IncidIhsMatrix1 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[0].matrix);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9211,10 +9762,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsMatrix())
+                if (!CheckIhsMatrix()) return null;
+                if ((_incidIhsMatrixRows.Length > 1) && (_incidIhsMatrixRows[1] != null) &&
+                    !_incidIhsMatrixRows[1].IsNull(_hluDS.incid_ihs_matrix.matrixColumn.Ordinal))
                     return _incidIhsMatrixRows[1].matrix;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsMatrix2Text
+        {
+            get
+            {
+                if (_lutIhsMatrixCodes == null)
+                {
+                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
+                    }
+
+                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
+                                            //where x.is_local
+                                            select x;
+                }
+
+                if (IncidIhsMatrix2 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[1].matrix);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9222,10 +9807,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsMatrix())
+                if (!CheckIhsMatrix()) return null;
+                if ((_incidIhsMatrixRows.Length > 2) && (_incidIhsMatrixRows[2] != null) &&
+                    !_incidIhsMatrixRows[2].IsNull(_hluDS.incid_ihs_matrix.matrixColumn.Ordinal))
                     return _incidIhsMatrixRows[2].matrix;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsMatrix3Text
+        {
+            get
+            {
+                if (_lutIhsMatrixCodes == null)
+                {
+                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
+                    }
+
+                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
+                                         //where x.is_local
+                                         select x;
+                }
+
+                if (IncidIhsMatrix3 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[2].matrix);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9234,7 +9853,15 @@ namespace HLU.UI.ViewModel
         {
             if (_bulkUpdateMode == true) return true;
 
-            return true;
+            if (_incidIhsMatrixRows == null)
+            {
+                HluDataSet.incid_ihs_matrixDataTable ihsMatrixTable = _hluDS.incid_ihs_matrix;
+                GetIncidChildRowsDb(new object[] { Incid },
+                    _hluTableAdapterMgr.incid_ihs_matrixTableAdapter, ref ihsMatrixTable);
+            }
+
+            return _incidIhsMatrixRows != null;
+            //return true;
         }
 
         #endregion
@@ -9257,10 +9884,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsFormation())
+                if (!CheckIhsFormation()) return null;
+                if ((_incidIhsFormationRows.Length > 0) && (_incidIhsFormationRows[0] != null) &&
+                    !_incidIhsFormationRows[0].IsNull(_hluDS.incid_ihs_formation.formationColumn.Ordinal))
                     return _incidIhsFormationRows[0].formation;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsFormation1Text
+        {
+            get
+            {
+                if (_lutIhsFormationCodes == null)
+                {
+                    if (HluDataset.lut_ihs_formation.IsInitialized && (HluDataset.lut_ihs_formation.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_formationTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_formationTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_formationDataTable, HluDataSet.lut_ihs_formationRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
+                    }
+
+                    _lutIhsFormationCodes = from x in HluDataset.lut_ihs_formation
+                                         //where x.is_local
+                                         select x;
+                }
+
+                if (IncidIhsFormation1 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsFormationCodes.Where(m => m.code == _incidIhsFormationRows[0].formation);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9268,10 +9929,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsFormation())
+                if (!CheckIhsFormation()) return null;
+                if ((_incidIhsFormationRows.Length > 1) && (_incidIhsFormationRows[1] != null) &&
+                    !_incidIhsFormationRows[1].IsNull(_hluDS.incid_ihs_formation.formationColumn.Ordinal))
                     return _incidIhsFormationRows[1].formation;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsFormation2Text
+        {
+            get
+            {
+                if (_lutIhsFormationCodes == null)
+                {
+                    if (HluDataset.lut_ihs_formation.IsInitialized && (HluDataset.lut_ihs_formation.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_formationTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_formationTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_formationDataTable, HluDataSet.lut_ihs_formationRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
+                    }
+
+                    _lutIhsFormationCodes = from x in HluDataset.lut_ihs_formation
+                                            //where x.is_local
+                                            select x;
+                }
+
+                if (IncidIhsFormation2 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsFormationCodes.Where(m => m.code == _incidIhsFormationRows[1].formation);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9280,14 +9975,19 @@ namespace HLU.UI.ViewModel
         {
             if (_bulkUpdateMode == true) return true;
 
-            return true;
+            if (_incidIhsFormationRows == null)
+            {
+                HluDataSet.incid_ihs_formationDataTable ihsFormationTable = _hluDS.incid_ihs_formation;
+                GetIncidChildRowsDb(new object[] { Incid },
+                    _hluTableAdapterMgr.incid_ihs_formationTableAdapter, ref ihsFormationTable);
+            }
+            return _incidIhsFormationRows != null;
         }
 
         #endregion
 
         #region IHS Management
 
-        //---------------------------------------------------------------------
         // Optionally hide group headers to reduce window height.
         public string IhsManagementHeader
         {
@@ -9304,10 +10004,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsManagement())
+                if (!CheckIhsManagement()) return null;
+                if ((_incidIhsManagementRows.Length > 0) && (_incidIhsManagementRows[0] != null) &&
+                    !_incidIhsManagementRows[0].IsNull(_hluDS.incid_ihs_management.managementColumn.Ordinal))
                     return _incidIhsManagementRows[0].management;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsManagement1Text
+        {
+            get
+            {
+                if (_lutIhsManagementCodes == null)
+                {
+                    if (HluDataset.lut_ihs_management.IsInitialized && (HluDataset.lut_ihs_management.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_managementTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_managementTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_managementDataTable, HluDataSet.lut_ihs_managementRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
+                    }
+
+                    _lutIhsManagementCodes = from x in HluDataset.lut_ihs_management
+                                         //where x.is_local
+                                         select x;
+                }
+
+                if (IncidIhsManagement1 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsManagementCodes.Where(m => m.code == _incidIhsManagementRows[0].management);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9315,10 +10049,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsManagement())
+                if (!CheckIhsManagement()) return null;
+                if ((_incidIhsManagementRows.Length > 1) && (_incidIhsManagementRows[1] != null) &&
+                    !_incidIhsManagementRows[1].IsNull(_hluDS.incid_ihs_management.managementColumn.Ordinal))
                     return _incidIhsManagementRows[1].management;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsManagement2Text
+        {
+            get
+            {
+                if (_lutIhsManagementCodes == null)
+                {
+                    if (HluDataset.lut_ihs_management.IsInitialized && (HluDataset.lut_ihs_management.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_managementTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_managementTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_managementDataTable, HluDataSet.lut_ihs_managementRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
+                    }
+
+                    _lutIhsManagementCodes = from x in HluDataset.lut_ihs_management
+                                             //where x.is_local
+                                             select x;
+                }
+
+                if (IncidIhsManagement2 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsManagementCodes.Where(m => m.code == _incidIhsManagementRows[1].management);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9327,14 +10095,20 @@ namespace HLU.UI.ViewModel
         {
             if (_bulkUpdateMode == true) return true;
 
-            return true;
+            if (_incidIhsManagementRows == null)
+            {
+                HluDataSet.incid_ihs_managementDataTable ihsManagementTable = _hluDS.incid_ihs_management;
+                GetIncidChildRowsDb(new object[] { Incid },
+                    _hluTableAdapterMgr.incid_ihs_managementTableAdapter, ref ihsManagementTable);
+            }
+
+            return _incidIhsManagementRows != null;
         }
 
         #endregion
 
         #region IHS Complex
 
-        //---------------------------------------------------------------------
         // Optionally hide group headers to reduce window height.
         public string IhsComplexHeader
         {
@@ -9351,10 +10125,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsComplex())
+                if (!CheckIhsComplex()) return null;
+                if ((_incidIhsComplexRows.Length > 0) && (_incidIhsComplexRows[0] != null) &&
+                    !_incidIhsComplexRows[0].IsNull(_hluDS.incid_ihs_complex.complexColumn.Ordinal))
                     return _incidIhsComplexRows[0].complex;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsComplex1Text
+        {
+            get
+            {
+                if (_lutIhsComplexCodes == null)
+                {
+                    if (HluDataset.lut_ihs_complex.IsInitialized && (HluDataset.lut_ihs_complex.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_complexTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_complexTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_complexDataTable, HluDataSet.lut_ihs_complexRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
+                    }
+
+                    _lutIhsComplexCodes = from x in HluDataset.lut_ihs_complex
+                                         //where x.is_local
+                                         select x;
+                }
+
+                if (IncidIhsComplex1 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsComplexCodes.Where(m => m.code == _incidIhsComplexRows[0].complex);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9362,10 +10170,44 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (CheckIhsComplex())
+                if (!CheckIhsComplex()) return null;
+                if ((_incidIhsComplexRows.Length > 1) && (_incidIhsComplexRows[1] != null) &&
+                    !_incidIhsComplexRows[1].IsNull(_hluDS.incid_ihs_complex.complexColumn.Ordinal))
                     return _incidIhsComplexRows[1].complex;
                 else
                     return null;
+            }
+        }
+
+        public string IncidIhsComplex2Text
+        {
+            get
+            {
+                if (_lutIhsComplexCodes == null)
+                {
+                    if (HluDataset.lut_ihs_complex.IsInitialized && (HluDataset.lut_ihs_complex.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_ihs_complexTableAdapter == null)
+                            _hluTableAdapterMgr.lut_ihs_complexTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_ihs_complexDataTable, HluDataSet.lut_ihs_complexRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
+                    }
+
+                    _lutIhsComplexCodes = from x in HluDataset.lut_ihs_complex
+                                          //where x.is_local
+                                          select x;
+                }
+
+                if (IncidIhsComplex2 == null)
+                    return null;
+                else
+                {
+                    var q = _lutIhsComplexCodes.Where(m => m.code == _incidIhsComplexRows[1].complex);
+                    if (q.Count() > 0)
+                        return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
+                    else
+                        return null;
+                }
             }
         }
 
@@ -9379,21 +10221,37 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Summary
+        #region IHS Summary
 
-        //TODO: IncidIhsSummary - chage to IncidSecondaries
+        // Optionally hide group headers to reduce window height.
+        public string IhsSummaryHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "IHS Summary";
+                else
+                    return null;
+            }
+        }
+
         public string IncidIhsSummary
         {
             get
             {
                 return ViewModelWindowMainHelpers.IhsSummary(new string[] { 
-                    IncidIhsHabitat, IncidIhsMatrix1, IncidIhsMatrix2, IncidIhsMatrix3,
-                    IncidIhsFormation1, IncidIhsFormation2, IncidIhsManagement1, IncidIhsManagement2,
-                    IncidIhsComplex1, IncidIhsComplex2 });
+                    IncidIhsHabitat,
+                    IncidIhsMatrix1,
+                    IncidIhsMatrix2,
+                    IncidIhsMatrix3,
+                    IncidIhsFormation1,
+                    IncidIhsFormation2,
+                    IncidIhsManagement1,
+                    IncidIhsManagement2,
+                    IncidIhsComplex1,
+                    IncidIhsComplex2 });
             }
         }
-
-        #endregion
 
         #endregion
 
@@ -9602,7 +10460,7 @@ namespace HLU.UI.ViewModel
             // Identify which primary BAP rows there should be from the
             // primary and secondary codes.
             //TODO: Pass secondaries as list of codes not string
-            IEnumerable<string> primaryBap = PrimaryBapEnvironments(IncidHabitatPrimary, IncidHabitatSecondaries);
+            IEnumerable<string> primaryBap = PrimaryBapEnvironments(IncidPrimary, IncidSecondaries);
 
             // Identify any BAP rows (both auto generated and user added) that
             // have not been marked as deleted.
@@ -11559,7 +12417,7 @@ namespace HLU.UI.ViewModel
 
         private int NextIncidSourcesId { get { return _recIDs.NextIncidSourcesId; } }
 
-        private int NextIncidSecondaryId { get { return _recIDs.NextIncidSsecondaryId; } }
+        private int NextIncidSecondaryId { get { return _recIDs.NextIncidSecondaryId; } }
 
         private int NextIncidConditionId { get { return _recIDs.NextIncidConditionId; } }
 
