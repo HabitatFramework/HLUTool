@@ -5849,7 +5849,7 @@ namespace HLU.UI.ViewModel
                     DelErrorList(ref _habitatErrors, "SecondaryHabitat");
             }
             else
-                DelErrorList(ref _detailsErrors, "SecondaryHabitat");
+                DelErrorList(ref _habitatErrors, "SecondaryHabitat");
 
             OnPropertyChanged("IncidSecondaryHabitats");
             OnPropertyChanged("HabitatTabLabel");
@@ -9391,24 +9391,23 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_secondaryDataTable) }, false);
                     }
 
-                    //TODO: Load based on secondary group selected
-                    //if (!String.IsNullOrEmpty(_secondaryGroup))
-                    //{
-                    //    // Load all secondary habitat codes that are flagged as local and
-                    //    // relate to the current secondary group.
-                    //    _secondaryCodes = (from h in HluDataset.lut_secondary
-                    //                       where h.is_local //&& h.code_group == _secondaryGroup
-                    //                       select h).ToArray();
-                    //}
-                    //else
-                    //{
-                        // Load all secondary habitat codes that are flagged as local.
-                        _secondaryCodes = (from h in HluDataset.lut_secondary
-                                           where h.is_local
-                                           select h).ToArray();
-                   // }
+                    // Load all secondary habitat codes that are flagged as local.
+                    _secondaryCodes = (from h in HluDataset.lut_secondary
+                                        where h.is_local
+                                        select h).OrderBy(r => r.sort_order).ThenBy(r => r.code).ToArray();
                 }
 
+                ////TODO: Load based on secondary group selected
+                //if (!String.IsNullOrEmpty(IncidSecondaryHabitats))
+                //{
+                //    private HluDataSet.lut_secondaryRow[] _secondaryCodes;
+                //    // Load all secondary habitat codes that are flagged as local and
+                //    // relate to the current secondary group.
+                //    secondaryCodes = (from h in HluDataset.lut_secondary
+                //                       where h.is_local //&& h.code_group == _secondaryGroup
+                //                       select h).ToArray();
+                //return secondaryCodes;
+                //}
                 return _secondaryCodes;
             }
         }
@@ -10305,7 +10304,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodesAuto
+        public HluDataSet.lut_quality_determinationRow[] BapDeterminationQualityCodesAuto
         {
             get
             {
@@ -10321,7 +10320,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodesUser
+        public HluDataSet.lut_quality_determinationRow[] BapDeterminationQualityCodesUser
         {
             get
             {
@@ -10330,14 +10329,7 @@ namespace HLU.UI.ViewModel
                 // Show all determination quality values in the drop-down list (instead
                 // of just 'Not present but close to definition') but validate the
                 // selected value later.
-                if (DeterminationQualityCodes != null)
-                    //return BapDeterminationQualityCodes.Where(r => r.code == BapEnvironment.BAPDetQltyUserAdded).OrderBy(r => r.sort_order).ToArray();
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 025 Add default sort order to all lookup tables
-                    return DeterminationQualityCodes.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                //---------------------------------------------------------------------
-                else
-                    return null;
+                return DeterminationQualityCodes;
                 //---------------------------------------------------------------------
             }
         }
@@ -10365,6 +10357,14 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                 }
                 return _DeterminationQualityCodes;
+            }
+        }
+
+        public HluDataSet.lut_quality_interpretationRow[] BapInterpretationQualityCodes
+        {
+            get
+            {
+                return InterpretationQualityCodes;
             }
         }
 

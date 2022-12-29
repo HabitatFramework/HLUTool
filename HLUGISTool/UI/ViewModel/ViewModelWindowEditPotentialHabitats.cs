@@ -195,7 +195,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                return _viewModelMain.DeterminationQualityCodesUser;
+                return _viewModelMain.BapDeterminationQualityCodesUser;
             }
         }
 

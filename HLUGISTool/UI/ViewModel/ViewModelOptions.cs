@@ -1010,7 +1010,7 @@ namespace HLU.UI.ViewModel
         /// </value>
         public HluDataSet.lut_quality_determinationRow[] BulkDeterminationQualityCodes
         {
-            get { return _viewModelMain.DeterminationQualityCodesAuto; }
+            get { return _viewModelMain.BapDeterminationQualityCodesAuto; }
         }
 
         /// <summary>
@@ -1336,11 +1336,11 @@ namespace HLU.UI.ViewModel
                         if (BulkDeterminationQuality == null)
                             error = "Please select the default determination quality for new priority habitats.";
                         break;
-                    // Validate the default interpration quality when adding
+                    // Validate the default interpretation quality when adding
                     // a BAP habitat during an OSMM bulk update.
                     case "BulkInterpretationQuality":
                         if (BulkInterpretationQuality == null)
-                            error = "Please select the default interpration quality for new priority habitats.";
+                            error = "Please select the default interpretation quality for new priority habitats.";
                         break;
                     // Validate the default OSMM source name to be applied
                     // during an OSMM bulk update.
