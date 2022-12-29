@@ -1257,10 +1257,14 @@
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                        Header="Secondary Habitat"
                                                                                        ItemsSource="{Binding DataContext.SecondaryCodes,
+																											 ConverterParameter=code^description^sort_order,
+																											 Converter={StaticResource codeDescriptionConverter},
                                                                                                              IsAsync=true,
                                                                                                              RelativeSource={RelativeSource AncestorType={x:Type Window},
                                                                                                                                             Mode=FindAncestor}}"
                                                                                        SelectedValueBinding="{Binding secondary_habitat,
+                                                                                                                      ConverterParameter=code^description^sort_order,
+                                                                                                                      Converter={StaticResource codeDescriptionConverter},
                                                                                                                       UpdateSourceTrigger=PropertyChanged,
                                                                                                                       ValidatesOnDataErrors=True}"
                                                                                        SelectedValuePath="code" />

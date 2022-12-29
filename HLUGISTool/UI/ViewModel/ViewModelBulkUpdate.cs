@@ -302,11 +302,11 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The primary bap determination quality codes.
         /// </value>
-        public HluDataSet.lut_quality_determinationRow[] DeterminationQualityCodes
+        public HluDataSet.lut_quality_determinationRow[] BapDeterminationQualityCodes
         {
             get
             {
-                return _viewModelMain.DeterminationQualityCodesAuto;
+                return _viewModelMain.BapDeterminationQualityCodesAuto;
             }
         }
 

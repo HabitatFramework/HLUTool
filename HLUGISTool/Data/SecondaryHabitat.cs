@@ -52,7 +52,7 @@ namespace HLU.Data
         {
             //TODO: Check
             _bulkUpdateMode = false;
-            _secondary_id = 1; // arbitrary PK for a new row
+            _secondary_id = -1; // arbitrary PK for a new row
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow)
@@ -77,7 +77,6 @@ namespace HLU.Data
             _incid = dataRow.incid;
             _secondary_habitat = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
 
-            //TODO: Lookup code group???
             //_secondary_group = ???;
             _secondaryHabitatList = shList;
         }

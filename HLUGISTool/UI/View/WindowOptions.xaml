@@ -639,12 +639,12 @@
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelMaxGetValues"
-                                   Grid.Column="2"
+                                   Grid.Column="0"
                                    Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Get Values Count"/>
                             <TextBox x:Name="TextBoxMaxGetValues"
-                                     Grid.Column="3"
+                                     Grid.Column="1"
                                      Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
