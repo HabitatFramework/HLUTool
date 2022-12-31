@@ -191,11 +191,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.lut_secondaryRow[] SecondaryCodes
+        public HluDataSet.lut_secondaryRow[] SecondaryHabitatCodes
         {
             get
             {
-                return _viewModelMain.SecondaryCodes;
+                return _viewModelMain.SecondaryHabitatCodes;
             }
         }
 

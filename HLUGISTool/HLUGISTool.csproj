@@ -605,6 +605,7 @@
     <Compile Include="UI\View\WindowWarnOnGISSelect.xaml.cs">
       <DependentUpon>WindowWarnOnGISSelect.xaml</DependentUpon>
     </Compile>
+    <Resource Include="Icons\AddRow.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
