@@ -18,7 +18,7 @@
         Closing="OnClosing"
         Topmost="{Binding ElementName=MenuItemAppKeepOnTop,
                           Path=IsChecked}"
-        WindowStyle="SingleBorderWindow">
+        WindowStyle="SingleBorderWindow"> <!-- d:DesignHeight="800" -->
     <!--  SizeToContent="Height"  -->
     <!--  Style="{DynamicResource WindowStyle}"  -->
 
@@ -1048,7 +1048,7 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80*" />
+                                            <ColumnDefinition Width="Auto" MinWidth="80" />
                                             <ColumnDefinition Width="358*" />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
@@ -1089,8 +1089,6 @@
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
-                                                  IsEnabled="{Binding HabitatTypeEnabled,
-                                                                      Mode=OneWay}"
                                                   IsReadOnly="False"
                                                   ItemsSource="{Binding HabitatTypeCodes,
                                                                         ConverterParameter=code^name^description^sort_order,
@@ -1121,7 +1119,7 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80*" />
+                                            <ColumnDefinition Width="Auto" MinWidth="80" />
                                             <ColumnDefinition Width="358*" />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
@@ -1195,22 +1193,106 @@
                                           Header="{Binding SecondaryHabitatsHeader}">
                                     <Grid x:Name="GridSecondaryHabitats" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="22" />
+                                            <ColumnDefinition Width="Auto" MinWidth="80" />
+                                            <ColumnDefinition Width="358*" />
+                                            <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
+
+                                        <Grid x:Name="GridAddSecondaryHabitat"
+                                              Grid.Row="0"
+                                              Grid.Column="0"
+											  Grid.ColumnSpan="2">
+                                            <Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto" MinWidth="40" />
+												<ColumnDefinition Width="120" />
+												<ColumnDefinition Width="Auto" MinWidth="35" />
+												<ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                        <Label x:Name="LabelSecondaryGroup"
+                                               Grid.Row="0"
+                                               Grid.Column="0"
+                                               Margin="0,0,0,4"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Content="Group" />
+                                            <ComboBox x:Name="ComboBoxSecondaryGroup"
+                                                      Grid.Row="0"
+                                                      Grid.Column="1"
+                                                      Margin="8,0,8,4"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="True"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding SecondaryGroupCodes,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                      KeyUp="EditableComboBox_KeyUp"
+                                                      SelectedValue="{Binding SecondaryGroup}"
+                                                      SelectedValuePath="code"
+                                                      ToolTipService.ShowOnDisabled="True" />
+
+                                            <Label x:Name="LabelSecondaryHabitat"
+                                                   Grid.Row="0"
+                                                   Grid.Column="2"
+                                                   Margin="0,0,0,4"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"
+                                                   Content="Habitat" />
+                                            <ComboBox x:Name="ComboBoxSecondaryHabitat"
+                                                      Grid.Row="0"
+                                                      Grid.Column="3"
+                                                      Margin="8,0,8,4"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="True"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding SecondaryHabitatCodes,
+                                                                        ConverterParameter=code^description^sort_order,
+                                                                        Converter={StaticResource codeDescriptionConverter},
+                                                                        UpdateSourceTrigger=PropertyChanged}"
+                                                      KeyUp="EditableComboBox_KeyUp"
+                                                      SelectedValue="{Binding SecondaryHabitatCode,
+                                                                          ConverterParameter=code^description^sort_order,
+                                                                          Converter={StaticResource codeDescriptionConverter},
+                                                                          ValidatesOnDataErrors=True}"
+                                                      SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                                      ToolTipService.ShowOnDisabled="True" />
+                                        </Grid>
+
+										<!--  ButtonEditSecondaryHabitats  -->
+										<Button x:Name="ButtonAddSecondaryHabitat"
+												Grid.Row="0"
+												Grid.Column="2"
+												Width="20"
+												MaxHeight="20"
+												Margin="0,5,0,0"
+												HorizontalAlignment="Right"
+												VerticalAlignment="Top"
+												Command="{Binding AddSecondaryHabitatCommand}"
+												IsEnabled="{Binding CanAddSecondaryHabitat}"
+												MouseEnter="ButtonAddSecondaryHabitat_MouseEnter"
+												MouseLeave="ButtonAddSecondaryHabitat_MouseLeave"
+												ToolTip="Add Secondary Habitat"
+												ToolTipService.ShowOnDisabled="True">
+											<Image Width="16"
+												   Height="16"
+												   Source="..\..\Icons\AddRow.png" />
+										</Button>
+
                                         <tkit:DataGrid x:Name="DataGridSecondaryHabitats"
-                                                       Grid.Row="0"
+                                                       Grid.Row="1"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        Margin="4,2,6,2"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
-                                                       CanUserAddRows="True"
+                                                       CanUserAddRows="False"
                                                        CanUserDeleteRows="True"
                                                        CanUserReorderColumns="False"
                                                        CanUserResizeColumns="True"
@@ -1235,28 +1317,13 @@
                                                                          Header="INCID"
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="150"
-                                                                                       CanUserResize="True"
-                                                                                       DisplayMemberPath="description"
-                                                                                       EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Secondary Group"
-                                                                                       IsReadOnly="False"
-                                                                                       ItemsSource="{Binding DataContext.SecondaryGroupCodes,
-                                                                                                             IsAsync=true,
-                                                                                                             RelativeSource={RelativeSource AncestorType={x:Type Window},
-                                                                                                                                            Mode=FindAncestor}}"
-                                                                                       SelectedValueBinding="{Binding secondary_group,
-                                                                                                                      UpdateSourceTrigger=PropertyChanged,
-                                                                                                                      ValidatesOnDataErrors=True}"
-                                                                                       SelectedValuePath="code" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="150"
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="*"
+																					   IsReadOnly="True"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                        Header="Secondary Habitat"
-                                                                                       ItemsSource="{Binding DataContext.SecondaryCodes,
+                                                                                       ItemsSource="{Binding DataContext.SecondaryHabitatCodesAll,
 																											 ConverterParameter=code^description^sort_order,
 																											 Converter={StaticResource codeDescriptionConverter},
                                                                                                              IsAsync=true,
@@ -1273,7 +1340,7 @@
 
 										<!--  ButtonEditSecondaryHabitats  -->
 										<Button x:Name="ButtonEditSecondaryHabitats"
-												Grid.Row="0"
+												Grid.Row="1"
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
@@ -1284,7 +1351,7 @@
 												IsEnabled="{Binding CanEditSecondaryHabitats}"
 												MouseEnter="ButtonEditSecondaryHabitats_MouseEnter"
 												MouseLeave="ButtonEditSecondaryHabitats_MouseLeave"
-												ToolTip="Secondary Habitats"
+												ToolTip="Edit Secondary Habitats"
 												ToolTipService.ShowOnDisabled="True">
 											<Image Width="16"
 												   Height="16"
@@ -1292,7 +1359,7 @@
 										</Button>
 
                                         <CheckBox x:Name="CheckBoxCopySecondaryHabitats"
-                                                  Grid.Row="0"
+                                                  Grid.Row="1"
                                                   Grid.Column="2"
                                                   Margin="0,0,0,4"
                                                   HorizontalAlignment="Right"
@@ -1316,7 +1383,7 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MinWidth="80" />
+                                            <ColumnDefinition Width="Auto" MinWidth="80" />
                                             <ColumnDefinition Width="358*" />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>

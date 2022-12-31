@@ -269,7 +269,25 @@ namespace HLU
         }
 
         // Pop-out window to view and edit secondary habitats more clearly.
-        //
+        private void ButtonAddSecondaryHabitat_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonAddSecondaryHabitat.IsEnabled)
+            {
+                this.ButtonAddSecondaryHabitat.Width *= 1.1;
+                this.ButtonAddSecondaryHabitat.Height *= 1.1;
+            }
+        }
+
+        private void ButtonAddSecondaryHabitat_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (this.ButtonAddSecondaryHabitat.IsEnabled)
+            {
+                this.ButtonAddSecondaryHabitat.Width = this.ButtonAddSecondaryHabitat.Width / 11 * 10;
+                this.ButtonAddSecondaryHabitat.Height = this.ButtonAddSecondaryHabitat.Width / 11 * 10;
+            }
+        }
+
+        // Pop-out window to view and edit secondary habitats more clearly.
         private void ButtonEditSecondaryHabitats_MouseEnter(object sender, MouseEventArgs e)
         {
             if (this.ButtonEditSecondaryHabitats.IsEnabled)

@@ -88,7 +88,7 @@
                                                                DisplayMemberPath="description"
                                                                EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                Header="Secondary Habitat"
-                                                               ItemsSource="{Binding DataContext.SecondaryCodes,
+                                                               ItemsSource="{Binding DataContext.SecondaryHabitatCodes,
 																					 ConverterParameter=code^description^sort_order,
 																					 Converter={StaticResource codeDescriptionConverter},
                                                                                      IsAsync=true,

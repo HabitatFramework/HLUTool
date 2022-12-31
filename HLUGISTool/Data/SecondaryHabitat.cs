@@ -126,6 +126,7 @@ namespace HLU.Data
 
         public static IEnumerable<SecondaryHabitat> SecondaryHabitatList
         {
+            get { return _secondaryHabitatList; }
             set { _secondaryHabitatList = value; }
         }
 
