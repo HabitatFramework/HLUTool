@@ -35,14 +35,14 @@ namespace HLU.Data
         private bool _bulkUpdateMode;
 
         private string _secondary_habitat;
-        private string _secondary_group;
+        private int _secondary_habitat_int;
 
         private string _incid_bak;
         private string _secondary_habitat_bak;
-        private string _secondary_group_bak;
 
         string _error;
         private static IEnumerable<SecondaryHabitat> _secondaryHabitatList;
+        private static IEnumerable<String> _validSecondaryCodes;
 
         #endregion
 
@@ -59,17 +59,22 @@ namespace HLU.Data
         {
             //TODO: Check
             _bulkUpdateMode = bulkUpdateMode;
+
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
             _secondary_id = dataRow.secondary_id;
             _incid = dataRow.incid;
             _secondary_habitat = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
 
-            //TODO: Lookup code group???
-            //_secondary_group = ???;
+            int secondary_habitat_int;
+            if (int.TryParse(_secondary_habitat, out secondary_habitat_int))
+                _secondary_habitat_int = secondary_habitat_int;
+            else
+                _secondary_habitat_int = int.MaxValue;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow, IEnumerable<SecondaryHabitat> shList)
         {
+            //TODO: Check
             _bulkUpdateMode = bulkUpdateMode;
 
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
@@ -77,31 +82,47 @@ namespace HLU.Data
             _incid = dataRow.incid;
             _secondary_habitat = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
 
-            //_secondary_group = ???;
+            int secondary_habitat_int;
+            if (int.TryParse(_secondary_habitat, out secondary_habitat_int))
+                _secondary_habitat_int = secondary_habitat_int;
+            else
+                _secondary_habitat_int = int.MaxValue;
+
+            //TODO: Needed?
             _secondaryHabitatList = shList;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, object[] itemArray)
         {
+            //TODO: Check
             _bulkUpdateMode = bulkUpdateMode;
 
             Int32.TryParse(itemArray[0].ToString(), out _secondary_id);
             _incid = itemArray[1].ToString();
             _secondary_habitat = itemArray[2].ToString();
 
-            //TODO: Lookup code group???
-            //_secondary_group = ???;
+            int secondary_habitat_int;
+            if (int.TryParse(_secondary_habitat, out secondary_habitat_int))
+                _secondary_habitat_int = secondary_habitat_int;
+            else
+                _secondary_habitat_int = int.MaxValue;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, int secondary_id, string incid, string secondary_habitat,
             string secondary_group)
         {
+            //TODO: Check
             _bulkUpdateMode = bulkUpdateMode;
 
             _secondary_id = secondary_id;
             _incid = incid;
             _secondary_habitat = secondary_habitat;
-            _secondary_group = secondary_group;
+
+            int secondary_habitat_int;
+            if (int.TryParse(_secondary_habitat, out secondary_habitat_int))
+                _secondary_habitat_int = secondary_habitat_int;
+            else
+                _secondary_habitat_int = int.MaxValue;
         }
 
         #endregion
@@ -128,6 +149,12 @@ namespace HLU.Data
         {
             get { return _secondaryHabitatList; }
             set { _secondaryHabitatList = value; }
+        }
+
+        public static IEnumerable<String> ValidSecondaryCodes
+        {
+            get { return _validSecondaryCodes; }
+            set { _validSecondaryCodes = value; }
         }
 
         public bool BulkUpdateMode
@@ -169,18 +196,19 @@ namespace HLU.Data
             }
         }
 
-        //TODO: Needed???
-        public string secondary_group
+        public int secondary_habitat_int
         {
-            get { return _secondary_group; }
+            get
+            {
+                return _secondary_habitat_int;
+            }
             set
             {
-                _secondary_group = value;
+                _secondary_habitat_int = value;
 
-                // Flag that the current record has changed so that the apply button
-                // will appear.
-                if (this.DataChanged != null)
-                    this.DataChanged(true);
+                // Don't flag that the current record as changed.
+                //if (this.DataChanged != null)
+                //    this.DataChanged(true);
             }
         }
 
@@ -192,12 +220,12 @@ namespace HLU.Data
 
         public object[] ToItemArray()
         {
-            return new object[] { _secondary_id, _incid, _secondary_habitat, _secondary_group };
+            return new object[] { _secondary_id, _incid, _secondary_habitat, _secondary_habitat_int };
         }
 
         public object[] ToItemArray(int secondaryID, string incid)
         {
-            return new object[] { secondaryID, incid, _secondary_habitat, _secondary_group };
+            return new object[] { secondaryID, incid, _secondary_habitat, _secondary_habitat_int };
         }
 
         #endregion
@@ -307,13 +335,6 @@ namespace HLU.Data
                             return "Duplicate secondary habitat";
                         }
                         _secondary_habitat_bak = _secondary_habitat;
-                        break;
-                    case "secondary_group":
-                        if (!_bulkUpdateMode && String.IsNullOrEmpty(secondary_group))
-                        {
-                            return "Secondary group is a mandatory field";
-                        }
-                        _secondary_group_bak = _secondary_group;
                         break;
                 }
 
