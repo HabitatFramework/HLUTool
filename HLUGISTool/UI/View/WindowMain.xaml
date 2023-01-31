@@ -1264,7 +1264,7 @@
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
 
-										<!--  ButtonEditSecondaryHabitats  -->
+										<!--  ButtonAddSecondaryHabitat  -->
 										<Button x:Name="ButtonAddSecondaryHabitat"
 												Grid.Row="0"
 												Grid.Column="2"
@@ -1281,7 +1281,7 @@
 												ToolTipService.ShowOnDisabled="True">
 											<Image Width="16"
 												   Height="16"
-												   Source="..\..\Icons\AddRow.png" />
+												   Source="..\..\Icons\AddRowSquare.png" />
 										</Button>
 
                                         <tkit:DataGrid x:Name="DataGridSecondaryHabitats"
@@ -1338,8 +1338,8 @@
                                             </tkit:DataGrid.Columns>
                                         </tkit:DataGrid>
 
-										<!--  ButtonEditSecondaryHabitats  -->
-										<Button x:Name="ButtonEditSecondaryHabitats"
+										<!--  ButtonAddSecondaryHabitatList  -->
+										<Button x:Name="ButtonAddSecondaryHabitatList"
 												Grid.Row="1"
 												Grid.Column="2"
 												Width="20"
@@ -1347,15 +1347,15 @@
 												Margin="0,5,0,0"
 												HorizontalAlignment="Right"
 												VerticalAlignment="Top"
-												Command="{Binding EditSecondaryHabitatsCommand}"
-												IsEnabled="{Binding CanEditSecondaryHabitats}"
-												MouseEnter="ButtonEditSecondaryHabitats_MouseEnter"
-												MouseLeave="ButtonEditSecondaryHabitats_MouseLeave"
-												ToolTip="Edit Secondary Habitats"
+												Command="{Binding AddSecondaryHabitatListCommand}"
+												IsEnabled="{Binding CanAddSecondaryHabitat}"
+												MouseEnter="ButtonAddSecondaryHabitatList_MouseEnter"
+												MouseLeave="ButtonAddSecondaryHabitatList_MouseLeave"
+												ToolTip="Add Secondary Habitat List"
 												ToolTipService.ShowOnDisabled="True">
 											<Image Width="16"
 												   Height="16"
-												   Source="..\..\Icons\ZoomTable.png" />
+												   Source="..\..\Icons\AddScript.png" />
 										</Button>
 
                                         <CheckBox x:Name="CheckBoxCopySecondaryHabitats"
