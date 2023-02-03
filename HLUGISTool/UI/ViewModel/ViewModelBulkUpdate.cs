@@ -44,7 +44,7 @@ namespace HLU.UI.ViewModel
         private bool _deleteOrphanBapHabitats;
         private bool _deletePotentialBapHabitats;
         private int _sourceCount;
-        private int _deleteMultiplexCodes;
+        private int _deleteSecondaryCodes;
         private bool _createHistory;
         private string _determinationQuality;
         private string _interpretationQuality;
@@ -70,7 +70,7 @@ namespace HLU.UI.ViewModel
             _deleteOrphanBapHabitats = deleteOrphanBapHabitats;
             _deletePotentialBapHabitats = deletePotentialBapHabitats;
             _sourceCount = sourceCount;
-            _deleteMultiplexCodes = deleteMultiplexCodes;
+            _deleteSecondaryCodes = deleteMultiplexCodes;
             _createHistory = createHistory;
             _determinationQuality = determinationQuality;
             _interpretationQuality = interpretationQuality;
@@ -156,7 +156,7 @@ namespace HLU.UI.ViewModel
             this.RequestClose(true,
                 _deleteOrphanBapHabitats,
                 _deletePotentialBapHabitats,
-                _deleteMultiplexCodes,
+                _deleteSecondaryCodes,
                 _createHistory,
                 _determinationQuality,
                 _interpretationQuality);
@@ -257,11 +257,11 @@ namespace HLU.UI.ViewModel
         /// <value>
         ///   <c>true</c> if existing multiplex codes should be deleted; otherwise, <c>false</c>.
         /// </value>
-        public DeleteMultiplexCodesAction[] DeleteMultiplexCodesActions
+        public DeleteSecondaryCodesAction[] DeleteSecondaryCodesActions
         {
             get
             {
-                return Enum.GetValues(typeof(DeleteMultiplexCodesAction)).Cast<DeleteMultiplexCodesAction>()
+                return Enum.GetValues(typeof(DeleteSecondaryCodesAction)).Cast<DeleteSecondaryCodesAction>()
                     .ToArray();
             }
             set { }
@@ -274,12 +274,12 @@ namespace HLU.UI.ViewModel
         ///   <c>Always</c> if all existing multiplex codes should be deleted; otherwise,
         /// <c>Invalid</c> if only invalid mulitplex codes should be deleted.
         /// </value>
-        public DeleteMultiplexCodesAction? DeleteMultiplexCodes
+        public DeleteSecondaryCodesAction? DeleteSecondaryCodes
         {
-            get { return (DeleteMultiplexCodesAction)_deleteMultiplexCodes; }
+            get { return (DeleteSecondaryCodesAction)_deleteSecondaryCodes; }
             set
             {
-                _deleteMultiplexCodes = (int)value;
+                _deleteSecondaryCodes = (int)value;
             }
         }
 
@@ -483,7 +483,7 @@ namespace HLU.UI.ViewModel
         /// Enable control when in OSMM Bulk Update mode and
         /// the IHS habitat has changed.
         /// </summary>
-        public bool EnableDeleteMultiplexCodes
+        public bool EnableDeleteSecondaryCodes
         {
             get
             {
@@ -533,13 +533,14 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
+                    //TODO: Delete secondary codes and/or multiplex codes when relevant
                     //---------------------------------------------------------------------
                     // FIXOLD: 088 Add warning to delete option in bulk update
                     //
-                    case "DeleteMultiplexCodes":
-                        if ((EnableDeleteMultiplexCodes == true) &&
-                            (DeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.All))
-                            error="Warning: This option will delete ALL multiplex codes from all affected incids";
+                    case "DeleteSecondaryCodes":
+                        if ((EnableDeleteSecondaryCodes == true) &&
+                            (DeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All))
+                            error="Warning: This option will delete ALL secondary codes from all affected incids";
                         break;
                     //---------------------------------------------------------------------
                     case "DeterminationQuality":

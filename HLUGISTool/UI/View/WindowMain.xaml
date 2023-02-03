@@ -1225,7 +1225,7 @@
                                                       Grid.Column="1"
                                                       Margin="8,0,8,4"
                                                       VerticalAlignment="Center"
-                                                      DisplayMemberPath="description"
+                                                      DisplayMemberPath="abbreviation"
                                                       IsEditable="True"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding SecondaryGroupCodes,

@@ -105,8 +105,8 @@
                                Margin="8,8,8,4"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center"
-							   Content="Delete Existing Multiplex Rows?"
-    						   IsEnabled="{Binding Path=EnableDeleteMultiplexCodes}"/>
+							   Content="Delete Existing Secondary Codes?"
+    						   IsEnabled="{Binding Path=EnableDeleteSecondaryCodes}"/>
                         <ComboBox Name="ComboBoxDeleteMultiplexCodes"
                                   Grid.Column="1"
                                   Margin="4,6,4,2"
@@ -114,9 +114,9 @@
                                   VerticalAlignment="Center"
                                   IsEditable="False"
                                   IsReadOnly="False"
-                                  ItemsSource="{Binding DeleteMultiplexCodesActions,
+                                  ItemsSource="{Binding DeleteSecondaryCodesActions,
                                                     UpdateSourceTrigger=PropertyChanged}"
-                                  SelectedValue="{Binding DeleteMultiplexCodes,
+                                  SelectedValue="{Binding DeleteSecondaryCodes,
                                                         ValidatesOnDataErrors=True}"
                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                   ToolTipService.ShowOnDisabled="True"

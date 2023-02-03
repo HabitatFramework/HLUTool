@@ -80,6 +80,17 @@ namespace HLU.UI.ViewModel
         Always
     };
 
+    /// <summary>
+    /// An enumeration of the different options for whether
+    /// to validate secondary codes against the primary code.
+    /// </summary>
+    public enum SecondaryCodeValidationOptions
+    {
+        Error,
+        Warning,
+        Ignore
+    };
+
     public class ViewModelWindowMain : ViewModelBase, IDataErrorInfo
     {
         #region Enums
@@ -192,9 +203,40 @@ namespace HLU.UI.ViewModel
         private int _mapWindowsCount;
         private bool? _showingReasonProcessGroup = null;
         private bool? _showingNVCCodesText = null;
-        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+
+        // Database options
+        private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
+
+        // GIS/Export options
+        private int _minZoom = Settings.Default.MinAutoZoom;
+
+        // History options
+        private DataColumn[] _historyColumns;
+        private int _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
+
+        // Interface options
+        private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showIHSTab = Settings.Default.ShowIHSTab;
+        private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
+        private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
+        private int _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private string _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
+
+        // Updates options
+        private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        private string _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
+        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
+
+        // Filter options
+        private int _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
+
+
+        // Dates options
+
         private bool? _showingOSMMPendingGroup = null;
         private string _logoPath = String.Empty;
         private DbBase _db;
@@ -240,6 +282,7 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_primary_categoryRow[] _primaryCategoryCodes;
         //private HluDataSet.lut_primaryRow[] _primaryCodes;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroupCodes;
+        public static HluDataSet.lut_secondary_groupRow[] SecondaryGroups;  // Used in the options window
         private HluDataSet.lut_secondaryRow[] _secondaryCodesAll;
         private HluDataSet.lut_secondaryRow[] _secondaryCodesValid;
 
@@ -251,8 +294,8 @@ namespace HLU.UI.ViewModel
         private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
+        public static HluDataSet.lut_habitat_classRow[] HabitatClasses; // Used in the options window
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
-        public static HluDataSet.lut_habitat_classRow[] HabitatClasses;
         private IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> _osmmHabitatXrefIds;
         private IEnumerable<HluDataSet.lut_habitat_type_primaryRow> _xrefHabitatTypePrimaryCodes;
         private IEnumerable<HluDataSet.lut_habitat_type_secondaryRow> _xrefHabitatTypeSecondaryCodes;
@@ -315,9 +358,6 @@ namespace HLU.UI.ViewModel
         private int _origIncidIhsComplexCount = 0;
         private int _origIncidSourcesCount = 0;
         private SqlFilterCondition _incidMMPolygonsIncidFilter;
-        private DataColumn[] _historyColumns;
-        private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
-        private int _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
         private int _incidRowCount;
         private int _incidPageRowNoMin = 0;
         private int _incidPageRowNoMax = 0;
@@ -402,10 +442,6 @@ namespace HLU.UI.ViewModel
         private bool _appKeepOnTop = Settings.Default.AppKeepOnTop;
         private int _autoZoomSelection = Settings.Default.AutoZoomSelection;
         private bool _autoSelectOnGis = Settings.Default.AutoSelectOnGis;
-        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
-        private int _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
-        private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
-        private int _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
 
         public static string HistoryGeometry1ColumnName = Settings.Default.HistoryGeometry1ColumnName;
         public static string HistoryGeometry2ColumnName = Settings.Default.HistoryGeometry2ColumnName;
@@ -3569,10 +3605,9 @@ namespace HLU.UI.ViewModel
         private void ZoomSelectionClicked(object param)
         {
             // Get the minimum auto zoom value and map distance units.
-            int minZoom = Settings.Default.MinimumAutoZoom;
             string distUnits = Settings.Default.MapDistanceUnits;
 
-            _gisApp.ZoomSelected(minZoom, distUnits, true);
+            _gisApp.ZoomSelected(_minZoom, distUnits, true);
         }
 
         public bool CanZoomSelection { get { return HaveGisApp && _gisSelection != null; } }
@@ -3685,30 +3720,44 @@ namespace HLU.UI.ViewModel
             // re-set static variables (IncidPageSize might be dangerous to change on the fly)
             if (saveSettings)
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 063 Apply user's option database connection timeout.
+                // Database options
                 _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
-                //---------------------------------------------------------------------
+
+                // GIS/Export options
+                int _minZoom = Settings.Default.MinAutoZoom;
+
+                // History options
                 _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
                 _historyColumns = InitializeHistoryColumns(_historyColumns);
-                VagueDate.Delimiter = Settings.Default.VagueDateDelimiter;
-                VagueDate.SeasonNames = Settings.Default.SeasonNames.Cast<string>().ToArray();
-                _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
+
+                // Interface options
+                _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
+                _showGroupHeaders = Settings.Default.ShowGroupHeaders;
+                _showNVCCodes = Settings.Default.ShowNVCCodes;
+                _showIHSTab = Settings.Default.ShowIHSTab;
+                _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
+                OnPropertyChanged("ShowNVCCodesText");
+                OnPropertyChanged("ShowIncidOSMMPendingGroup");
+                _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
+                _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+                _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+                _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
+
+                // Updates options
                 _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
                 _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
-                _showNVCCodes = Settings.Default.ShowNVCCodes;
-                OnPropertyChanged("ShowNVCCodesText");
-                //---------------------------------------------------------------------
-                // CHANGED: CR49 Process proposed OSMM Updates
-                _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
-                OnPropertyChanged("ShowIncidOSMMPendingGroup");
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // FIXOLD: 076 New option to hide group headers to reduce window height.
-                _showGroupHeaders = Settings.Default.ShowGroupHeaders;
+
+                // Filter options
+                _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
+
+                // Dates options
+                VagueDate.Delimiter = Settings.Default.VagueDateDelimiter;
+                VagueDate.SeasonNames = Settings.Default.SeasonNames.Cast<string>().ToArray();
+
+                // Bulk Update options
+
                 RefreshGroupHeaders();
-                //---------------------------------------------------------------------
             }
         }
 
@@ -5356,11 +5405,10 @@ namespace HLU.UI.ViewModel
                 // Zoom to the GIS selection if auto zoom is on.
                 if (_gisSelection != null && _autoZoomSelection != 0)
                 {
-                    // Get the minimum auto zoom value and map distance units.
-                    int minZoom = Settings.Default.MinimumAutoZoom;
+                    // Get the map distance units.
                     string distUnits = Settings.Default.MapDistanceUnits;
 
-                    _gisApp.ZoomSelected(minZoom, distUnits, _autoZoomSelection == 2);
+                    _gisApp.ZoomSelected(_minZoom, distUnits, _autoZoomSelection == 2);
                 }
                 //---------------------------------------------------------------------
 
@@ -5939,11 +5987,10 @@ namespace HLU.UI.ViewModel
                         // Zoom to the GIS selection if auto zoom is on.
                         if (_gisSelection != null && _autoZoomSelection != 0)
                         {
-                            // Get the minimum auto zoom value and map distance units.
-                            int minZoom = Settings.Default.MinimumAutoZoom;
+                            // Get the map distance units.
                             string distUnits = Settings.Default.MapDistanceUnits;
 
-                            _gisApp.ZoomSelected(minZoom, distUnits, _autoZoomSelection == 2);
+                            _gisApp.ZoomSelected(_minZoom, distUnits, _autoZoomSelection == 2);
                         }
                         //---------------------------------------------------------------------
 
@@ -8915,6 +8962,7 @@ namespace HLU.UI.ViewModel
                                           where c.is_local
                                           select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
+                    // Set the static variable (used in the options window)
                     HabitatClasses = _habitatClassCodes;
                 }
                 return _habitatClassCodes;
@@ -8937,7 +8985,7 @@ namespace HLU.UI.ViewModel
                 // Don't set the habitat class when there are no OSMM updates to process.
                 //
                 if (_habitatClass == null && _osmmUpdatesEmpty == false)
-                    _habitatClass = Settings.Default.PreferredHabitatClass;
+                    _habitatClass = _preferredHabitatClass;
                 //---------------------------------------------------------------------
                 return _habitatClass;
             }
@@ -9292,24 +9340,48 @@ namespace HLU.UI.ViewModel
                         new Type[] { typeof(HluDataSet.lut_secondary_groupDataTable) }, false);
                 }
 
+                // Set the static variable (used in the options window)
+                if (SecondaryGroups == null);
+                {
+                    HluDataSet.lut_secondary_groupRow[] secondaryGroupCodes;
+                    secondaryGroupCodes = (from sg in HluDataset.lut_secondary_group
+                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).Distinct().ToArray();
+
+                    if (secondaryGroupCodes != null)
+                    {
+                        HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
+                        allRow.code = "<All>";
+                        allRow.description = "<All>";
+                        allRow.abbreviation = "<All>";
+                        allRow.sort_order = -1;
+                        secondaryGroupCodes = secondaryGroupCodes.Concat(
+                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).ToArray();
+                    }
+
+                    SecondaryGroups = secondaryGroupCodes;
+                }
+
                 if (!String.IsNullOrEmpty(IncidPrimary))
                 {
                     _secondaryGroupCodes = (from sg in HluDataset.lut_secondary_group
                                             from s in HluDataset.lut_secondary
-                                            from p in HluDataset.lut_primary_secondary
+                                            from ps in HluDataset.lut_primary_secondary
                                             where sg.code == s.code_group
-                                            && s.code == p.code_secondary
-                                            && p.category == IncidPrimaryCategory
-                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
+                                            && s.is_local == true
+                                            && s.code == ps.code_secondary
+                                            && ps.is_local
+                                            && ps.category == IncidPrimaryCategory
+                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).Distinct().ToArray();
 
                     if (_secondaryGroupCodes != null)
                     {
                         HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
                         allRow.code = "<All>";
                         allRow.description = "<All>";
+                        allRow.abbreviation = "<All>";
                         allRow.sort_order = -1;
                         _secondaryGroupCodes = _secondaryGroupCodes.Concat(
-                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).ToArray();
                     }
                 }
                 else

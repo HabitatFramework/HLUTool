@@ -44,9 +44,9 @@ namespace HLU.UI.ViewModel
     //    
     /// <summary>
     /// An enumeration of the different options for when
-    /// to delete multiplex codes.
+    /// to delete secondary codes.
     /// </summary>
-    public enum DeleteMultiplexCodesAction
+    public enum DeleteSecondaryCodesAction
     {
         All,
         Invalid,
@@ -67,7 +67,7 @@ namespace HLU.UI.ViewModel
 
         private bool _bulkDeleteOrphanBapHabitats;
         private bool _bulkDeletePotentialBapHabitats;
-        private int _bulkDeleteMultiplexCodes;
+        private int _bulkDeleteSecondaryCodes;
         private bool _bulkCreateHistory;
         private string _bulkDeterminationQuality;
         private string _bulkInterpretationQuality;
@@ -194,7 +194,7 @@ namespace HLU.UI.ViewModel
                 ihsHabitatChanged = false;
                 deleteOrphanBapHabitats = true;
                 deletePotentialBapHabitats = true;
-                deleteMultiplexCodes = (int)DeleteMultiplexCodesAction.All;
+                deleteMultiplexCodes = (int)DeleteSecondaryCodesAction.All;
             }
             // Determine if the IHS habitat has been changed
             else if (_viewModelMain.IncidIhsHabitat == null)
@@ -203,7 +203,7 @@ namespace HLU.UI.ViewModel
                 ihsHabitatChanged = false;
                 deleteOrphanBapHabitats = false;
                 deletePotentialBapHabitats = false;
-                deleteMultiplexCodes = (int)DeleteMultiplexCodesAction.None;
+                deleteMultiplexCodes = (int)DeleteSecondaryCodesAction.None;
             }
             //---------------------------------------------------------------------
 
@@ -236,7 +236,7 @@ namespace HLU.UI.ViewModel
         private void _viewModelBulkUpdate_RequestClose(bool apply,
             bool bulkDeleteOrphanBapHabitats,
             bool bulkDeletePotentialBapHabitats,
-            int bulkDeleteMultiplexCodes,
+            int bulkDeleteSecondaryCodes,
             bool bulkCreateHistory,
             string bulkDeterminationQuality,
             string bulkInterpretationQuality)
@@ -253,7 +253,7 @@ namespace HLU.UI.ViewModel
                 // Set the options for processing the bulk update
                 _bulkDeleteOrphanBapHabitats = bulkDeleteOrphanBapHabitats;
                 _bulkDeletePotentialBapHabitats = bulkDeletePotentialBapHabitats;
-                _bulkDeleteMultiplexCodes = bulkDeleteMultiplexCodes;
+                _bulkDeleteSecondaryCodes = bulkDeleteSecondaryCodes;
                 _bulkCreateHistory = bulkCreateHistory;
                 _bulkDeterminationQuality = bulkDeterminationQuality;
                 _bulkInterpretationQuality = bulkInterpretationQuality;
@@ -319,8 +319,10 @@ namespace HLU.UI.ViewModel
                 // Build DELETE statements for all IHS multiplex rows
                 List<string> ihsMultiplexDelStatements = new List<string>();
 
+
+                //TODO: Delete secondary codes and/or multiplex codes when relevant
                 // If all multiplex codes are to be deleted
-                if (_bulkDeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.All)
+                if (_bulkDeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All)
                 {
                     // Build DELETE statements for all IHS multiplex rows
                     ihsMultiplexDelStatements.Add(
@@ -350,7 +352,7 @@ namespace HLU.UI.ViewModel
                 // If the IHS habitat code has changed and invalid multiplex codes
                 // are to be deleted
                 else if ((incidUpdateVals.Contains(_viewModelMain.HluDataset.incid.ihs_habitatColumn)) &&
-                    (_bulkDeleteMultiplexCodes == (int)DeleteMultiplexCodesAction.Invalid))
+                    (_bulkDeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.Invalid))
                 {
                     //TODO: Replace with secondary code?
                     //// Get the new IHS habitat code
@@ -427,6 +429,7 @@ namespace HLU.UI.ViewModel
                 int incidOrdinal =
                     _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
 
+                //TODO: Delete secondary codes and/or multiplex codes when relevant
                 //---------------------------------------------------------------------
                 // FIXOLD: 078 Bulk update overhaul/improvements.
                 // 
@@ -439,10 +442,10 @@ namespace HLU.UI.ViewModel
                     // Perform the bulk updates on the data tables
                     if (Settings.Default.BulkUpdateUsesAdo)
                         BulkUpdateAdo(currIncid, selectCommandIncid, updateCommandIncid, null,
-                            ihsMultiplexDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                            ihsMultiplexDelStatements, _bulkDeleteSecondaryCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                     else
                         BulkUpdateDb(currIncid, selectCommandIncid, updateCommandIncid, null,
-                            ihsMultiplexDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                            ihsMultiplexDelStatements, _bulkDeleteSecondaryCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                 }
                 //---------------------------------------------------------------------
 
@@ -644,6 +647,7 @@ namespace HLU.UI.ViewModel
                         //    secondaryRow += 1;
                         //}
 
+                        //TODO: Delete secondary codes and/or multiplex codes when relevant
                         //TODO: OSMM secondaries
                         // Filter out any rows not set (because the maximum number of blank rows are
                         // created above so any not used need to be removed)
@@ -656,10 +660,10 @@ namespace HLU.UI.ViewModel
                         // Perform the bulk updates on the data tables
                         if (Settings.Default.BulkUpdateUsesAdo)
                             BulkUpdateAdo(currIncid, selectCommandIncid, updateCommandIncid, updateCommandIncidOSMMUpdates,
-                                secondaryDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                                secondaryDelStatements, _bulkDeleteSecondaryCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                         else
                             BulkUpdateDb(currIncid, selectCommandIncid, updateCommandIncid, updateCommandIncidOSMMUpdates,
-                                secondaryDelStatements, _bulkDeleteMultiplexCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
+                                secondaryDelStatements, _bulkDeleteSecondaryCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                     }
                 }
 
@@ -1648,7 +1652,8 @@ namespace HLU.UI.ViewModel
                         throw new Exception(String.Format("Failed to insert into table {0}.", dbRows.TableName));
                 }
             }
-            else if ((deleteExistingRows == (int)DeleteMultiplexCodesAction.All) && (numRowsDb > numRowsNew))
+            //TODO: Delete secondary codes and/or multiplex codes when relevant
+            else if ((deleteExistingRows == (int)DeleteSecondaryCodesAction.All) && (numRowsDb > numRowsNew))
             {
                 StringBuilder deleteCommand = new StringBuilder(String.Format(
                     "DELETE FROM {0} WHERE ", _viewModelMain.DataBase.QualifyTableName(dbRows.TableName)));
@@ -1723,8 +1728,9 @@ namespace HLU.UI.ViewModel
             // Get the number of non-blank row with non-duplicate data corresponding to child table dbRows
             int numRowsNew = newRowsNoDups.Count();
 
+            //TODO: Delete secondary codes and/or multiplex codes when relevant
             // Exit if no existing rows are to be retained and there are no new rows to add
-            if ((deleteExistingRows == (int)DeleteMultiplexCodesAction.All) && (numRowsNew == 0)) return;
+            if ((deleteExistingRows == (int)DeleteSecondaryCodesAction.All) && (numRowsNew == 0)) return;
 
             // Select only existing data table rows not in the new rows
             R[] oldRows = (from dr in dbRowsEnum
@@ -1787,12 +1793,13 @@ namespace HLU.UI.ViewModel
                     break;
             }
 
+            //TODO: Delete secondary codes and/or multiplex codes when relevant
             // Re-insert any old rows not in the new rows
             //---------------------------------------------------------------------
             // FIXOLD: 091 Fix bug when applying bulk updates
             //
-            //if (deleteExistingRows != (int)DeleteMultiplexCodesAction.None)
-            if (deleteExistingRows != (int)DeleteMultiplexCodesAction.All)
+            //if (deleteExistingRows != (int)DeleteSecondaryCodesAction.None)
+            if (deleteExistingRows != (int)DeleteSecondaryCodesAction.All)
             //---------------------------------------------------------------------
             {
                 foreach (R oldRow in oldRows)

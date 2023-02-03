@@ -860,12 +860,12 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1000")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public int MinimumAutoZoom {
+        public int MinAutoZoom {
             get {
-                return ((int)(this["MinimumAutoZoom"]));
+                return ((int)(this["MinAutoZoom"]));
             }
             set {
-                this["MinimumAutoZoom"] = value;
+                this["MinAutoZoom"] = value;
             }
         }
         
@@ -881,9 +881,9 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1000000")]
-        public int MaximumAutoZoom {
+        public int MaxAutoZoom {
             get {
-                return ((int)(this["MaximumAutoZoom"]));
+                return ((int)(this["MaxAutoZoom"]));
             }
         }
         
@@ -1122,6 +1122,121 @@ namespace HLU.Properties {
         public string HLUData_v400ConnectionString {
             get {
                 return ((string)(this["HLUData_v400ConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SecondaryCodeDelimiter {
+            get {
+                return ((string)(this["SecondaryCodeDelimiter"]));
+            }
+            set {
+                this["SecondaryCodeDelimiter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowIHSTab {
+            get {
+                return ((bool)(this["ShowIHSTab"]));
+            }
+            set {
+                this["ShowIHSTab"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<All>")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string PreferredSecondaryGroup {
+            get {
+                return ((string)(this["PreferredSecondaryGroup"]));
+            }
+            set {
+                this["PreferredSecondaryGroup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int SecondaryCodeValidation {
+            get {
+                return ((int)(this["SecondaryCodeValidation"]));
+            }
+            set {
+                this["SecondaryCodeValidation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int SecondaryGroupColumnWidth {
+            get {
+                return ((int)(this["SecondaryGroupColumnWidth"]));
+            }
+            set {
+                this["SecondaryGroupColumnWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Never clear</string>
+  <string>Clear on change in primary code only</string>
+  <string>Clear on change in primary or secondary codes</string>
+  <string>Clear on any change</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection ClearIHSUpdateActions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["ClearIHSUpdateActions"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int BulkUpdateDeleteSecondaryCodes {
+            get {
+                return ((int)(this["BulkUpdateDeleteSecondaryCodes"]));
+            }
+            set {
+                this["BulkUpdateDeleteSecondaryCodes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string ClearIHSUpdateAction {
+            get {
+                return ((string)(this["ClearIHSUpdateAction"]));
+            }
+            set {
+                this["ClearIHSUpdateAction"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
+        public int MaxSecondaryGroupColumnWidth {
+            get {
+                return ((int)(this["MaxSecondaryGroupColumnWidth"]));
             }
         }
     }
