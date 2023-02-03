@@ -16500,6 +16500,8 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnsort_order;
             
+            private global::System.Data.DataColumn columnabbreviation;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_secondary_groupDataTable() {
@@ -16559,6 +16561,14 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn abbreviationColumn {
+                get {
+                    return this.columnabbreviation;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -16594,12 +16604,13 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_secondary_groupRow Addlut_secondary_groupRow(string code, string description, int sort_order) {
+            public lut_secondary_groupRow Addlut_secondary_groupRow(string code, string description, int sort_order, string abbreviation) {
                 lut_secondary_groupRow rowlut_secondary_groupRow = ((lut_secondary_groupRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         code,
                         description,
-                        sort_order};
+                        sort_order,
+                        abbreviation};
                 rowlut_secondary_groupRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowlut_secondary_groupRow);
                 return rowlut_secondary_groupRow;
@@ -16632,6 +16643,7 @@ namespace HLU.Data.Model {
                 this.columncode = base.Columns["code"];
                 this.columndescription = base.Columns["description"];
                 this.columnsort_order = base.Columns["sort_order"];
+                this.columnabbreviation = base.Columns["abbreviation"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -16643,6 +16655,8 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columndescription);
                 this.columnsort_order = new global::System.Data.DataColumn("sort_order", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnsort_order);
+                this.columnabbreviation = new global::System.Data.DataColumn("abbreviation", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnabbreviation);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columncode}, true));
                 this.columncode.AllowDBNull = false;
@@ -16651,6 +16665,7 @@ namespace HLU.Data.Model {
                 this.columndescription.AllowDBNull = false;
                 this.columndescription.MaxLength = 50;
                 this.columnsort_order.AllowDBNull = false;
+                this.columnabbreviation.MaxLength = 20;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -24243,6 +24258,34 @@ namespace HLU.Data.Model {
                 set {
                     this[this.tablelut_secondary_group.sort_orderColumn] = value;
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string abbreviation {
+                get {
+                    try {
+                        return ((string)(this[this.tablelut_secondary_group.abbreviationColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'abbreviation\' in table \'lut_secondary_group\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablelut_secondary_group.abbreviationColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IsabbreviationNull() {
+                return this.IsNull(this.tablelut_secondary_group.abbreviationColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetabbreviationNull() {
+                this[this.tablelut_secondary_group.abbreviationColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -42604,25 +42647,30 @@ SELECT code_habitat, bap_habitat FROM lut_secondary_bap_habitat WHERE (bap_habit
             tableMapping.ColumnMappings.Add("code", "code");
             tableMapping.ColumnMappings.Add("description", "description");
             tableMapping.ColumnMappings.Add("sort_order", "sort_order");
+            tableMapping.ColumnMappings.Add("abbreviation", "abbreviation");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_secondary_group] WHERE (([code] = @Original_code) AND ([descript" +
-                "ion] = @Original_description) AND ([sort_order] = @Original_sort_order))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [lut_secondary_group] WHERE (([code] = @Original_code) AND ([description] = @Original_description) AND ((@IsNull_abbreviation = 1 AND [abbreviation] IS NULL) OR ([abbreviation] = @Original_abbreviation)) AND ([sort_order] = @Original_sort_order))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_abbreviation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "abbreviation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_abbreviation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "abbreviation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_secondary_group] SET [code] = @code, [description] = @description, [sort_order] = @sort_order WHERE (([code] = @Original_code) AND ([description] = @Original_description) AND ([sort_order] = @Original_sort_order));
-SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @code)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_secondary_group] SET [code] = @code, [description] = @description, [abbreviation] = @abbreviation, [sort_order] = @sort_order WHERE (([code] = @Original_code) AND ([description] = @Original_description) AND ((@IsNull_abbreviation = 1 AND [abbreviation] IS NULL) OR ([abbreviation] = @Original_abbreviation)) AND ([sort_order] = @Original_sort_order));
+SELECT code, description, abbreviation, sort_order FROM lut_secondary_group WHERE (code = @code)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@abbreviation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "abbreviation", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_abbreviation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "abbreviation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_abbreviation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "abbreviation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_sort_order", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sort_order", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
@@ -42639,7 +42687,8 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        code, description, sort_order\r\nFROM            lut_secondary_group";
+            this._commandCollection[0].CommandText = "SELECT        code, description, abbreviation, sort_order\r\nFROM            lut_se" +
+                "condary_group";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -42700,7 +42749,7 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_code, string Original_description, int Original_sort_order) {
+        public virtual int Delete(string Original_code, string Original_description, string Original_abbreviation, int Original_sort_order) {
             if ((Original_code == null)) {
                 throw new global::System.ArgumentNullException("Original_code");
             }
@@ -42713,7 +42762,15 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
             else {
                 this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_description));
             }
-            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_sort_order));
+            if ((Original_abbreviation == null)) {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_abbreviation));
+            }
+            this.Adapter.DeleteCommand.Parameters[4].Value = ((int)(Original_sort_order));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -42734,7 +42791,7 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string code, string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
+        public virtual int Update(string code, string description, string abbreviation, int sort_order, string Original_code, string Original_description, string Original_abbreviation, int Original_sort_order) {
             if ((code == null)) {
                 throw new global::System.ArgumentNullException("code");
             }
@@ -42747,20 +42804,34 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
             else {
                 this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(description));
             }
-            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(sort_order));
+            if ((abbreviation == null)) {
+                this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(abbreviation));
+            }
+            this.Adapter.UpdateCommand.Parameters[3].Value = ((int)(sort_order));
             if ((Original_code == null)) {
                 throw new global::System.ArgumentNullException("Original_code");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code));
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_code));
             }
             if ((Original_description == null)) {
                 throw new global::System.ArgumentNullException("Original_description");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_description));
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_description));
             }
-            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_sort_order));
+            if ((Original_abbreviation == null)) {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(Original_abbreviation));
+            }
+            this.Adapter.UpdateCommand.Parameters[8].Value = ((int)(Original_sort_order));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -42781,8 +42852,8 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string description, int sort_order, string Original_code, string Original_description, int Original_sort_order) {
-            return this.Update(Original_code, description, sort_order, Original_code, Original_description, Original_sort_order);
+        public virtual int Update(string description, string abbreviation, int sort_order, string Original_code, string Original_description, string Original_abbreviation, int Original_sort_order) {
+            return this.Update(Original_code, description, abbreviation, sort_order, Original_code, Original_description, Original_abbreviation, Original_sort_order);
         }
     }
     

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hlu="clr-namespace:HLU.UI.UserControls;assembly="
         Title="{Binding WindowTitle}"
-        Width="550"
+        Width="600"
         Height="Auto"
         Icon="..\..\Icons\HLUIcon.png"
         ResizeMode="NoResize"
@@ -214,7 +214,7 @@
 									  Grid.Row="2">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="80" />
+										<ColumnDefinition Width="70" />
 									</Grid.ColumnDefinitions>
 
 									<Label x:Name="LabelMinAutoZoom"
@@ -256,7 +256,7 @@
 										   Grid.Column="0"
 										   Margin="4,4,4,4"
 										   HorizontalAlignment="Right"
-										   VerticalAlignment="Center" Content="Export Default Directory:"/>
+										   VerticalAlignment="Center" Content="Default Export Directory:"/>
 									<TextBox x:Name="TextBoxExportPath"
 											 Grid.Column="1"
 											 Margin="4,8,1,8"
@@ -321,7 +321,7 @@
                               Grid.Column="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
                             <Label x:Name="LabelHistoryColumns1"
                                    Grid.Row="0"
@@ -342,7 +342,7 @@
                                      ItemsSource="{Binding HistoryColumns}"
                                      Padding="2"
                                      SelectionMode="Extended">
-                                <!--  ItemContainerStyle="{StaticResource ListBoxItemStyle}"  -->
+
                                 <ListBox.ItemContainerStyle>
                                     <Style>
                                         <Setter Property="ListBoxItem.Background" Value="Transparent" />
@@ -383,7 +383,7 @@
 							  Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="70" />
                             </Grid.ColumnDefinitions>
 
                         <Label x:Name="LabelHistoryDisplayLastN"
@@ -453,13 +453,11 @@
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelPreferredHabitatClass"
-                                   Grid.Row="1"
                                    Grid.Column="0"
                                    Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Preferred Habitat Class"/>
                             <ComboBox x:Name="ComboBoxPreferredHabitatClass"
-                                      Grid.Row="1"
                                       Grid.Column="1"
                                       Margin="4,8,4,8"
                                       BorderThickness="1"
@@ -471,7 +469,197 @@
 
                         </Grid>
 
-                        <Grid x:Name="GridSubsetUpdateAction" Grid.Row="1">
+                        <Grid x:Name="GridShowOptions" Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="25" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelShowGroupHeaders"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Show Group Headers"/>
+                            <CheckBox x:Name="CheckBoxShowGroupHeaders"
+                                      Grid.Column="1"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ShowGroupHeaders}" />
+                            <Label x:Name="LabelShowNVCCodes"
+                                   Grid.Column="2"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Show NVC Codes"/>
+                            <CheckBox x:Name="CheckBoxShowNVCCodes"
+                                      Grid.Column="3"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ShowNVCCodes}" />
+                            <Label x:Name="LabelShowIHSTab"
+                                   Grid.Column="4"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Show IHS Tab"/>
+                            <CheckBox x:Name="CheckBoxShowIHSTab"
+                                      Grid.Column="5"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding ShowIHSTab}" />
+                        </Grid>
+
+                        <Grid x:Name="GridShowOSMMUpdateOptions" Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="160" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelShowOSMMUpdateOptions"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Show OSMM Update Attributes"/>
+                            <ComboBox x:Name="ComboBoxShowOSMMUpdateOptions"
+                                      Grid.Column="1"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding ShowOSMMUpdatesOptions}"
+                                      SelectedValue="{Binding ShowOSMMUpdatesOption, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+                        </Grid>
+
+                        <Grid x:Name="GridPreferredSecondaryGroup" Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" MinWidth="200" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelPreferredSecondaryGroup"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Preferred Secondary Group"/>
+                            <ComboBox x:Name="ComboBoxPreferredSecondaryGroup"
+                                      Grid.Column="1"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      DisplayMemberPath="description"
+                                      ItemsSource="{Binding SecondaryGroupCodes}"
+                                      SelectedValue="{Binding PreferredSecondaryGroup, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+                                      SelectedValuePath="code" />
+
+                        </Grid>
+
+                        <Grid x:Name="GridSecondaryGroupWidthCodeValidation" Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelSecondaryGroupColumnWidth"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Secondary Group Column Width"/>
+                            <TextBox x:Name="TextBoxSecondaryGroupColumnWidth"
+                                     Grid.Column="1"
+                                     Margin="4,8,4,8"
+                                     VerticalAlignment="Center"
+                                     BorderThickness="1"
+                                     Text="{Binding SecondaryGroupColumnWidth, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+                                     TextAlignment="Right" />
+                            <Label x:Name="LabelSecondaryCodeValidation"
+                                   Grid.Row="0"
+                                   Grid.Column="2"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Secondary Code Validation"/>
+                            <ComboBox x:Name="ComboBoxSecondaryCodeValidation"
+                                      Grid.Row="0"
+                                      Grid.Column="3"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding SecondaryCodeValidationOptions}"
+                                      SelectedValue="{Binding SecondaryCodeValidation, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+                        </Grid>
+
+                        <Grid x:Name="GridSecondaryCodeDelimiter"
+                              Grid.Row="5"
+                              HorizontalAlignment="Right">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="35" />
+                            </Grid.ColumnDefinitions>
+                            <Label x:Name="LabelSecondaryCodeDelimiter"
+                                   Grid.Row="3"
+                                   Grid.Column="0"
+                                   Margin="4,8,4,8"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Secondary Code Delimiter"/>
+                            <TextBox x:Name="TextBoxSecondaryCodeSeparatorDelimiter"
+                                     Grid.Row="3"
+                                     Grid.Column="1"
+                                     Margin="4,8,4,8"
+                                     VerticalAlignment="Center"
+                                     BorderThickness="1"
+                                     Text="{Binding SecondaryCodeDelimiter, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                     Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
+                                     TextAlignment="Center" />
+                        </Grid>
+
+                    </Grid>
+                </GroupBox>
+
+                        </ScrollViewer>
+                    </AdornerDecorator>
+
+        		</TabItem>
+
+                <TabItem x:Name="TabUpdates"
+                         Height="29.29"
+                         VerticalAlignment="Bottom"
+                         IsEnabled="True">
+
+                    <TabItem.Header>
+                        <StackPanel>
+                            <Label x:Name="UpdatesTabLabel"
+                                   Margin="2,0,2,0"
+                                   VerticalAlignment="Bottom"
+                                   Content="Updates"
+                                   FontSize="13"
+                                   Padding="4,2,4,4"
+                                   ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <GroupBox x:Name="GroupBoxUpdates"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="Updates Options">
+                    <Grid Margin="2,4,4,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid x:Name="GridSubsetUpdateAction" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="110" />
@@ -482,7 +670,7 @@
                                    Grid.Column="0"
                                    Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Action To Take When Updating Subset"/>
+                                   VerticalAlignment="Center" Content="Action To Take When Updating Incid Subset"/>
                             <ComboBox x:Name="ComboBoxSubsetUpdateAction"
                                       Grid.Row="0"
                                       Grid.Column="1"
@@ -494,41 +682,30 @@
 
                         </Grid>
 
-                        <Grid x:Name="GridShowNVCandHeaders" Grid.Row="2">
+                        <Grid x:Name="GridIHSUpdateAction" Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="25" />
-                                <ColumnDefinition Width="4*" />
-                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="300" />
                             </Grid.ColumnDefinitions>
 
-                            <Label x:Name="LabelShowNVCCodes"
+                            <Label x:Name="LabelClearIHSUpdateAction"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Show NVC Codes?"/>
-                            <CheckBox x:Name="CheckBoxShowNVCCodes"
+                                   VerticalAlignment="Center" Content="When To Clear IHS Codes After Update"/>
+                            <ComboBox x:Name="ComboBoxClearIHSUpdateAction"
                                       Grid.Row="0"
                                       Grid.Column="1"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding ShowNVCCodes}" />
-                            <Label x:Name="LabelShowGroupHeaders"
-                                   Grid.Row="0"
-                                   Grid.Column="2"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Show Group Headers?"/>
-                            <CheckBox x:Name="CheckBoxShowGroupHeaders"
-                                      Grid.Row="0"
-                                      Grid.Column="3"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding ShowGroupHeaders}" />
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding ClearIHSUpdateActions}"
+                                      SelectedValue="{Binding ClearIHSUpdateAction, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
                         </Grid>
 
-                        <Grid x:Name="GridNotify" Grid.Row="3">
+                        <Grid x:Name="GridNotify" Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="25" />
@@ -539,7 +716,7 @@
                                    Grid.Column="0"
                                    Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Notify After Completing Split/Merge?"/>
+                                   VerticalAlignment="Center" Content="Notify After Completing Split/Merge"/>
                             <CheckBox x:Name="CheckBoxNotifyOnSplitMerge"
                                       Grid.Row="0"
                                       Grid.Column="1"
@@ -548,30 +725,7 @@
                                       IsChecked="{Binding NotifyOnSplitMerge}" />
                         </Grid>
 
-                        <Grid x:Name="GridShowOSMMUpdateOptions" Grid.Row="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="160" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label x:Name="LabelShowOSMMUpdateOptions"
-                                   Grid.Row="1"
-                                   Grid.Column="0"
-                                   Margin="4,0,4,0"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Show OSMM Update Attributes?"/>
-                            <ComboBox x:Name="ComboBoxShowOSMMUpdateOptions"
-                                      Grid.Row="1"
-                                      Grid.Column="1"
-                                      Margin="4,8,4,8"
-                                      BorderThickness="1"
-                                      ItemsSource="{Binding ShowOSMMUpdatesOptions}"
-                                      SelectedValue="{Binding ShowOSMMUpdatesOption, ValidatesOnDataErrors=True}"
-                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
-
-                        </Grid>
-
-                        <Grid x:Name="GridResetOSMMUpdatesStatus" Grid.Row="5">
+                        <Grid x:Name="GridResetOSMMUpdatesStatus" Grid.Row="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="25" />
@@ -582,7 +736,7 @@
                                    Grid.Column="0"
                                    Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update?"/>
+                                   VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update"/>
                             <CheckBox x:Name="CheckBoxResetOSMMUpdatesStatus"
                                       Grid.Row="0"
                                       Grid.Column="1"
@@ -597,7 +751,6 @@
 
                         </ScrollViewer>
                     </AdornerDecorator>
-
         		</TabItem>
 
                 <TabItem x:Name="TabSQL"
@@ -635,7 +788,7 @@
                         <Grid x:Name="GridSQLSelect" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="70" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelMaxGetValues"
@@ -664,7 +817,7 @@
                                    Grid.Column="0"
                                    Margin="4,8,4,8"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Warn Before GIS Select?"/>
+                                   VerticalAlignment="Center" Content="Warn Before GIS Select"/>
                             <ComboBox x:Name="ComboBoxWarnBeforeGISSelect"
                                       Grid.Column="1"
                                       Margin="4,8,4,8"
@@ -745,10 +898,10 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" MinWidth="70" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" MinWidth="70" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" MinWidth="70" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" MinWidth="70" />
+                            <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
                         <Label x:Name="LabelSeasonSpring"
                                Grid.Row="0"
@@ -832,6 +985,7 @@
                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
                                      TextAlignment="Center" />
                         </Grid>
+
                     </Grid>
                 </GroupBox>
 
@@ -894,7 +1048,7 @@
 											Grid.Column="0"
 											Margin="4,8,4,8"
 											HorizontalAlignment="Right"
-											VerticalAlignment="Center" Content="Delete Orphan Priority Habitats?"/>
+											VerticalAlignment="Center" Content="Delete Orphan Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeleteOrphanBapHabitats"
 												Grid.Row="0"
 												Grid.Column="2"
@@ -908,7 +1062,7 @@
 											Grid.ColumnSpan="2"
 											Margin="4,8,4,8"
 											HorizontalAlignment="Right"
-											VerticalAlignment="Center" Content="Delete Potential Priority Habitats?"/>
+											VerticalAlignment="Center" Content="Delete Potential Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeletePotentialBapHabitats"
 												Grid.Row="0"
 												Grid.Column="5"
@@ -916,20 +1070,20 @@
 												VerticalAlignment="Center"
 												IsChecked="{Binding BulkDeletePotentialBapHabitats}" />
 
-									<Label x:Name="LabelBulkDeleteMultiplexCodes"
+									<Label x:Name="LabelBulkDeleteSecondaryCodes"
 											Grid.Row="1"
 											Grid.Column="0"
 											Margin="4,8,4,8"
 											HorizontalAlignment="Right"
-											VerticalAlignment="Center" Content="Delete Existing Multiplex Rows?"/>
-									<ComboBox Name="ComboBoxDeleteMultiplexCodes"
+											VerticalAlignment="Center" Content="Delete Existing Secondary Codes"/>
+									<ComboBox Name="ComboBoxDeleteSecondaryCodes"
 											  Grid.Row="1"
 											  Grid.Column="1"
 											  Grid.ColumnSpan="2"
 											  Margin="4,8,4,8"
 											  BorderThickness="1"
-											  ItemsSource="{Binding BulkDeleteMultiplexCodesActions}"
-											  SelectedValue="{Binding BulkDeleteMultiplexCodes, ValidatesOnDataErrors=True}"
+											  ItemsSource="{Binding BulkDeleteSecondaryCodesActions}"
+											  SelectedValue="{Binding BulkDeleteSecondaryCodes, ValidatesOnDataErrors=True}"
 											  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
 
 									<Label x:Name="LabelBulkCreateHistory"
@@ -937,7 +1091,7 @@
 											Grid.Column="4"
 											Margin="4,8,4,8"
 											HorizontalAlignment="Right"
-											VerticalAlignment="Center" Content="Create History Records?"/>
+											VerticalAlignment="Center" Content="Create History Records"/>
 									<CheckBox x:Name="CheckBoxBulkCreateHistory"
 												Grid.Row="1"
 												Grid.Column="5"

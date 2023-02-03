@@ -54,45 +54,63 @@ namespace HLU.UI.ViewModel
         private HluDataSet.incid_mm_polygonsDataTable _incidMMPolygonsTable = 
             new HluDataSet.incid_mm_polygonsDataTable();
         private List<int> _gisIDColumnOrdinals;
-        private string[] _showOSMMUpdatesOptions;
 
+        // Database options
         private int? _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
         private int? _incidTablePageSize = Settings.Default.IncidTablePageSize;
 
+        // GIS/Export options
         private int _preferredGis = Settings.Default.PreferredGis;
         private string _mapPath = Settings.Default.MapPath;
-        private int? _minAutoZoom = Settings.Default.MinimumAutoZoom;
+        private int? _minAutoZoom = Settings.Default.MinAutoZoom;
         private string _exportPath = Settings.Default.ExportPath;
 
+        // History options
         private SelectionList<string> _historyColumns;
         private int? _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
 
-        private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        // Interface options
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
-        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
-        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showIHSTab = Settings.Default.ShowIHSTab;
+        private string[] _showOSMMUpdatesOptions;
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
+
+        private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
+        private int? _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private string _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
+
+        // Updates options
+        private int? _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+        private string[] _clearIHSUpdateActions;
+        private string _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
+        private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
 
+        // Filter options
         private int? _getValueRows = Settings.Default.GetValueRows;
         private int? _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
         private string _sqlPath = Settings.Default.SqlPath;
 
+        // Dates options
         private string _seasonSpring = Settings.Default.SeasonNames[0];
         private string _seasonSummer = Settings.Default.SeasonNames[1];
         private string _seasonAutumn = Settings.Default.SeasonNames[2];
         private string _seasonWinter = Settings.Default.SeasonNames[3];
         private string _vagueDateDelimiter = Settings.Default.VagueDateDelimiter;
 
+        // Bulk Update options
         private bool _bulkDeleteOrphanBapHabitats = Settings.Default.BulkUpdateDeleteOrphanBapHabitats;
         private bool _bulkDeletePotentialBapHabitats = Settings.Default.BulkUpdateDeletePotentialBapHabitats;
-        private int _bulkDeleteMultiplexCodes = Settings.Default.BulkUpdateDeleteMultiplexCodes;
+        private int _bulkDeleteSecondaryCodes = Settings.Default.BulkUpdateDeleteSecondaryCodes;
         private bool _bulkCreateHistoryRecords = Settings.Default.BulkUpdateCreateHistoryRecords;
         private string _bulkDeterminationQuality = Settings.Default.BulkUpdateDeterminationQuality;
         private string _bulkInterpretationQuality = Settings.Default.BulkUpdateInterpretationQuality;
         private Nullable<int> _bulkOSMMSourceId = Settings.Default.BulkOSMMSourceId;
 
+        // Backup variables
         private string _bakMapPath;
         private string _bakExportPath;
         private string _bakSqlPath;
@@ -205,7 +223,7 @@ namespace HLU.UI.ViewModel
             // GIS/Export options
             Settings.Default.PreferredGis = _preferredGis;
             Settings.Default.MapPath = _mapPath;
-            Settings.Default.MinimumAutoZoom = (int)_minAutoZoom;
+            Settings.Default.MinAutoZoom = (int)_minAutoZoom;
             Settings.Default.ExportPath = _exportPath;
 
             // History options
@@ -216,12 +234,21 @@ namespace HLU.UI.ViewModel
 
             // Interface options
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
-            Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
-            Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.ShowGroupHeaders = _showGroupHeaders;
-            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+            Settings.Default.ShowNVCCodes = _showNVCCodes;
+            Settings.Default.ShowIHSTab = _showIHSTab;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
+
+            Settings.Default.PreferredSecondaryGroup = _preferredSecondaryGroup;
+            Settings.Default.SecondaryGroupColumnWidth = (int)_secondaryGroupColumnWidth;
+            Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
+            Settings.Default.SecondaryCodeDelimiter = _secondaryCodeDelimiter;
+
+            // Updates options
+            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+            Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
+            Settings.Default.ClearIHSUpdateAction = _clearIHSUpdateAction;
 
             // Filter options
             Settings.Default.GetValueRows = (int)_getValueRows;
@@ -235,17 +262,12 @@ namespace HLU.UI.ViewModel
             Settings.Default.SeasonNames[3] = _seasonWinter;
             Settings.Default.VagueDateDelimiter = _vagueDateDelimiter;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Bulk update options
             Settings.Default.BulkUpdateDeleteOrphanBapHabitats = _bulkDeleteOrphanBapHabitats;
             Settings.Default.BulkUpdateDeletePotentialBapHabitats = _bulkDeletePotentialBapHabitats;
-            Settings.Default.BulkUpdateDeleteMultiplexCodes = _bulkDeleteMultiplexCodes;
+            Settings.Default.BulkUpdateDeleteSecondaryCodes = _bulkDeleteSecondaryCodes;
             Settings.Default.BulkUpdateCreateHistoryRecords = _bulkCreateHistoryRecords;
-            //---------------------------------------------------------------------
-            //---------------------------------------------------------------------
-            // CHANGED: CR49 Process bulk OSMM Updates
+
             // OSMM bulk update options
             Settings.Default.BulkUpdateDeterminationQuality = _bulkDeterminationQuality;
             Settings.Default.BulkUpdateInterpretationQuality = _bulkInterpretationQuality;
@@ -574,45 +596,6 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
-        // CHANGED: CR10 (Attribute updates for incid subsets)
-        // A new option to enable the user to determine what to do
-        // if they try to update a subset of features for the current
-        // incid.
-        // 
-        /// <summary>
-        /// Gets or sets the list of available subset update actions from
-        /// the enum.
-        /// </summary>
-        /// <value>
-        /// The list of subset update actions.
-        /// </value>
-        public SubsetUpdateActions[] SubsetUpdateActions
-        {
-            get
-            {
-                return Enum.GetValues(typeof(SubsetUpdateActions)).Cast<SubsetUpdateActions>()
-                    .ToArray();
-            }
-            set { }
-        }
-
-        /// <summary>
-        /// Gets or sets the preferred subset update action.
-        /// </summary>
-        /// <value>
-        /// The preferred subset update action.
-        /// </value>
-        public SubsetUpdateActions? SubsetUpdateAction
-        {
-            get { return (SubsetUpdateActions)_subsetUpdateAction; }
-            set
-            {
-                _subsetUpdateAction = (int)value;
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
         // FIXOLD: 056 A new option to enable NVC Codes to be shown or hidden.
         // 
         /// <summary>
@@ -644,25 +627,11 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // CHANGED: CR39 (Split and merge complete messages)
-        // A new option to enable the user to determine if they
-        // want to be notified following the completion of a
-        // split or merge.
-        //
-        /// <summary>
-        /// Gets or sets the choice of whether the user will
-        /// be notified when a split or merge has completed.
-        /// </summary>
-        /// <value>
-        /// If the user will be notified after a split or merge.
-        /// </value>
-        public bool NotifyOnSplitMerge
+        public bool ShowIHSTab
         {
-            get { return _notifyOnSplitMerge; }
-            set { _notifyOnSplitMerge = value; }
+            get { return _showIHSTab; }
+            set { _showIHSTab = value; }
         }
-        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR49 Process proposed OSMM Updates
@@ -703,6 +672,180 @@ namespace HLU.UI.ViewModel
             {
                 _showOSMMUpdatesOption = value;
             }
+        }
+        //---------------------------------------------------------------------
+
+        public HluDataSet.lut_secondary_groupRow[] SecondaryGroupCodes
+        {
+            get { return ViewModelWindowMain.SecondaryGroups; }
+            set { }
+        }
+
+        public string PreferredSecondaryGroup
+        {
+            get
+            {
+                var q = SecondaryGroupCodes.Where(h => h.code == _preferredSecondaryGroup);
+                if (q.Count() > 0)
+                    return _preferredSecondaryGroup;
+                else
+                    return null;
+            }
+            set
+            {
+                _preferredSecondaryGroup = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the width of the secondary group column.
+        /// </summary>
+        /// <value>
+        /// The width of the secondary group column.
+        /// </value>
+        public int? SecondaryGroupColumnWidth
+        {
+            get { return _secondaryGroupColumnWidth; }
+            set
+            {
+                _secondaryGroupColumnWidth = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the secondary code validation options.
+        /// </summary>
+        /// <value>
+        /// The secondary code validation options.
+        /// </value>
+        public SecondaryCodeValidationOptions[] SecondaryCodeValidationOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SecondaryCodeValidationOptions)).Cast<SecondaryCodeValidationOptions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the secondary code validation choice.
+        /// </summary>
+        /// <value>
+        /// The secondary code validation choice.
+        /// </value>
+        public SecondaryCodeValidationOptions? SecondaryCodeValidation
+        {
+            get { return (SecondaryCodeValidationOptions)_secondaryCodeValidation; }
+            set
+            {
+                _secondaryCodeValidation = (int)value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the secondary code delimiter.
+        /// </summary>
+        /// <value>
+        /// The secondary code delimiter.
+        /// </value>
+        public string SecondaryCodeDelimiter
+        {
+            get { return _secondaryCodeDelimiter; }
+            set
+            {
+                _secondaryCodeDelimiter = value;
+            }
+        }
+
+        #endregion
+
+        #region Updates
+
+        /// <summary>
+        /// Gets or sets the list of available subset update actions from
+        /// the enum.
+        /// </summary>
+        /// <value>
+        /// The list of subset update actions.
+        /// </value>
+        public SubsetUpdateActions[] SubsetUpdateActions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SubsetUpdateActions)).Cast<SubsetUpdateActions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred subset update action.
+        /// </summary>
+        /// <value>
+        /// The preferred subset update action.
+        /// </value>
+        public SubsetUpdateActions? SubsetUpdateAction
+        {
+            get { return (SubsetUpdateActions)_subsetUpdateAction; }
+            set
+            {
+                _subsetUpdateAction = (int)value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the clear IHS update actions.
+        /// </summary>
+        /// <value>
+        /// The clear IHS update actions.
+        /// </value>
+        public string[] ClearIHSUpdateActions
+        {
+            get
+            {
+                if (_clearIHSUpdateActions == null)
+                {
+                    _clearIHSUpdateActions = Settings.Default.ClearIHSUpdateActions.Cast<string>().ToArray();
+                }
+
+                return _clearIHSUpdateActions;
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the clear IHS update action.
+        /// </summary>
+        /// <value>
+        /// The clear IHS update action.
+        /// </value>
+        public string ClearIHSUpdateAction
+        {
+            get { return _clearIHSUpdateAction; }
+            set
+            {
+                _clearIHSUpdateAction = value;
+            }
+        }
+
+        //---------------------------------------------------------------------
+        // CHANGED: CR39 (Split and merge complete messages)
+        // A new option to enable the user to determine if they
+        // want to be notified following the completion of a
+        // split or merge.
+        //
+        /// <summary>
+        /// Gets or sets the choice of whether the user will
+        /// be notified when a split or merge has completed.
+        /// </summary>
+        /// <value>
+        /// If the user will be notified after a split or merge.
+        /// </value>
+        public bool NotifyOnSplitMerge
+        {
+            get { return _notifyOnSplitMerge; }
+            set { _notifyOnSplitMerge = value; }
         }
         //---------------------------------------------------------------------
 
@@ -926,34 +1069,34 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets whether existing multiplex codes should be deleted.
+        /// Gets or sets whether existing secondary codes should be deleted.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if existing multiplex codes should be deleted; otherwise, <c>false</c>.
+        ///   <c>true</c> if existing secondary codes should be deleted; otherwise, <c>false</c>.
         /// </value>
-        public DeleteMultiplexCodesAction[] BulkDeleteMultiplexCodesActions
+        public DeleteSecondaryCodesAction[] BulkDeleteSecondaryCodesActions
         {
             get
             {
-                return Enum.GetValues(typeof(DeleteMultiplexCodesAction)).Cast<DeleteMultiplexCodesAction>()
+                return Enum.GetValues(typeof(DeleteSecondaryCodesAction)).Cast<DeleteSecondaryCodesAction>()
                     .ToArray();
             }
             set { }
         }
 
         /// <summary>
-        /// Gets or sets the default option to delete invalid multiplex
+        /// Gets or sets the default option to delete invalid secondary
         /// codes when applying bulk updates.
         /// </summary>
         /// <value>
-        /// The default option for deleting invalid multiplex codes.
+        /// The default option for deleting invalid secondary codes.
         /// </value>
-        public DeleteMultiplexCodesAction? BulkDeleteMultiplexCodes
+        public DeleteSecondaryCodesAction? BulkDeleteSecondaryCodes
         {
-            get { return (DeleteMultiplexCodesAction)_bulkDeleteMultiplexCodes; }
+            get { return (DeleteSecondaryCodesAction)_bulkDeleteSecondaryCodes; }
             set
             {
-                _bulkDeleteMultiplexCodes = (int)value;
+                _bulkDeleteSecondaryCodes = (int)value;
             }
         }
 
@@ -1106,17 +1249,13 @@ namespace HLU.UI.ViewModel
             {
                 StringBuilder error = new StringBuilder();
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 017 Validate that mandatory values are not blank.
-                // Validate that the database timeout period, database page size and
-                // history rows to display are not null.
+                // Database options
                 if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
                     error.Append("\n" + "Please enter a database timeout greater than 0 seconds.");
                 if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
                     error.Append("\n" + "Please enter a database page size greater than 0 rows.");
-                if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
-                    error.Append("\n" + "Number of history rows to be displayed must be greater than 0.");
-                //---------------------------------------------------------------------
+
+                // GIS/Export options
                 if (GisAppsEnabled && (PreferredGis == GISApplications.None))
                     error.Append("\n" + "Please select your preferred GIS application.");
                 if (String.IsNullOrEmpty(_mapPath))
@@ -1128,53 +1267,46 @@ namespace HLU.UI.ViewModel
                     string msg;
                     if (!ValidateMapPath(out msg)) error.Append(msg);
                 }
-                //---------------------------------------------------------------------
-                // FIXOLD: 071 Add minimum auto zoom scale to options.
-                // Validate the minimum auto zoom scale.
                 if (Convert.ToInt32(MinAutoZoom) < 100 || MinAutoZoom == null)
                     error.Append("\n" + "Minimum auto zoom scale must be at least 100.");
-                if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
-                    error.Append("\n" + String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom));
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // CHANGED: CR10 (Attribute updates for incid subsets)
-                // Validate the users preferred action when updating a
-                // subset of features for an incid.
-                if (SubsetUpdateAction == null)
-                    error.Append("Please select the action to take when updating an incid subset.");
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // CHANGED: CR29 (Habitat classification and conversion to IHS)
-                // Validate the users preferred habitat class.
+                if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaxAutoZoom)
+                    error.Append("\n" + String.Format("Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaxAutoZoom));
+
+                // History options
+                if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
+                    error.Append("\n" + "Number of history rows to be displayed must be greater than 0.");
+
+                // Interface options
                 if (PreferredHabitatClass == null)
                     error.Append("Please select your preferred habitat class.");
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // CHANGED: CR49 Process proposed OSMM Updates
-                // A new option to enable the user to determine whether to show
-                // the OSMM update attributes for the current incid.
                 if (ShowOSMMUpdatesOption == null)
                     error.Append("Please select the option of when to display any OSMM Updates.");
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // CHANGED: CR5 (Select by attributes interface)
-                // Validate the maximum number of rows to be retrieved
-                // when getting values for a data column when building
-                // a sql query.
+                if (PreferredSecondaryGroup == null)
+                    error.Append("Please select your preferred secondary group.");
+                if (Convert.ToInt32(SecondaryGroupColumnWidth) < 0 || SecondaryGroupColumnWidth == null)
+                    error.Append("\n" + "Secondary Group Column Width must be greater than or equal to 0.");
+                if (Convert.ToInt32(SecondaryGroupColumnWidth) > Settings.Default.MaxSecondaryGroupColumnWidth)
+                    error.Append("\n" + String.Format("Secondary Group Column Width must not be greater than {0}.", Settings.Default.MaxAutoZoom));
+                if (SecondaryCodeValidation == null)
+                    error.Append("Please select option of when to validate secondary codes.");
+                if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
+                    error.Append("\n" + "Please enter a secondary code delimiter character.");
+                else if (SecondaryCodeDelimiter.Length > 2)
+                    error.Append("\n" + "Secondary code delimiter must be one or two characters.");
+
+                // Update options
+                if (SubsetUpdateAction == null)
+                    error.Append("Please select the action to take when updating an incid subset.");
+                if (ClearIHSUpdateAction == null)
+                    error.Append("Please select when to clear IHS codes after an update.");
+
+                // Filter options
                 if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
                     error.Append("\n" + "Number of value rows to be retrieved must be greater than 0.");
                 if (Convert.ToInt32(GetValueRows) > Settings.Default.MaxGetValueRows)
                     error.Append("\n" + String.Format("Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows));
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // FIXOLD: 006 Allow the user to not display any of the history columns
-                // Remove the validation enforcing the user to display at least one
-                // of the history columns because they are all updated when creating
-                // history regardless of whether the user wants to display any of them.
-                //
-                //if (_historyColumns.Count(h => h.IsSelected) == 0)
-                //    error.Append("\n" + "Please select columns to be recorded in history trail.");
-                //---------------------------------------------------------------------
+
+                // Date options
                 if (String.IsNullOrEmpty(SeasonSpring))
                     error.Append("\n" + "Please enter a season name for spring.");
                 if (String.IsNullOrEmpty(SeasonSummer))
@@ -1188,19 +1320,13 @@ namespace HLU.UI.ViewModel
                 else if (VagueDateDelimiter.Length > 1)
                     error.Append("\n" + "Vague date delimiter must be a single character.");
 
-                //---------------------------------------------------------------------
-                // CHANGED: CR49 Process bulk OSMM Updates
-                // Validate the users default determination quality when adding
-                // a BAP habitat during an OSMM bulk update.
+                // Bulk Update options
+                if (BulkDeleteSecondaryCodes == null)
+                    error.Append("Please select when to delete existing secondary codes.");
                 if (BulkDeterminationQuality == null)
                     error.Append("Please select the default determination quality for new priority habitats.");
-                // Validate the users default interpration quality when adding
-                // a BAP habitat during an OSMM bulk update.
                 if (BulkInterpretationQuality == null)
                     error.Append("Please select the default interpration quality for new priority habitats.");
-                //---------------------------------------------------------------------
-                // Validate the default OSMM source name to be applied
-                // during an OSMM bulk update.
                 if (OSMMSourceId == null)
                     error.Append("Please select the default source name for OS MasterMap.");
 
@@ -1219,11 +1345,7 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 017 Validate that mandatory values are not blank
-                    // Validate that the database timeout period, database page size and
-                    // history rows to display are not null.
-                    //---------------------------------------------------------------------
+                    // Database options
                     case "DbConnectionTimeout":
                         if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
                             error = "Error: Enter a database timeout greater than 0 seconds.";
@@ -1234,11 +1356,8 @@ namespace HLU.UI.ViewModel
                         if (Convert.ToInt32(IncidTablePageSize) > 1000 || IncidTablePageSize == null)
                             error = "Error: Enter a database page size no more than 1000 rows.";
                         break;
-                    case "HistoryDisplayLastN":
-                        if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
-                            error = "Error: Number of history rows to be displayed must be greater than 0.";
-                        break;
-                    //---------------------------------------------------------------------
+
+                    // GIS/Export options
                     case "PreferredGis":
                         if (GisAppsEnabled && (PreferredGis == GISApplications.None))
                             error = "Error: Select your preferred GIS application.";
@@ -1254,58 +1373,68 @@ namespace HLU.UI.ViewModel
                             if (!ValidateMapPath(out msg)) error = msg;
                         }
                         break;
-                    case "HistoryColumns":
-                        if (_historyColumns.Count(h => h.IsSelected) == 0)
-                            error = "Error: Select columns to be recorded in history trail.";
-                        break;
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 071 Add minimum auto zoom scale to options.
-                    // Validate the minimum auto zoom scale.
                     case "MinAutoZoom":
-                        if (Convert.ToInt32(MinAutoZoom) <= 0 || MinAutoZoom == null)
-                            error = "Error: Minimum auto zoom scale must be greater than 0.";
-                        if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaximumAutoZoom)
-                            error = String.Format("Error: Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaximumAutoZoom);
+                        if (Convert.ToInt32(MinAutoZoom) < 100 || MinAutoZoom == null)
+                            error = "Error: Minimum auto zoom scale must be at least 100.";
+                        if (Convert.ToInt32(MinAutoZoom) > Settings.Default.MaxAutoZoom)
+                            error = String.Format("Error: Minimum auto zoom scale must not be greater than {0}.", Settings.Default.MaxAutoZoom);
                         break;
-                    //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
-                    // Validate the users preferred action when updating a
-                    // subset of features for an incid.
-                    case "SubsetUpdateAction":
-                        if (SubsetUpdateAction == null)
-                            error = "Error: Select the action to take when updating an incid subset.";
+
+                    // History options
+                    case "HistoryDisplayLastN":
+                        if (Convert.ToInt32(HistoryDisplayLastN) <= 0 || HistoryDisplayLastN == null)
+                            error = "Error: Number of history rows to be displayed must be greater than 0.";
                         break;
-                    //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR29 (Habitat classification and conversion to IHS)
-                    // Validate the users preferred habitat class.
+
+                    // Interface options
                     case "PreferredHabitatClass":
                         if (PreferredHabitatClass == null)
                             error = "Error: Select your preferred habitat class.";
                         break;
-                    //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR49 Process proposed OSMM Updates
-                    // A new option to enable the user to determine whether to show
-                    // the OSMM update attributes for the current incid.
                     case "ShowOSMMUpdatesOption":
                         if (ShowOSMMUpdatesOption == null)
                             error = "Error: Select option of when to display any OSMM Updates.";
                         break;
-                    //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR5 (Select by attributes interface)
-                    // Validate the maximum number of rows to be retrieved
-                    // when getting values for a data column when building
-                    // a sql query.
+                    case "PreferredSecondaryGroup":
+                        if (PreferredSecondaryGroup == null)
+                            error = "Error: Select your preferred secondary group.";
+                        break;
+                    case "SecondaryGroupColumnWidth":
+                        if (Convert.ToInt32(SecondaryGroupColumnWidth) < 0 || SecondaryGroupColumnWidth == null)
+                            error = "Error: Secondary Group Column Width must be greater than or equal to 0.";
+                        if (Convert.ToInt32(SecondaryGroupColumnWidth) > Settings.Default.MaxSecondaryGroupColumnWidth)
+                            error = String.Format("Error: Secondary Group Column Width must not be greater than {0}.", Settings.Default.MaxSecondaryGroupColumnWidth);
+                        break;
+                    case "SecondaryCodeValidation":
+                        if (SecondaryCodeValidation == null)
+                            error = "Error: Select option of when to validate secondary codes.";
+                        break;
+                    case "SecondaryCodeDelimiter":
+                        if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
+                            error = "Error: You must enter a secondary code delimiter character.";
+                        else if (SecondaryCodeDelimiter.Length > 2)
+                            error = "Error: Secondary code delimiter must be one or two characters.";
+                        break;
+
+                    // Update options
+                    case "SubsetUpdateAction":
+                        if (SubsetUpdateAction == null)
+                            error = "Error: Select the action to take when updating an incid subset.";
+                        break;
+                    case "ClearIHSUpdateAction":
+                        if (ClearIHSUpdateAction == null)
+                            error = "Error: Select when to clear IHS codes after an update.";
+                        break;
+
+                    // Filter options
                     case "GetValueRows":
                         if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
                             error = "Error: Number of value rows to be retrieved must be greater than 0.";
                         if (Convert.ToInt32(GetValueRows) > Settings.Default.MaxGetValueRows)
                             error = String.Format("Error: Number of value rows to be retrieved must not be greater than {0}.", Settings.Default.MaxGetValueRows);
                         break;
-                    //---------------------------------------------------------------------
+
+                    // Date options
                     case "SeasonSpring":
                         if (String.IsNullOrEmpty(SeasonSpring))
                             error = "Error: You must enter a season name for spring.";
@@ -1328,27 +1457,24 @@ namespace HLU.UI.ViewModel
                         else if (VagueDateDelimiter.Length > 1)
                             error = "Error: Vague date delimiter must be a single character.";
                         break;
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR49 Process bulk OSMM Updates
-                    // Validate the default determination quality when adding
-                    // a BAP habitat during an OSMM bulk update.
+
+                    // Bulk Update options
+                    case "BulkDeleteSecondaryCodes":
+                        if (BulkDeleteSecondaryCodes == null)
+                            error = "Please select when to delete existing secondary codes.";
+                        break;
                     case "BulkDeterminationQuality":
                         if (BulkDeterminationQuality == null)
                             error = "Please select the default determination quality for new priority habitats.";
                         break;
-                    // Validate the default interpretation quality when adding
-                    // a BAP habitat during an OSMM bulk update.
                     case "BulkInterpretationQuality":
                         if (BulkInterpretationQuality == null)
                             error = "Please select the default interpretation quality for new priority habitats.";
                         break;
-                    // Validate the default OSMM source name to be applied
-                    // during an OSMM bulk update.
                     case "OSMMSourceId":
                         if (OSMMSourceId == null)
                             error = "Please select the default source name for OS MasterMap.";
                         break;
-                    //---------------------------------------------------------------------
 
                 }
 
