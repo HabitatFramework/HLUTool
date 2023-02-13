@@ -221,7 +221,7 @@ namespace HLU.UI.ViewModel
         private bool _showIHSTab = Settings.Default.ShowIHSTab;
         private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
         private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
-        private int _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+        private bool _showSecondaryGroupColumn = Settings.Default.ShowSecondaryGroupColumn;
         private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
         private string _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
 
@@ -281,8 +281,9 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_condition_qualifierRow[] _conditionQualifierCodes;
         private HluDataSet.lut_primary_categoryRow[] _primaryCategoryCodes;
         //private HluDataSet.lut_primaryRow[] _primaryCodes;
-        private HluDataSet.lut_secondary_groupRow[] _secondaryGroupCodes;
-        public static HluDataSet.lut_secondary_groupRow[] SecondaryGroups;  // Used in the options window
+        private HluDataSet.lut_secondary_groupRow[] _secondaryGroupsValid;
+        private HluDataSet.lut_secondary_groupRow[] _secondaryGroups;
+        public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll;  // Used in the options window
         private HluDataSet.lut_secondaryRow[] _secondaryCodesAll;
         private HluDataSet.lut_secondaryRow[] _secondaryCodesValid;
 
@@ -3734,12 +3735,15 @@ namespace HLU.UI.ViewModel
                 _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
                 _showGroupHeaders = Settings.Default.ShowGroupHeaders;
                 _showNVCCodes = Settings.Default.ShowNVCCodes;
-                _showIHSTab = Settings.Default.ShowIHSTab;
-                _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
                 OnPropertyChanged("ShowNVCCodesText");
+                _showIHSTab = Settings.Default.ShowIHSTab;
+                OnPropertyChanged("ShowIHSTab");
+                _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
                 _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
-                _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+                //TODO: Remove as not working
+                _showSecondaryGroupColumn = Settings.Default.ShowSecondaryGroupColumn;
+                //OnPropertyChanged("ShowSecondaryGroupColumn");
                 _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
                 _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
 
@@ -5784,8 +5788,9 @@ namespace HLU.UI.ViewModel
         {
             try
             {
-                // Add secondary habitat to table
-                _incidSecondaryHabitats.Add(new SecondaryHabitat(false, -1, Incid, SecondaryHabitatCode, SecondaryGroup));
+                // Add secondary habitat to table if it isn't already in the table
+                if (SecondaryHabitat.SecondaryHabitatList == null || SecondaryHabitat.SecondaryHabitatList.Count(sh => sh.secondary_habitat == SecondaryHabitatCode) == 0)
+                    _incidSecondaryHabitats.Add(new SecondaryHabitat(false, -1, Incid, SecondaryHabitatCode, SecondaryGroup));
 
                 // Refresh table and summary
                 //OnPropertyChanged("IncidSecondaryHabitats");
@@ -7095,7 +7100,7 @@ namespace HLU.UI.ViewModel
                 //_incidIhsHabitat = null;
 
                 IncidCurrentRowDerivedValuesRetrieve();
-                OnPropertyChanged("IncidIhsHabitat");
+                OnPropertyChanged("IncidPrimary");
                 GetIncidChildRows(IncidCurrentRow);
 
                 //---------------------------------------------------------------------
@@ -7238,8 +7243,9 @@ namespace HLU.UI.ViewModel
         {
             _incidLastModifiedUser = _incidCurrentRow.last_modified_user_id;
             _incidLastModifiedDate = Convert.IsDBNull(_incidCurrentRow.last_modified_date) ? DateTime.MinValue : _incidCurrentRow.last_modified_date;
-            //TODO
+            //TODO: Check
             _incidIhsHabitat = _incidCurrentRow.Isihs_habitatNull() ? null : _incidCurrentRow.ihs_habitat;
+            IncidPrimary = _incidCurrentRow.Ishabitat_primaryNull() ? null : _incidCurrentRow.habitat_primary;
         }
 
         private void CloneIncidCurrentRow()
@@ -7508,6 +7514,14 @@ namespace HLU.UI.ViewModel
         {
             Dictionary<Type, string> childRowOrberByDict = new Dictionary<Type, string>();
 
+            childRowOrberByDict.Add(typeof(HluDataSet.incid_secondaryDataTable), _hluDS.incid_secondary.PrimaryKey
+                .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
+                .Remove(0, 1).ToString());
+
+            childRowOrberByDict.Add(typeof(HluDataSet.incid_conditionDataTable), _hluDS.incid_condition.PrimaryKey
+                .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
+                .Remove(0, 1).ToString());
+
             childRowOrberByDict.Add(typeof(HluDataSet.incid_ihs_matrixDataTable), _hluDS.incid_ihs_matrix.PrimaryKey
                 .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
                 .Remove(0, 1).ToString());
@@ -7543,6 +7557,12 @@ namespace HLU.UI.ViewModel
         {
             Dictionary<Type, List<SqlFilterCondition>> childRowFilterDict =
                 new Dictionary<Type, List<SqlFilterCondition>>();
+
+            childRowFilterDict.Add(typeof(HluDataSet.incid_secondaryDataTable),
+                ChildRowFilter(_hluDS.incid, _hluDS.incid_secondary));
+
+            childRowFilterDict.Add(typeof(HluDataSet.incid_conditionDataTable),
+                ChildRowFilter(_hluDS.incid, _hluDS.incid_condition));
 
             childRowFilterDict.Add(typeof(HluDataSet.incid_ihs_matrixDataTable),
                 ChildRowFilter(_hluDS.incid, _hluDS.incid_ihs_matrix));
@@ -9340,30 +9360,39 @@ namespace HLU.UI.ViewModel
                         new Type[] { typeof(HluDataSet.lut_secondary_groupDataTable) }, false);
                 }
 
-                // Set the static variable (used in the options window)
-                if (SecondaryGroups == null);
+                // Set the public and static variables
+                if (SecondaryGroupsAll == null || SecondaryGroupsAll.Count() == 0)
                 {
-                    HluDataSet.lut_secondary_groupRow[] secondaryGroupCodes;
-                    secondaryGroupCodes = (from sg in HluDataset.lut_secondary_group
-                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).Distinct().ToArray();
+                    // Set the full list of secondary groups.
+                    _secondaryGroups = (from sg in HluDataset.lut_secondary_group
+                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
-                    if (secondaryGroupCodes != null)
+                    // Set the full list of secondary groups plus <All>.
+                    HluDataSet.lut_secondary_groupRow[] secondaryGroupsAll;
+                    secondaryGroupsAll = _secondaryGroups;
+                    if (secondaryGroupsAll != null)
                     {
                         HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
                         allRow.code = "<All>";
                         allRow.description = "<All>";
-                        allRow.abbreviation = "<All>";
                         allRow.sort_order = -1;
-                        secondaryGroupCodes = secondaryGroupCodes.Concat(
-                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).ToArray();
+                        secondaryGroupsAll = secondaryGroupsAll.Concat(
+                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     }
 
-                    SecondaryGroups = secondaryGroupCodes;
+                    // Set the static variable
+                    SecondaryGroupsAll = secondaryGroupsAll;
+
+                    // Set the dictionary of secondary group codes.
+                    SecondaryHabitat.SecondaryGroupCodes = (from sg in HluDataset.lut_secondary
+                                                            where sg.is_local == true
+                                                            select sg).OrderBy(r => r.code).ThenBy(r => r.code_group).ToDictionary(r => r.code, r => r.code_group);
                 }
 
                 if (!String.IsNullOrEmpty(IncidPrimary))
                 {
-                    _secondaryGroupCodes = (from sg in HluDataset.lut_secondary_group
+                    // Set the valid list of secondary codes for the primary category.
+                    _secondaryGroupsValid = (from sg in HluDataset.lut_secondary_group
                                             from s in HluDataset.lut_secondary
                                             from ps in HluDataset.lut_primary_secondary
                                             where sg.code == s.code_group
@@ -9371,25 +9400,43 @@ namespace HLU.UI.ViewModel
                                             && s.code == ps.code_secondary
                                             && ps.is_local
                                             && ps.category == IncidPrimaryCategory
-                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).Distinct().ToArray();
+                                             select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
-                    if (_secondaryGroupCodes != null)
+                    if (_secondaryGroupsValid != null)
                     {
                         HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
                         allRow.code = "<All>";
                         allRow.description = "<All>";
-                        allRow.abbreviation = "<All>";
                         allRow.sort_order = -1;
-                        _secondaryGroupCodes = _secondaryGroupCodes.Concat(
-                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.abbreviation).ToArray();
+                        _secondaryGroupsValid = _secondaryGroupsValid.Concat(
+                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     }
                 }
                 else
                 {
-                    _secondaryGroupCodes = null;
+                    _secondaryGroupsValid = null;
                 }
 
-                return _secondaryGroupCodes;
+                return _secondaryGroupsValid;
+            }
+        }
+
+        public HluDataSet.lut_secondary_groupRow[] SecondaryGroupCodesAll
+        {
+            get
+            {
+                return _secondaryGroups;
+            }
+        }
+
+        public Visibility ShowSecondaryGroupColumn
+        {
+            get
+            {
+                if (_showSecondaryGroupColumn == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
             }
         }
 
@@ -9406,49 +9453,6 @@ namespace HLU.UI.ViewModel
             set
             {
                 _secondaryGroup = value;
-
-                //if (!String.IsNullOrEmpty(IncidPrimary))
-                //{
-                //    if (!String.IsNullOrEmpty(_secondaryGroup))
-                //    {
-                //        if (_secondaryGroup == "<All>")
-                //        {
-                //            // Load all secondary habitat codes that are flagged as local for
-                //            // all secondary groups that relate to the primary habitat.
-                //            _secondaryCodes = (from s in HluDataset.lut_secondary
-                //                               from p in HluDataset.lut_primary_secondary
-                //                               where s.is_local
-                //                               && p.category == IncidPrimaryCategory
-                //                               && s.code == p.code_secondary
-                //                               select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                //        }
-                //        else
-                //        {
-                //            // Load all secondary habitat codes that are flagged as local and
-                //            // relate to the current secondary group and primary habitat.
-                //            _secondaryCodes = (from s in HluDataset.lut_secondary
-                //                               from p in HluDataset.lut_primary_secondary
-                //                               where s.is_local && s.code_group == _secondaryGroup
-                //                               && p.category == IncidPrimaryCategory
-                //                               && s.code == p.code_secondary
-                //                               select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                //        }
-                //    }
-                //    else
-                //    {
-                //        //// Load all secondary habitat codes that are flagged as local.
-                //        //_secondaryCodes = (from s in HluDataset.lut_secondary
-                //        //                   from p in HluDataset.lut_primary_secondary
-                //        //                   where s.is_local
-                //        //                   && p.category == IncidPrimaryCategory
-                //        //                   && s.code == p.code_secondary
-                //        //                   select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                //        _secondaryCodes = null;
-                //    }
-                //}
-                //else
-                //    _secondaryCodes = null;
-
                 OnPropertyChanged("SecondaryHabitatCodes");
             }
         }
@@ -9457,30 +9461,6 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //if (HluDataset.lut_secondary.IsInitialized && (HluDataset.lut_secondary.Rows.Count == 0))
-                //{
-                //    if (_hluTableAdapterMgr.lut_secondaryTableAdapter == null)
-                //        _hluTableAdapterMgr.lut_secondaryTableAdapter =
-                //            new HluTableAdapter<HluDataSet.lut_secondaryDataTable,
-                //                HluDataSet.lut_secondaryRow>(_db);
-                //    _hluTableAdapterMgr.Fill(HluDataset, 
-                //        new Type[] { typeof(HluDataSet.lut_secondaryDataTable) }, false);
-                //}
-
-                //if (!String.IsNullOrEmpty(IncidPrimary))
-                //{
-                //    // Store all secondary habitat codes that are flagged as local for
-                //    // all secondary groups that relate to the primary habitat.
-                //    _secondaryCodesValid = (from s in SecondaryHabitatCodesAll
-                //            from p in HluDataset.lut_primary_secondary
-                //            where s.is_local
-                //            && p.category == IncidPrimaryCategory
-                //            && s.code == p.code_secondary
-                //            select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-
-                //    // Set the list of valid secondary codes.
-                //    SecondaryHabitat.ValidSecondaryCodes = _validSecondaryCodes.Select(s => s.code);
-
                 if (!String.IsNullOrEmpty(SecondaryGroup))
                 {
                     if (SecondaryGroup == "<All>")
@@ -9576,10 +9556,10 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                _incidSecondaries = String.Join(", ", _incidSecondaryHabitats
+                _incidSecondaries = String.Join(Settings.Default.SecondaryCodeDelimiter, _incidSecondaryHabitats
                     .OrderBy(s => s.secondary_habitat_int)
                     .ThenBy(s => s.secondary_habitat)
-                    .Select(s => s.secondary_habitat)
+                    .Select(s => s.secondary_habitat_int)
                     .Distinct().ToList());
                 return _incidSecondaries;
             }
@@ -9862,6 +9842,17 @@ namespace HLU.UI.ViewModel
             get { return "IHS"; }
         }
         //---------------------------------------------------------------------
+
+        public Visibility ShowIHSTab
+        {
+            get
+            {
+                if ((bool)_showIHSTab)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
 
         #region IHS Habitat
 
