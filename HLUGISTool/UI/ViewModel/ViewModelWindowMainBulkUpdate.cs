@@ -1133,8 +1133,8 @@ namespace HLU.UI.ViewModel
             bool deletePotentialBapRows)
         {
             //TODO: to check
-            var sr = incidsecondaryRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.secondary);
-            string[] ihsMatrixVals = sr.Concat(new string[15 - sr.Count()]).ToArray();
+            //var sr = incidsecondaryRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.secondary);
+            //string[] ihsMatrixVals = sr.Concat(new string[15 - sr.Count()]).ToArray();
 
             //TODO: Pass array of secondary rows
             ////---------------------------------------------------------------------

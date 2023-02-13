@@ -78,7 +78,7 @@ namespace HLU.UI.ViewModel
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
 
         private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
-        private int? _secondaryGroupColumnWidth = Settings.Default.SecondaryGroupColumnWidth;
+        private bool _showSecondaryGroupColumn = Settings.Default.ShowSecondaryGroupColumn;
         private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
         private string _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
 
@@ -240,7 +240,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
 
             Settings.Default.PreferredSecondaryGroup = _preferredSecondaryGroup;
-            Settings.Default.SecondaryGroupColumnWidth = (int)_secondaryGroupColumnWidth;
+            Settings.Default.ShowSecondaryGroupColumn = _showSecondaryGroupColumn;
             Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
             Settings.Default.SecondaryCodeDelimiter = _secondaryCodeDelimiter;
 
@@ -677,7 +677,7 @@ namespace HLU.UI.ViewModel
 
         public HluDataSet.lut_secondary_groupRow[] SecondaryGroupCodes
         {
-            get { return ViewModelWindowMain.SecondaryGroups; }
+            get { return ViewModelWindowMain.SecondaryGroupsAll; }
             set { }
         }
 
@@ -698,17 +698,17 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the width of the secondary group column.
+        /// Gets or sets a value indicating whether to show the secondary group column.
         /// </summary>
         /// <value>
-        /// The width of the secondary group column.
+        ///   <c>true</c> if to show the secondary group column; otherwise, <c>false</c>.
         /// </value>
-        public int? SecondaryGroupColumnWidth
+        public bool ShowSecondaryGroupColumn
         {
-            get { return _secondaryGroupColumnWidth; }
+            get { return _showSecondaryGroupColumn; }
             set
             {
-                _secondaryGroupColumnWidth = value;
+                _showSecondaryGroupColumn = value;
             }
         }
 
@@ -1283,10 +1283,6 @@ namespace HLU.UI.ViewModel
                     error.Append("Please select the option of when to display any OSMM Updates.");
                 if (PreferredSecondaryGroup == null)
                     error.Append("Please select your preferred secondary group.");
-                if (Convert.ToInt32(SecondaryGroupColumnWidth) < 0 || SecondaryGroupColumnWidth == null)
-                    error.Append("\n" + "Secondary Group Column Width must be greater than or equal to 0.");
-                if (Convert.ToInt32(SecondaryGroupColumnWidth) > Settings.Default.MaxSecondaryGroupColumnWidth)
-                    error.Append("\n" + String.Format("Secondary Group Column Width must not be greater than {0}.", Settings.Default.MaxAutoZoom));
                 if (SecondaryCodeValidation == null)
                     error.Append("Please select option of when to validate secondary codes.");
                 if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
@@ -1398,12 +1394,6 @@ namespace HLU.UI.ViewModel
                     case "PreferredSecondaryGroup":
                         if (PreferredSecondaryGroup == null)
                             error = "Error: Select your preferred secondary group.";
-                        break;
-                    case "SecondaryGroupColumnWidth":
-                        if (Convert.ToInt32(SecondaryGroupColumnWidth) < 0 || SecondaryGroupColumnWidth == null)
-                            error = "Error: Secondary Group Column Width must be greater than or equal to 0.";
-                        if (Convert.ToInt32(SecondaryGroupColumnWidth) > Settings.Default.MaxSecondaryGroupColumnWidth)
-                            error = String.Format("Error: Secondary Group Column Width must not be greater than {0}.", Settings.Default.MaxSecondaryGroupColumnWidth);
                         break;
                     case "SecondaryCodeValidation":
                         if (SecondaryCodeValidation == null)

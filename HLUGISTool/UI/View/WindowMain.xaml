@@ -1225,7 +1225,7 @@
                                                       Grid.Column="1"
                                                       Margin="8,0,8,4"
                                                       VerticalAlignment="Center"
-                                                      DisplayMemberPath="abbreviation"
+                                                      DisplayMemberPath="description"
                                                       IsEditable="True"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding SecondaryGroupCodes,
@@ -1295,7 +1295,7 @@
                                                        CanUserAddRows="False"
                                                        CanUserDeleteRows="True"
                                                        CanUserReorderColumns="False"
-                                                       CanUserResizeColumns="True"
+                                                       CanUserResizeColumns="False"
                                                        CanUserSortColumns="True"
                                                        HeadersVisibility="All"
                                                        IsEnabled="{Binding SecondaryHabitatsEnabled}"
@@ -1317,12 +1317,29 @@
                                                                          Header="INCID"
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="*"
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="120"
 																					   IsReadOnly="True"
-                                                                                       CanUserResize="True"
+                                                                                       CanUserResize="False"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Secondary Habitat"
+                                                                                       Header="Group"
+                                                                                       ItemsSource="{Binding DataContext.SecondaryGroupCodesAll,
+																											 IsAsync=true,
+                                                                                                             RelativeSource={RelativeSource AncestorType={x:Type Window},
+                                                                                                                                            Mode=FindAncestor}}"
+                                                                                       SelectedValueBinding="{Binding secondary_group,
+                                                                                                                      ConverterParameter=code^description^sort_order,
+                                                                                                                      Converter={StaticResource codeDescriptionConverter},
+                                                                                                                      UpdateSourceTrigger=PropertyChanged,
+                                                                                                                      ValidatesOnDataErrors=True}"
+                                                                                       SelectedValuePath="code" />
+																					   <!-- Visibility="{Binding ShowSecondaryGroupColumn}" -->
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="*"
+																					   IsReadOnly="True"
+                                                                                       CanUserResize="False"
+                                                                                       DisplayMemberPath="description"
+                                                                                       EditingElementStyle="{DynamicResource ComboBoxStyle}"
+                                                                                       Header="Habitat"
                                                                                        ItemsSource="{Binding DataContext.SecondaryHabitatCodesAll,
 																											 ConverterParameter=code^description^sort_order,
 																											 Converter={StaticResource codeDescriptionConverter},
@@ -1458,9 +1475,8 @@
 
                 <!--  TabItemIHS  -->
                 <TabItem x:Name="TabItemIHS"
-                         Height="29.29"
-                         VerticalAlignment="Bottom"
-                         IsEnabled="{Binding TabItemIHSEnabled}">
+                         IsEnabled="{Binding TabItemIHSEnabled}"
+						 Visibility="{Binding ShowIHSTab}">
 
                     <TabItem.Header>
                         <StackPanel>
