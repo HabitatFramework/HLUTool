@@ -270,8 +270,8 @@ namespace HLU.UI.ViewModel
         private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormationCodes;
         private IEnumerable<HluDataSet.lut_ihs_managementRow> _lutIhsManagementCodes;
         private IEnumerable<HluDataSet.lut_ihs_complexRow> _lutIhsComplexCodes;
-        private HluDataSet.lut_quality_determinationRow[] _DeterminationQualityCodes;
-        private HluDataSet.lut_quality_interpretationRow[] _InterpretationQualityCodes;
+        private HluDataSet.lut_quality_determinationRow[] _determinationQualityCodes;
+        private HluDataSet.lut_quality_interpretationRow[] _interpretationQualityCodes;
         private HluDataSet.lut_sourcesRow[] _sourceNames;
         private HluDataSet.lut_habitat_classRow[] _sourceHabitatClassCodes;
         private HluDataSet.lut_importanceRow[] _sourceImportanceCodes;
@@ -314,11 +314,13 @@ namespace HLU.UI.ViewModel
         private int _tabItemSelected = 0;
         private bool _tabItemHabitatEnabled = true;
         private bool _tabItemIHSEnabled = true;
+        private bool _tabItemPriorityEnabled = true;
         private bool _tabItemDetailsEnabled = true;
         private bool _tabItemSourcesEnabled = true;
         private bool _tabItemHistoryEnabled = true;
         private bool _tabHabitatControlsEnabled = true;
         private bool _tabIhsControlsEnabled = true;
+        private bool _tabPriorityControlsEnabled = true;
         private bool _tabDetailsControlsEnabled = true;
         private bool _tabSourcesControlsEnabled = true;
         private bool _windowEnabled = true;
@@ -412,11 +414,13 @@ namespace HLU.UI.ViewModel
         private bool _saved = false;
         private bool _savingAttempted;
         private List<string> _habitatWarnings = new List<string>();
+        private List<string> _priorityWarnings = new List<string>();
         private List<string> _detailsWarnings = new List<string>();
         private List<string[]> _source1Warnings = null;
         private List<string[]> _source2Warnings = null;
         private List<string[]> _source3Warnings = null;
         private List<string> _habitatErrors = new List<string>();
+        private List<string> _priorityErrors = new List<string>();
         private List<string> _detailsErrors = new List<string>();
         private List<string[]> _source1Errors = null;
         private List<string[]> _source2Errors = null;
@@ -793,32 +797,41 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //---------------------------------------------------------------------
-                // CHANGED: CR19 (Feature layer position in GIS)
-                // Also display the current HLU layer in the window title.
-                //
+                return String.Format("{0}{1}", DisplayName, _editMode ? String.Empty : " [READONLY]");
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the layer to display in the status bar.
+        /// </summary>
+        /// <value>
+        /// The name of the layer.
+        /// </value>
+        public string LayerName
+        {
+            get
+            {
                 // If no HLU layer has been identified yet (GIS is still loading) then
                 // don't return the layer name
                 if (_gisApp.CurrentHluLayer == null)
-                    return String.Format("{0}{1}", DisplayName, _editMode ? String.Empty : " [READONLY]");
+                    return String.Empty;
                 else
                 {
                     //---------------------------------------------------------------------
-                    // FIXOLD: 059 Do not display map window number with layer name
+                    // Do not display map window number with layer name
                     // if there is only one map window.
                     // 
                     if (_mapWindowsCount > 1)
                         // Include the layer name and active layer/map window number in the window title.
-                        return String.Format("{0} - {1} [{2}]{3}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _gisApp.CurrentHluLayer.MapNum, _editMode ? String.Empty : " [READONLY]");
+                        return String.Format("{0} [{1}]", _gisApp.CurrentHluLayer.LayerName, _gisApp.CurrentHluLayer.MapNum);
                     else
                         // Include only the layer name in the window title.
-                        return String.Format("{0} - {1} {2}", DisplayName, _gisApp.CurrentHluLayer.LayerName, _editMode ? String.Empty : " [READONLY]");
+                        return String.Format("{0}", _gisApp.CurrentHluLayer.LayerName);
                     //---------------------------------------------------------------------
                 }
                 //---------------------------------------------------------------------
             }
         }
-
         //---------------------------------------------------------------------
         // FIXOLD: 057 Adjust window height correctly for optional areas.
         // 
@@ -838,9 +851,9 @@ namespace HLU.UI.ViewModel
                 if (_windowHeight == 0)
                 {
                     if (_showGroupHeaders)
-                        _windowHeight = 961;
+                        _windowHeight = 935;
                     else
-                        _windowHeight = 881;
+                        _windowHeight = 855;
 
                     //// Adjust the standard height if the NVC codes text is not showing.
                     //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
@@ -886,9 +899,9 @@ namespace HLU.UI.ViewModel
             // Calculate the new window height.
             int _newWindowHeight;
             if (_showGroupHeaders)
-                _newWindowHeight = 961;
+                _newWindowHeight = 935;
             else
-                _newWindowHeight = 881;
+                _newWindowHeight = 855;
 
             //// Adjust the minimum height if the NVC codes text is not showing.
             //if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = Settings.Default.ShowNVCCodes;
@@ -1209,6 +1222,12 @@ namespace HLU.UI.ViewModel
             set { _habitatWarnings = value; }
         }
 
+        internal List<string> PriorityWarnings
+        {
+            get { return _priorityWarnings; }
+            set { _priorityWarnings = value; }
+        }
+
         internal List<string> DetailsWarnings
         {
             get { return _detailsWarnings; }
@@ -1237,6 +1256,12 @@ namespace HLU.UI.ViewModel
         {
             get { return _habitatErrors; }
             set { _habitatErrors = value; }
+        }
+
+        internal List<string> PriorityErrors
+        {
+            get { return _priorityErrors; }
+            set { _priorityErrors = value; }
         }
 
         internal List<string> DetailsErrors
@@ -1377,7 +1402,7 @@ namespace HLU.UI.ViewModel
                 _processingMsg = "Processing ...";
             else
                 _processingMsg = processingMessage;
-            OnPropertyChanged("StatusTop");
+            OnPropertyChanged("StatusBar");
             if (cursorType == Cursors.Wait)
                 DispatcherHelper.DoEvents();
         }
@@ -1877,14 +1902,14 @@ namespace HLU.UI.ViewModel
                     //---------------------------------------------------------------------
                     // FIXOLD: 089 Only enable split/merge after select from map
                     //
-                    (_filterByMap == true); //&&
+                    (_filterByMap == true) &&
                     //---------------------------------------------------------------------
                     //---------------------------------------------------------------------
                     // CHANGED: CR7 (Split/merge options)
                     // Only enable logical split menu/button if a subset of all the
                     // features for the current incid have been selected.
-                    //((_toidsIncidGisCount != _toidsIncidDbCount) ||
-                    //(_fragsIncidGisCount != _fragsIncidDbCount));
+                    ((_toidsIncidGisCount != _toidsIncidDbCount) ||
+                    (_fragsIncidGisCount != _fragsIncidDbCount));
                 //---------------------------------------------------------------------
             }
         }
@@ -5658,19 +5683,19 @@ namespace HLU.UI.ViewModel
                 // in pop-up window.
                 //
                 // Check if there are any errors in the primary BAP records to see
-                // if the Details tab label should be flagged as also in error.
+                // if the Priority tab label should be flagged as also in error.
                 if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
                 {
                     int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                     if (countInvalid > 0)
-                        AddErrorList(ref _detailsErrors, "BapAuto");
+                        AddErrorList(ref _priorityErrors, "BapAuto");
                     else
-                        DelErrorList(ref _detailsErrors, "BapAuto");
+                        DelErrorList(ref _priorityErrors, "BapAuto");
                 }
                 //---------------------------------------------------------------------
 
                 OnPropertyChanged("IncidBapHabitatsAuto");
-                OnPropertyChanged("DetailsTabLabel");
+                OnPropertyChanged("PriorityTabLabel");
             }
         }
 
@@ -5742,19 +5767,19 @@ namespace HLU.UI.ViewModel
                 // in pop-up window.
                 //
                 // Check if there are any errors in the secondary BAP records to see
-                // if the Details tab label should be flagged as also in error.
+                // if the Priority tab label should be flagged as also in error.
                 if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
                 {
                     int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                     if (countInvalid > 0)
-                        AddErrorList(ref _detailsErrors, "BapUser");
+                        AddErrorList(ref _priorityErrors, "BapUser");
                     else
-                        DelErrorList(ref _detailsErrors, "BapUser");
+                        DelErrorList(ref _priorityErrors, "BapUser");
                 }
                 //---------------------------------------------------------------------
 
                 OnPropertyChanged("IncidBapHabitatsUser");
-                OnPropertyChanged("DetailsTabLabel");
+                OnPropertyChanged("PriorityTabLabel");
             }
         }
 
@@ -6540,8 +6565,8 @@ namespace HLU.UI.ViewModel
                     {
                         _mapWindowsCount = mapWindowsCount;
 
-                        // Refresh the window title
-                        OnPropertyChanged("WindowTitle");
+                        // Refresh the layer name
+                        OnPropertyChanged("LayerName");
                     }
 
                     // Return true if there is more than one map layer
@@ -6582,8 +6607,8 @@ namespace HLU.UI.ViewModel
                         //    MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
                         //        "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
-                        // Refresh the window title
-                        OnPropertyChanged("WindowTitle");
+                        // Refresh the later name
+                        OnPropertyChanged("LayerName");
 
                         // Get the new GIS layer selection
                         ReadMapSelection(false);
@@ -6693,6 +6718,20 @@ namespace HLU.UI.ViewModel
                             new HluTableAdapter<HluDataSet.incid_sourcesDataTable, HluDataSet.incid_sourcesRow>(_db);
                 }
                 return _hluDS.incid_sources;
+            }
+        }
+
+        public HluDataSet.incid_conditionDataTable IncidConditionTable
+        {
+            get
+            {
+                if (HluDataset.incid_condition.IsInitialized && (HluDataset.incid_condition.Rows.Count == 0))
+                {
+                    if (_hluTableAdapterMgr.incid_conditionTableAdapter == null)
+                        _hluTableAdapterMgr.incid_conditionTableAdapter =
+                            new HluTableAdapter<HluDataSet.incid_conditionDataTable, HluDataSet.incid_conditionRow>(_db);
+                }
+                return _hluDS.incid_condition;
             }
         }
 
@@ -6817,7 +6856,7 @@ namespace HLU.UI.ViewModel
 
         public string StatusIncidToolTip { get { return IsFiltered ? "Double click to clear filter" : null; } }
 
-        public string StatusTop
+        public string StatusBar
         {
             get { return _windowCursor == Cursors.Wait ? _processingMsg : String.Empty; }
         }
@@ -7170,6 +7209,7 @@ namespace HLU.UI.ViewModel
                 RefreshOSMMUpdate();
                 RefreshHabitatTab();
                 RefreshIHSTab();
+                RefreshPriorityTab();
                 RefreshDetailsTab();
                 RefreshSource1();
                 RefreshSource2();
@@ -7999,6 +8039,7 @@ namespace HLU.UI.ViewModel
             RefreshOSMMUpdate();
             RefreshHabitatTab();
             RefreshIHSTab();
+            RefreshPriorityTab();
             RefreshDetailsTab();
             RefreshSources();
             RefreshHistory();
@@ -8042,7 +8083,7 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("OSMMIncidCurrentRowIndex");
             OnPropertyChanged("StatusIncid");
             OnPropertyChanged("StatusIncidToolTip");
-            OnPropertyChanged("StatusTop");
+            OnPropertyChanged("StatusBar");
             OnPropertyChanged("CanZoomSelection");
             OnPropertyChanged("CanBulkUpdate");
             OnPropertyChanged("CanBulkUpdateMode");
@@ -8092,6 +8133,8 @@ namespace HLU.UI.ViewModel
 
             OnPropertyChanged("DetailsSiteHeader");
             OnPropertyChanged("DetailsMapsHeader");
+            OnPropertyChanged("DetailsConditionHeader");
+            OnPropertyChanged("DetailsQualityHeader");
 
             OnPropertyChanged("ShowSource1Number");
             OnPropertyChanged("Source1Header");
@@ -8157,14 +8200,21 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("IncidIhsSummary");
         }
 
+        private void RefreshPriorityTab()
+        {
+            OnPropertyChanged("TabItemPriorityEnabled");
+            OnPropertyChanged("TabPriorityControlsEnabled");
+            OnPropertyChanged("PriorityTabLabel");
+            OnPropertyChanged("IncidBapHabitatsAuto");
+            OnPropertyChanged("IncidBapHabitatsUser");
+            OnPropertyChanged("BapHabitatsUserEnabled");
+        }
+
         private void RefreshDetailsTab()
         {
             OnPropertyChanged("TabItemDetailsEnabled");
             OnPropertyChanged("TabDetailsControlsEnabled");
             OnPropertyChanged("DetailsTabLabel");
-            OnPropertyChanged("IncidBapHabitatsAuto");
-            OnPropertyChanged("IncidBapHabitatsUser");
-            OnPropertyChanged("BapHabitatsUserEnabled");
             OnPropertyChanged("IncidGeneralComments");
             OnPropertyChanged("IncidBoundaryBaseMap");
             OnPropertyChanged("IncidDigitisationBaseMap");
@@ -8309,6 +8359,12 @@ namespace HLU.UI.ViewModel
             set { _tabItemHabitatEnabled = value; }
         }
 
+        public bool TabItemPriorityEnabled
+        {
+            get { return _tabItemPriorityEnabled; }
+            set { _tabItemPriorityEnabled = value; }
+        }
+
         public bool TabItemDetailsEnabled
         {
             get { return _tabItemDetailsEnabled; }
@@ -8343,6 +8399,12 @@ namespace HLU.UI.ViewModel
         {
             get { return _tabIhsControlsEnabled; }
             set { _tabIhsControlsEnabled = value; }
+        }
+
+        public bool TabPriorityControlsEnabled
+        {
+            get { return _tabPriorityControlsEnabled; }
+            set { _tabPriorityControlsEnabled = value; }
         }
 
         public bool TabDetailsControlsEnabled
@@ -10470,21 +10532,15 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Details Tab
+        #region Priority Tab
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 020 Show field errors on tab labels.
-        // Set the Details tab label from here so that validation can be done.
-        // This will enable tooltips to be shown so that validation errors
-        // in any fields in the tab can be highlighted by flagging the tab
-        // label as in error.
-        public string DetailsTabLabel
+        public string PriorityTabLabel
         {
-            get { return "Details"; }
+            get { return "Priority"; }
         }
         //---------------------------------------------------------------------
 
-        #region BAP Habitat
+        #region Priority Habitat
 
         public HluDataSet.lut_habitat_typeRow[] BapHabitatCodes
         {
@@ -10552,7 +10608,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_DeterminationQualityCodes == null)
+                if (_determinationQualityCodes == null)
                 {
                     if (HluDataset.lut_quality_determination.IsInitialized &&
                         HluDataset.lut_quality_determination.Count == 0)
@@ -10566,11 +10622,11 @@ namespace HLU.UI.ViewModel
                     }
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    _DeterminationQualityCodes =
+                    _determinationQualityCodes =
                         HluDataset.lut_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
-                return _DeterminationQualityCodes;
+                return _determinationQualityCodes;
             }
         }
 
@@ -10586,7 +10642,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_InterpretationQualityCodes == null)
+                if (_interpretationQualityCodes == null)
                 {
                     if (HluDataset.lut_quality_interpretation.IsInitialized &&
                         HluDataset.lut_quality_interpretation.Count == 0)
@@ -10600,11 +10656,11 @@ namespace HLU.UI.ViewModel
                     }
                     //---------------------------------------------------------------------
                     // FIXOLD: 025 Add default sort order to all lookup tables
-                    _InterpretationQualityCodes =
+                    _interpretationQualityCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
-                return _InterpretationQualityCodes;
+                return _interpretationQualityCodes;
             }
         }
 
@@ -10811,19 +10867,19 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapAuto");
+                    AddErrorList(ref _priorityErrors, "BapAuto");
                 else
-                    DelErrorList(ref _detailsErrors, "BapAuto");
+                    DelErrorList(ref _priorityErrors, "BapAuto");
             }
             else
-                DelErrorList(ref _detailsErrors, "BapAuto");
+                DelErrorList(ref _priorityErrors, "BapAuto");
 
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
             //---------------------------------------------------------------------
             OnPropertyChanged("IncidBapHabitatsAuto");
 
@@ -10938,14 +10994,14 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapUser");
+                    AddErrorList(ref _priorityErrors, "BapUser");
                 else
-                    DelErrorList(ref _detailsErrors, "BapUser");
+                    DelErrorList(ref _priorityErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -10956,15 +11012,15 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        AddErrorList(ref _detailsErrors, "BapUserDup");
+                        AddErrorList(ref _priorityErrors, "BapUserDup");
                     else
-                        DelErrorList(ref _detailsErrors, "BapUserDup");
+                        DelErrorList(ref _priorityErrors, "BapUserDup");
                 }
             }
             else
-                DelErrorList(ref _detailsErrors, "BapUser");
+                DelErrorList(ref _priorityErrors, "BapUser");
 
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
             //---------------------------------------------------------------------
             OnPropertyChanged("IncidBapHabitatsUser");
         }
@@ -10980,16 +11036,16 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapAuto");
+                    AddErrorList(ref _priorityErrors, "BapAuto");
                 else
-                    DelErrorList(ref _detailsErrors, "BapAuto");
+                    DelErrorList(ref _priorityErrors, "BapAuto");
             }
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
             //---------------------------------------------------------------------
         }
         //---------------------------------------------------------------------
@@ -11005,14 +11061,14 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapUser");
+                    AddErrorList(ref _priorityErrors, "BapUser");
                 else
-                    DelErrorList(ref _detailsErrors, "BapUser");
+                    DelErrorList(ref _priorityErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -11023,12 +11079,12 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        AddErrorList(ref _detailsErrors, "BapUserDup");
+                        AddErrorList(ref _priorityErrors, "BapUserDup");
                     else
-                        DelErrorList(ref _detailsErrors, "BapUserDup");
+                        DelErrorList(ref _priorityErrors, "BapUserDup");
                 }
             }
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
             //---------------------------------------------------------------------
         }
         //---------------------------------------------------------------------
@@ -11115,16 +11171,16 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the primary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsAuto != null && _incidBapRowsAuto.Count > 0)
             {
                 int countInvalid = _incidBapRowsAuto.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapAuto");
+                    AddErrorList(ref _priorityErrors, "BapAuto");
                 else
-                    DelErrorList(ref _detailsErrors, "BapAuto");
+                    DelErrorList(ref _priorityErrors, "BapAuto");
             }
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
             //---------------------------------------------------------------------
         }
 
@@ -11163,14 +11219,14 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // FIXOLD: 020 Show field errors on tab labels.
             // Check if there are any errors in the secondary BAP records to see
-            // if the Details tab label should be flagged as also in error.
+            // if the Priority tab label should be flagged as also in error.
             if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
             {
                 int countInvalid = _incidBapRowsUser.Count(be => !be.IsValid());
                 if (countInvalid > 0)
-                    AddErrorList(ref _detailsErrors, "BapUser");
+                    AddErrorList(ref _priorityErrors, "BapUser");
                 else
-                    DelErrorList(ref _detailsErrors, "BapUser");
+                    DelErrorList(ref _priorityErrors, "BapUser");
 
                 // Check if there are any duplicates between the primary and 
                 // secondary BAP records.
@@ -11181,12 +11237,12 @@ namespace HLU.UI.ViewModel
                                             where g.Count() > 1
                                             select g.Key).Aggregate(new StringBuilder(), (sb, code) => sb.Append(", " + code));
                     if (beDups.Length > 2)
-                        AddErrorList(ref _detailsErrors, "BapUserDup");
+                        AddErrorList(ref _priorityErrors, "BapUserDup");
                     else
-                        DelErrorList(ref _detailsErrors, "BapUserDup");
+                        DelErrorList(ref _priorityErrors, "BapUserDup");
                 }
             }
-            OnPropertyChanged("DetailsTabLabel");
+            OnPropertyChanged("PriorityTabLabel");
 
             foreach (BapEnvironment be in _incidBapRowsUser)
             {
@@ -11197,8 +11253,24 @@ namespace HLU.UI.ViewModel
             }
             //---------------------------------------------------------------------
         }
+        
+        #endregion
 
         #endregion
+
+        #region Details Tab
+
+        //---------------------------------------------------------------------
+        // FIXOLD: 020 Show field errors on tab labels.
+        // Set the Details tab label from here so that validation can be done.
+        // This will enable tooltips to be shown so that validation errors
+        // in any fields in the tab can be highlighted by flagging the tab
+        // label as in error.
+        public string DetailsTabLabel
+        {
+            get { return "Details"; }
+        }
+        //---------------------------------------------------------------------
 
         #region General Comments
 
@@ -11318,9 +11390,6 @@ namespace HLU.UI.ViewModel
 
         #region Site
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 076 New option to hide group headers to reduce window height.
-        // 
         public string DetailsSiteHeader
         {
             get
@@ -11331,7 +11400,6 @@ namespace HLU.UI.ViewModel
                     return null;
             }
         }
-        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)
@@ -11375,6 +11443,350 @@ namespace HLU.UI.ViewModel
                 if ((IncidCurrentRow != null) && (value != null))
                 {
                     IncidCurrentRow.site_name = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+                }
+            }
+        }
+
+        #endregion
+
+        #region Condition
+
+        public string DetailsConditionHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Condition";
+                else
+                    return null;
+            }
+        }
+
+        private bool CheckCondition()
+        {
+            if (_bulkUpdateMode == true) return true;
+
+            if (_incidConditionRows == null)
+            {
+                HluDataSet.incid_conditionDataTable incidConditionTable = _hluDS.incid_condition;
+                _incidConditionRows = GetIncidChildRowsDb(new object[] { Incid },
+                    _hluTableAdapterMgr.incid_conditionTableAdapter, ref incidConditionTable);
+            }
+            return _incidConditionRows != null;
+        }
+
+        public HluDataSet.lut_conditionRow[] ConditionCodes
+        {
+            get
+            {
+                if (_conditionCodes == null)
+                {
+                    if (HluDataset.lut_condition.IsInitialized && (HluDataset.lut_condition.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_conditionTableAdapter == null)
+                            _hluTableAdapterMgr.lut_conditionTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_conditionDataTable, HluDataSet.lut_conditionRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_conditionDataTable) }, false);
+                    }
+                    //---------------------------------------------------------------------
+                    // FIXOLD: 025 Add default sort order to all lookup tables
+                    _conditionCodes = HluDataset.lut_condition.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
+                }
+                return _conditionCodes;
+            }
+        }
+
+        // Display the conditions in the interface.
+        public string IncidCondition
+        {
+            get
+            {
+                if (!CheckCondition()) return null;
+                if ((_incidConditionRows.Length > 0) && (_incidConditionRows[0] != null) &&
+                    !_incidConditionRows[0].IsNull(HluDataset.incid_condition.conditionColumn))
+                    return _incidConditionRows[0].condition;
+                else
+                    return null;
+            }
+            set
+            {
+                //TODO: Still to do
+                //UpdateIncidCondition(0, IncidConditionTable.conditionColumn.Ordinal, value);
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        public HluDataSet.lut_condition_qualifierRow[] ConditionQualifierCodes
+        {
+            get
+            {
+                if (_conditionQualifierCodes == null)
+                {
+                    if (HluDataset.lut_condition_qualifier.IsInitialized && (HluDataset.lut_condition_qualifier.Rows.Count == 0))
+                    {
+                        if (_hluTableAdapterMgr.lut_condition_qualifierTableAdapter == null)
+                            _hluTableAdapterMgr.lut_condition_qualifierTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_condition_qualifierDataTable, HluDataSet.lut_condition_qualifierRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_condition_qualifierDataTable) }, false);
+                    }
+                    //---------------------------------------------------------------------
+                    // FIXOLD: 025 Add default sort order to all lookup tables
+                    _conditionQualifierCodes = HluDataset.lut_condition_qualifier.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    //---------------------------------------------------------------------
+                }
+                return _conditionQualifierCodes;
+            }
+        }
+
+        public string IncidConditionQualifier
+        {
+            //TODO: Still to do
+            get
+            {
+                if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.boundary_base_mapColumn))
+                    return IncidCurrentRow.boundary_base_map;
+                else
+                    return null;
+            }
+            set
+            {
+                if ((IncidCurrentRow != null) && (value != null))
+                {
+                    IncidCurrentRow.boundary_base_map = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+                }
+            }
+        }
+
+        public Date.VagueDateInstance IncidConditionDate
+        {
+            //TODO: Still to do
+            get
+            {
+                if (!CheckSources()) return null;
+                if ((_incidSourcesRows.Length > 0) && (_incidSourcesRows[0] != null) &&
+                    !_incidSourcesRows[0].IsNull(HluDataset.incid_sources.source_date_startColumn) &&
+                    !_incidSourcesRows[0].IsNull(HluDataset.incid_sources.source_date_endColumn) &&
+                    !_incidSourcesRows[0].IsNull(HluDataset.incid_sources.source_date_typeColumn))
+                {
+                    Date.VagueDateInstance vd = new Date.VagueDateInstance(_incidSourcesRows[0].source_date_start,
+                        _incidSourcesRows[0].source_date_end, _incidSourcesRows[0].source_date_type,
+                        _incidSource1DateEntered != null ? _incidSource1DateEntered.UserEntry : null);
+                    return vd;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                UpdateIncidConditionRow(0, IncidConditionTable.condition_date_startColumn.Ordinal, value);
+                _incidSource1DateEntered = value;
+                OnPropertyChanged("IncidSource1Date");
+                //---------------------------------------------------------------------
+                // CHANGED: CR2 (Apply button)
+                // Flag that the current record has changed so that the apply button
+                // will appear.
+                Changed = true;
+                //---------------------------------------------------------------------
+            }
+        }
+
+        private void UpdateIncidConditionRow<T>(int rowNumber, int columnOrdinal, T newValue)
+        {
+            //TODO: Still to do
+            //try
+            //{
+            //    if (_incidConditionRows == null) return;
+
+            //    if (_incidConditionRows[rowNumber] == null)
+            //    {
+            //        if (columnOrdinal == HluDataset.incid_condition.incid_condition_idColumn.Ordinal)
+            //        {
+            //            HluDataSet.incid_conditionRow newRow = IncidConditionTable.Newincid_conditionRow();
+            //            newRow.incid_condition_id = NextIncidConditionId;
+            //            newRow.incid = IncidCurrentRow.incid;
+            //            //newRow.sort_order = rowNumber + 1;
+            //            _incidConditionRows[rowNumber] = newRow;
+            //        }
+            //        else
+            //        {
+            //            return;
+            //        }
+            //    }
+            //    else if ((columnOrdinal == HluDataset.incid_condition.source_idColumn.Ordinal) && (newValue == null))
+            //    {
+            //        //---------------------------------------------------------------------
+            //        // FIXOLD: 078 Bulk update overhaul/improvements.
+            //        // 
+            //        if (_bulkUpdateMode == false)
+            //        {
+            //            if (_incidConditionRows[rowNumber].RowState != DataRowState.Detached)
+            //                _incidConditionRows[rowNumber].Delete();
+            //            _incidConditionRows[rowNumber] = null;
+            //        }
+            //        else
+            //        {
+            //            _incidConditionRows[rowNumber] = IncidConditionTable.Newincid_conditionRow();
+            //            IncidConditionRows[rowNumber].incid_condition_id = rowNumber;
+            //            IncidConditionRows[rowNumber].condition = null;
+            //            IncidConditionRows[rowNumber].incid = RecIDs.CurrentIncid;
+            //        }
+            //        //---------------------------------------------------------------------
+            //        return;
+            //    }
+
+            //    if ((columnOrdinal == HluDataset.incid_sources.source_date_startColumn.Ordinal) ||
+            //        (columnOrdinal == HluDataset.incid_sources.source_date_endColumn.Ordinal))
+            //    {
+            //        Date.VagueDateInstance vd = newValue as Date.VagueDateInstance;
+            //        if (vd != null)
+            //        {
+            //            _incidConditionRows[rowNumber].source_date_start = vd.StartDate;
+            //            _incidConditionRows[rowNumber].source_date_end = vd.EndDate;
+            //            _incidConditionRows[rowNumber].source_date_type = vd.DateType;
+            //        }
+            //        else
+            //        {
+            //            _incidConditionRows[rowNumber].source_date_start = VagueDate.DateUnknown;
+            //            _incidConditionRows[rowNumber].source_date_end = VagueDate.DateUnknown;
+            //            _incidConditionRows[rowNumber].source_date_type = null;
+            //        }
+            //    }
+            //    else if ((((_incidConditionRows[rowNumber].IsNull(columnOrdinal) ^ (newValue == null)) ||
+            //        ((!_incidConditionRows[rowNumber].IsNull(columnOrdinal) && (newValue != null)))) &&
+            //        !_incidConditionRows[rowNumber][columnOrdinal].Equals(newValue)))
+            //    {
+            //        _incidConditionRows[rowNumber][columnOrdinal] = newValue;
+            //    }
+
+            //    if (columnOrdinal == HluDataset.incid_sources.source_idColumn.Ordinal)
+            //    {
+            //        try
+            //        {
+            //            HluDataSet.lut_sourcesRow lutRow =
+            //                HluDataset.lut_sources.Single(r => r.source_id == _incidConditionRows[rowNumber].source_id);
+            //            if (!String.IsNullOrEmpty(lutRow.source_date_default))
+            //            {
+            //                string defaultDateString;
+            //                string formatString = VagueDate.GetType(lutRow.source_date_default, out defaultDateString);
+            //                int defaultStartDate = VagueDate.ToTimeSpanDays(defaultDateString,
+            //                    formatString, VagueDate.DateType.Start);
+            //                int defaultEndDate = VagueDate.ToTimeSpanDays(defaultDateString,
+            //                    formatString, VagueDate.DateType.End);
+            //                _incidConditionRows[rowNumber].source_date_start = defaultStartDate;
+            //                _incidConditionRows[rowNumber].source_date_end = defaultEndDate;
+            //            }
+            //        }
+            //        catch { }
+            //    }
+
+            //    if ((_incidConditionRows[rowNumber].RowState == DataRowState.Detached) &&
+            //        IsCompleteRow(_incidConditionRows[rowNumber]))
+            //    {
+            //        _incidConditionRows[rowNumber].sort_order = rowNumber + 1;
+            //        IncidConditionTable.Addincid_sourcesRow(_incidConditionRows[rowNumber]);
+            //    }
+            //}
+            //catch { }
+        }
+
+        #endregion
+
+        #region Quality
+
+        public string DetailsQualityHeader
+        {
+            get
+            {
+                if ((bool)_showGroupHeaders)
+                    return "Quality";
+                else
+                    return null;
+            }
+        }
+
+        // Display the quality in the interface.
+        public string IncidQualityDetermination
+        {
+            get
+            {
+                if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.boundary_base_mapColumn))
+                    return IncidCurrentRow.boundary_base_map;
+                else
+                    return null;
+            }
+            set
+            {
+                if ((IncidCurrentRow != null) && (value != null))
+                {
+                    IncidCurrentRow.boundary_base_map = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+                }
+            }
+        }
+
+        public string IncidQualityInterpretation
+        {
+            get
+            {
+                if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.boundary_base_mapColumn))
+                    return IncidCurrentRow.boundary_base_map;
+                else
+                    return null;
+            }
+            set
+            {
+                if ((IncidCurrentRow != null) && (value != null))
+                {
+                    IncidCurrentRow.boundary_base_map = value;
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR2 (Apply button)
+                    // Flag that the current record has changed so that the apply button
+                    // will appear.
+                    Changed = true;
+                    //---------------------------------------------------------------------
+                }
+            }
+        }
+
+        public string IncidQualityComments
+        {
+            get
+            {
+                if ((IncidCurrentRow != null) && !IncidCurrentRow.IsNull(HluDataset.incid.general_commentsColumn))
+                    return IncidCurrentRow.general_comments;
+                else
+                    return null;
+            }
+            set
+            {
+                if ((IncidCurrentRow != null) && (value != null))
+                {
+                    IncidCurrentRow.general_comments = value;
                     //---------------------------------------------------------------------
                     // CHANGED: CR2 (Apply button)
                     // Flag that the current record has changed so that the apply button
@@ -13448,6 +13860,13 @@ namespace HLU.UI.ViewModel
 
                 //---------------------------------------------------------------------
                 // FIXOLD: 020 Show field errors on tab labels.
+                // If there are any Priority field errors then show an error on the tab label.
+                if (PriorityErrors != null && PriorityErrors.Count > 0)
+                    error.Append(Environment.NewLine).Append("One or more Priority are in error");
+                //---------------------------------------------------------------------
+
+                //---------------------------------------------------------------------
+                // FIXOLD: 020 Show field errors on tab labels.
                 // If there are any Detail field errors then show an error on the tab label.
                 if (DetailsErrors != null && DetailsErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more Details are in error");
@@ -13842,29 +14261,26 @@ namespace HLU.UI.ViewModel
                     //    //---------------------------------------------------------------------
                     //    OnPropertyChanged("HabitatTabLabel");
                     //    break;
+                    case "PriorityTabLabel":
+                        if (PriorityWarnings != null && PriorityWarnings.Count > 0)
+                            error = "Warning: One or more Priority have a warning";
+
+                        if (PriorityErrors != null && PriorityErrors.Count > 0)
+                            error = "Error: One or more Priority are in error";
+                        break;
                     case "DetailsTabLabel":
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 080 Functionality to display warning level messages.
-                        //    
                         if (DetailsWarnings != null && DetailsWarnings.Count > 0)
                             error = "Warning: One or more Details have a warning";
-                        //---------------------------------------------------------------------
+
                         if (DetailsErrors != null && DetailsErrors.Count > 0)
                             error = "Error: One or more Details are in error";
                         break;
                     case "SourcesTabLabel":
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 080 Functionality to display warning level messages.
-                        //    
-                        // Check the Source field warnings to see if the Source tab label
-                        // should be flagged with a warning.
                         if ((Source1Warnings != null && Source1Warnings.Count > 0) ||
                             (Source2Warnings != null && Source2Warnings.Count > 0) ||
                             (Source3Warnings != null && Source3Warnings.Count > 0))
                             error = "Warning: One or more Sources have a warning";
-                        //---------------------------------------------------------------------
-                        // Check the Source field errors to see if the Source tab label
-                        // should be flagged as in error.
+
                         if ((Source1Errors != null && Source1Errors.Count > 0) ||
                             (Source2Errors != null && Source2Errors.Count > 0) ||
                             (Source3Errors != null && Source3Errors.Count > 0))
@@ -14009,6 +14425,8 @@ namespace HLU.UI.ViewModel
         {
             _habitatWarnings = new List<string>();
             _habitatErrors = new List<string>();
+            _priorityWarnings = new List<string>();
+            _priorityErrors = new List<string>();
             _detailsWarnings = new List<string>();
             _detailsErrors = new List<string>();
             _source1Warnings = null;

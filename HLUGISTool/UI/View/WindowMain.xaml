@@ -435,6 +435,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!--  GroupBoxTopControlsBulkUpdate  -->
@@ -1078,14 +1080,14 @@
                                         <Label x:Name="LabelHabitatType"
                                                Grid.Row="1"
                                                Grid.Column="0"
-                                               Margin="0,0,0,4"
+                                               Margin="0,0,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Habitat Type" />
                                         <ComboBox x:Name="ComboBoxHabitatType"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,4"
+                                                  Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1126,14 +1128,14 @@
                                         <Label x:Name="LabelPrimary"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,0,0,4"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Primary" />
                                         <ComboBox x:Name="ComboBoxPrimary"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,4"
+                                                  Margin="8,0,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1155,7 +1157,7 @@
                                         <CheckBox x:Name="CheckBoxCopyPrimary"
                                                   Grid.Row="0"
                                                   Grid.Column="2"
-                                                  Margin="0,0,0,4"
+                                                  Margin="0,0,0,2"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding CopySwitches.CopyIncidPrimary,
@@ -1165,7 +1167,7 @@
                                         <Label x:Name="LabelNvcCodes"
                                                Grid.Row="1"
                                                Grid.Column="0"
-                                               Margin="0,0,0,0"
+                                               Margin="0,2,0,0"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="NVC Codes"
@@ -1173,7 +1175,7 @@
                                         <TextBox x:Name="TextBoxNvcCodes"
                                                  Grid.Row="1"
                                                  Grid.Column="1"
-                                                 Margin="8,0,8,2"
+                                                 Margin="8,2,8,0"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  Text="{Binding NvcCodes,
@@ -1216,14 +1218,14 @@
                                         <Label x:Name="LabelSecondaryGroup"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,0,0,4"
+                                               Margin="0,2,0,4"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Group" />
                                             <ComboBox x:Name="ComboBoxSecondaryGroup"
                                                       Grid.Row="0"
                                                       Grid.Column="1"
-                                                      Margin="8,0,8,4"
+                                                      Margin="8,2,8,4"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
                                                       IsEditable="True"
@@ -1238,14 +1240,14 @@
                                             <Label x:Name="LabelSecondaryHabitat"
                                                    Grid.Row="0"
                                                    Grid.Column="2"
-                                                   Margin="0,0,0,4"
+                                                   Margin="0,2,0,4"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
                                                    Content="Habitat" />
                                             <ComboBox x:Name="ComboBoxSecondaryHabitat"
                                                       Grid.Row="0"
                                                       Grid.Column="3"
-                                                      Margin="8,0,8,4"
+                                                      Margin="8,2,8,4"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
                                                       IsEditable="True"
@@ -1270,7 +1272,7 @@
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
-												Margin="0,5,0,0"
+												Margin="0,4,0,0"
 												HorizontalAlignment="Right"
 												VerticalAlignment="Top"
 												Command="{Binding AddSecondaryHabitatCommand}"
@@ -1288,7 +1290,7 @@
                                                        Grid.Row="1"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Margin="4,2,6,2"
+                                                       Margin="2,2,6,2"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
@@ -1408,14 +1410,14 @@
                                         <Label x:Name="LabelSecondaries"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,2,0,4"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Summary" />
                                         <TextBox x:Name="TextBoxSecondaries"
                                                  Grid.Row="0"
                                                  Grid.Column="1"
-                                                 Margin="8,2,2,4"
+                                                 Margin="8,2,2,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  IsReadOnly="True"
@@ -1445,14 +1447,14 @@
                                         <Label x:Name="LabelLegacyHabitat"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,0,0,0"
+                                               Margin="0,2,0,0"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Legacy Habitat" />
                                         <ComboBox x:Name="ComboBoxLegacyHabitat"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,2"
+                                                  Margin="8,2,8,0"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1465,6 +1467,15 @@
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                   ToolTipService.ShowOnDisabled="True" />
+                                        <CheckBox x:Name="CheckBoxCopyLegacyHabitat"
+                                                  Grid.Row="0"
+                                                  Grid.Column="2"
+                                                  Margin="0,0,0,2"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding CopySwitches.CopyLegacyHabitat,
+                                                                      Mode=TwoWay,
+                                                                      UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
                                 </GroupBox>
                             </Grid>
@@ -1495,12 +1506,12 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid x:Name="GridTabItemIHS">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" MinHeight="4" />
-                                    <RowDefinition Height="Auto" MinHeight="11" />
-                                    <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="Auto" MinHeight="4" />
+                                    <RowDefinition Height="1.2*" MinHeight="4" />
+                                    <RowDefinition Height="2.7*" MinHeight="11" />
+                                    <RowDefinition Height="2*" MinHeight="8" />
+                                    <RowDefinition Height="2*" MinHeight="8" />
+                                    <RowDefinition Height="2*" MinHeight="8" />
+                                    <RowDefinition Height="1.2*" MinHeight="4" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -1810,37 +1821,34 @@
 
                 </TabItem>
 
-                <!--  TabItemDetails  -->
-                <TabItem x:Name="TabItemDetails"
-				         IsEnabled="{Binding TabItemDetailsEnabled}">
+                <!--  TabItemPriority  -->
+				<TabItem x:Name="TabItemPriority"
+                		 IsEnabled="{Binding TabItemPriorityEnabled}" >
 					
-                    <TabItem.Header>
-                        <StackPanel>
-                        	<Label x:Name="DetailsTabLabel"
-                        		Margin="2,0,2,0"
-                        		VerticalAlignment="Bottom"
-                        		Content="{Binding DetailsTabLabel, ValidatesOnDataErrors=True}"
-                        		FontSize="13"
-                        		Padding="4,2,4,4"
-                        		Tag="{Binding (Validation.Errors).CurrentItem.ErrorContent, Converter={StaticResource errorMessageConverter}, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                        		ToolTipService.ShowOnDisabled="True" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <AdornerDecorator>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <Grid x:Name="GridTabItemDetails">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="4*" MinHeight="150" />
-                                    <RowDefinition Height="3*" MinHeight="140" />
-                                    <RowDefinition Height="2.5*" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="20" />
-                                </Grid.ColumnDefinitions>
+                	<TabItem.Header>
+                		<StackPanel>
+                			<Label x:Name="PriorityTabLabel"
+                				Margin="2,0,2,0"
+                				VerticalAlignment="Bottom"
+                				Content="{Binding PriorityTabLabel, ValidatesOnDataErrors=True}"
+                				FontSize="13"
+                				Padding="4,2,4,4"
+                				Tag="{Binding (Validation.Errors).CurrentItem.ErrorContent, Converter={StaticResource errorMessageConverter}, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                				ToolTipService.ShowOnDisabled="True" />
+                		</StackPanel>
+                	</TabItem.Header>
+                	<AdornerDecorator>
+                		<ScrollViewer VerticalScrollBarVisibility="Auto">
+                			<Grid x:Name="GridTabItemPriority">
+                				<Grid.RowDefinitions>
+                					<RowDefinition Height="4*" MinHeight="150" />
+                					<RowDefinition Height="4*" MinHeight="150" />
+                				</Grid.RowDefinitions>
+                				<Grid.ColumnDefinitions>
+                					<ColumnDefinition Width="*" />
+                					<ColumnDefinition />
+                					<ColumnDefinition Width="20" />
+                				</Grid.ColumnDefinitions>
 
                                 <GroupBox x:Name="GroupBoxPrimaryBapHabitats"
                                           Grid.Row="0"
@@ -2103,34 +2111,71 @@
                                     </Grid>
                                 </GroupBox>
 
+                			</Grid>
+                		</ScrollViewer>
+                	</AdornerDecorator>
+                </TabItem>
+				
+                <!--  TabItemDetails  -->
+                <TabItem x:Name="TabItemDetails"
+				         IsEnabled="{Binding TabItemDetailsEnabled}">
+					
+                    <TabItem.Header>
+                        <StackPanel>
+                        	<Label x:Name="DetailsTabLabel"
+                        		Margin="2,0,2,0"
+                        		VerticalAlignment="Bottom"
+                        		Content="{Binding DetailsTabLabel, ValidatesOnDataErrors=True}"
+                        		FontSize="13"
+                        		Padding="4,2,4,4"
+                        		Tag="{Binding (Validation.Errors).CurrentItem.ErrorContent, Converter={StaticResource errorMessageConverter}, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                        		ToolTipService.ShowOnDisabled="True" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <AdornerDecorator>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid x:Name="GridTabItemDetails">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*" />
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="1.5*" />
+                                    <RowDefinition Height="1.5*" />
+                                    <RowDefinition Height="3*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="20" />
+                                </Grid.ColumnDefinitions>
+
                                 <!--  GroupBoxGeneralComments  -->
                                 <GroupBox x:Name="GroupBoxGeneralComments"
-                                          Grid.Row="2"
+                                          Grid.Row="0"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
                                           VerticalAlignment="Stretch"
 										  IsEnabled="{Binding TabDetailsControlsEnabled}">
                                     <Grid x:Name="GridGeneralComments" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition MinHeight="50" />
+                                            <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" MinWidth="70" />
+                                            <ColumnDefinition Width="Auto" MinWidth="82" />
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Label x:Name="LabelGeneralComments"
+										<Label x:Name="LabelGeneralComments"
                                                Grid.Row="0"
                                                Grid.Column="0"
                                                Margin="2,2,4,4"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
-                                               Content="Comments" />
+											   Content="General&#xa;Comments">
+										</Label>
                                         <TextBox x:Name="TextBoxIncidGeneralComments"
                                                  Grid.Row="0"
                                                  Grid.Column="1"
-                                                 Grid.ColumnSpan="1"
                                                  MinHeight="52"
                                                  Margin="4,2,8,2"
                                                  BorderThickness="1"
@@ -2156,7 +2201,7 @@
 
                                 <!--  GroupBoxMaps  -->
                                 <GroupBox x:Name="GroupBoxMaps"
-                                          Grid.Row="3"
+                                          Grid.Row="1"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
 										  IsEnabled="{Binding TabDetailsControlsEnabled}"
@@ -2176,7 +2221,7 @@
                                               Grid.Column="0"
                                               Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" MinWidth="70" />
+                                                <ColumnDefinition Width="Auto" MinWidth="82" />
                                                 <ColumnDefinition Width="*" MinWidth="100" />
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
@@ -2251,7 +2296,7 @@
 
                                 <!--  GroupBoxSite  -->
                                 <GroupBox x:Name="GroupBoxSite"
-                                          Grid.Row="4"
+                                          Grid.Row="2"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
 										  IsEnabled="{Binding TabDetailsControlsEnabled}"
@@ -2262,10 +2307,10 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" MinWidth="70" />
+                                            <ColumnDefinition Width="Auto" MinWidth="82" />
                                             <ColumnDefinition Width="Auto" MinWidth="100" />
                                             <ColumnDefinition Width="20" />
-                                            <ColumnDefinition Width="*" MinWidth="100" />
+											<ColumnDefinition Width="*" MinWidth="100" />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
 
@@ -2279,7 +2324,6 @@
                                         <TextBox x:Name="TextBoxSiteRef"
                                                  Grid.Row="0"
                                                  Grid.Column="1"
-                                                 Grid.ColumnSpan="1"
                                                  Width="180"
                                                  Margin="4,2,8,4"
                                                  HorizontalAlignment="Left"
@@ -2312,7 +2356,7 @@
                                         <TextBox x:Name="TextBoxSiteName"
                                                  Grid.Row="1"
                                                  Grid.Column="1"
-                                                 Grid.ColumnSpan="3"
+												 Grid.ColumnSpan="3"
                                                  Margin="4,0,8,2"
                                                  BorderThickness="1"
                                                  MaxLength="100"
@@ -2335,12 +2379,298 @@
                                                                       UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
                                 </GroupBox>
+
+                                <!--  GroupBoxCondition  -->
+                                <GroupBox x:Name="GroupBoxCondition"
+                                          Grid.Row="3"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
+                                          Header="{Binding DetailsConditionHeader}">
+                                    <Grid x:Name="GridCondition" Margin="0,4,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" MinWidth="82" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid x:Name="GridConditionQualifier"
+                                              Grid.Row="0"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" MinWidth="82" />
+                                                <ColumnDefinition Width="*" MinWidth="100" />
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" MinWidth="100" />
+                                            </Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelCondition"
+												   Grid.Row="0"
+												   Grid.Column="0"
+												   Margin="2,2,4,4"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Condition" />
+                                            <ComboBox x:Name="ComboBoxIncidCondition"
+                                                      Grid.Row="0"
+                                                      Grid.Column="1"
+                                                      Margin="4,2,8,2"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="False"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding ConditionCodes,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValue="{Binding IncidCondition,
+                                                                              ValidatesOnDataErrors=True}"
+                                                      SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                                      ToolTipService.ShowOnDisabled="True" />
+											<CheckBox x:Name="CheckBoxCopyCondition"
+													  Grid.Row="0"
+													  Grid.Column="2"
+													  Margin="0,2,0,4"
+													  HorizontalAlignment="Right"
+													  VerticalAlignment="Center"
+													  IsChecked="{Binding CopySwitches.CopyCondition,
+																		  Mode=TwoWay,
+																		  UpdateSourceTrigger=PropertyChanged}" />
+
+											<Label x:Name="LabelConditionQualifier"
+												   Grid.Row="0"
+												   Grid.Column="3"
+												   Margin="6,2,4,2"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Qualifier" />
+                                            <ComboBox x:Name="ComboBoxIncidConditionQualifier"
+                                                      Grid.Row="0"
+                                                      Grid.Column="4"
+                                                      Margin="4,2,8,2"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="False"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding ConditionQualifierCodes,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValue="{Binding IncidConditionQualifier,
+                                                                              ValidatesOnDataErrors=True}"
+                                                      SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                                      ToolTipService.ShowOnDisabled="True" />
+                                        </Grid>
+										<CheckBox x:Name="CheckBoxCopyConditionQualifier"
+													Grid.Row="0"
+													Grid.Column="2"
+													Margin="0,0,0,2"
+													HorizontalAlignment="Right"
+													VerticalAlignment="Center"
+													IsChecked="{Binding CopySwitches.CopyConditionQualifier,
+																		Mode=TwoWay,
+																		UpdateSourceTrigger=PropertyChanged}" />
+
+                                        <Grid x:Name="GridConditionDate"
+                                              Grid.Row="1"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" MinWidth="82" />
+                                                <ColumnDefinition Width="*" MinWidth="150" />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelConditionDate"
+												   Grid.Row="1"
+												   Grid.Column="0"
+												   Margin="2,0,4,2"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Date" />
+											<TextBox x:Name="TextBoxConditionDate"
+													 Grid.Row="1"
+													 Grid.Column="1"
+													 Margin="4,0,8,2"
+													 BorderThickness="1"
+													 MaxLength="100"
+													 VerticalAlignment="Center"
+													 Text="{Binding IncidConditionDate,
+																	Mode=TwoWay,
+																	UpdateSourceTrigger=PropertyChanged,
+																	ValidatesOnDataErrors=True}"
+													 TextWrapping="Wrap"
+													 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+													 ToolTipService.ShowOnDisabled="True" />
+											<CheckBox x:Name="CheckBoxCopyConditionDate"
+													  Grid.Row="1"
+													  Grid.Column="2"
+													  Margin="0,0,0,2"
+													  HorizontalAlignment="Right"
+													  VerticalAlignment="Center"
+													  IsChecked="{Binding CopySwitches.CopyConditionDate,
+																		  Mode=TwoWay,
+																		  UpdateSourceTrigger=PropertyChanged}" />                                    </Grid>
+                                        </Grid>
+                                </GroupBox>
+
+                                <!--  GroupBoxQuality  -->
+                                <GroupBox x:Name="GroupBoxQuality"
+                                          Grid.Row="4"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="3"
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
+                                          Header="{Binding DetailsQualityHeader}">
+                                    <Grid x:Name="GridQuality" Margin="0,4,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid x:Name="GridQualityDeterminationInterpretation"
+                                              Grid.Row="0"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="3">
+											<Grid.RowDefinitions>
+												<RowDefinition />
+												<RowDefinition />
+											</Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" MinWidth="82" />
+                                                <ColumnDefinition Width="*" MinWidth="70" />
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" MinWidth="70" />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelQualityDetermination"
+												   Grid.Row="0"
+												   Grid.Column="0"
+												   Margin="2,2,4,4"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Determination" />
+                                            <ComboBox x:Name="ComboBoxIncidQualityDetermination"
+                                                      Grid.Row="0"
+                                                      Grid.Column="1"
+													  Grid.ColumnSpan="4"
+                                                      Margin="4,2,8,2"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="False"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding DeterminationQualityCodes,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValue="{Binding IncidQualityDetermination,
+                                                                              ValidatesOnDataErrors=True}"
+                                                      SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                                      ToolTipService.ShowOnDisabled="True" />
+											<CheckBox x:Name="CheckBoxCopyQualityDetermination"
+													  Grid.Row="0"
+													  Grid.Column="5"
+													  Margin="0,2,0,4"
+													  HorizontalAlignment="Right"
+													  VerticalAlignment="Center"
+													  IsChecked="{Binding CopySwitches.CopyQualityDetermination,
+																		  Mode=TwoWay,
+																		  UpdateSourceTrigger=PropertyChanged}" />
+
+											<Label x:Name="LabelQualityInterpretation"
+												   Grid.Row="1"
+												   Grid.Column="0"
+												   Margin="2,0,4,2"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Interpretation" />
+                                            <ComboBox x:Name="ComboBoxIncidQualityInterpretation"
+                                                      Grid.Row="1"
+                                                      Grid.Column="1"
+                                                      Margin="4,2,8,2"
+                                                      VerticalAlignment="Center"
+                                                      DisplayMemberPath="description"
+                                                      IsEditable="False"
+                                                      IsReadOnly="False"
+                                                      ItemsSource="{Binding InterpretationQualityCodes,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValue="{Binding IncidQualityInterpretation,
+                                                                              ValidatesOnDataErrors=True}"
+                                                      SelectedValuePath="code"
+                                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+                                                      ToolTipService.ShowOnDisabled="True" />
+											<CheckBox x:Name="CheckBoxCopyQualityInterpretation"
+														Grid.Row="1"
+														Grid.Column="2"
+														Margin="0,0,0,2"
+														HorizontalAlignment="Right"
+														VerticalAlignment="Center"
+														IsChecked="{Binding CopySwitches.CopyQualityInterpretation,
+																			Mode=TwoWay,
+																			UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+
+                                        <Grid x:Name="GridQualityComments"
+                                              Grid.Row="1"
+                                              Grid.Column="0"
+                                              Grid.ColumnSpan="3">
+											<Grid.RowDefinitions>
+												<RowDefinition MinHeight="70" />
+											</Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" MinWidth="82" />
+                                                <ColumnDefinition Width="*" MinWidth="150" />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
+
+											<Label x:Name="LabelQualityComments"
+												   Grid.Row="1"
+												   Grid.Column="0"
+												   Margin="2,0,4,2"
+												   HorizontalAlignment="Right"
+												   VerticalAlignment="Center"
+												   Content="Comments" />
+											<TextBox x:Name="TextBoxQualityComments"
+													 Grid.Row="1"
+													 Grid.Column="1"
+													 MinHeight="52"
+													 Margin="4,2,8,2"
+													 BorderThickness="1"
+													 MaxLength="254"
+													 Text="{Binding IncidQualityComments,
+																	Mode=TwoWay,
+																	UpdateSourceTrigger=PropertyChanged,
+																	ValidatesOnDataErrors=True}"
+													 TextWrapping="Wrap"
+													 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+													 ToolTipService.ShowOnDisabled="True" />
+											<CheckBox x:Name="CheckBoxCopyQualityComments"
+													  Grid.Row="1"
+													  Grid.Column="2"
+													  Margin="0,0,0,2"
+													  HorizontalAlignment="Right"
+													  VerticalAlignment="Center"
+													  IsChecked="{Binding CopySwitches.CopyQualityComments,
+																		  Mode=TwoWay,
+																		  UpdateSourceTrigger=PropertyChanged}" />                                    </Grid>
+                                        </Grid>
+                                </GroupBox>
+
                             </Grid>
                         </ScrollViewer>
                     </AdornerDecorator>
                 </TabItem>
 
-                <!--  TabItemSources  -->
+				<!--  TabItemSources  -->
                 <TabItem x:Name="TabItemSources" IsEnabled="{Binding TabItemSourcesEnabled}">
                     <TabItem.Header>
                         <StackPanel>
@@ -2549,7 +2879,7 @@
                                                Grid.Row="4"
                                                Grid.Column="0"
 											   Grid.ColumnSpan="2"
-                                               Margin="0,0,0,2"
+                                               Margin="0,0,0,0"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Boundary Imp." />
@@ -2566,7 +2896,7 @@
                                             <ComboBox x:Name="ComboBoxIncidSource1BoundaryImportance"
                                                       Grid.Row="0"
                                                       Grid.Column="0"
-                                                      Margin="8,0,8,2"
+                                                      Margin="8,0,8,0"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
                                                       IsEditable="True"
@@ -2584,7 +2914,7 @@
                                             <CheckBox x:Name="CheckBoxCopySource1BoundaryImportance"
                                                       Grid.Row="0"
                                                       Grid.Column="1"
-                                                      Margin="0,0,0,2"
+                                                      Margin="0,0,0,0"
                                                       HorizontalAlignment="Right"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding CopySwitches.CopyIncidSource1BoundaryImportance,
@@ -2593,14 +2923,14 @@
                                             <Label x:Name="LabelIncidSource1HabitatImportance"
                                                    Grid.Row="0"
                                                    Grid.Column="2"
-                                                   Margin="0,0,0,2"
+                                                   Margin="0,0,0,0"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
                                                    Content="Habitat Imp." />
                                             <ComboBox x:Name="ComboBoxIncidSource1HabitatImportance"
                                                       Grid.Row="3"
                                                       Grid.Column="3"
-                                                      Margin="8,0,8,2"
+                                                      Margin="8,0,8,0"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
                                                       IsEditable="True"
@@ -2619,7 +2949,7 @@
                                         <CheckBox x:Name="CheckBoxCopySource1HabitatImportance"
                                                   Grid.Row="4"
                                                   Grid.Column="3"
-                                                  Margin="0,0,0,2"
+                                                  Margin="0,0,0,0"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding CopySwitches.CopyIncidSource1HabitatImportance,
@@ -3206,45 +3536,6 @@
                 </TabItem>
             </TabControl>
 
-            <!--  DockPanelGetMapSelection  -->
-            <DockPanel x:Name="DockPanelGetMapSelection"
-                       Grid.Row="3"
-                       Grid.Column="0"
-                       MaxHeight="30"
-                       Margin="0,4,0,0"
-                       VerticalAlignment="Top"
-                       Panel.ZIndex="5">
-                <Grid x:Name="GridStatusTop">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Label x:Name="LabelStatusTop"
-                           Grid.Column="0"
-                           Margin="2,7,36,0"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center">
-                        <TextBlock x:Name="TextBlockStatusTop" Text="{Binding StatusTop}">
-                            <TextBlock.Triggers>
-                                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation AutoReverse="True"
-                                                             Duration="0:0:5"
-                                                             From="1.0"
-                                                             RepeatBehavior="Forever"
-                                                             Storyboard.TargetName="TextBlockStatusTop"
-                                                             Storyboard.TargetProperty="(UIElement.Opacity)"
-                                                             To="1.0" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </TextBlock.Triggers>
-                        </TextBlock>
-                    </Label>
-                </Grid>
-            </DockPanel>
-
             <!--  ButtonGetMapSelection2  -->
             <Button x:Name="ButtonGetMapSelection2"
                     Grid.Row="3"
@@ -3269,7 +3560,7 @@
             <!--  GridNavigation  -->
             <Grid x:Name="GridStatus"
                   Grid.Row="4"
-                  Margin="0,4,0,0"
+                  Margin="0,4,0,4"
                   IsEnabled="{Binding WindowEnabled}"
 				  Visibility="{Binding Path=HideInOSMMUpdateMode}">
                 <Grid.ColumnDefinitions>
@@ -3495,6 +3786,64 @@
 							              UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
             </Grid>
+
+			<Separator Grid.Row="5" />
+
+            <!--  DockPanelStatusBar  -->
+            <DockPanel x:Name="DockPanelStatusBar"
+                       Grid.Row="6"
+                       Grid.Column="0"
+                       Margin="0,0,0,0"
+                       VerticalAlignment="Top"
+                       Panel.ZIndex="5">
+<!--					   MaxHeight="30"	-->
+                <Grid x:Name="GridStatusBar">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="LabelStatusBar"
+                           Grid.Column="0"
+                           Margin="4,0,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+						   Content="{Binding StatusBar}"
+						   Style="{DynamicResource LabelReverseStyle}">
+<!--                        <TextBlock x:Name="TextBlockStatusBar" Text="{Binding StatusBar}">
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation AutoReverse="True"
+                                                             Duration="0:0:5"
+                                                             From="1.0"
+                                                             RepeatBehavior="Forever"
+                                                             Storyboard.TargetName="TextBlockStatusBar"
+                                                             Storyboard.TargetProperty="(UIElement.Opacity)"
+                                                             To="1.0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>	-->
+                    </Label>
+                    <Label x:Name="LabelLayerName"
+                            Grid.Column="1"
+                            Margin="0,0,4,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Content="Active Layer:"
+							Style="{DynamicResource LabelReverseStyle}" />
+                    <TextBox x:Name="TextBoxLayerName"
+                             Grid.Column="2"
+                             Margin="2,0,0,0"
+                             IsReadOnly="True"
+                             TextAlignment="Right"
+                             Text="{Binding LayerName, Mode=OneWay}" />
+                </Grid>
+            </DockPanel>
+
         </Grid>
     </DockPanel>
 </Window>
