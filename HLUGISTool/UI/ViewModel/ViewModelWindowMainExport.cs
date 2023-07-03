@@ -2455,8 +2455,12 @@ namespace HLU.UI.ViewModel
                             VagueDate.DateType dateType = VagueDate.DateType.Vague;
                             if (_sourceDateStartOrdinals.Contains(inOrdinal))
                                 dateType = VagueDate.DateType.Start;
-                            else if (_sourceDateStartOrdinals.Contains(inOrdinal))
-                                dateType = VagueDate.DateType.Start;
+                            //---------------------------------------------------------------------
+                            // FIX: 109 Fix bug exporting source dates.
+                            //
+                            else if (_sourceDateEndOrdinals.Contains(inOrdinal))
+                                dateType = VagueDate.DateType.End;
+                            //---------------------------------------------------------------------
 
                             string inStr = VagueDate.FromVagueDateInstance(new VagueDateInstance(sourceDateStart, sourceDateEnd, "D"), dateType);
                             DateTime inDate;
@@ -2467,14 +2471,18 @@ namespace HLU.UI.ViewModel
                             string outDate;
                             outDate = inDate.ToString(outFormat);
 
-                            // Parse the formatted date back into a date using the
-                            // output format to check it is a valid date.
-                            DateTime inDateAgain;
-                            if (!DateTime.TryParseExact(outDate, outFormat, null, DateTimeStyles.None, out inDateAgain) ||
-                                (inDate != inDateAgain))
-                                return null;
-                            else
-                                return outDate;
+                            //---------------------------------------------------------------------
+                            // FIX: 109 Fix bug exporting source dates.
+                            //
+                            //// Parse the formatted date back into a date using the
+                            //// output format to check it is a valid date.
+                            //DateTime inDateAgain;
+                            //if (!DateTime.TryParseExact(outDate, outFormat, null, DateTimeStyles.None, out inDateAgain) ||
+                            //    (inDate != inDateAgain))
+                            //    return null;
+                            //else
+                            //    return outDate;
+                            //---------------------------------------------------------------------
                         }
                     }
                 }
