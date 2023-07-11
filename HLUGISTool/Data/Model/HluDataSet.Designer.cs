@@ -4388,7 +4388,7 @@ namespace HLU.Data.Model {
                 this.columnlast_modified_date.AllowDBNull = false;
                 this.columnlast_modified_user_id.AllowDBNull = false;
                 this.columnlast_modified_user_id.MaxLength = 40;
-                this.columnhabitat_version.MaxLength = 10;
+                this.columnhabitat_version.MaxLength = 11;
                 this.columnhabitat_primary.MaxLength = 8;
                 this.columnhabitat_secondaries.MaxLength = 80;
                 this.columnquality_determination.MaxLength = 2;
