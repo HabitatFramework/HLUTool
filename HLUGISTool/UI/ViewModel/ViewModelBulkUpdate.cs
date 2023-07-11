@@ -213,9 +213,6 @@ namespace HLU.UI.ViewModel
 
         #region Interface
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 078 Bulk update overhaul/improvements.
-        //         
         /// <summary>
         /// Gets or sets whether orphan bap habitats should be deleted.
         /// </summary>
@@ -356,7 +353,6 @@ namespace HLU.UI.ViewModel
             }
             set { _interpretationQuality = value; }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Hide control when in OSMM Bulk Update mode.
