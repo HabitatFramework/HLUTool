@@ -470,7 +470,7 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(_viewModelMain.HluDataset.incid) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid.TableName));
 
-                //TODO: Replace with secondary and condition rows
+                //TODO: Logical split incid - Replace with secondary and condition rows
                 ////---------------------------------------------------------------------
                 //if ((_viewModelMain.IncidIhsMatrixRows != null) && (_viewModelMain.IncidIhsMatrixRows.Length > 0))
                 //{

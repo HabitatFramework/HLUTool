@@ -1054,9 +1054,6 @@ namespace HLU.UI.ViewModel
 
         #region Bulk Update
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 078 Bulk update overhaul/improvements.
-        // 
         /// <summary>
         /// Checks if the user has bulk update authority.
         /// </summary>

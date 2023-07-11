@@ -133,15 +133,11 @@ namespace HLU.UI.ViewModel
             }
             //---------------------------------------------------------------------
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Clear any interface warning and error messages
             _viewModelMain.ResetWarningsErrors();
             _viewModelMain.RefreshAll();
 
             //DispatcherHelper.DoEvents();
-            //---------------------------------------------------------------------
 
             if (_osmmBulkUpdateMode == true)
             {
@@ -156,9 +152,6 @@ namespace HLU.UI.ViewModel
 
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 078 Bulk update overhaul/improvements.
-        // 
         /// <summary>
         /// Displays the bulk update window.
         /// </summary>
@@ -265,7 +258,6 @@ namespace HLU.UI.ViewModel
                     ApplyBulkUpdate();
             }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Applies the bulk update.
@@ -354,7 +346,7 @@ namespace HLU.UI.ViewModel
                 else if ((incidUpdateVals.Contains(_viewModelMain.HluDataset.incid.ihs_habitatColumn)) &&
                     (_bulkDeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.Invalid))
                 {
-                    //TODO: Replace with secondary code?
+                    //TODO: Bulk update - Replace with secondary code?
                     //// Get the new IHS habitat code
                     //string newIncidIhsHabitatCode = _viewModelMain.IncidCurrentRow[_viewModelMain.HluDataset.incid.ihs_habitatColumn.Ordinal].ToString();
 
@@ -405,7 +397,7 @@ namespace HLU.UI.ViewModel
                     //    _viewModelMain.DataBase.QuoteValue(newIncidIhsHabitatCode)));
                 }
 
-                //TODO: Replace with secondary and condition rows
+                //TODO: Bulk update - Replace with secondary and condition rows
                 ////---------------------------------------------------------------------
                 //// Filter out any rows not set (because the maximum number of blank rows are
                 //// created at the start of the bulk process so any not used need to be removed)
@@ -429,9 +421,7 @@ namespace HLU.UI.ViewModel
                 int incidOrdinal =
                     _viewModelMain.IncidSelection.Columns[_viewModelMain.HluDataset.incid.incidColumn.ColumnName].Ordinal;
 
-                //TODO: Delete secondary codes and/or multiplex codes when relevant
-                //---------------------------------------------------------------------
-                // FIXOLD: 078 Bulk update overhaul/improvements.
+                //TODO: Bulk update - Delete secondary codes and/or multiplex codes when relevant
                 // 
                 // Loop through each row in the incid selection
                 foreach (DataRow r in _viewModelMain.IncidSelection.Rows)
@@ -447,7 +437,6 @@ namespace HLU.UI.ViewModel
                         BulkUpdateDb(currIncid, selectCommandIncid, updateCommandIncid, null,
                             ihsMultiplexDelStatements, _bulkDeleteSecondaryCodes, _bulkDeleteOrphanBapHabitats, _bulkDeletePotentialBapHabitats);
                 }
-                //---------------------------------------------------------------------
 
                 // Perform the bulk updates on the GIS data, shadow copy in DB and history
                 BulkUpdateGis(incidOrdinal, _viewModelMain.IncidSelection, _bulkCreateHistory, ViewModelWindowMain.Operations.BulkUpdate, nowDtTm);
@@ -488,14 +477,10 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void BulkUpdateResetControls()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Force the Incid table to be refilled because it has been
             // updated directly in the database rather than via the
             // local copy.
             _viewModelMain.RefillIncidTable = true;
-            //---------------------------------------------------------------------
 
             // Reset the incid filter
             _viewModelMain.BulkUpdateMode = null;
@@ -706,14 +691,10 @@ namespace HLU.UI.ViewModel
         /// </summary>
         private void OSMMBulkUpdateResetControls()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Force the Incid table to be refilled because it has been
             // updated directly in the database rather than via the
             // local copy.
             _viewModelMain.RefillIncidTable = true;
-            //---------------------------------------------------------------------
 
             // Reset the incid and map selections and move
             // to the first incid in the database.
@@ -807,7 +788,7 @@ namespace HLU.UI.ViewModel
             // Create an array of the value of the current incid
             object[] relValues = new object[] { currIncid };
 
-            //TODO: Secondary rows
+            //TODO: Bulk update - Secondary rows
             ////---------------------------------------------------------------------
             //// Store the rows from the user interface
             //HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
@@ -820,7 +801,7 @@ namespace HLU.UI.ViewModel
             //    secondaryTable, ref incidSecondaryRows);
             ////---------------------------------------------------------------------
 
-            //TODO: Secondary rows
+            //TODO: Bulk update - Secondary rows
             ////---------------------------------------------------------------------
             // Store a copy of the table for the current incid
             //HluDataSet.incid_bapDataTable bapTable =
@@ -843,7 +824,7 @@ namespace HLU.UI.ViewModel
                            where nr.source_id != Int32.MinValue
                            select nr).Count();
 
-            //TODO: Source rows
+            //TODO: Bulk update - Source rows
             ////---------------------------------------------------------------------
             //// If there are new source rows then delete the old sources
             //int deleteSources = newRows > 0 ? 0 : 2;
@@ -918,7 +899,7 @@ namespace HLU.UI.ViewModel
             // Create an array of the value of the current incid
             object[] relValues = new object[] { currIncid };
 
-            //TODO: Secondary rows
+            //TODO: Bulk update - Secondary rows
             ////---------------------------------------------------------------------
             //// Store the rows from the user interface
             //HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
@@ -937,7 +918,7 @@ namespace HLU.UI.ViewModel
             _viewModelMain.GetIncidChildRowsDb(relValues,
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter, ref bapTable);
             // Update the rows in the database
-            //TODO: Secondary rows
+            //TODO: Bulk update - Secondary rows
             ////---------------------------------------------------------------------
             //BulkUpdateBap(currIncid, ihsHabitat, bapTable, incidSecondaryRows, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
             ////---------------------------------------------------------------------
@@ -1039,13 +1020,9 @@ namespace HLU.UI.ViewModel
             where T : DataTable
             where R : DataRow
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             List<R> newRows = new List<R>(rows.Length);
 
             if ((rows == null) || (rows.Length == 0) || (rows[0] == null)) return newRows.ToArray();
-            //---------------------------------------------------------------------
 
             T table = (T)rows[0].Table;
 
@@ -1132,7 +1109,7 @@ namespace HLU.UI.ViewModel
             bool deleteOrphanBapRows,
             bool deletePotentialBapRows)
         {
-            //TODO: to check
+            //TODO: Bulk update - Check
             //var sr = incidsecondaryRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.secondary);
             //string[] ihsMatrixVals = sr.Concat(new string[15 - sr.Count()]).ToArray();
 
@@ -1334,7 +1311,7 @@ namespace HLU.UI.ViewModel
             }
             else
             {
-                //TODO: Set primary and secondaries (and other fields?
+                //TODO: Bulk update GIS - Set primary and secondaries (and other fields)?
                 ////---------------------------------------------------------------------
                 //// Check if the IHS Summary is one of the columns to update (it should always be)
                 //int ixIhsSummary = System.Array.IndexOf(updateColumns, _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
@@ -1438,14 +1415,8 @@ namespace HLU.UI.ViewModel
             {
                 var incidRow = _viewModelMain.IncidTable.Where(r => r.incid == incid);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 078 Bulk update overhaul/improvements.
-                // 
-                //string ihsHabitat = incidRow.Count() == 1 ? incidRow.ElementAt(0).ihs_habitat : String.Empty;
-
                 // Get the IHS habitat from the user interface
                 string ihsHabitat = _viewModelMain.IncidCurrentRow.ihs_habitat;
-                //---------------------------------------------------------------------
 
                 // Get the multiplex rows from the database
                 _viewModelMain.GetIncidChildRowsDb(new object[] { incid },
@@ -1460,9 +1431,6 @@ namespace HLU.UI.ViewModel
                 _viewModelMain.GetIncidChildRowsDb(new object[] { incid },
                     _viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter, ref _ihsComplexTable);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 078 Bulk update overhaul/improvements.
-                // 
                 // Build the IHS Summary string
                 object ihsSummaryValue = ViewModelWindowMainHelpers.IhsSummary(new string[] { ihsHabitat }
                     .Concat(_ihsMatrixTable.Select((ihs, index) =>  
@@ -1481,7 +1449,6 @@ namespace HLU.UI.ViewModel
                         !ihs.IsNull(_viewModelMain.HluDataset.incid_ihs_complex.complexColumn.Ordinal) ?
                         ihs[_viewModelMain.HluDataset.incid_ihs_complex.complexColumn.Ordinal].ToString() :
                         String.Empty)).ToArray());
-                //---------------------------------------------------------------------
                 
                 // Return the IHS summary string
                 if (ihsSummaryValue != null)
@@ -1769,9 +1736,6 @@ namespace HLU.UI.ViewModel
                 newRow[pkOrdinal] = pkValue;
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 078 Bulk update overhaul/improvements.
-            // 
             // Get the maximum number of child rows for the current table
             int maxRowsDb = 0;
             switch (dbRows.TableName.ToLower())
@@ -1837,7 +1801,6 @@ namespace HLU.UI.ViewModel
                     oldRows[0].Table.AcceptChanges();
                 //dbRows = (T)newRows[0].Table;
             }
-            //---------------------------------------------------------------------
         }
 
         #endregion
