@@ -2481,7 +2481,7 @@ namespace HLU.UI.ViewModel
                             //    (inDate != inDateAgain))
                             //    return null;
                             //else
-                            //    return outDate;
+                                return outDate;
                             //---------------------------------------------------------------------
                         }
                     }
