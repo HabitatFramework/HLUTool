@@ -57,29 +57,57 @@ namespace HLU.UI.ViewModel
             {
                 _viewModelMain.ChangeCursor(Cursors.Wait, "Saving ...");
 
+                // Store row index for reloading the row after the update
                 int incidCurrRowIx = _viewModelMain.IncidCurrentRowIndex;
 
-                //---------------------------------------------------------------------
-                // FIXED: KI97 (Last modified date and user)
-                // CHANGED: CR3 (IHS version)
                 // Previously only changes to fields on the incid table triggered the
                 // last modified date & user fields to be updated.
-                // Update the last modified date & user fields and the ihs version on
-                // the incid table regardless of which attributes have been changed.
-                //if (_viewModelMain.IsDirtyIncid())
-                //{
+                // Update the incid table regardless of which attributes have changed.
                 IncidCurrentRowDerivedValuesUpdate(_viewModelMain);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 028 Only update DateTime fields to whole seconds
+                // Update the DateTime fields to whole seconds.
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                //---------------------------------------------------------------------
                 _viewModelMain.IncidCurrentRow.last_modified_date = nowDtTm;
                 _viewModelMain.IncidCurrentRow.last_modified_user_id = _viewModelMain.UserID;
-                _viewModelMain.IncidCurrentRow.habitat_version = _viewModelMain.HabitatVersion;
+
+                // Update the incid row
+                if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
+                    (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
+                    throw new Exception(String.Format("Failed to update '{0}' table.",
+                        _viewModelMain.HluDataset.incid.TableName));
+
+                //TODO: Update - Check incid_condition update
+                // Update condition rows
+                if ((_viewModelMain.IncidConditionRows != null) && _viewModelMain.IsDirtyIncidCondition())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_conditionTableAdapter.Update(
+                        (HluDataSet.incid_conditionDataTable)_viewModelMain.HluDataset.incid_condition.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_condition.TableName));
+                }
+
+                // Update the secondary rows
+                if (_viewModelMain.IsDirtyIncidSecondary()) UpdateSecondary();
+
+                // Update the BAP rows
+                if (_viewModelMain.IsDirtyIncidBap()) UpdateBap();
+
+                // Update the source rows
+                if (_viewModelMain.IncidSourcesRows != null)
+                {
+                    int j = 0;
+                    for (int i = 0; i < _viewModelMain.IncidSourcesRows.Length; i++)
+                        if (_viewModelMain.IncidSourcesRows[i] != null)
+                            _viewModelMain.IncidSourcesRows[i].sort_order = ++j;
+
+                    if (_viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter.Update(
+                        (HluDataSet.incid_sourcesDataTable)_viewModelMain.IncidSourcesTable.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update {0} table.", 
+                            _viewModelMain.HluDataset.incid_sources.TableName));
+                }
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR49 Process proposed OSMM Updates
@@ -99,63 +127,7 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
-                if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(
-                    (HluDataSet.incidDataTable)_viewModelMain.HluDataset.incid.GetChanges()) == -1)
-                    throw new Exception(String.Format("Failed to update '{0}' table.",
-                        _viewModelMain.HluDataset.incid.TableName));
-                //}
-                //---------------------------------------------------------------------
-
-                //TODO: Replace with secondary and condition rows
-                ////---------------------------------------------------------------------
-                //if ((_viewModelMain.IncidIhsMatrixRows != null) && _viewModelMain.IsDirtyIncidIhsMatrix())
-                //{
-                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter.Update(
-                //        (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.GetChanges()) == -1)
-                //        throw new Exception(String.Format("Failed to update '{0}' table.",
-                //            _viewModelMain.HluDataset.incid_ihs_matrix.TableName));
-                //}
-
-                //if ((_viewModelMain.IncidIhsFormationRows != null) && _viewModelMain.IsDirtyIncidIhsFormation())
-                //{
-                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter.Update(
-                //        (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.GetChanges()) == -1)
-                //        throw new Exception(String.Format("Failed to update '{0}' table.",
-                //            _viewModelMain.HluDataset.incid_ihs_formation.TableName));
-                //}
-
-                //if ((_viewModelMain.IncidIhsManagementRows != null) && _viewModelMain.IsDirtyIncidIhsManagement())
-                //{
-                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter.Update(
-                //        (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.GetChanges()) == -1)
-                //        throw new Exception(String.Format("Failed to update '{0}' table.",
-                //            _viewModelMain.HluDataset.incid_ihs_management.TableName));
-                //}
-
-                //if ((_viewModelMain.IncidIhsComplexRows != null) && _viewModelMain.IsDirtyIncidIhsComplex())
-                //{
-                //    if (_viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter.Update(
-                //        (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.GetChanges()) == -1)
-                //        throw new Exception(String.Format("Failed to update '{0}' table.",
-                //            _viewModelMain.HluDataset.incid_ihs_complex.TableName));
-                //}
-                ////---------------------------------------------------------------------
-
-                if (_viewModelMain.IsDirtyIncidBap()) UpdateBap();
-
-                if (_viewModelMain.IncidSourcesRows != null)
-                {
-                    int j = 0;
-                    for (int i = 0; i < _viewModelMain.IncidSourcesRows.Length; i++)
-                        if (_viewModelMain.IncidSourcesRows[i] != null)
-                            _viewModelMain.IncidSourcesRows[i].sort_order = ++j;
-
-                    if (_viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter.Update(
-                        (HluDataSet.incid_sourcesDataTable)_viewModelMain.IncidSourcesTable.GetChanges()) == -1)
-                        throw new Exception(String.Format("Failed to update {0} table.", 
-                            _viewModelMain.HluDataset.incid_sources.TableName));
-                }
-
+                // Update the OSMM Update rows
                 if ((_viewModelMain.IncidOSMMUpdatesRows != null) && _viewModelMain.IsDirtyIncidOSMMUpdates())
                 {
                     if (_viewModelMain.HluTableAdapterManager.incid_osmm_updatesTableAdapter.Update(
@@ -164,7 +136,7 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.HluDataset.incid_osmm_updates.TableName));
                 }
 
-                // update all GIS rows corresponding to this incid
+                // Update all of the GIS rows corresponding to this incid
                 List<SqlFilterCondition> incidCond = new List<SqlFilterCondition>(new SqlFilterCondition[] { 
                     new SqlFilterCondition(_viewModelMain.HluDataset.incid_mm_polygons, 
                         _viewModelMain.HluDataset.incid_mm_polygons.incidColumn, _viewModelMain.Incid) });
@@ -179,12 +151,14 @@ namespace HLU.UI.ViewModel
                     new object[] { ihsHabitatCategory, _viewModelMain.IncidIhsSummary },
                     _viewModelMain.HistoryColumns, incidCond);
 
+                // Check if a history table was returned from updating
+                // the GIS rows
                 if (historyTable == null)
                     throw new Exception("Error updating GIS layer.");
                 else if (historyTable.Rows.Count == 0)
                     throw new Exception("No GIS features to update.");
 
-                // likewise update DB shadow copy of GIS layer
+                // Likewise update DB shadow copy of GIS layer
                 if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {3}, {2} = {4} WHERE {5}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     _viewModelMain.DataBase.QuoteIdentifier(
@@ -197,17 +171,21 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                     throw new Exception("Failed to update database copy of GIS layer.");
 
-                // save history returned from GIS
+                // Save the history returned from GIS
                 Dictionary<int, string> fixedValues = new Dictionary<int, string>();
                 fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, _viewModelMain.Incid);
                 ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                 vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.AttributeUpdate, nowDtTm);
 
+                // Commit the transation and accept the changes
                 _viewModelMain.DataBase.CommitTransaction();
                 _viewModelMain.HluDataset.AcceptChanges();
                 _viewModelMain.Saved = true;
 
+                // Recount the incid rows in the database
                 _viewModelMain.IncidRowCount(true);
+
+                // Reload the current row index
                 _viewModelMain.IncidCurrentRowIndex = incidCurrRowIx;
 
                 return true;
@@ -302,6 +280,72 @@ namespace HLU.UI.ViewModel
             // Insert the new rows into the table.
             foreach (HluDataSet.incid_bapRow r in newRows)
                 _viewModelMain.HluTableAdapterManager.incid_bapTableAdapter.Insert(r);
+
+        }
+
+        /// <summary>
+        /// Updates secondary habitat rows corresponding to current incid.
+        /// </summary>
+        private void UpdateSecondary()
+        {
+            if (_viewModelMain.IncidSecondaryHabitats == null)
+                _viewModelMain.IncidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>();
+
+            // remove duplicate codes
+            IEnumerable<SecondaryHabitat> currSecondaryRows = from s in _viewModelMain.IncidSecondaryHabitats
+                                                        group s by new { s.secondary_group, s.secondary_habitat } into secs
+                                                        select secs.First();
+
+            List<HluDataSet.incid_secondaryRow> newRows = new List<HluDataSet.incid_secondaryRow>();
+            List<HluDataSet.incid_secondaryRow> updateRows = new List<HluDataSet.incid_secondaryRow>();
+            HluDataSet.incid_secondaryRow updateRow;
+
+            foreach (SecondaryHabitat sh in currSecondaryRows)
+            {
+                if (sh.secondary_id == -1) // new secondary habitat environment
+                {
+                    sh.secondary_id = _viewModelMain.RecIDs.NextIncidSecondaryId;
+                    sh.incid = _viewModelMain.Incid;
+                    HluDataSet.incid_secondaryRow newRow = _viewModelMain.IncidSecondaryTable.Newincid_secondaryRow();
+                    newRow.ItemArray = sh.ToItemArray();
+                    newRows.Add(newRow);
+                }
+                // Get the new values for every updated secondary habitat row from the
+                // secondary habitat data grid.
+                else if ((updateRow = UpdateIncidSecondaryRow(sh)) != null)
+                {
+                    // If a row is returned from the data grid add it to the list
+                    // of updated rows.
+                    updateRows.Add(updateRow);
+                }
+            }
+
+            // Delete any rows that haven't been marked as deleted but are
+            // no longer in the current rows.
+            List<HluDataSet.incid_secondaryRow> temp = _viewModelMain.IncidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted &&
+                currSecondaryRows.Count(g => g.secondary_id == r.secondary_id) == 0).ToList();
+
+            _viewModelMain.IncidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted &&
+                currSecondaryRows.Count(g => g.secondary_id == r.secondary_id) == 0).ToList()
+                .ForEach(delegate(HluDataSet.incid_secondaryRow row) { row.Delete(); });
+
+            // Update the table to remove the deleted rows.
+            if (_viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter.Update(
+                _viewModelMain.IncidSecondaryRows.Where(r => r.RowState == DataRowState.Deleted).ToArray()) == -1)
+                throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_secondary.TableName));
+
+            // If there are any rows that have been updated.
+            if (updateRows.Count > 0)
+            {
+                // Update the table to update the updated rows.
+                if (_viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter.Update(updateRows.ToArray()) == -1)
+                    throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_secondary.TableName));
+            }
+
+            // Insert the new rows into the table.
+            foreach (HluDataSet.incid_secondaryRow r in newRows)
+                _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter.Insert(r);
+
         }
 
         /// <summary>
@@ -325,18 +369,49 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
+        /// Writes the values from a SecondaryHabitat object bound to the secondaries data grids
+        /// into the corresponding incid_secondary DataRow.
+        /// </summary>
+        /// <param name="sh">SecondaryHabitat object bound to data grid on form.</param>
+        /// <returns>Updated incid_secondary row, or null if no corresponding row was found.</returns>
+        private HluDataSet.incid_secondaryRow UpdateIncidSecondaryRow(SecondaryHabitat sh)
+        {
+            var q = _viewModelMain.IncidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted && r.secondary_id == sh.secondary_id);
+            if (q.Count() == 1)
+            {
+                if (!sh.IsValid()) return null;
+                HluDataSet.incid_secondaryRow oldRow = q.ElementAt(0);
+                object[] itemArray = sh.ToItemArray();
+                for (int i = 0; i < itemArray.Length; i++)
+                    oldRow[i] = itemArray[i];
+                return oldRow;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Updates those columns of IncidCurrentRow in main view model that are not directly updated 
         /// by properties (to enable undo if update cancelled).
-        /// Called here and by bulk update.
         /// </summary>
         /// <param name="viewModelMain">Reference to main window view model.</param>
         internal static void IncidCurrentRowDerivedValuesUpdate(ViewModelWindowMain viewModelMain)
         {
+            // Update other incid vales
+            viewModelMain.IncidCurrentRow.habitat_primary = viewModelMain.IncidPrimary;
+            viewModelMain.IncidCurrentRow.habitat_secondaries = viewModelMain.IncidSecondaries;
+            viewModelMain.IncidCurrentRow.habitat_version = viewModelMain.HabitatVersion;
+
+            //TODO: Update - Needed (e.g. if clearing IHS values on update)?
             viewModelMain.IncidCurrentRow.ihs_habitat = viewModelMain.IncidIhsHabitat;
-            viewModelMain.IncidCurrentRow.last_modified_user_id = viewModelMain.IncidLastModifiedUserId;
-            viewModelMain.IncidCurrentRow.last_modified_date = viewModelMain.IncidLastModifiedDateVal;
         }
 
+        /// <summary>
+        /// Updates the incid modified columns following a physical or
+        /// logical split or merge.
+        /// </summary>
+        /// <param name="incid">The incid.</param>
+        /// <param name="nowDtTm">The current date and time.</param>
+        /// <exception cref="Exception">Failed to update incid table modified details.</exception>
         internal void UpdateIncidModifiedColumns(string incid, DateTime nowDtTm)
         {
             if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
