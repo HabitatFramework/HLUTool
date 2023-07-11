@@ -1319,7 +1319,7 @@
                                                                          Header="INCID"
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="120"
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="100"
 																					   IsReadOnly="True"
                                                                                        CanUserResize="False"
                                                                                        DisplayMemberPath="description"
@@ -1370,7 +1370,7 @@
 												IsEnabled="{Binding CanAddSecondaryHabitat}"
 												MouseEnter="ButtonAddSecondaryHabitatList_MouseEnter"
 												MouseLeave="ButtonAddSecondaryHabitatList_MouseLeave"
-												ToolTip="Add Secondary Habitat List"
+												ToolTip="Add Secondary Habitats from List"
 												ToolTipService.ShowOnDisabled="True">
 											<Image Width="16"
 												   Height="16"
@@ -2496,14 +2496,14 @@
 													 Grid.Row="1"
 													 Grid.Column="1"
 													 Margin="4,0,8,2"
-													 BorderThickness="1"
-													 MaxLength="100"
 													 VerticalAlignment="Center"
+													 BorderThickness="1"
 													 Text="{Binding IncidConditionDate,
+																	ConverterParameter=source_date_start^source_date_end^source_date_type,
+																	Converter={StaticResource vagueDateConverter},
 																	Mode=TwoWay,
 																	UpdateSourceTrigger=PropertyChanged,
 																	ValidatesOnDataErrors=True}"
-													 TextWrapping="Wrap"
 													 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
 													 ToolTipService.ShowOnDisabled="True" />
 											<CheckBox x:Name="CheckBoxCopyConditionDate"
@@ -2531,7 +2531,7 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" MinWidth="82" />
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
@@ -2539,7 +2539,7 @@
                                         <Grid x:Name="GridQualityDeterminationInterpretation"
                                               Grid.Row="0"
                                               Grid.Column="0"
-                                              Grid.ColumnSpan="3">
+                                              Grid.ColumnSpan="2">
 											<Grid.RowDefinitions>
 												<RowDefinition />
 												<RowDefinition />
@@ -2550,7 +2550,6 @@
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" MinWidth="70" />
-                                                <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
 
 											<Label x:Name="LabelQualityDetermination"
@@ -2608,16 +2607,16 @@
                                                       SelectedValuePath="code"
                                                       Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
-											<CheckBox x:Name="CheckBoxCopyQualityInterpretation"
-														Grid.Row="1"
-														Grid.Column="2"
-														Margin="0,0,0,2"
-														HorizontalAlignment="Right"
-														VerticalAlignment="Center"
-														IsChecked="{Binding CopySwitches.CopyQualityInterpretation,
-																			Mode=TwoWay,
-																			UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
+										<CheckBox x:Name="CheckBoxCopyQualityInterpretation"
+													Grid.Row="1"
+													Grid.Column="2"
+													Margin="0,0,0,2"
+													HorizontalAlignment="Right"
+													VerticalAlignment="Center"
+													IsChecked="{Binding CopySwitches.CopyQualityInterpretation,
+																		Mode=TwoWay,
+																		UpdateSourceTrigger=PropertyChanged}" />
 
                                         <Grid x:Name="GridQualityComments"
                                               Grid.Row="1"
