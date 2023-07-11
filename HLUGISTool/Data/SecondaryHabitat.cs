@@ -51,14 +51,14 @@ namespace HLU.Data
 
         public SecondaryHabitat()
         {
-            //TODO: Check
+            //TODO: Secondaries - Check
             _bulkUpdateMode = false;
             _secondary_id = -1; // arbitrary PK for a new row
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow)
         {
-            //TODO: Check
+            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
@@ -72,13 +72,13 @@ namespace HLU.Data
                 _secondary_habitat_int = 0;
             _secondary_group = dataRow.secondary_group;
 
-            //TODO: Lookup secondary group
+            //TODO: Secondaries - Lookup secondary group
             //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow, IEnumerable<SecondaryHabitat> shList)
         {
-            //TODO: Check
+            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
@@ -92,16 +92,16 @@ namespace HLU.Data
                 _secondary_habitat_int = 0;
             _secondary_group = dataRow.secondary_group;
 
-            //TODO: Lookup secondary group
+            //TODO: Secondaries - Lookup secondary group
             //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
 
-            //TODO: Needed?
+            //TODO: Secondaries - Needed?
             _secondaryHabitatList = shList;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, object[] itemArray)
         {
-            //TODO: Check
+            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             Int32.TryParse(itemArray[0].ToString(), out _secondary_id);
@@ -114,13 +114,13 @@ namespace HLU.Data
                 _secondary_habitat_int = 0;
             _secondary_group = itemArray[3].ToString();
 
-            //TODO: Lookup secondary group
+            //TODO: Secondaries - Lookup secondary group
             //_secondary_group = _secondaryGroupCodes.FirstOrDefault(c => c.Key == _secondary_habitat).Value;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, int secondary_id, string incid, string secondary_habitat, string secondary_group)
         {
-            //TODO: Check
+            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             _secondary_id = secondary_id;
@@ -133,7 +133,7 @@ namespace HLU.Data
                 _secondary_habitat_int = 0;
             _secondary_group = secondary_group;
 
-            //TODO: Lookup secondary group
+            //TODO: Secondaries - Lookup secondary group
             //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
             //_secondary_group = _secondaryGroupCodes.FirstOrDefault(c => c.Key == _secondary_habitat).Value;
         }
@@ -142,8 +142,6 @@ namespace HLU.Data
 
         #region DataChanged
 
-        //---------------------------------------------------------------------
-        // CHANGED: CR2 (Apply button)
         // Create a handler so that updates to the secondary records can be picked
         // up back in the main window.
         //
@@ -152,7 +150,6 @@ namespace HLU.Data
 
         // declare the event
         public event DataChangedEventHandler DataChanged;
-        //---------------------------------------------------------------------
 
         #endregion
 
@@ -218,7 +215,7 @@ namespace HLU.Data
             {
                 _secondary_habitat = value;
 
-                //TODO: Needed?
+                //TODO: Secondaries - Needed?
                 // Flag that the current record has changed so that the apply button
                 // will appear.
                 if (this.DataChanged != null)
@@ -301,7 +298,7 @@ namespace HLU.Data
         {
             StringBuilder sbError = new StringBuilder();
 
-            //TODO: Check
+            //TODO: Secondaries - Check
             if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
                 sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
 
@@ -311,7 +308,7 @@ namespace HLU.Data
             if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
                 sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
 
-            //TODO: Needed???
+            //TODO: Secondaries validation - Needed???
             ////if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
             ////    sbError.Append(Environment.NewLine).Append("Duplicate priority environment");
 
@@ -354,9 +351,9 @@ namespace HLU.Data
                         }
                         _incid_bak = _incid;
                         break;
-                    //TODO: Check
+                    //TODO: Secondaries - Check
                     case "secondary_habitat":
-                        //TODO: Check integer can equal null
+                        //TODO: Secondaries - Check integer can equal null
                         if (String.IsNullOrEmpty(secondary_habitat))
                         {
                             return "Secondary habitat is a mandatory field";
