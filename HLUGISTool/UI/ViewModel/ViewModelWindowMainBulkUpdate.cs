@@ -176,9 +176,6 @@ namespace HLU.UI.ViewModel
                 createHistory = true;
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 087 Enable bulk update options only if habitat has changed
-            //
             // If in OSMM bulk update mode
             if (_osmmBulkUpdateMode == true)
             {
@@ -198,7 +195,6 @@ namespace HLU.UI.ViewModel
                 deletePotentialBapHabitats = false;
                 deleteMultiplexCodes = (int)DeleteSecondaryCodesAction.None;
             }
-            //---------------------------------------------------------------------
 
             _windowBulkUpdate = new WindowBulkUpdate();
             _windowBulkUpdate.Owner = App.Current.MainWindow;
@@ -1192,9 +1188,6 @@ namespace HLU.UI.ViewModel
                 });
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 094 Insert new primary BAP habitats for bulk OSMM update
-            //
             // Determine if there are any primary BAP habitats that aren't
             // in the user interface (they must have come from an OSMM
             // bulk update)
@@ -1234,7 +1227,6 @@ namespace HLU.UI.ViewModel
                         break;
                 }
             }
-            //---------------------------------------------------------------------
 
             // Update the BAP habitat if there are any rows to update
             if (updateRows.Count > 0)
@@ -1759,12 +1751,7 @@ namespace HLU.UI.ViewModel
 
             //TODO: Delete secondary codes and/or multiplex codes when relevant
             // Re-insert any old rows not in the new rows
-            //---------------------------------------------------------------------
-            // FIXOLD: 091 Fix bug when applying bulk updates
-            //
-            //if (deleteExistingRows != (int)DeleteSecondaryCodesAction.None)
             if (deleteExistingRows != (int)DeleteSecondaryCodesAction.All)
-            //---------------------------------------------------------------------
             {
                 foreach (R oldRow in oldRows)
                 {

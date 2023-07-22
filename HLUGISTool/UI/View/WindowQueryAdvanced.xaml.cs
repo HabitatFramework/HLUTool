@@ -61,10 +61,8 @@ namespace HLU.UI.View
                 TextBox tbx = (TextBox)cb.Template.FindName("PART_EditableTextBox", cb);
                 int caretIx = tbx.CaretIndex;
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 031 Check combobox text is not null before finding list item
+                // Check combobox text is not null before finding list item
                 if (cb.Text != null)
-                //---------------------------------------------------------------------
                 {
                     string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx);
                     //string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx - 1);

@@ -1,5 +1,5 @@
 ﻿// HLUTool is used to view and maintain habitat and land use GIS data.
-// Copyright © 2019 LaSER
+// Copyright © 2019 London & South East Record Centres (LaSER)
 // 
 // This file is part of HLUTool.
 // 
@@ -17,25 +17,20 @@
 // along with HLUTool.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Windows;
-using System.Diagnostics;
-using System.Windows.Navigation;
+using System.Reflection;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace HLU.UI.View
 {
     /// <summary>
-    /// Interaction logic for WindowAbout.xaml
+    /// Interaction logic for WindowQuerySecondaries.xaml
     /// </summary>
-    public partial class WindowAbout : Window
+    public partial class WindowQuerySecondaries : Window
     {
-        public WindowAbout()
+        public WindowQuerySecondaries()
         {
             InitializeComponent();
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
         }
     }
 }

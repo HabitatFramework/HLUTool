@@ -169,12 +169,9 @@ namespace HLU.UI.ViewModel
             if (connection == null)
                 return false;
             else
-                //---------------------------------------------------------------------
-                // FIXOLD: 055 Enable connection using Microsoft ACE driver.
-                //
+                // Enable connection using Microsoft ACE driver.
                 return (connection.Provider.ToLower().StartsWith("microsoft.jet.oledb") ||
                     (connection.Provider.ToLower().StartsWith("microsoft.ace.oledb.12.0")));
-                //---------------------------------------------------------------------
         }
 
         private bool IsSqlServer(ADODB.Connection connection)
@@ -504,12 +501,10 @@ namespace HLU.UI.ViewModel
 
                 if (String.IsNullOrEmpty(_connStrBuilder.ConnectionString))
                     error.Append(", connection");
-                //---------------------------------------------------------------------
-                // FIXOLD: 055 Enable connection using Microsoft ACE driver.
-                //
+
+                // Enable connection using Microsoft ACE driver.
                 if ((_connAdo != null) && !IsMsAccess(_connAdo) && 
                     String.IsNullOrEmpty(_defaultSchema)) error.Append(", default schema");
-                //---------------------------------------------------------------------
 
                 if (error.Length > 0)
                     return error.Remove(0, 1).Insert(0, "Please provide").ToString();
@@ -531,12 +526,9 @@ namespace HLU.UI.ViewModel
                             error = "Error: You must create a connection";
                         break;
                     case "DefaultSchema":
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 055 Enable connection using Microsoft ACE driver.
-                        //
+                        // Enable connection using Microsoft ACE driver.
                         if ((_connAdo != null) && !IsMsAccess(_connAdo) &&
                             String.IsNullOrEmpty(_defaultSchema)) error = "Error: You must provide a default schema";
-                        //---------------------------------------------------------------------
                         break;
                 }
 

@@ -339,12 +339,17 @@
       <Value Profile="(Default)">&lt;All&gt;</Value>
     </Setting>
     <Setting Name="SecondaryCodeValidation" Roaming="true" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="ShowSecondaryGroupColumn" Roaming="true" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="SecondaryCodeOrderOptions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;As entered&lt;/string&gt;
+  &lt;string&gt;By group then code&lt;/string&gt;
+  &lt;string&gt;By code&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="ClearIHSUpdateActions" Roaming="true" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="ClearIHSUpdateActions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;Never clear&lt;/string&gt;
@@ -361,6 +366,12 @@
     </Setting>
     <Setting Name="MaxSecondaryGroupColumnWidth" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">250</Value>
+    </Setting>
+    <Setting Name="SecondaryCodeOrder" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="QualityValidation" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

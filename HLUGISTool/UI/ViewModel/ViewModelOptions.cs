@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 using HLU.Data.Model;
 using HLU.UI.ViewModel;
 using HLU.GISApplication;
@@ -78,8 +79,8 @@ namespace HLU.UI.ViewModel
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
 
         private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
-        private bool _showSecondaryGroupColumn = Settings.Default.ShowSecondaryGroupColumn;
-        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private string[] _secondaryCodeOrderOptions;
+        private string _secondaryCodeOrder = Settings.Default.SecondaryCodeOrder;
         private string _secondaryCodeDelimiter = Settings.Default.SecondaryCodeDelimiter;
 
         // Updates options
@@ -88,6 +89,8 @@ namespace HLU.UI.ViewModel
         private string _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
+        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private int _qualityValidation = Settings.Default.QualityValidation;
 
         // Filter options
         private int? _getValueRows = Settings.Default.GetValueRows;
@@ -142,12 +145,9 @@ namespace HLU.UI.ViewModel
                 si.IsSelected = historyColumnOrdinals.Contains(
                     _incidMMPolygonsTable.Columns[UnescapeAccessKey(si.Item)].Ordinal);
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 010 Don't clear the map path when cancelling option updates
             // Store the map path so that it can be reset if the user 
             // cancels updates to the options.
             _bakMapPath = _mapPath;
-            //---------------------------------------------------------------------
         }
 
         private string EscapeAccessKey(string s)
@@ -240,8 +240,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
 
             Settings.Default.PreferredSecondaryGroup = _preferredSecondaryGroup;
-            Settings.Default.ShowSecondaryGroupColumn = _showSecondaryGroupColumn;
-            Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
+            Settings.Default.SecondaryCodeOrder = _secondaryCodeOrder;
             Settings.Default.SecondaryCodeDelimiter = _secondaryCodeDelimiter;
 
             // Updates options
@@ -249,6 +248,8 @@ namespace HLU.UI.ViewModel
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
             Settings.Default.ClearIHSUpdateAction = _clearIHSUpdateAction;
+            Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
+            Settings.Default.QualityValidation = _qualityValidation;
 
             // Filter options
             Settings.Default.GetValueRows = (int)_getValueRows;
@@ -416,10 +417,6 @@ namespace HLU.UI.ViewModel
             set { _mapPath = value; }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 071 Add minimum auto zoom scale to options.
-        // Validate the minimum auto zoom scale.
-        //
         /// <summary>
         /// Gets the default minimum auto zoom scale text.
         /// </summary>
@@ -446,12 +443,7 @@ namespace HLU.UI.ViewModel
             get { return _minAutoZoom; }
             set { _minAutoZoom = value; }
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 040 Enable MapInfo users to set a default export
-        // folder path.
-        // 
         /// <summary>
         /// Get the browse Export Path command.
         /// </summary>
@@ -538,7 +530,6 @@ namespace HLU.UI.ViewModel
 
             return null;
         }
-        //---------------------------------------------------------------------
 
         #endregion
 
@@ -595,9 +586,6 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 056 A new option to enable NVC Codes to be shown or hidden.
-        // 
         /// <summary>
         /// Gets or sets the preferred option to show or hide NVC Codes.
         /// </summary>
@@ -609,11 +597,7 @@ namespace HLU.UI.ViewModel
             get { return _showNVCCodes; }
             set { _showNVCCodes = value; }
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 076 New option to hide group headers to reduce window height.
-        // 
         /// <summary>
         /// Gets or sets the preferred option to show or hide group headers.
         /// </summary>
@@ -625,7 +609,6 @@ namespace HLU.UI.ViewModel
             get { return _showGroupHeaders; }
             set { _showGroupHeaders = value; }
         }
-        //---------------------------------------------------------------------
 
         public bool ShowIHSTab
         {
@@ -698,48 +681,37 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to show the secondary group column.
+        /// Gets or sets the secondary code order options.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if to show the secondary group column; otherwise, <c>false</c>.
+        /// The secondary code order options.
         /// </value>
-        public bool ShowSecondaryGroupColumn
-        {
-            get { return _showSecondaryGroupColumn; }
-            set
-            {
-                _showSecondaryGroupColumn = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the secondary code validation options.
-        /// </summary>
-        /// <value>
-        /// The secondary code validation options.
-        /// </value>
-        public SecondaryCodeValidationOptions[] SecondaryCodeValidationOptions
+        public string[] SecondaryCodeOrderOptions
         {
             get
             {
-                return Enum.GetValues(typeof(SecondaryCodeValidationOptions)).Cast<SecondaryCodeValidationOptions>()
-                    .ToArray();
+                if (_secondaryCodeOrderOptions == null)
+                {
+                    _secondaryCodeOrderOptions = Settings.Default.SecondaryCodeOrderOptions.Cast<string>().ToArray();
+                }
+
+                return _secondaryCodeOrderOptions;
             }
             set { }
         }
 
         /// <summary>
-        /// Gets or sets the secondary code validation choice.
+        /// Gets or sets the secondary code order choice.
         /// </summary>
         /// <value>
-        /// The secondary code validation choice.
+        /// The secondary code order choice.
         /// </value>
-        public SecondaryCodeValidationOptions? SecondaryCodeValidation
+        public string SecondaryCodeOrder
         {
-            get { return (SecondaryCodeValidationOptions)_secondaryCodeValidation; }
+            get { return _secondaryCodeOrder; }
             set
             {
-                _secondaryCodeValidation = (int)value;
+                _secondaryCodeOrder = value;
             }
         }
 
@@ -869,6 +841,68 @@ namespace HLU.UI.ViewModel
             set { _resetOSMMUpdatesStatus = value; }
         }
         //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets or sets the secondary code validation options.
+        /// </summary>
+        /// <value>
+        /// The secondary code validation options.
+        /// </value>
+        public SecondaryCodeValidationOptions[] SecondaryCodeValidationOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(SecondaryCodeValidationOptions)).Cast<SecondaryCodeValidationOptions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the secondary code validation choice.
+        /// </summary>
+        /// <value>
+        /// The secondary code validation choice.
+        /// </value>
+        public SecondaryCodeValidationOptions? SecondaryCodeValidation
+        {
+            get { return (SecondaryCodeValidationOptions)_secondaryCodeValidation; }
+            set
+            {
+                _secondaryCodeValidation = (int)value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the quality validation options.
+        /// </summary>
+        /// <value>
+        /// The quality validation options.
+        /// </value>
+        public QualityValidationOptions[] QualityValidationOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(QualityValidationOptions)).Cast<QualityValidationOptions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the quality validation choice.
+        /// </summary>
+        /// <value>
+        /// The quality validation choice.
+        /// </value>
+        public QualityValidationOptions? QualityValidation
+        {
+            get { return (QualityValidationOptions)_qualityValidation; }
+            set
+            {
+                _qualityValidation = (int)value;
+            }
+        }
 
         #endregion
 
@@ -1248,16 +1282,16 @@ namespace HLU.UI.ViewModel
 
                 // Database options
                 if (Convert.ToInt32(DbConnectionTimeout) <= 0 || DbConnectionTimeout == null)
-                    error.Append("\n" + "Please enter a database timeout greater than 0 seconds.");
+                    error.Append("\n" + "Enter a database timeout greater than 0 seconds.");
                 if (Convert.ToInt32(IncidTablePageSize) <= 0 || IncidTablePageSize == null)
-                    error.Append("\n" + "Please enter a database page size greater than 0 rows.");
+                    error.Append("\n" + "Enter a database page size greater than 0 rows.");
 
                 // GIS/Export options
                 if (GisAppsEnabled && (PreferredGis == GISApplications.None))
-                    error.Append("\n" + "Please select your preferred GIS application.");
+                    error.Append("\n" + "Select your preferred GIS application.");
                 if (String.IsNullOrEmpty(_mapPath))
                 {
-                    error.Append("\n" + "Please enter a path to a GIS workspace.");
+                    error.Append("\n" + "Enter a path to a GIS workspace.");
                 }
                 else
                 {
@@ -1275,23 +1309,29 @@ namespace HLU.UI.ViewModel
 
                 // Interface options
                 if (PreferredHabitatClass == null)
-                    error.Append("Please select your preferred habitat class.");
+                    error.Append("Select your preferred habitat class.");
                 if (ShowOSMMUpdatesOption == null)
-                    error.Append("Please select the option of when to display any OSMM Updates.");
+                    error.Append("Select the option of when to display any OSMM Updates.");
                 if (PreferredSecondaryGroup == null)
-                    error.Append("Please select your preferred secondary group.");
+                    error.Append("Select your preferred secondary group.");
                 if (SecondaryCodeValidation == null)
-                    error.Append("Please select option of when to validate secondary codes.");
+                    error.Append("Select option of when to validate secondary codes.");
                 if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
-                    error.Append("\n" + "Please enter a secondary code delimiter character.");
+                    error.Append("\n" + "You must enter a secondary code delimiter character.");
                 else if (SecondaryCodeDelimiter.Length > 2)
                     error.Append("\n" + "Secondary code delimiter must be one or two characters.");
+                else
+                {
+                    Match m = Regex.Match(SecondaryCodeDelimiter, @"[a-zA-Z0-9]");
+                    if (m.Success == true)
+                        error.Append("\n" + "Secondary code delimiter cannot contain letters or numbers.");
+                }
 
                 // Update options
                 if (SubsetUpdateAction == null)
-                    error.Append("Please select the action to take when updating an incid subset.");
+                    error.Append("Select the action to take when updating an incid subset.");
                 if (ClearIHSUpdateAction == null)
-                    error.Append("Please select when to clear IHS codes after an update.");
+                    error.Append("Select when to clear IHS codes after an update.");
 
                 // Filter options
                 if (Convert.ToInt32(GetValueRows) <= 0 || GetValueRows == null)
@@ -1301,27 +1341,33 @@ namespace HLU.UI.ViewModel
 
                 // Date options
                 if (String.IsNullOrEmpty(SeasonSpring))
-                    error.Append("\n" + "Please enter a season name for spring.");
+                    error.Append("\n" + "You must enter a season name for spring.");
                 if (String.IsNullOrEmpty(SeasonSummer))
-                    error.Append("\n" + "Please enter a season name for summer.");
+                    error.Append("\n" + "You must enter a season name for summer.");
                 if (String.IsNullOrEmpty(SeasonAutumn))
-                    error.Append("\n" + "Please enter a season name for autumn.");
+                    error.Append("\n" + "You must enter a season name for autumn.");
                 if (String.IsNullOrEmpty(SeasonWinter))
-                    error.Append("\n" + "Please enter a season name for winter.");
+                    error.Append("\n" + "You must enter a season name for winter.");
                 if (String.IsNullOrEmpty(VagueDateDelimiter))
-                    error.Append("\n" + "Please enter a vague date delimiter character.");
+                    error.Append("\n" + "You must enter a vague date delimiter character.");
                 else if (VagueDateDelimiter.Length > 1)
                     error.Append("\n" + "Vague date delimiter must be a single character.");
+                else
+                {
+                    Match m = Regex.Match(VagueDateDelimiter, @"[a-zA-Z0-9]");
+                    if (m.Success == true)
+                        error.Append("\n" + "Vague date delimiter cannot contain letters or numbers.");
+                }
 
                 // Bulk Update options
                 if (BulkDeleteSecondaryCodes == null)
-                    error.Append("Please select when to delete existing secondary codes.");
+                    error.Append("Select when to delete existing secondary codes.");
                 if (BulkDeterminationQuality == null)
-                    error.Append("Please select the default determination quality for new priority habitats.");
+                    error.Append("Select the default determination quality for new priority habitats.");
                 if (BulkInterpretationQuality == null)
-                    error.Append("Please select the default interpration quality for new priority habitats.");
+                    error.Append("Select the default interpration quality for new priority habitats.");
                 if (OSMMSourceId == null)
-                    error.Append("Please select the default source name for OS MasterMap.");
+                    error.Append("Select the default source name for OS MasterMap.");
 
                 if (error.Length > 0)
                     return error.ToString();
@@ -1401,6 +1447,12 @@ namespace HLU.UI.ViewModel
                             error = "Error: You must enter a secondary code delimiter character.";
                         else if (SecondaryCodeDelimiter.Length > 2)
                             error = "Error: Secondary code delimiter must be one or two characters.";
+                        else
+                        {
+                            Match m = Regex.Match(SecondaryCodeDelimiter, @"[a-zA-Z0-9]");
+                            if (m.Success == true)
+                                error = "Error: Secondary code delimiter cannot contain letters or numbers.";
+                        }
                         break;
 
                     // Update options
@@ -1443,24 +1495,30 @@ namespace HLU.UI.ViewModel
                             error = "Error: You must enter a vague date delimiter character.";
                         else if (VagueDateDelimiter.Length > 1)
                             error = "Error: Vague date delimiter must be a single character.";
+                        else
+                        {
+                            Match m = Regex.Match(VagueDateDelimiter, @"[a-zA-Z0-9]");
+                            if (m.Success == true)
+                                error = "Error: Vague date delimiter cannot contain letters or numbers.";
+                        }
                         break;
 
                     // Bulk Update options
                     case "BulkDeleteSecondaryCodes":
                         if (BulkDeleteSecondaryCodes == null)
-                            error = "Please select when to delete existing secondary codes.";
+                            error = "Error: Select when to delete existing secondary codes.";
                         break;
                     case "BulkDeterminationQuality":
                         if (BulkDeterminationQuality == null)
-                            error = "Please select the default determination quality for new priority habitats.";
+                            error = "Error: Select the default determination quality for new priority habitats.";
                         break;
                     case "BulkInterpretationQuality":
                         if (BulkInterpretationQuality == null)
-                            error = "Please select the default interpretation quality for new priority habitats.";
+                            error = "Error: Select the default interpretation quality for new priority habitats.";
                         break;
                     case "OSMMSourceId":
                         if (OSMMSourceId == null)
-                            error = "Please select the default source name for OS MasterMap.";
+                            error = "Error: Select the default source name for OS MasterMap.";
                         break;
 
                 }

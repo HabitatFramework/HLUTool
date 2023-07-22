@@ -186,9 +186,6 @@ namespace HLU.UI.ViewModel
                     {
                         if (i >= _lastValueCounter)
                         {
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 092 Enable advanced filter in OSMM mode
-                            //
                             // Add the key (string) and value (object) to the dictionary
                             // (if the key already exists the value will be updated).
                             if ((Table.TableName.ToLower() == "incid_osmm_updates") &&
@@ -216,7 +213,6 @@ namespace HLU.UI.ViewModel
                                 q[dataReader.GetValue(0).ToString() + " : " + status] = dataReader.GetValue(0);
                             }
                             else
-                            //---------------------------------------------------------------------
                                 q[dataReader.GetValue(0).ToString()] = dataReader.GetValue(0);
                         }
                         i += 1;
@@ -874,9 +870,6 @@ namespace HLU.UI.ViewModel
                         //    lut.AsEnumerable().Where(r => Regex.IsMatch(r[lut.PrimaryKey[0].Ordinal].ToString(), @"\APHAP")) :
                         //    lut.AsEnumerable();
 
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 092 Enable advanced filter in OSMM mode
-                        //
                         // If the select table is the 'incid_bap' table then only
                         // bap_priority values from the related lookup table (lut_habitat_type).
                         var q = lut.AsEnumerable();
@@ -904,7 +897,6 @@ namespace HLU.UI.ViewModel
                             _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
                                 " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
                         }
-                        //---------------------------------------------------------------------
                         //---------------------------------------------------------------------
 
                         // Reset the cursor back to normal.

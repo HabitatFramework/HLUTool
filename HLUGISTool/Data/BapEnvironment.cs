@@ -45,14 +45,12 @@ namespace HLU.Data
         private string _quality_interpretation_bak;
         string _error;
         private static IEnumerable<BapEnvironment> _bapEnvironmentList;
+
         public readonly static string BAPDetQltyUserAdded = Settings.Default.BAPDeterminationQualityUserAdded;
-        //---------------------------------------------------------------------
-        // CHANGED: CR49 Process bulk OSMM Updates
         public readonly static string BAPDetQltyUserAddedDesc = Settings.Default.BAPDeterminationQualityUserAddedDesc;
         public readonly static string BAPDetQltyPrevious = Settings.Default.BAPDeterminationQualityPrevious;
         public readonly static string BAPDetQltyPreviousDesc = Settings.Default.BAPDeterminationQualityPreviousDesc;
         public readonly static string BAPHabitatIgnore = Settings.Default.BAPHabitatIgnore;
-        //---------------------------------------------------------------------
 
         #endregion
 
@@ -376,8 +374,6 @@ namespace HLU.Data
             }
             else
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 015 Allow 'None' habitats to be managed
                 // Validate that if this is a secondary priority habitat (i.e. in
                 // the secondary list) and the habitat is to be ignored (i.e. it equals
                 // 'None') then the determination quality can be anything except
@@ -442,7 +438,6 @@ namespace HLU.Data
                         //---------------------------------------------------------------------
                     }
                 }
-                //---------------------------------------------------------------------
             }
 
             if (!_bulkUpdateMode && String.IsNullOrEmpty(quality_interpretation))
@@ -482,7 +477,7 @@ namespace HLU.Data
                         if ((bap_id != -1) && String.IsNullOrEmpty(incid))
                         {
                             _incid = _incid_bak;
-                            return "INCID is a mandatory field";
+                            return "Error: INCID is a mandatory field";
                         }
                         _incid_bak = _incid;
                         break;
@@ -490,11 +485,11 @@ namespace HLU.Data
                         if (String.IsNullOrEmpty(bap_habitat))
                         {
                             //_bap_habitat = _bap_habitat_bak;
-                            return "Priority habitat is a mandatory field";
+                            return "Error: Priority habitat is a mandatory field";
                         }
                         else if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
                         {
-                            return "Duplicate priority habitat";
+                            return "Error: Duplicate priority habitat";
                         }
                         _bap_habitat_bak = _bap_habitat;
                         break;
@@ -503,14 +498,11 @@ namespace HLU.Data
                         {
                             if (!_bulkUpdateMode)
                             {
-                                return "Determination quality is a mandatory field";
+                                return "Error: Determination quality is a mandatory field";
                             }
                         }
                         else
                         {
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 015 Allow 'None' habitats to be managed
-                            //
                             if (_secondaryPriorityHabitat)
                             {
                                 //
@@ -524,17 +516,16 @@ namespace HLU.Data
                                     // CHANGED: CR49 Process bulk OSMM Updates
                                     if (quality_determination == BAPDetQltyUserAdded)
                                     {
-                                        return String.Format("Determination quality for 'None' priority habitats cannot be '{0}'",
+                                        return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
                                             BAPDetQltyUserAddedDesc);
                                     }
                                     else if (quality_determination == BAPDetQltyPrevious)
                                     {
-                                        return String.Format("Determination quality for 'None' priority habitats cannot be '{0}'",
+                                        return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
                                             BAPDetQltyPreviousDesc);
                                     }
                                     //---------------------------------------------------------------------
                                 }
-                                //---------------------------------------------------------------------
 
                                 //
                                 // Validate that if this is a secondary priority habitat (i.e. in
@@ -548,7 +539,7 @@ namespace HLU.Data
                                     if ((quality_determination != BAPDetQltyUserAdded)
                                     && (quality_determination != BAPDetQltyPrevious))
                                     {
-                                        return String.Format("Determination quality for potential priority habitats can only be '{0}' or '{1}'",
+                                        return String.Format("Error: Determination quality for potential priority habitats can only be '{0}' or '{1}'",
                                             BAPDetQltyUserAddedDesc, BAPDetQltyPreviousDesc);
                                     }
                                     //---------------------------------------------------------------------
@@ -563,12 +554,12 @@ namespace HLU.Data
                                 // CHANGED: CR49 Process bulk OSMM Updates
                                 if ((quality_determination == BAPDetQltyUserAdded))
                                 {
-                                    return String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats",
+                                    return String.Format("Error: Determination quality cannot be '{0}' for priority habitats",
                                         BAPDetQltyUserAddedDesc);
                                 }
                                 else if ((quality_determination == BAPDetQltyPrevious))
                                 {
-                                    return String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats",
+                                    return String.Format("Error: Determination quality cannot be '{0}' for priority habitats",
                                         BAPDetQltyPreviousDesc);
                                 }
                                 //---------------------------------------------------------------------
@@ -581,7 +572,7 @@ namespace HLU.Data
                     case "quality_interpretation":
                         if (!_bulkUpdateMode && String.IsNullOrEmpty(quality_interpretation))
                         {
-                            return "Interpretation quality is a mandatory field";
+                            return "Error: Interpretation quality is a mandatory field";
                         }
                         _quality_interpretation_bak = _quality_interpretation;
                         break;

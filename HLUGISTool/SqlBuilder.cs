@@ -355,9 +355,6 @@ namespace HLU
         {
             if ((whereConds != null) && (whereConds.Count > 0))
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 051 Improve performance when filtering large number of incids.
-                //
                 // Avoid repeated calls to 'GetUnderlyingType' for the same table
                 // and column type by checking to see if it is a string (which most
                 // fields are).
@@ -369,7 +366,6 @@ namespace HLU
                     SqlFilterCondition sqlTestCond = whereConds[0];
                     condString = GetUnderlyingType(sqlTestCond) is string ? true : false;
                 }
-                //---------------------------------------------------------------------
 
                 StringBuilder sbWhereClause = new StringBuilder(includeWhere ? " WHERE " : " ");
                 for (int i = 0; i < whereConds.Count; i++)
@@ -459,9 +455,6 @@ namespace HLU
                                         sqlCond.Value, WildcardManyMatch)));
                                     break;
                                 default:
-                                    //---------------------------------------------------------------------
-                                    // FIXOLD: 051 Improve performance when filtering large number of incids.
-                                    //
                                     // Avoid repeated calls to 'GetUnderlyingType' for string fields.
                                     if (condString)
                                         sbWhereClause.Append(String.Format(" {0} {1}", sqlCond.Operator,
@@ -469,7 +462,6 @@ namespace HLU
                                     else
                                         sbWhereClause.Append(String.Format(" {0} {1}", sqlCond.Operator,
                                             QuoteValue(GetUnderlyingType(sqlCond))));
-                                    //---------------------------------------------------------------------
                                     break;
                             }
                         }
@@ -485,15 +477,11 @@ namespace HLU
                                     break;
                                 default:
                                     sbWhereClause.Append(" ").Append(sqlCond.Operator).Append(" ");
-                                    //---------------------------------------------------------------------
-                                    // FIXOLD: 051 Improve performance when filtering large number of incids.
-                                    //
                                     // Avoid repeated calls to 'GetUnderlyingType' for string fields.
                                     if (condString)
                                         sbWhereClause.Append(QuoteValue(sqlCond.Value));
                                     else
                                         sbWhereClause.Append(QuoteValue(GetUnderlyingType(sqlCond)));
-                                    //---------------------------------------------------------------------
                                     break;
                             }
                         }

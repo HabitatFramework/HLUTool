@@ -1,8 +1,8 @@
-﻿<Window x:Class="HLU.UI.View.WindowQueryIncid"
+﻿<Window x:Class="HLU.UI.View.WindowQuerySecondaries"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="{Binding Path=WindowTitle}"
-	Width="290"
+	Width="430"
 	Height="120"
 	Icon="..\..\Icons\HLUIcon.png"
 	ResizeMode="NoResize"
@@ -22,7 +22,7 @@
 	           VerticalAlignment="Stretch"
 			   Margin="4,4,4,4"
 			   Width="Auto"
-			   FocusManager.FocusedElement="{Binding ElementName=TextBoxQueryIncid}">
+			   FocusManager.FocusedElement="{Binding ElementName=TextBoxQuerySecondaries}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -30,20 +30,20 @@
                 <RowDefinition Height="23" />
             </Grid.RowDefinitions>
 
-            <GroupBox Name="GroupQueryIncid">
+            <GroupBox Name="GroupQuerySecondaries">
 
-            <Grid Name="GridQueryIncid" Margin="2,8,2,2">
+            <Grid Name="GridQuerySecondaries" Margin="2,8,2,2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="108"/>
+                    <ColumnDefinition Width="220"/>
                 </Grid.ColumnDefinitions>
-                <Label Name="LabelIncid" Grid.Row="0" Grid.Column="0" 
-                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,0,8">Enter Incid to filter by</Label>
-                <TextBox Name="TextBoxQueryIncid" Grid.Row="0" Grid.Column="1" 
-                         Text="{Binding Path=QueryIncid, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                <Label Name="LabelSecondaries" Grid.Row="0" Grid.Column="0" 
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,0,8">Enter list of secondary codes</Label>
+                <TextBox Name="TextBoxQuerySecondaries" Grid.Row="0" Grid.Column="1" 
+                         Text="{Binding Path=QuerySecondaries, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                          Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                          IsEnabled="True" Margin="8,0,2,8"></TextBox>
             </Grid>

@@ -103,13 +103,11 @@ namespace HLU.Data.Connection
             if ((cn.State == ConnectionState.Open) &&
                 (previousConnectionState != ConnectionState.Open)) cn.Close();
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 055 Enable connection using Microsoft ACE driver.
+            // Enable connection using Microsoft ACE driver.
             //
             if (provider.StartsWith("microsoft.jet.oledb") ||
                 provider.StartsWith("microsoft.ace.oledb.12.0"))
                 return Backends.Access;
-            //---------------------------------------------------------------------
             else if (provider.StartsWith("sqloledb"))
                 return Backends.SqlServer;
             else if (provider.StartsWith("oraoledb"))
@@ -919,13 +917,11 @@ namespace HLU.Data.Connection
             int colType;
             if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases so use
                 // DateTime strings not numbers containing fractions.
                 string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Replace("T", " ") : value.ToString();
-                //---------------------------------------------------------------------
+
                 switch ((OleDbType)colType)
                 {
                     case OleDbType.BSTR:
