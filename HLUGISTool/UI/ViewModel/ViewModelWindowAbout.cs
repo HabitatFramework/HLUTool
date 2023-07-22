@@ -21,9 +21,6 @@ using System.Windows.Input;
 
 namespace HLU.UI.ViewModel
 {
-    //---------------------------------------------------------------------
-    // FIXOLD: 079 Display links to online guides in new 'About' window.
-    //
     class ViewModelWindowAbout : ViewModelBase
     {
         #region Fields
@@ -172,5 +169,4 @@ namespace HLU.UI.ViewModel
             set { _technicalGuideText = value; }
         }
     }
-    //---------------------------------------------------------------------
 }

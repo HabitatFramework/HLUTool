@@ -104,13 +104,10 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                //---------------------------------------------------------------------
 
                 // find the last used toid_fragment_id for the selected toid
                 string lastToidFragmentID = _viewModelMain.RecIDs.MaxToidFragmentId(_viewModelMain.ToidsSelectedMap.ElementAt(0));
@@ -235,13 +232,11 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.ClearFilter(false);
 
                     // Synch with the GIS selection.
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 027 Force refill of Incid table after split/merge
                     // Force the Incid table to be refilled because it has been
                     // updated directly in the database rather than via the
                     // local copy.
                     _viewModelMain.RefillIncidTable = true;
-                    //---------------------------------------------------------------------
+
                     _viewModelMain.ReadMapSelection(true);
                 }
             }
@@ -283,23 +278,17 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                //---------------------------------------------------------------------
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 008 Update the incid modified columns for the current incid
                 // The incid modified columns (i.e. last modified user and date)
                 // should be updated for the active incid not the 'highest' incid
                 // which is what "_viewModelMain.CurrentIncid" represents.
                 //
                 //_viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.CurrentIncid);
                 _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.Incid, nowDtTm);
-                //---------------------------------------------------------------------
 
                 // create new incid by cloning the current one
                 string msg;
@@ -352,14 +341,11 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.HluTableAdapterManager.incid_mm_polygonsTableAdapter.Update(polygons) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 024 Don't update the incid modified columns again
                 // The incid modified columns (i.e. last modified user and date)
                 // have already been update above for the current incid.
                 //
                 //_viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(
                 //    historyTable.Rows[0][_viewModelMain.HluDataset.history.incidColumn.ColumnName].ToString());
-                //---------------------------------------------------------------------
 
                 // write history
                 Dictionary<int, string> fixedValues = new Dictionary<int, string>();
@@ -392,13 +378,11 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.ClearFilter(false);
 
                     // Synch with the GIS selection.
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 027 Force refill of Incid table after split/merge
                     // Force the Incid table to be refilled because it has been
                     // updated directly in the database rather than via the
                     // local copy.
                     _viewModelMain.RefillIncidTable = true;
-                    //---------------------------------------------------------------------
+
                     _viewModelMain.ReadMapSelection(true);
                 }
             }
@@ -436,8 +420,6 @@ namespace HLU.UI.ViewModel
 
                 //---------------------------------------------------------------------
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 009 Don't update the ihs version when splitting features
                 // Previously the ihs version was set to the latest version for
                 // new (cloned) incids which meant that a feature split into 2
                 // parts could result in one with the current 'old' ihs version
@@ -448,16 +430,13 @@ namespace HLU.UI.ViewModel
                 // logical split.
                 //
                 //newIncidRow.habitat_version = _viewModelMain.RecIDs.HabitatVersion;
-                //---------------------------------------------------------------------
 
                 // Update the created and last modified date and user fields.
-                //---------------------------------------------------------------------
-                // FIXOLD: 028 Only update DateTime fields to whole seconds
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                //---------------------------------------------------------------------
+
                 newIncidRow.created_date = nowDtTm;
                 newIncidRow.created_user_id = _viewModelMain.UserID;
                 newIncidRow.last_modified_date = newIncidRow.created_date;

@@ -430,9 +430,6 @@ namespace HLU.UI.ViewModel
             set { }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 087 Enable bulk update options only if habitat has changed
-        //
         /// <summary>
         /// Enable control when in OSMM Bulk Update mode and
         /// the IHS habitat has changed.
@@ -496,7 +493,6 @@ namespace HLU.UI.ViewModel
             }
             set { }
         }
-        //---------------------------------------------------------------------
 
         #endregion
 
@@ -530,15 +526,11 @@ namespace HLU.UI.ViewModel
                 switch (columnName)
                 {
                     //TODO: Delete secondary codes and/or multiplex codes when relevant
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 088 Add warning to delete option in bulk update
-                    //
                     case "DeleteSecondaryCodes":
                         if ((EnableDeleteSecondaryCodes == true) &&
                             (DeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All))
                             error="Warning: This option will delete ALL secondary codes from all affected incids";
                         break;
-                    //---------------------------------------------------------------------
                     case "DeterminationQuality":
                         if (String.IsNullOrEmpty(DeterminationQuality))
                             error= "Error: You must choose a Determination Quality";
@@ -557,5 +549,4 @@ namespace HLU.UI.ViewModel
 
         #endregion
     }
-    //---------------------------------------------------------------------
 }

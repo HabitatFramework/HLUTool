@@ -600,6 +600,7 @@
                       Panel.ZIndex="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" MinWidth="90" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
@@ -630,7 +631,7 @@
                     <Grid x:Name="GridIncidAttributes"
                           Grid.Row="0"
                           Grid.Column="2"
-                          Grid.ColumnSpan="2">
+                          Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
@@ -687,6 +688,7 @@
                     <TextBox x:Name="TextBoxIncidCreatedDate"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Grid.ColumnSpan="2"
                              Margin="8,0,4,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
@@ -694,11 +696,11 @@
                              Text="{Binding IncidCreatedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right" />
+                             TextAlignment="Left" />
 
                     <Label x:Name="LabelIncidCreatedUser"
                            Grid.Row="1"
-                           Grid.Column="2"
+                           Grid.Column="3"
                            Margin="12,0,0,4"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center">
@@ -706,7 +708,7 @@
                     </Label>
                     <TextBox x:Name="TextBoxIncidCreatedUser"
                              Grid.Row="1"
-                             Grid.Column="3"
+                             Grid.Column="4"
                              Margin="8,0,8,4"
                              VerticalAlignment="Center"
                              IsEnabled="False"
@@ -714,7 +716,7 @@
                              Text="{Binding IncidCreatedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right" />
+                             TextAlignment="Left" />
 
                     <Label x:Name="LabelIncidLastModDate"
                            Grid.Row="2"
@@ -727,6 +729,7 @@
                     <TextBox x:Name="TextBoxIncidLastModDate"
                              Grid.Row="2"
                              Grid.Column="1"
+                             Grid.ColumnSpan="2"
                              Margin="8,0,4,2"
                              VerticalAlignment="Center"
                              IsEnabled="False"
@@ -734,11 +737,11 @@
                              Text="{Binding IncidLastModifiedDate,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right" />
+                             TextAlignment="Left" />
 
                     <Label x:Name="LabelIncidLastModUser"
                            Grid.Row="2"
-                           Grid.Column="2"
+                           Grid.Column="3"
                            Margin="12,0,0,2"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center">
@@ -746,7 +749,7 @@
                     </Label>
                     <TextBox x:Name="TextBoxIncidLastModUser"
                              Grid.Row="2"
-                             Grid.Column="3"
+                             Grid.Column="4"
                              Margin="8,0,8,2"
                              VerticalAlignment="Center"
                              IsEnabled="False"
@@ -754,7 +757,7 @@
                              Text="{Binding IncidLastModifiedUser,
                                             Mode=OneWay,
                                             ValidatesOnDataErrors=False}"
-                             TextAlignment="Right" />
+                             TextAlignment="Left" />
 
                 </Grid>
             </GroupBox>
@@ -1023,11 +1026,11 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid x:Name="GridTabItemHabitat">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="*" MinHeight="150" />
-                                    <RowDefinition Height="Auto" MinHeight="6" />
-                                    <RowDefinition Height="Auto" MinHeight="6" />
+                                    <RowDefinition Height="*" MinHeight="8" />
+                                    <RowDefinition Height="*" MinHeight="8" />
+                                    <RowDefinition Height="250" />
+                                    <RowDefinition Height="*" MinHeight="6" />
+                                    <RowDefinition Height="*" MinHeight="8" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="19*" />
@@ -1058,14 +1061,14 @@
                                         <Label x:Name="LabelHabitatClass"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,2,0,4"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Habitat Class" />
                                         <ComboBox x:Name="ComboBoxHabitatClass"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,2,8,4"
+                                                  Margin="8,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1080,14 +1083,14 @@
                                         <Label x:Name="LabelHabitatType"
                                                Grid.Row="1"
                                                Grid.Column="0"
-                                               Margin="0,0,0,2"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Habitat Type" />
                                         <ComboBox x:Name="ComboBoxHabitatType"
                                                   Grid.Row="1"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,2"
+                                                  Margin="8,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1118,7 +1121,6 @@
                                     <Grid x:Name="GridPrimary" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
-                                            <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" MinWidth="80" />
@@ -1135,7 +1137,7 @@
                                         <ComboBox x:Name="ComboBoxPrimary"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,0,8,2"
+                                                  Margin="8,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -1157,7 +1159,7 @@
                                         <CheckBox x:Name="CheckBoxCopyPrimary"
                                                   Grid.Row="0"
                                                   Grid.Column="2"
-                                                  Margin="0,0,0,2"
+                                                  Margin="0,2,0,2"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding CopySwitches.CopyIncidPrimary,
@@ -1167,7 +1169,7 @@
                                         <Label x:Name="LabelNvcCodes"
                                                Grid.Row="1"
                                                Grid.Column="0"
-                                               Margin="0,2,0,0"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="NVC Codes"
@@ -1175,7 +1177,7 @@
                                         <TextBox x:Name="TextBoxNvcCodes"
                                                  Grid.Row="1"
                                                  Grid.Column="1"
-                                                 Margin="8,2,8,0"
+                                                 Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  Text="{Binding NvcCodes,
@@ -1286,24 +1288,26 @@
 												   Source="..\..\Icons\AddRowSquare.png" />
 										</Button>
 
+										<!-- <ScrollViewer VerticalScrollBarVisibility="Auto"> -->
                                         <tkit:DataGrid x:Name="DataGridSecondaryHabitats"
                                                        Grid.Row="1"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Margin="2,2,6,2"
+                                                       Margin="2,2,6,0"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
                                                        CanUserAddRows="False"
                                                        CanUserDeleteRows="True"
                                                        CanUserReorderColumns="False"
-                                                       CanUserResizeColumns="False"
-                                                       CanUserSortColumns="True"
+                                                       CanUserResizeColumns="True"
+                                                       CanUserSortColumns="False"
                                                        HeadersVisibility="All"
                                                        IsEnabled="{Binding SecondaryHabitatsEnabled}"
                                                        ItemsSource="{Binding IncidSecondaryHabitats}"
                                                        MinRowHeight="24"
                                                        Padding="2,0"
+													   VerticalScrollBarVisibility="Auto"
                                                        RowDetailsVisibilityMode="Visible"
                                                        RowHeaderWidth="20"
                                                        RowHeight="24">
@@ -1321,7 +1325,7 @@
                                                                          Visibility="Collapsed" />
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="100"
 																					   IsReadOnly="True"
-                                                                                       CanUserResize="False"
+                                                                                       CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                        Header="Group"
@@ -1338,10 +1342,11 @@
 																					   <!-- Visibility="{Binding ShowSecondaryGroupColumn}" -->
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="*"
 																					   IsReadOnly="True"
-                                                                                       CanUserResize="False"
+                                                                                       CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
                                                                                        Header="Habitat"
+																					   SortDirection="Ascending"
                                                                                        ItemsSource="{Binding DataContext.SecondaryHabitatCodesAll,
 																											 ConverterParameter=code^description^sort_order,
 																											 Converter={StaticResource codeDescriptionConverter},
@@ -1356,6 +1361,7 @@
                                                                                        SelectedValuePath="code" />
                                             </tkit:DataGrid.Columns>
                                         </tkit:DataGrid>
+				                        <!-- </ScrollViewer> -->
 
 										<!--  ButtonAddSecondaryHabitatList  -->
 										<Button x:Name="ButtonAddSecondaryHabitatList"
@@ -1367,7 +1373,7 @@
 												HorizontalAlignment="Right"
 												VerticalAlignment="Top"
 												Command="{Binding AddSecondaryHabitatListCommand}"
-												IsEnabled="{Binding CanAddSecondaryHabitat}"
+												IsEnabled="{Binding CanAddSecondaryHabitatList}"
 												MouseEnter="ButtonAddSecondaryHabitatList_MouseEnter"
 												MouseLeave="ButtonAddSecondaryHabitatList_MouseLeave"
 												ToolTip="Add Secondary Habitats from List"
@@ -1390,13 +1396,14 @@
                                     </Grid>
                                 </GroupBox>
 
-                                <!--  GroupBoxSecondaries  -->
-                                <GroupBox x:Name="GroupBoxSecondaries"
+                                <!--  GroupBoxSecondarySummary  -->
+                                <GroupBox x:Name="GroupBoxSecondarySummary"
                                           Grid.Row="3"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
+                                          VerticalAlignment="Stretch"
 										  IsEnabled="{Binding TabHabitatControlsEnabled}"
-                                          Header="{Binding SecondariesHeader}">
+                                          Header="{Binding SecondarySummaryHeader}">
                                     <Grid x:Name="GridSecondaries" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -1407,21 +1414,21 @@
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Label x:Name="LabelSecondaries"
+                                        <Label x:Name="LabelSecondarySummary"
                                                Grid.Row="0"
                                                Grid.Column="0"
                                                Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Summary" />
-                                        <TextBox x:Name="TextBoxSecondaries"
+                                        <TextBox x:Name="TextBoxSecondarySummary"
                                                  Grid.Row="0"
                                                  Grid.Column="1"
-                                                 Margin="8,2,2,2"
+                                                 Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
                                                  IsEnabled="False"
                                                  IsReadOnly="True"
-                                                 Text="{Binding IncidSecondaries, Mode=OneWay}" />
+                                                 Text="{Binding IncidSecondarySummary, Mode=OneWay}" />
                                     </Grid>
                                 </GroupBox>
 
@@ -1430,8 +1437,8 @@
                                           Grid.Row="4"
                                           Grid.Column="0"
                                           Grid.ColumnSpan="4"
-										  IsEnabled="{Binding TabHabitatControlsEnabled}"
                                           VerticalAlignment="Stretch"
+										  IsEnabled="{Binding TabHabitatControlsEnabled}"
                                           Header="{Binding LegacyHeader}">
                                           <!-- Margin="0" -->
                                     <Grid x:Name="GridLegacy" Margin="0,2,0,0">
@@ -1447,14 +1454,14 @@
                                         <Label x:Name="LabelLegacyHabitat"
                                                Grid.Row="0"
                                                Grid.Column="0"
-                                               Margin="0,2,0,0"
+                                               Margin="0,2,0,2"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="Legacy Habitat" />
                                         <ComboBox x:Name="ComboBoxLegacyHabitat"
                                                   Grid.Row="0"
                                                   Grid.Column="1"
-                                                  Margin="8,2,8,0"
+                                                  Margin="8,2,8,2"
                                                   VerticalAlignment="Center"
                                                   DisplayMemberPath="description"
                                                   IsEditable="True"
@@ -2154,7 +2161,8 @@
                                           Grid.Column="0"
                                           Grid.ColumnSpan="3"
                                           VerticalAlignment="Stretch"
-										  IsEnabled="{Binding TabDetailsControlsEnabled}">
+										  IsEnabled="{Binding TabDetailsControlsEnabled}"
+                                          Header="{Binding DetailsCommentsHeader}">
                                     <Grid x:Name="GridGeneralComments" Margin="0,4,0,0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
@@ -2502,7 +2510,7 @@
 																	ConverterParameter=source_date_start^source_date_end^source_date_type,
 																	Converter={StaticResource vagueDateConverter},
 																	Mode=TwoWay,
-																	UpdateSourceTrigger=PropertyChanged,
+																	UpdateSourceTrigger=LostFocus,
 																	ValidatesOnDataErrors=True}"
 													 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
 													 ToolTipService.ShowOnDisabled="True" />
@@ -2539,17 +2547,16 @@
                                         <Grid x:Name="GridQualityDeterminationInterpretation"
                                               Grid.Row="0"
                                               Grid.Column="0"
-                                              Grid.ColumnSpan="2">
+                                              Grid.ColumnSpan="3">
 											<Grid.RowDefinitions>
 												<RowDefinition />
 												<RowDefinition />
 											</Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" MinWidth="82" />
-                                                <ColumnDefinition Width="*" MinWidth="70" />
+                                                <ColumnDefinition Width="*" MinWidth="100" />
+                                                <ColumnDefinition Width="2*" />
                                                 <ColumnDefinition Width="20" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" MinWidth="70" />
                                             </Grid.ColumnDefinitions>
 
 											<Label x:Name="LabelQualityDetermination"
@@ -2562,13 +2569,13 @@
                                             <ComboBox x:Name="ComboBoxIncidQualityDetermination"
                                                       Grid.Row="0"
                                                       Grid.Column="1"
-													  Grid.ColumnSpan="4"
+													  Grid.ColumnSpan="2"
                                                       Margin="4,2,8,2"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
                                                       IsEditable="False"
                                                       IsReadOnly="False"
-                                                      ItemsSource="{Binding DeterminationQualityCodes,
+                                                      ItemsSource="{Binding QualityDeterminationCodes,
                                                                             UpdateSourceTrigger=PropertyChanged}"
                                                       SelectedValue="{Binding IncidQualityDetermination,
                                                                               ValidatesOnDataErrors=True}"
@@ -2577,7 +2584,7 @@
                                                       ToolTipService.ShowOnDisabled="True" />
 											<CheckBox x:Name="CheckBoxCopyQualityDetermination"
 													  Grid.Row="0"
-													  Grid.Column="5"
+													  Grid.Column="3"
 													  Margin="0,2,0,4"
 													  HorizontalAlignment="Right"
 													  VerticalAlignment="Center"
@@ -2600,23 +2607,23 @@
                                                       DisplayMemberPath="description"
                                                       IsEditable="False"
                                                       IsReadOnly="False"
-                                                      ItemsSource="{Binding InterpretationQualityCodes,
+                                                      ItemsSource="{Binding QualityInterpretationCodes,
                                                                             UpdateSourceTrigger=PropertyChanged}"
                                                       SelectedValue="{Binding IncidQualityInterpretation,
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
                                                       Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                       ToolTipService.ShowOnDisabled="True" />
-                                        </Grid>
 										<CheckBox x:Name="CheckBoxCopyQualityInterpretation"
 													Grid.Row="1"
-													Grid.Column="2"
+													Grid.Column="3"
 													Margin="0,0,0,2"
 													HorizontalAlignment="Right"
 													VerticalAlignment="Center"
 													IsChecked="{Binding CopySwitches.CopyQualityInterpretation,
 																		Mode=TwoWay,
 																		UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
 
                                         <Grid x:Name="GridQualityComments"
                                               Grid.Row="1"
@@ -2783,7 +2790,7 @@
                                                                 ConverterParameter=source_date_start^source_date_end^source_date_type,
                                                                 Converter={StaticResource vagueDateConverter},
                                                                 Mode=TwoWay,
-                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                UpdateSourceTrigger=LostFocus,
                                                                 ValidatesOnDataErrors=True}"
                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
@@ -3042,7 +3049,7 @@
                                                                 ConverterParameter=source_date_start^source_date_end^source_date_type,
                                                                 Converter={StaticResource vagueDateConverter},
                                                                 Mode=TwoWay,
-                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                UpdateSourceTrigger=LostFocus,
                                                                 ValidatesOnDataErrors=True}"
                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />
@@ -3301,7 +3308,7 @@
                                                                 ConverterParameter=source_date_start^source_date_end^source_date_type,
                                                                 Converter={StaticResource vagueDateConverter},
                                                                 Mode=TwoWay,
-                                                                UpdateSourceTrigger=PropertyChanged,
+                                                                UpdateSourceTrigger=LostFocus,
                                                                 ValidatesOnDataErrors=True}"
                                                  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
                                                  ToolTipService.ShowOnDisabled="True" />

@@ -45,6 +45,8 @@ namespace HLU.Data
         private static IEnumerable<string> _validSecondaryCodes;
         private static Dictionary<string, String> _secondaryGroupCodes;
 
+        public static int _secondaryCodeValidation;
+
         #endregion
 
         #region ctor
@@ -165,8 +167,6 @@ namespace HLU.Data
                 {
                     SecondaryHabitat sh = new SecondaryHabitat();
                     sh = _secondaryHabitatList.ElementAt(i);
-                    //TODO: Lookup secondary group
-                    //sh._secondary_group = _secondaryGroupCodes.FirstOrDefault(c => c.Key == sh._secondary_habitat).Value;
                 }
             }
         }
@@ -181,6 +181,12 @@ namespace HLU.Data
         {
             get { return _validSecondaryCodes; }
             set { _validSecondaryCodes = value; }
+        }
+
+        public static int SecondaryCodeValidation
+        {
+            get { return _secondaryCodeValidation; }
+            set { _secondaryCodeValidation = value; }
         }
 
         public bool BulkUpdateMode
@@ -299,18 +305,21 @@ namespace HLU.Data
             StringBuilder sbError = new StringBuilder();
 
             //TODO: Secondaries - Check
-            if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
-                sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
+            // Only validate if errors are to be shown
+            if (SecondaryCodeValidation > 0)
+            {
+                if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
+                    sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
 
-            if (String.IsNullOrEmpty(secondary_habitat))
-                sbError.Append(Environment.NewLine).Append("Secondary habitat is a mandatory field");
+                if (String.IsNullOrEmpty(secondary_habitat))
+                    sbError.Append(Environment.NewLine).Append("Secondary habitat is a mandatory field");
 
-            if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
-                sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
+                if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
+                    sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
 
-            //TODO: Secondaries validation - Needed???
-            ////if ((_bapEnvironmentList != null) && (_bapEnvironmentList.Count(b => b.bap_habitat == bap_habitat) > 1))
-            ////    sbError.Append(Environment.NewLine).Append("Duplicate priority environment");
+                if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
+                    sbError.Append(Environment.NewLine).Append("Duplicate secondary habitat");
+            }
 
             return sbError.Length > 0 ? sbError.Remove(0, 1).ToString() : null;
         }
@@ -347,25 +356,29 @@ namespace HLU.Data
                         if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
                         {
                             _incid = _incid_bak;
-                            return "INCID is a mandatory field";
+                            return "Error: INCID is a mandatory field";
                         }
                         _incid_bak = _incid;
                         break;
                     //TODO: Secondaries - Check
                     case "secondary_habitat":
-                        //TODO: Secondaries - Check integer can equal null
-                        if (String.IsNullOrEmpty(secondary_habitat))
+                        // Only validate if errors are to be shown
+                        if (SecondaryCodeValidation == 1)
                         {
-                            return "Secondary habitat is a mandatory field";
-                        }
-                        else if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
-                            return "Secondary habitat is not valid for primary habitat";
+                            //TODO: Secondaries - Check integer can equal null
+                            if (String.IsNullOrEmpty(secondary_habitat))
+                            {
+                                return "Error: Secondary habitat is a mandatory field";
+                            }
+                            else if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
+                                return "Warning: Secondary habitat is not valid for primary habitat";
 
-                        else if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
-                        {
-                            return "Duplicate secondary habitat";
+                            else if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
+                            {
+                                return "Error: Duplicate secondary habitat";
+                            }
+                            _secondary_habitat_bak = _secondary_habitat;
                         }
-                        _secondary_habitat_bak = _secondary_habitat;
                         break;
                 }
 

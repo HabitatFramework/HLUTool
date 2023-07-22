@@ -358,10 +358,6 @@ namespace HLU.GISApplication.MapInfo
             get { return _hluCurrentLayer; }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 059 Do not display map window number with layer name
-        // if there is only one map window.
-        // 
         /// <summary>
         /// The total number of map windows in the current workspace.
         /// </summary>
@@ -369,7 +365,6 @@ namespace HLU.GISApplication.MapInfo
         {
             get { return _mapWindowsCount; }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Gets the currently selected map features and writes their UIDs into a DataTable.
@@ -538,10 +533,8 @@ namespace HLU.GISApplication.MapInfo
                         "Global Pen(1, 2, {2}) Global Brush(2, {2}, {3})", _hluMapWindowID, flashLayer,
                         (int)MapInfoConstants.Colors.RED, (int)MapInfoConstants.Colors.WHITE));
 
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
+                    // Bring ArcGIS and MapInfo into line by flashing all features twice
                     for (int i = 0; i < 2; i++)
-                    //---------------------------------------------------------------------
                     {
                         _mapInfoApp.Do(String.Format("Set Map Window {0} Layer {1} Display Off", _hluMapWindowID, flashLayer));
                         Thread.Sleep(300);
@@ -694,8 +687,7 @@ namespace HLU.GISApplication.MapInfo
 
                 // re-select split polygons (all rows in orignal selection)
                 List<SqlFilterCondition> reSelectionWhereClause;
-                //---------------------------------------------------------------------
-                // FIXOLD: 029 Ignore case when comparing column names
+
                 // Ignore case when comparing column names so that GIS layer
                 // names may be mixed/upper case.
                 var q = selectionWhereClause.Where(c => c.Column.ColumnName.ToLower() == _hluLayerStructure.toidColumn.ColumnName.ToLower());
@@ -931,11 +923,6 @@ namespace HLU.GISApplication.MapInfo
 
         public override void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 070 Improve zoom to selected features scaling.
-            //
-            //_mapInfoApp.RunMenuCommand((int)MapInfoConstants.MenuDef95Query.M_QUERY_FIND_SELECTION);
-
             // Get the name of the table that the current selection is based on.
             string tableName = _mapInfoApp.Eval(String.Format(
                 "SelectionInfo({0})", (int)MapInfoConstants.SelectionInfo.SEL_INFO_TABLENAME));
@@ -944,10 +931,6 @@ namespace HLU.GISApplication.MapInfo
             // Check that the table is the same as the expected table.
             if (tableName != _hluLayer)
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 052 Ensure get map selection works when selection is based
-                // on joining two or more tables in MapInfo.
-                //
                 // Get the name of the temporary table that the current selection
                 // is based on (in case the selection was done by joining two or
                 // more tables).
@@ -959,7 +942,6 @@ namespace HLU.GISApplication.MapInfo
                 // and if not return.
                 if (mapName != _hluLayer)
                     return;
-                //---------------------------------------------------------------------
             }
 
             // Get the name of the query that contains the current selection.
@@ -1000,8 +982,6 @@ namespace HLU.GISApplication.MapInfo
             // Get the size of the window border (i.e. 10% of the total size)
             float winBorder = Math.Min(winMaxX - winMinX, winMaxY - winMinY) / 10;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 097 Enable auto zoom when selecting features on map.
             // Check if the current selection fits well within
             // the map window (i.e. within the middle 80%).
             if ((selMinX <= (winMinX + winBorder) ||
@@ -1009,7 +989,6 @@ namespace HLU.GISApplication.MapInfo
                 selMinY <= (winMinY + winBorder) ||
                 selMaxY >= (winMaxY - winBorder)) ||
                 alwaysZoom)
-            //---------------------------------------------------------------------
             {
                 // Zoom to the extent of the whole selection.
                 _mapInfoApp.RunCommand(String.Format("select * from {0} into ZoomSelection NoSelect", selName));
@@ -1043,7 +1022,6 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.Do("Close Table ZoomSelection");
                 _mapInfoApp.Do("Set Map Redraw On");
             }
-            //---------------------------------------------------------------------
 
         }
 
@@ -1182,9 +1160,8 @@ namespace HLU.GISApplication.MapInfo
 
                 rollbackChanges = true;
 
-                // merge selected features into the target feature
-                //---------------------------------------------------------------------
-                // FIXOLD: 026 Hide progress bars during MapInfo processing
+                // Merge selected features into the target feature
+                // Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Objects Combine Into Target Data {0}", toidFragIdClause));
                 _mapInfoApp.Do("Set ProgressBars On");
@@ -1312,15 +1289,12 @@ namespace HLU.GISApplication.MapInfo
 
                         if (_mapInfoApp.Eval(incidCommand) == keepIncid)
                         {
-                            //---------------------------------------------------------------------
-                            // FIXOLD: 013 Don't overwrite the geometry fields during logical merge
                             // Don't include the geometry fields in the update string when updating
                             // all the rows that are logically merging into the keep incid.
                             updateCommandTemplate = new StringBuilder(updateCommandTemplate).Append(_hluFieldNames.Where(fn =>
                                 (fn != incidFieldName) && (fn != toidFieldName) && (fn != toidFragFieldName) && !fn.StartsWith("shape_")).Aggregate(new StringBuilder(), 
                                 (sb, fn) => sb.Append(", " + fn + " = " + QuoteValue(_mapInfoApp.Eval(String.Format(readCommandTemplate, fn))))))
                                     .Append(" Where RowID = {0}").ToString();
-                            //---------------------------------------------------------------------
                             break;
                         }
                     }
@@ -1331,15 +1305,10 @@ namespace HLU.GISApplication.MapInfo
                         _selName, incidFieldName, QuoteValue(keepIncid), "{0}");
                 }
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 014 Don't drop indexes unless processing > 500 rows
                 // Dropping (and rebuilding) the indexes takes a long time
                 // so it is not worth it unless a lot of rows are going to
                 // be processed.
-                //
-                //if (numRows > 2)
                 if (numRows > 500)
-                //---------------------------------------------------------------------
                 {
                     indexColumns = new string[] { 
                         GetFieldName(_hluLayerStructure.incidColumn.Ordinal),
@@ -1373,9 +1342,6 @@ namespace HLU.GISApplication.MapInfo
             finally { if (indexColumns != null) CreateIndexes(_hluLayer, indexColumns); }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
-        //
         /// <summary>
         /// Prompts the user for the export layer name.
         /// </summary>
@@ -1395,10 +1361,8 @@ namespace HLU.GISApplication.MapInfo
             {
                 if (!File.Exists(tempMdbPathName)) throw new IOException("File not found");
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 035 Only export selected features, not all features for
+                // Only export selected features, not all features for
                 // selected incids.
-                //
                 // Get the number of features to export.
                 if (selectedOnly)
                 {
@@ -1425,12 +1389,7 @@ namespace HLU.GISApplication.MapInfo
                     outFeatureCount = Int32.Parse(_mapInfoApp.Eval(String.Format(
                         "TableInfo({0}, {1})", QuoteValue(_hluLayer), (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
                 }
-                //---------------------------------------------------------------------
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 039 Check export layer won't exceed MapInfo maximum record
-                // length or file sizes.
-                //
                 // Check the total attributes length doesn't exceed the MapInfo
                 // maximum record length.
                 if (attributesLength > Settings.Default.MapInfoMaxRecordLength)
@@ -1440,12 +1399,7 @@ namespace HLU.GISApplication.MapInfo
                 // maximum .tab file size.
                 if (((attributesLength * outFeatureCount) / 1024) > Settings.Default.MapInfoMaxTableSize)
                     throw new Exception(String.Format("The export table size ({0} Kb) will exceed the maximum allowed for MapInfo .tab files (2 Gb)", (attributesLength * outFeatureCount)/1024));
-                //---------------------------------------------------------------------
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 040 Enable MapInfo users to set a default export
-                // folder path.
-                //
                 // Prompt the user for where to save the export layer
                 SaveFileDialog saveFileFlg = new SaveFileDialog();
                 saveFileFlg.Title = "Export";
@@ -1454,7 +1408,6 @@ namespace HLU.GISApplication.MapInfo
                 saveFileFlg.RestoreDirectory = false;
                 saveFileFlg.InitialDirectory = Settings.Default.ExportPath;
                 saveFileFlg.Filter = "MapInfo Tables (*.tab)|*.tab";
-                //---------------------------------------------------------------------
 
                 // If no export dataset name was chosen by the user then cancel the export.
                 if (saveFileFlg.ShowDialog(App.GetActiveWindow()) != true)
@@ -1478,7 +1431,6 @@ namespace HLU.GISApplication.MapInfo
             finally { }
 
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Exports the HLU features and attribute data to a new GIS layer file.
@@ -1507,8 +1459,7 @@ namespace HLU.GISApplication.MapInfo
                     return false;
                 }
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 035 Only export selected features, not all features for
+                // Only export selected features, not all features for
                 // selected incids.
                 //
                 // Get the name of the feature layer to join to.
@@ -1552,7 +1503,6 @@ namespace HLU.GISApplication.MapInfo
                     // Set the name of the join table to the whole feature layer.
                     joinLayer = _hluLayer;
                 }
-                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIX: 105 Trap error when unable to register Access table.
@@ -1600,9 +1550,7 @@ namespace HLU.GISApplication.MapInfo
                 if (!String.IsNullOrEmpty(geomColNames)) geomColsFound = true;
 
                 // Perform a sql join between the feature layer and the attribute table
-                //---------------------------------------------------------------------
-                // FIXOLD: 026 Hide progress bars during MapInfo processing
-                // FIXOLD: 037 Move the geometry length and area fields to the end.
+                // Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Select {0}, {1}{2} From {3}, {4} Where {3}.{5} = {4}.{6}",
                     ColumnList(joinLayer, new string[] { geomCol1Name, geomCol2Name }, false),
@@ -1613,7 +1561,6 @@ namespace HLU.GISApplication.MapInfo
                     QuoteIdentifier(GetFieldName(_hluLayerStructure.incidColumn.Ordinal)),
                     QuoteIdentifier(_hluLayerStructure.incidColumn.ColumnName)));
                 _mapInfoApp.Do("Set ProgressBars On");
-                //---------------------------------------------------------------------
  
                 // Get the name of the new selection table
                 selTable = _mapInfoApp.Eval(String.Format("SelectionInfo({0})",
@@ -1623,13 +1570,11 @@ namespace HLU.GISApplication.MapInfo
                 if (string.IsNullOrEmpty(selTable)) return false;
 
                 // Save the joined table as the new export table
-                //---------------------------------------------------------------------
-                // FIXOLD: 026 Hide progress bars during MapInfo processing
+                // Hide progress bars during MapInfo processing
                 _mapInfoApp.Do("Set ProgressBars Off");
                 _mapInfoApp.Do(String.Format("Commit Table {0} As {1}",
                     QuoteIdentifier(selTable), QuoteValue(_outTabPath)));
                 _mapInfoApp.Do("Set ProgressBars On");
-                //---------------------------------------------------------------------
 
                 // Close the exported table.
                 _mapInfoApp.Do(String.Format("Close Table {0}", QuoteValue(selTable)));
@@ -1648,10 +1593,8 @@ namespace HLU.GISApplication.MapInfo
                 // not found earlier.
                 if (!geomColsFound)
                 {
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 026 Hide progress bars during MapInfo processing
+                    // Hide progress bars during MapInfo processing
                     _mapInfoApp.Do("Set ProgressBars Off");
-                    //---------------------------------------------------------------------
 
                     // Set the geometry column names to the correct case (as
                     // best as can be determined).
@@ -1676,9 +1619,7 @@ namespace HLU.GISApplication.MapInfo
                     int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                         outTable, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
 
-                    // Speed up edits ('Undo Off' and 'FastEdit On').
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo Off", QuoteIdentifier(outTable)));
-                    //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit On", QuoteIdentifier(outTable)));
 
                     // Fetch the first row from the export table
                     double geom1;
@@ -1704,10 +1645,8 @@ namespace HLU.GISApplication.MapInfo
                     _mapInfoApp.Do(String.Format("Set Table {0} Undo On", QuoteIdentifier(outTable)));
                     //_mapInfoApp.Do(String.Format("Set Table {0} FastEdit Off", QuoteIdentifier(outTable)));
 
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 026 Hide progress bars during MapInfo processing
+                    // Turn progress bars back on
                     _mapInfoApp.Do("Set ProgressBars On");
-                    //---------------------------------------------------------------------
                 }
                 //---------------------------------------------------------------------
 
@@ -1881,12 +1820,10 @@ namespace HLU.GISApplication.MapInfo
 
         private bool CommitChanges()
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 026 Hide progress bars during MapInfo processing
+            // Hide progress bars during MapInfo processing
             _mapInfoApp.Do("Set ProgressBars Off");
             _mapInfoApp.Do(String.Format("Commit Table {0}", _hluLayer));
             _mapInfoApp.Do("Set ProgressBars On");
-            //---------------------------------------------------------------------
 
             // if _hluLayer still flagged as edited save must have failed
             if (_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
@@ -1910,22 +1847,14 @@ namespace HLU.GISApplication.MapInfo
         {
             try
             {
-                //---------------------------------------------------------------------
-	            // FIXOLD: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-                // 
                 // Get the default version of MapInfo from the registry.
                 String curVer = GetDefaultOLE_MIVer();
                 var verSplit = curVer.Split('.');
                 String miVer = verSplit[verSplit.GetUpperBound(0)];
 
-                //---------------------------------------------------------------------
-
                 // get any running MapInfo processes
                 _mapInfoProcsPreStart = GetMapInfoProcesses();
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 062 Enable tool to run in multi-user environment.
-                // 
                 // if there are already any MapInfo processes running then tell the
                 // user that they must close all instanced before starting the tool
                 //if (_mapInfoProcsPreStart.Count() != 0)
@@ -1934,30 +1863,22 @@ namespace HLU.GISApplication.MapInfo
                 //        "Error Starting MapInfo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 //    return false;
                 //}
-                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // FIXED: KI94 (MapInfo Layer Control)
                 // FIXED: KI98 (MapInfo user interface)
                 // Start MapInfo as a process rather than as a COM object so that it
                 // starts correctly (e.g. all the menu bars, etc. where the user wants).
-                //---------------------------------------------------------------------
-	            // FIXOLD: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-                // 
+
                 // Start the default version of MapInfo
                 LaunchMI();
 
                 // Get the process that has just been started
                 _mapInfoProcess = GetMapInfoProcess(_mapInfoProcsPreStart);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 062 Enable tool to run in multi-user environment.
-                // 
                 // Connect to the newly running version of MapInfo
                 //_mapInfoApp = (MapInfoApplication)ConnectToRunningMI(curVer, miVer);
                 _mapInfoApp = ConnectToNewMI(_mapInfoProcess);
-                //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
                 //---------------------------------------------------------------------
 
                 // Wait 2 seconds before continuing to allow MapInfo to finish opening
@@ -2020,9 +1941,6 @@ namespace HLU.GISApplication.MapInfo
             //int miProcID = Shell(GetMIPath(ver) + "\\mapinfow.exe", Microsoft.VisualBasic.AppWinStyle.NormalFocus, false, -1);
         }
 
-		//---------------------------------------------------------------------
-		// FIXOLD: 061 Enable tool to work with 32bit and 64bit versions of MapInfo.
-		// 
         /// <summary>
         /// Connects to an existing instance of MapInfo
         /// </summary>
@@ -2034,11 +1952,8 @@ namespace HLU.GISApplication.MapInfo
             object MIObj1 = null;
             int stoploop = 0;
             int countloop = 0;
-            //---------------------------------------------------------------------
-            // FIXOLD: 002 Increase the max timeout waiting for MI to start
             // Wait up to 30 seconds for MapInfo to start.
             while (stoploop != 1 || countloop > 30)
-            //---------------------------------------------------------------------
             {
                 try
                 {
@@ -2065,19 +1980,13 @@ namespace HLU.GISApplication.MapInfo
                 MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 019 Pause before connecting to MapInfo to let it finish opening
             // Wait a couple of seconds after connecting to MapInfo to let it finish opening.
             System.Threading.Thread.Sleep(2000);
-            //---------------------------------------------------------------------
+
             return MIObj1;
 
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 062 Enable tool to run in multi-user environment.
-        // 
         /// <summary>
         /// Get a snapshot of the running object table (ROT).
         /// </summary>
@@ -2112,11 +2021,7 @@ namespace HLU.GISApplication.MapInfo
 
             return result;
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 062 Enable tool to run in multi-user environment.
-        // 
         /// <summary>
         /// Get a table of the currently running instances of MapInfo.
         /// </summary>
@@ -2163,11 +2068,7 @@ namespace HLU.GISApplication.MapInfo
             // of MapInfo
             return runningMIInstances;
         }
-        //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 062 Enable tool to run in multi-user environment.
-        // 
         /// <summary>
         /// Connects to the newly started instance of MapInfo
         /// </summary>
@@ -2204,7 +2105,6 @@ namespace HLU.GISApplication.MapInfo
 
             return null;
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Finding installed version of MI
@@ -2254,9 +2154,6 @@ namespace HLU.GISApplication.MapInfo
         {
             if (miProcs == null) return null;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 062 Enable tool to run in multi-user environment.
-            // 
             int stoploop = 0;
             int countloop = 0;
             // Wait up to 60 seconds for MapInfo to start
@@ -2278,7 +2175,6 @@ namespace HLU.GISApplication.MapInfo
                 System.Threading.Thread.Sleep(1000);
                 countloop += 1;
             }
-            //---------------------------------------------------------------------
 
             return null;
         }
@@ -2674,10 +2570,6 @@ namespace HLU.GISApplication.MapInfo
             // and if not return an empty result table.
             if ((tableName != selName) && (tableName != _hluLayer))
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 052 Ensure get map selection works when selection is based
-                // on joining two or more tables in MapInfo.
-                //
                 // Get the name of the temporary table that the current selection
                 // is based on (in case the selection was done by joining two or
                 // more tables).
@@ -2689,7 +2581,6 @@ namespace HLU.GISApplication.MapInfo
                 // and if not return an empty result table.
                 if (mapName != selName)
                     return;
-                //---------------------------------------------------------------------
             }
             //---------------------------------------------------------------------
             
@@ -2750,10 +2641,11 @@ namespace HLU.GISApplication.MapInfo
             }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 053 Check if all selected rows have unique keys to avoid
-        // any potential data integrity problems.
-        //
+        /// <summary>
+        /// Check if all selected rows have unique keys to avoid any
+        /// potential data integrity problems.
+        /// </summary>
+        /// <returns></returns>
         public override bool SelectedRowsUnique()
         {
             try
@@ -2822,7 +2714,6 @@ namespace HLU.GISApplication.MapInfo
                 _mapInfoApp.RunCommand(String.Format(selectCommand));
             }
         }
-        //---------------------------------------------------------------------
 
         public override string QuoteIdentifier(string identifier)
         {
@@ -3222,12 +3113,10 @@ namespace HLU.GISApplication.MapInfo
                 string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", tableName,
                     QuoteValue(String.Format("Col{0}", i)), (int)MapInfoConstants.ColumnInfo.COL_INFO_NAME));
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 033 Ignore case in field names during export to avoid duplicate
+                // Ignore case in field names during export to avoid duplicate
                 // fields.
                 if (Array.FindIndex(skipColumns, c => c.Equals(colName, StringComparison.InvariantCultureIgnoreCase)) == -1)
                     columnList.Add(tableNameQuoted + "." + QuoteIdentifier(colName));
-                //---------------------------------------------------------------------
             }
 
             if (includeGeom &&( _mapInfoApp.Eval(String.Format("TableInfo({0}, {1})", _hluLayer,
@@ -3276,8 +3165,7 @@ namespace HLU.GISApplication.MapInfo
 
             for (int i = 1; i <= numColumns; i++)
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 033 Ignore case in field names during export to avoid duplicate
+                // Ignore case in field names during export to avoid duplicate
                 // fields.
                 string colName = _mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})",
                     tableName, QuoteValue(String.Format("Col{0}", i)),
@@ -3286,7 +3174,6 @@ namespace HLU.GISApplication.MapInfo
                     return true;
                 else if (!ignoreCase && colName == columnName)
                     return true;
-                //---------------------------------------------------------------------
             }
 
             return false;
@@ -3454,13 +3341,8 @@ namespace HLU.GISApplication.MapInfo
                         (int)MapInfoConstants.WindowInfo.WIN_INFO_TYPE))) ==
                         (int)MapInfoConstants.WindowInfoWindowTypes.WIN_MAPPER)
                     {
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 059 Do not display map window number with layer name
-                        // if there is only one map window.
-                        // 
                         // Increment the map window counter
                         _mapWindowsCount += 1;
-                        //---------------------------------------------------------------------
 
                         // Store the number of layers in the window
                         int numLayers = Int32.Parse(_mapInfoApp.Eval(String.Format("MapperInfo({0}, {1})",

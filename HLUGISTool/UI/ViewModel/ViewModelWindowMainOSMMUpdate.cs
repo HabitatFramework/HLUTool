@@ -200,9 +200,6 @@ namespace HLU.UI.ViewModel
             // Get the current userid
             string user_id = _viewModelMain.UserID;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 096 Improve performance of reviewing OSMM updates
-            //
             // Use the stored where clause if set
             if (_viewModelMain.OSMMUpdateWhereClause != null)
             {
@@ -260,7 +257,6 @@ namespace HLU.UI.ViewModel
                     }
                 }
             }
-            //---------------------------------------------------------------------
         }
 
         public void CancelOSMMUpdate()

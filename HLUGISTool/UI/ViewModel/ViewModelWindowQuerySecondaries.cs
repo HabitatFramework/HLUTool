@@ -28,14 +28,14 @@ using HLU.Data.Model;
 
 namespace HLU.UI.ViewModel
 {
-    class ViewModelWindowQueryIncid : ViewModelBase, IDataErrorInfo
+    class ViewModelWindowQuerySecondaries : ViewModelBase, IDataErrorInfo
     {
         #region Fields
 
         private ICommand _okCommand;
         private ICommand _cancelCommand;
-        private string _displayName = "Query Incid";
-        private String _queryIncid;
+        private string _displayName = "Add Secondary Habitats";
+        private String _querySecondaries;
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace HLU.UI.ViewModel
         #region RequestClose
 
         // declare the delegate since using non-generic pattern
-        public delegate void RequestCloseEventHandler(String queryIncid);
+        public delegate void RequestCloseEventHandler(String querySecondaries);
 
         // declare the event
         public event RequestCloseEventHandler RequestClose;
@@ -93,7 +93,7 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void OkCommandClick(object param)
         {
-            this.RequestClose(QueryIncid);
+            this.RequestClose(QuerySecondaries);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace HLU.UI.ViewModel
         { 
             get 
             {
-                return (String.IsNullOrEmpty(Error) && (_queryIncid != null));
+                return (String.IsNullOrEmpty(Error) && (_querySecondaries != null));
             } 
         }
 
@@ -145,12 +145,12 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Query Incid
+        #region Query Secondaries
 
-        public string QueryIncid
+        public string QuerySecondaries
         {
-            get { return _queryIncid; }
-            set { _queryIncid = value; }
+            get { return _querySecondaries; }
+            set { _querySecondaries = value; }
         }
 
         #endregion
@@ -161,8 +161,10 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
-                    return "Please enter a valid incid with format {nnnn:nnnnnnn}.";
+                // Validate the string entered
+                string pattern = @"^[1-9][0-9]{0,3}(\s[1-9][0-9]{0,3})*$|^[1-9][0-9]{0,3}((\s)*,(\s)*[1-9][0-9]{0,3})*$|^[1-9][0-9]{0,3}((\s)*\.(\s)*[1-9][0-9]{0,3})*$";
+                if ((!String.IsNullOrEmpty(QuerySecondaries)) && (!Regex.IsMatch(QuerySecondaries, pattern, RegexOptions.IgnoreCase)))
+                    return "Please enter a valid list of secondaries code separated by either spaces, commas or points.";
                 else return null;
             }
         }
@@ -173,11 +175,13 @@ namespace HLU.UI.ViewModel
             {
                 string error = null;
 
+                // Validate the string entered
+                string pattern = @"^[1-9][0-9]{0,3}(\s[1-9][0-9]{0,3})*$|^[1-9][0-9]{0,3}((\s)*,(\s)*[1-9][0-9]{0,3})*$|^[1-9][0-9]{0,3}((\s)*\.(\s)*[1-9][0-9]{0,3})*$";
                 switch (columnName)
                 {
-                    case "QueryIncid":
-                        if ((!String.IsNullOrEmpty(QueryIncid)) && (!Regex.IsMatch(QueryIncid, @"[0-9]{4}:[0-9]{7}", RegexOptions.IgnoreCase)))
-                            error = "Error: You must enter a valid incid with format {nnnn:nnnnnnn}.";
+                    case "QuerySecondaries":
+                        if ((!String.IsNullOrEmpty(QuerySecondaries)) && (!Regex.IsMatch(QuerySecondaries, pattern, RegexOptions.IgnoreCase)))
+                            error = "Error: You must enter a valid list of secondaries codes separated by either spaces, commas or points.";
                         break;
                 }
 
@@ -190,4 +194,5 @@ namespace HLU.UI.ViewModel
 
         #endregion
     }
+    //---------------------------------------------------------------------
 }

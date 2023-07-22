@@ -153,8 +153,7 @@ namespace HLU.Converters
         {
             if (codeColumnOrdinal == -1) return rows;
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 025 Add default sort order to all lookup tables
+            // Sort depending on the source columns
             if ((nameColumnOrdinal != -1) && (descriptionColumnOrdinal != -1) && (sortColumnOrdinal != -1))
                 return (from r in rows
                         select new
@@ -221,7 +220,6 @@ namespace HLU.Converters
                            description = String.Empty,
                            sort_order = r.Field<int>(sortColumnOrdinal)
                        };
-            //---------------------------------------------------------------------
         }
 
         private string FormatDescription(DataRow r, int codeColumnOrdinal, int nameColumnOrdinal, int descriptionColumnOrdinal)

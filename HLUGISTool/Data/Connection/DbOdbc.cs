@@ -901,12 +901,10 @@ namespace HLU.Data.Connection
             int colType;
             if (_typeMapSystemToSQL.TryGetValue(valueType, out colType))
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 030 Include time in DateTime fields with ODBC connections
                 // Ensure that updates to databases using ODBC connection type
                 // include the time when updating DateTime fields.
                 string s = valueType == typeof(DateTime) ? ((DateTime)value).ToString("s").Replace("T", " ") : value.ToString();
-                //---------------------------------------------------------------------
+
                 switch ((OdbcType)colType)
                 {
                     case OdbcType.Char:

@@ -104,10 +104,6 @@ namespace HLU.Data
         {
             get
             {
-                //---------------------------------------------------------------------
-                // FIXOLD: 059 Do not display map window number with layer name
-                // if there is only one map window.
-                // 
                 string mapName = null;
 
                 // If there is no map window name (MapInfo) then set
@@ -124,7 +120,6 @@ namespace HLU.Data
                     return String.Format("{0}{1}", _layerName, mapName);
                 else
                     return String.Format("{0}", _layerName);
-                //---------------------------------------------------------------------
             }
         }
 

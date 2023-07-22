@@ -170,13 +170,10 @@ namespace HLU.UI.ViewModel
                 {
                     string keepIncid = selectTable[_mergeResultFeatureIndex].incid;
 
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 028 Only update DateTime fields to whole seconds
                     // Fractions of a second can cause rounding differences when
                     // comparing DateTime fields later in some databases.
                     DateTime currDtTm = DateTime.Now;
                     DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                    //---------------------------------------------------------------------
 
                     // assign selected incid to selected features except keepIncid
                     DataTable historyTable = _viewModelMain.GISApplication.MergeFeaturesLogically(
@@ -310,13 +307,11 @@ namespace HLU.UI.ViewModel
                         _viewModelMain.ClearFilter(false);
 
                         // Synch with the GIS selection.
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 027 Force refill of Incid table after split/merge
                         // Force the Incid table to be refilled because it has been
                         // updated directly in the database rather than via the
                         // local copy.
                         _viewModelMain.RefillIncidTable = true;
-                        //---------------------------------------------------------------------
+
                         _viewModelMain.ReadMapSelection(true);
                     }
                 }
@@ -407,13 +402,10 @@ namespace HLU.UI.ViewModel
 
                     try
                     {
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 028 Only update DateTime fields to whole seconds
                         // Fractions of a second can cause rounding differences when
                         // comparing DateTime fields later in some databases.
                         DateTime currDtTm = DateTime.Now;
                         DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
-                        //---------------------------------------------------------------------
 
                         _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0), nowDtTm);
 
@@ -475,13 +467,11 @@ namespace HLU.UI.ViewModel
                         _viewModelMain.ClearFilter(false);
 
                         // Synch with the GIS selection.
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 027 Force refill of Incid table after split/merge
                         // Force the Incid table to be refilled because it has been
                         // updated directly in the database rather than via the
                         // local copy.
                         _viewModelMain.RefillIncidTable = true;
-                        //---------------------------------------------------------------------
+
                         _viewModelMain.ReadMapSelection(true);
                     }
                     catch

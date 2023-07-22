@@ -965,12 +965,8 @@ namespace HLU.Data.Connection
                 sbCommandText.Append(fromList);
                 sbCommandText.Append(WhereClause(true, true, qualifyColumns, whereConds));
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 075 Ensure that filtered records are sorted by INCID.
-                //
                 // Append an order by clause based on the primary key columns.
                 sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
-                //---------------------------------------------------------------------
 
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
 
@@ -1089,15 +1085,11 @@ namespace HLU.Data.Connection
                 else
                     sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 075 Ensure that filtered records are sorted by INCID.
-                //
                 // Append an order by clause based on the primary key columns.
                 if (targetColumns.Length > 1)
                     sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
                 else
                     sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => x.ColumnName)));
-                //---------------------------------------------------------------------
 
                 // Fill the result table using the sql command.
                 FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
@@ -1256,11 +1248,9 @@ namespace HLU.Data.Connection
                         if ((c.DataType == typeof(string)) && (c.MaxLength != -1))
                             dbColTypeString = dbColTypeString.Replace("(" + TextLength + ")", "(" + c.MaxLength + ")");
 
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 034 Enable autoincrement fields to be included in exports
+                        // Enable autoincrement fields to be included in exports
                         if ((c.AutoIncrement == true) && (c.DataType == typeof(Int32)))
                             dbColTypeString = "COUNTER";
-                        //---------------------------------------------------------------------
 
                         sql.Append(String.Format(", {0} {1} {2}", QuoteIdentifier(c.ColumnName),
                             dbColTypeString, c.AllowDBNull ? "NULL" : "NOT NULL"));

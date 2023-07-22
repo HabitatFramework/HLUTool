@@ -1166,7 +1166,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public int SecondaryCodeValidation {
             get {
@@ -1177,16 +1177,17 @@ namespace HLU.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool ShowSecondaryGroupColumn {
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>As entered</string>
+  <string>By group then code</string>
+  <string>By code</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection SecondaryCodeOrderOptions {
             get {
-                return ((bool)(this["ShowSecondaryGroupColumn"]));
-            }
-            set {
-                this["ShowSecondaryGroupColumn"] = value;
+                return ((global::System.Collections.Specialized.StringCollection)(this["SecondaryCodeOrderOptions"]));
             }
         }
         
@@ -1237,6 +1238,32 @@ namespace HLU.Properties {
         public int MaxSecondaryGroupColumnWidth {
             get {
                 return ((int)(this["MaxSecondaryGroupColumnWidth"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public string SecondaryCodeOrder {
+            get {
+                return ((string)(this["SecondaryCodeOrder"]));
+            }
+            set {
+                this["SecondaryCodeOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int QualityValidation {
+            get {
+                return ((int)(this["QualityValidation"]));
+            }
+            set {
+                this["QualityValidation"] = value;
             }
         }
     }

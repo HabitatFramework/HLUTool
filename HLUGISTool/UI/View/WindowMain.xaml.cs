@@ -71,19 +71,12 @@ namespace HLU
                 CheckMenuItem(_lastStyle, true);
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 074 Save option to always keep app window on top.
-            //
             // Get the app keep on top option default value.
             _keepOnTop = Settings.Default.AppKeepOnTop;
 
             // Check the menu item for the app keep on top option.
             CheckMenuItem("MenuItemAppKeepOnTop", _keepOnTop);
-            //---------------------------------------------------------------------
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 097 Enable auto zoom when selecting features on map.
-            //
             // Get the auto zoom option default value.
             _autoZoom = Settings.Default.AutoZoomSelection;
 
@@ -100,17 +93,12 @@ namespace HLU
                     CheckMenuItem("ZoomAlways", true);
                     break;
             }
-            //---------------------------------------------------------------------
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 069 Enable auto select of features on change of incid.
-            //
             // Get the auto select option default value.
             _autoSelect = Settings.Default.AutoSelectOnGis;
 
             // Check the menu item for the auto select option.
             CheckMenuItem("MenuItemAutoSelectOnGis", _autoSelect);
-            //---------------------------------------------------------------------
 
         }
 
@@ -373,10 +361,8 @@ namespace HLU
                 TextBox tbx = (TextBox)cb.Template.FindName("PART_EditableTextBox", cb);
                 int caretIx = tbx.CaretIndex;
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 031 Check combobox text is not null before finding list item
+                // Check combobox text is not null before finding list item
                 if (!String.IsNullOrEmpty(cb.Text))
-                //---------------------------------------------------------------------
                 {
                     string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx);
                     //string validText = cb.Text.Substring(0, caretIx < 1 ? 0 : caretIx - 1);
@@ -422,8 +408,6 @@ namespace HLU
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 097 Enable auto zoom when selecting features on map.
         /// <summary>
         /// Handles the Click event of the MenuItem_Zoom control.
         /// </summary>
@@ -452,7 +436,6 @@ namespace HLU
                     break;
             }
         }
-        //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------
         // FIXED: KI15 (User Interface Style)

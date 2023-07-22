@@ -773,10 +773,11 @@ namespace HLU.GISApplication.ArcGIS
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 053 Check if all selected rows have unique keys to avoid
-        // any potential data integrity problems.
-        //
+        /// <summary>
+        /// Check if all selected rows have unique keys to avoid
+        /// any potential data integrity problems.        
+        /// </summary>
+        /// <returns></returns>
         public override bool SelectedRowsUnique()
         {
             try
@@ -938,18 +939,13 @@ namespace HLU.GISApplication.ArcGIS
 
         public override void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
-            //---------------------------------------------------------------------
-            // FIXOLD: 097 Enable auto zoom when selecting features on map.
+            // Enable auto zoom when selecting features on map.
             if (alwaysZoom)
                 IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits, "always" });
             else
                 IpcArcMap(new string[] { "zs", minZoom.ToString(), distUnits, "when" });
-            //---------------------------------------------------------------------
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
-        //
         /// <summary>
         /// Prompts the user for the export layer name.
         /// </summary>
@@ -981,7 +977,6 @@ namespace HLU.GISApplication.ArcGIS
                 return true;
             }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Exports the HLU features and attribute data to a new GIS layer file.
@@ -1425,10 +1420,6 @@ namespace HLU.GISApplication.ArcGIS
             get { return _hluCurrentLayer; }
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 059 Do not display map window number with layer name
-        // if there is only one map window.
-        // 
         /// <summary>
         /// The total number of map windows in the current workspace.
         /// </summary>
@@ -1436,7 +1427,6 @@ namespace HLU.GISApplication.ArcGIS
         {
             get { return _mapWindowsCount; }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// True if ArcMap is running, otherwise false.
@@ -1821,10 +1811,6 @@ namespace HLU.GISApplication.ArcGIS
                 {
                     if (Int32.Parse(retList[0]) > 0)
                     {
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 059 Do not display map window number with layer name
-                        // if there is only one map window.
-                        // 
                         // Store the total number of map windows.
                         _mapWindowsCount = Int32.Parse(retList[1]);
 
@@ -1842,7 +1828,6 @@ namespace HLU.GISApplication.ArcGIS
                             string[] layerParts = retList[i].ToString().Split(new string[] { "::" }, StringSplitOptions.None);
                             _hluLayerList.Add(new GISLayer(Int32.Parse(layerParts[0]) + 1, layerParts[1], Int32.Parse(layerParts[2]), layerParts[3]));
                         }
-                        //---------------------------------------------------------------------
                     }
                 }
                 else
@@ -2421,13 +2406,11 @@ namespace HLU.GISApplication.ArcGIS
                     {
                         path = openFileDlg.FileName;
                         Settings.Default.MapPath = path;
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 012 Ensure HLU layer displays in map after reconfiguration
+
                         // For some reason the HLU layer does not display in the map
                         // window (although it appears in the contents list and the
                         // attribute table can be opened) if the application is not set
                         // to visible again before opening the document.
-                        //---------------------------------------------------------------------
                         _arcMap.Visible = true;
                     }
                     else

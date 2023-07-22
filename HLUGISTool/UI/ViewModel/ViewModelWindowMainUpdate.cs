@@ -398,7 +398,7 @@ namespace HLU.UI.ViewModel
         {
             // Update other incid vales
             viewModelMain.IncidCurrentRow.habitat_primary = viewModelMain.IncidPrimary;
-            viewModelMain.IncidCurrentRow.habitat_secondaries = viewModelMain.IncidSecondaries;
+            viewModelMain.IncidCurrentRow.habitat_secondaries = viewModelMain.IncidSecondarySummary;
             viewModelMain.IncidCurrentRow.habitat_version = viewModelMain.HabitatVersion;
 
             //TODO: Update - Needed (e.g. if clearing IHS values on update)?

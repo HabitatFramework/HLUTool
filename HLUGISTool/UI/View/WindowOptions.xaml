@@ -79,7 +79,7 @@
                         <Label x:Name="LabelConnectionTimeout"
                                Grid.Row="0"
                                Grid.Column="0"
-                               Margin="0,4,8,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Timeout [secs]"/>
                         <TextBox x:Name="TextBoxConnectionTimeout"
@@ -95,7 +95,7 @@
                         <Label x:Name="LabelIncidPageSize"
                                Grid.Row="0"
                                Grid.Column="2"
-                               Margin="0,4,8,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Incid Table Page Size [rows]"/>
                         <TextBox x:Name="TextBoxIncidPageSize"
@@ -158,12 +158,12 @@
 									  Margin="8,0,0,0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="100" />
+										<ColumnDefinition Width="Auto" MinWidth="100" />
 									</Grid.ColumnDefinitions>
 									<Label x:Name="LabelPreferredGis"
 										   Grid.Row="0"
 										   Grid.Column="0"
-										   Margin="4,8,4,8"
+										   Margin="4,0,4,0"
 										   HorizontalAlignment="Right"
 										   VerticalAlignment="Center" Content="Preferred GIS Application"/>
 									<ComboBox x:Name="ComboBoxPreferredGis"
@@ -188,12 +188,12 @@
 
 										<Label x:Name="LabelMapPath"
 											   Grid.Column="0"
-											   Margin="4,4,4,4"
+											   Margin="4,0,4,0"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Map Document/Workspace:"/>
 										<TextBox x:Name="TextBoxMapPath"
 													Grid.Column="1"
-													Margin="4,8,1,8"
+													Margin="4,8,4,8"
 													BorderThickness="1"
 													IsEnabled="False"
 													Text="{Binding MapDocument, ValidatesOnDataErrors=True}"
@@ -203,7 +203,7 @@
 													ToolTipService.ShowOnDisabled="True" />
 										<Button x:Name="ButtonBrowseMap"
 												Grid.Column="2"
-												Margin="1,8,4,8"
+												Margin="0,8,4,8"
 												Command="{Binding BrowseMapPathCommand}"
 												Content="..."
 												IsEnabled="{Binding CanBrowseMapPath}" />
@@ -219,12 +219,12 @@
 
 									<Label x:Name="LabelMinAutoZoom"
 										   Grid.Column="0"
-										   Margin="4,4,4,4"
+										   Margin="4,0,4,0"
 										   HorizontalAlignment="Right"
 										   VerticalAlignment="Center" Content="{Binding MinAutoZoomText}"/>
 									<TextBox x:Name="TextBoxMinAutoZoom"
 											 Grid.Column="1"
-											 Margin="4,8,1,8"
+											 Margin="4,8,4,8"
 											 BorderThickness="1"
 											 Text="{Binding MinAutoZoom, Converter={StaticResource nullableValueConverter}, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
 											 Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" 
@@ -254,12 +254,12 @@
 
 									<Label x:Name="LabelExportPath"
 										   Grid.Column="0"
-										   Margin="4,4,4,4"
+										   Margin="4,0,4,0"
 										   HorizontalAlignment="Right"
 										   VerticalAlignment="Center" Content="Default Export Directory:"/>
 									<TextBox x:Name="TextBoxExportPath"
 											 Grid.Column="1"
-											 Margin="4,8,1,8"
+											 Margin="4,8,4,8"
 											 BorderThickness="1"
 											 IsEnabled="False"
 											 Text="{Binding ExportPath, ValidatesOnDataErrors=True}"
@@ -269,7 +269,7 @@
 											 ToolTipService.ShowOnDisabled="True" />
 									<Button x:Name="ButtonBrowseExportPath"
 											Grid.Column="2"
-											Margin="1,8,4,8"
+											Margin="0,8,4,8"
 											Command="{Binding BrowseExportPathCommand}"
 											Content="..."
 											IsEnabled="{Binding CanBrowseExportPath}" />
@@ -326,7 +326,7 @@
                             <Label x:Name="LabelHistoryColumns1"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="8,8,8,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top">
                                 <TextBlock HorizontalAlignment="Right"
@@ -389,7 +389,7 @@
                         <Label x:Name="LabelHistoryDisplayLastN"
                                Grid.Row="0"
                                Grid.Column="0"
-                               Margin="8,4,8,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Display History Rows"/>
                         <TextBox x:Name="TextBoxHistoryDisplayLastN"
@@ -481,7 +481,7 @@
 
                             <Label x:Name="LabelShowGroupHeaders"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Show Group Headers"/>
                             <CheckBox x:Name="CheckBoxShowGroupHeaders"
@@ -491,7 +491,7 @@
                                       IsChecked="{Binding ShowGroupHeaders}" />
                             <Label x:Name="LabelShowNVCCodes"
                                    Grid.Column="2"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Show NVC Codes"/>
                             <CheckBox x:Name="CheckBoxShowNVCCodes"
@@ -501,7 +501,7 @@
                                       IsChecked="{Binding ShowNVCCodes}" />
                             <Label x:Name="LabelShowIHSTab"
                                    Grid.Column="4"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Show IHS Tab"/>
                             <CheckBox x:Name="CheckBoxShowIHSTab"
@@ -514,7 +514,7 @@
                         <Grid x:Name="GridShowOSMMUpdateOptions" Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="160" />
+                                <ColumnDefinition Width="Auto" MinWidth="160" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelShowOSMMUpdateOptions"
@@ -555,57 +555,33 @@
 
                         </Grid>
 
-                        <Grid x:Name="GridSecondaryGroupWidthCodeValidation" Grid.Row="4">
+                        <Grid x:Name="GridSecondaryCodeDelimiter" Grid.Row="4">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="4*" />
-                                <ColumnDefinition Width="25" />
-                                <ColumnDefinition Width="4*" />
-                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" MinWidth="160" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="40" />
                             </Grid.ColumnDefinitions>
 
-                            <Label x:Name="LabelSecondaryGroupColumnWidth"
+                            <Label x:Name="LabelSecondaryCodeOrder"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Show Secondary Group In Table"/>
-                            <CheckBox x:Name="CheckBoxShowSecondaryGroup"
+                                   VerticalAlignment="Center" Content="Secondary Group Table Order"/>
+                            <ComboBox x:Name="ComboBoxSecondaryCodeOrder"
                                       Grid.Column="1"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      IsChecked="{Binding ShowSecondaryGroupColumn}" />
-                            <Label x:Name="LabelSecondaryCodeValidation"
-                                   Grid.Row="0"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding SecondaryCodeOrderOptions}"
+                                      SelectedValue="{Binding SecondaryCodeOrder, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+                            <Label x:Name="LabelSecondaryCodeDelimiter"
                                    Grid.Column="2"
                                    Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
-                                   VerticalAlignment="Center" Content="Secondary Code Validation"/>
-                            <ComboBox x:Name="ComboBoxSecondaryCodeValidation"
-                                      Grid.Row="0"
-                                      Grid.Column="3"
-                                      Margin="4,8,4,8"
-                                      BorderThickness="1"
-                                      ItemsSource="{Binding SecondaryCodeValidationOptions}"
-                                      SelectedValue="{Binding SecondaryCodeValidation, ValidatesOnDataErrors=True}"
-                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
-
-                        </Grid>
-
-                        <Grid x:Name="GridSecondaryCodeDelimiter"
-                              Grid.Row="5"
-                              HorizontalAlignment="Right">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="35" />
-                            </Grid.ColumnDefinitions>
-                            <Label x:Name="LabelSecondaryCodeDelimiter"
-                                   Grid.Row="3"
-                                   Grid.Column="0"
-                                   Margin="4,8,4,8"
-                                   HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Secondary Code Delimiter"/>
                             <TextBox x:Name="TextBoxSecondaryCodeSeparatorDelimiter"
-                                     Grid.Row="3"
-                                     Grid.Column="1"
+                                     Grid.Column="3"
                                      Margin="4,8,4,8"
                                      VerticalAlignment="Center"
                                      BorderThickness="1"
@@ -659,7 +635,7 @@
                         <Grid x:Name="GridSubsetUpdateAction" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="Auto" MinWidth="110" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelSubsetUpdateAction"
@@ -682,7 +658,7 @@
                         <Grid x:Name="GridIHSUpdateAction" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="Auto" MinWidth="300" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelClearIHSUpdateAction"
@@ -711,12 +687,13 @@
                             <Label x:Name="LabelNotifyOnSplitMerge"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Notify After Completing Split/Merge"/>
                             <CheckBox x:Name="CheckBoxNotifyOnSplitMerge"
                                       Grid.Row="0"
                                       Grid.Column="1"
+                                      Margin="4,8,4,8"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
                                       IsChecked="{Binding NotifyOnSplitMerge}" />
@@ -731,7 +708,7 @@
                             <Label x:Name="LabelResetOSMMUpdatesStatus"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update"/>
                             <CheckBox x:Name="CheckBoxResetOSMMUpdatesStatus"
@@ -741,6 +718,48 @@
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
                                       IsChecked="{Binding ResetOSMMUpdatesStatus}" />
+                        </Grid>
+
+                        <Grid x:Name="GridSecondaryCodeValidation" Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" MinWidth="100" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelSecondaryCodeValidation"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Secondary Code Validation"/>
+                            <ComboBox x:Name="ComboBoxSecondaryCodeValidation"
+                                      Grid.Column="1"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding SecondaryCodeValidationOptions}"
+                                      SelectedValue="{Binding SecondaryCodeValidation, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
+                        </Grid>
+
+                        <Grid x:Name="GridQualityValidation" Grid.Row="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" MinWidth="100" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="LabelQualityValidation"
+                                   Grid.Column="0"
+                                   Margin="4,0,4,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Content="Quality Determination And Interpretation Validation"/>
+                            <ComboBox x:Name="ComboBoxQualityValidation"
+                                      Grid.Column="1"
+                                      Margin="4,8,4,8"
+                                      BorderThickness="1"
+                                      ItemsSource="{Binding QualityValidationOptions}"
+                                      SelectedValue="{Binding QualityValidation, ValidatesOnDataErrors=True}"
+                                      Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+
                         </Grid>
 
                     </Grid>
@@ -790,7 +809,7 @@
 
                             <Label x:Name="LabelMaxGetValues"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Get Values Count"/>
                             <TextBox x:Name="TextBoxMaxGetValues"
@@ -807,12 +826,12 @@
                         <Grid x:Name="GridWarnBeforeGISSelect" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="Auto" MinWidth="100" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelWarnBeforeGISSelect"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Warn Before GIS Select"/>
                             <ComboBox x:Name="ComboBoxWarnBeforeGISSelect"
@@ -835,12 +854,12 @@
                             <Label x:Name="LabelSqlPath"
                                    Grid.Row="1"
                                    Grid.Column="0"
-                                   Margin="4,4,4,4"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Default Query Directory:"/>
                             <TextBox x:Name="TextBoxSqlPath"
                                      Grid.Column="1"
-                                     Margin="4,8,1,8"
+                                     Margin="4,8,4,8"
                                      BorderThickness="1"
                                      IsEnabled="False"
                                      Text="{Binding SqlPath, ValidatesOnDataErrors=True}"
@@ -850,7 +869,7 @@
                                      ToolTipService.ShowOnDisabled="True" />
                             <Button x:Name="ButtonBrowseSql"
                                     Grid.Column="2"
-                                    Margin="1,8,4,8"
+                                    Margin="0,8,4,8"
                                     Command="{Binding BrowseSqlPathCommand}"
                                     Content="..." />
                         </Grid>
@@ -903,25 +922,25 @@
                         <Label x:Name="LabelSeasonSpring"
                                Grid.Row="0"
                                Grid.Column="0"
-                               Margin="4,8,4,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Spring"/>
                         <Label x:Name="LabelSeasonSummer"
                                Grid.Row="1"
                                Grid.Column="0"
-                               Margin="4,8,4,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Summer"/>
                         <Label x:Name="LabelSeasonAutumn"
                                Grid.Row="0"
                                Grid.Column="2"
-                               Margin="4,8,4,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Autumn"/>
                         <Label x:Name="LabelSeasonWinter"
                                Grid.Row="1"
                                Grid.Column="2"
-                               Margin="4,8,4,8"
+                               Margin="4,0,4,0"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center" Content="Winter"/>
 
@@ -969,7 +988,7 @@
                             <Label x:Name="LabelDateDelimiter"
                                    Grid.Row="0"
                                    Grid.Column="0"
-                                   Margin="4,8,4,8"
+                                   Margin="4,0,4,0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center" Content="Vague Date Delimiter"/>
                             <TextBox x:Name="TextBoxVagueDateDelimiter"
@@ -1013,8 +1032,8 @@
 
                     <Grid x:Name="GridTabBulkUpdate">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="3*" />
                         </Grid.RowDefinitions>
 
 						<GroupBox x:Name="GroupBoxBulkUpdate"
@@ -1028,11 +1047,11 @@
 
 								<Grid x:Name="GridBulkUpdateDefaults" Grid.Row="0">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="2*" />
-										<ColumnDefinition Width="80" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" MinWidth="80" />
 										<ColumnDefinition Width="25" />
 										<ColumnDefinition Width="10" />
-										<ColumnDefinition Width="2*" />
+										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="25" />
 									</Grid.ColumnDefinitions>
 									<Grid.RowDefinitions>
@@ -1043,12 +1062,13 @@
 									<Label x:Name="LabelBulkDeleteOrphanBapHabitats"
 											Grid.Row="0"
 											Grid.Column="0"
-											Margin="4,8,4,8"
+											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Delete Orphan Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeleteOrphanBapHabitats"
 												Grid.Row="0"
 												Grid.Column="2"
+												Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
 												IsChecked="{Binding BulkDeleteOrphanBapHabitats}" />
@@ -1057,12 +1077,13 @@
 											Grid.Row="0"
 											Grid.Column="3"
 											Grid.ColumnSpan="2"
-											Margin="4,8,4,8"
+											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Delete Potential Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeletePotentialBapHabitats"
 												Grid.Row="0"
 												Grid.Column="5"
+			                                    Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
 												IsChecked="{Binding BulkDeletePotentialBapHabitats}" />
@@ -1070,7 +1091,7 @@
 									<Label x:Name="LabelBulkDeleteSecondaryCodes"
 											Grid.Row="1"
 											Grid.Column="0"
-											Margin="4,8,4,8"
+											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Delete Existing Secondary Codes"/>
 									<ComboBox Name="ComboBoxDeleteSecondaryCodes"
@@ -1086,12 +1107,13 @@
 									<Label x:Name="LabelBulkCreateHistory"
 											Grid.Row="1"
 											Grid.Column="4"
-											Margin="4,8,4,8"
+											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Create History Records"/>
 									<CheckBox x:Name="CheckBoxBulkCreateHistory"
 												Grid.Row="1"
 												Grid.Column="5"
+												Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
 												IsChecked="{Binding BulkCreateHistoryRecords}" />
@@ -1117,12 +1139,12 @@
 											  Grid.Row="0">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="370" />
+												<ColumnDefinition Width="Auto" MinWidth="370" />
 											</Grid.ColumnDefinitions>
 
 											<Label x:Name="LabelDeterminationQuality"
 												   Grid.Column="0"
-												   Margin="4,8,4,8"
+												   Margin="4,0,4,0"
 												   HorizontalAlignment="Right"
 												   VerticalAlignment="Center" Content="Determination Quality"/>
 											<ComboBox x:Name="ComboBoxDeterminationQuality"
@@ -1140,12 +1162,12 @@
 											  Grid.Row="1">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="120" />
+												<ColumnDefinition Width="Auto" MinWidth="120" />
 											</Grid.ColumnDefinitions>
 
 											<Label x:Name="LabelInterpretationQuality"
 												   Grid.Column="0"
-												   Margin="4,8,4,8"
+												   Margin="4,0,4,0"
 												   HorizontalAlignment="Right"
 												   VerticalAlignment="Center" Content="Interpretation Quality"/>
 											<ComboBox x:Name="ComboBoxInterpretationQuality"
@@ -1163,12 +1185,12 @@
 											  Grid.Row="2">
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="380" />
+												<ColumnDefinition Width="Auto" MinWidth="380" />
 											</Grid.ColumnDefinitions>
 
 											<Label x:Name="LabelOSMMSource"
 												   Grid.Column="0"
-												   Margin="4,8,4,8"
+												   Margin="4,0,4,0"
 												   HorizontalAlignment="Right"
 												   VerticalAlignment="Center" Content="OSMM Source Name"/>
 											<ComboBox x:Name="ComboBoxOSMMSource"
