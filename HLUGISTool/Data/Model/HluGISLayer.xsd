@@ -9,44 +9,65 @@
       </DataSource>
     </xs:appinfo>
   </xs:annotation>
-  <xs:element name="HluGISLayer" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="HluGISLayer" msprop:Generator_DataSetName="HluGISLayer" msprop:EnableTableAdapterManager="true">
+  <xs:element name="HluGISLayer" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="HluGISLayer" msprop:Generator_UserDSName="HluGISLayer">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="incid_mm_polygons" msprop:Generator_UserTableName="incid_mm_polygons" msprop:Generator_RowDeletedName="incid_mm_polygonsRowDeleted" msprop:Generator_RowChangedName="incid_mm_polygonsRowChanged" msprop:Generator_RowClassName="incid_mm_polygonsRow" msprop:Generator_RowChangingName="incid_mm_polygonsRowChanging" msprop:Generator_RowEvArgName="incid_mm_polygonsRowChangeEvent" msprop:Generator_RowEvHandlerName="incid_mm_polygonsRowChangeEventHandler" msprop:Generator_TableClassName="incid_mm_polygonsDataTable" msprop:Generator_TableVarName="tableincid_mm_polygons" msprop:Generator_RowDeletingName="incid_mm_polygonsRowDeleting" msprop:Generator_TablePropName="incid_mm_polygons">
+        <xs:element name="incid_mm_polygons" msprop:Generator_UserTableName="incid_mm_polygons" msprop:Generator_RowEvArgName="incid_mm_polygonsRowChangeEvent" msprop:Generator_TableVarName="tableincid_mm_polygons" msprop:Generator_TablePropName="incid_mm_polygons" msprop:Generator_RowDeletingName="incid_mm_polygonsRowDeleting" msprop:Generator_RowChangingName="incid_mm_polygonsRowChanging" msprop:Generator_RowDeletedName="incid_mm_polygonsRowDeleted" msprop:Generator_RowEvHandlerName="incid_mm_polygonsRowChangeEventHandler" msprop:Generator_TableClassName="incid_mm_polygonsDataTable" msprop:Generator_RowChangedName="incid_mm_polygonsRowChanged" msprop:Generator_RowClassName="incid_mm_polygonsRow">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="incid" msprop:Generator_UserColumnName="incid" msprop:Generator_ColumnPropNameInRow="incid" msprop:Generator_ColumnVarNameInTable="columnincid" msprop:Generator_ColumnPropNameInTable="incidColumn">
+              <xs:element name="incid" msprop:Generator_ColumnVarNameInTable="columnincid" msprop:Generator_ColumnPropNameInRow="incid" msprop:Generator_ColumnPropNameInTable="incidColumn" msprop:Generator_UserColumnName="incid">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="12" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="toid" msprop:Generator_UserColumnName="toid" msprop:Generator_ColumnPropNameInRow="toid" msprop:Generator_ColumnVarNameInTable="columntoid" msprop:Generator_ColumnPropNameInTable="toidColumn">
+              <xs:element name="toid" msprop:Generator_ColumnVarNameInTable="columntoid" msprop:Generator_ColumnPropNameInRow="toid" msprop:Generator_ColumnPropNameInTable="toidColumn" msprop:Generator_UserColumnName="toid">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="20" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="toid_fragment_id" msprop:Generator_UserColumnName="toid_fragment_id" msprop:Generator_ColumnPropNameInRow="toid_fragment_id" msprop:Generator_ColumnVarNameInTable="columntoid_fragment_id" msprop:Generator_ColumnPropNameInTable="toid_fragment_idColumn">
+              <xs:element name="toid_fragment_id" msprop:Generator_ColumnVarNameInTable="columntoid_fragment_id" msprop:Generator_ColumnPropNameInRow="toid_fragment_id" msprop:Generator_ColumnPropNameInTable="toid_fragment_idColumn" msprop:Generator_UserColumnName="toid_fragment_id">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="5" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="ihs_category" msprop:Generator_UserColumnName="ihs_category" msprop:Generator_ColumnPropNameInRow="ihs_category" msprop:Generator_ColumnVarNameInTable="columnihs_category" msprop:Generator_ColumnPropNameInTable="ihs_categoryColumn" minOccurs="0">
+              <xs:element name="habitat_primary" msprop:Generator_ColumnVarNameInTable="columnhabitat_primary" msprop:Generator_ColumnPropNameInRow="habitat_primary" msprop:Generator_ColumnPropNameInTable="habitat_primaryColumn" msprop:Generator_UserColumnName="habitat_primary" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="8" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="habitat_secondaries" msprop:Generator_ColumnVarNameInTable="columnhabitat_secondaries" msprop:Generator_ColumnPropNameInRow="habitat_secondaries" msprop:Generator_ColumnPropNameInTable="habitat_secondariesColumn" msprop:Generator_UserColumnName="habitat_secondaries" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="80" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="habitat_determination" msprop:Generator_ColumnVarNameInTable="columnhabitat_determination" msprop:Generator_ColumnPropNameInRow="habitat_determination" msprop:Generator_ColumnPropNameInTable="habitat_determinationColumn" msprop:Generator_UserColumnName="habitat_determination" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="ihs_summary" msprop:Generator_UserColumnName="ihs_summary" msprop:Generator_ColumnPropNameInRow="ihs_summary" msprop:Generator_ColumnVarNameInTable="columnihs_summary" msprop:Generator_ColumnPropNameInTable="ihs_summaryColumn" minOccurs="0">
+              <xs:element name="habitat_interpretation" msprop:Generator_ColumnVarNameInTable="columnhabitat_interpretation" msprop:Generator_ColumnPropNameInRow="habitat_interpretation" msprop:Generator_ColumnPropNameInTable="habitat_interpretationColumn" msprop:Generator_UserColumnName="habitat_interpretation" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
-                    <xs:maxLength value="50" />
+                    <xs:maxLength value="2" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="interpretation_comments" msprop:Generator_ColumnVarNameInTable="columninterpretation_comments" msprop:Generator_ColumnPropNameInRow="interpretation_comments" msprop:Generator_ColumnPropNameInTable="interpretation_commentsColumn" msprop:Generator_UserColumnName="interpretation_comments" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="254" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>

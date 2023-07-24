@@ -136,19 +136,27 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.HluDataset.incid_osmm_updates.TableName));
                 }
 
+                //---------------------------------------------------------------------
                 // Update all of the GIS rows corresponding to this incid
+                //---------------------------------------------------------------------
+
+                // Set the SQL condition for the update
                 List<SqlFilterCondition> incidCond = new List<SqlFilterCondition>(new SqlFilterCondition[] { 
                     new SqlFilterCondition(_viewModelMain.HluDataset.incid_mm_polygons, 
                         _viewModelMain.HluDataset.incid_mm_polygons.incidColumn, _viewModelMain.Incid) });
 
-                var q = _viewModelMain.HluDataset.lut_ihs_habitat
-                    .Where(r => r.code == _viewModelMain.IncidCurrentRow.ihs_habitat);
-                string ihsHabitatCategory = q.Count() == 1 ? q.ElementAt(0).category : null;
-
+                // Update the GIS layer
                 DataTable historyTable = _viewModelMain.GISApplication.UpdateFeatures(new DataColumn[] { 
                     _viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn },
-                    new object[] { ihsHabitatCategory, _viewModelMain.IncidIhsSummary },
+                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_determinationColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_interpretationColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn },
+                    new object[] { _viewModelMain.IncidPrimary,
+                        _viewModelMain.IncidSecondarySummary,
+                        _viewModelMain.IncidQualityDetermination,
+                        _viewModelMain.IncidQualityInterpretation,
+                        _viewModelMain.IncidQualityComments },
                     _viewModelMain.HistoryColumns, incidCond);
 
                 // Check if a history table was returned from updating
@@ -156,17 +164,21 @@ namespace HLU.UI.ViewModel
                 if (historyTable == null)
                     throw new Exception("Error updating GIS layer.");
                 else if (historyTable.Rows.Count == 0)
-                    throw new Exception("No GIS features to update.");
+                    throw new Exception("No GIS features were updated.");
 
-                // Likewise update DB shadow copy of GIS layer
-                if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {3}, {2} = {4} WHERE {5}",
+                // Likewise update the DB shadow copy of the GIS layer
+                if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8}, {9}={10} WHERE {11}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(
-                        _viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteIdentifier(
-                        _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue(ihsHabitatCategory),
-                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidIhsSummary),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidPrimary),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidSecondarySummary),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_determinationColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityDetermination),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_interpretationColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityInterpretation),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityComments),
                     _viewModelMain.DataBase.WhereClause(false, true, true, incidCond)),
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                     throw new Exception("Failed to update database copy of GIS layer.");

@@ -1323,7 +1323,7 @@
                                                                          Header="INCID"
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="100"
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="90"
 																					   IsReadOnly="True"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
@@ -1426,7 +1426,6 @@
                                                  Grid.Column="1"
                                                  Margin="8,2,8,2"
                                                  VerticalAlignment="Center"
-                                                 IsEnabled="False"
                                                  IsReadOnly="True"
                                                  Text="{Binding IncidSecondarySummary, Mode=OneWay}" />
                                     </Grid>

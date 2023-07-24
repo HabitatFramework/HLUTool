@@ -615,8 +615,8 @@ namespace HLU.UI.ViewModel
 
                         //TODO: OSMM secondaries
                         // Create new rows in the secondary table from the lut_osmm_habitat_xref table
-                        string newSecondaryCode;
-                        int secondaryRow = 0;
+                        //string newSecondaryCode;
+                        //int secondaryRow = 0;
                         //_viewModelMain.IncidSecondaryRows = new HluDataSet.incid_secondaryRow[15]
                         //    .Select(mr => _viewModelMain.HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
                         //if (!osmmHabitatXref.ElementAt(0).Isihs_matrix1Null())
