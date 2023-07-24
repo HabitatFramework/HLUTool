@@ -83,6 +83,7 @@ namespace HLU.UI.ViewModel
 
         private string _descriptionFieldName = Settings.Default.LutDescriptionFieldName;
         private int _descriptionFieldOrdinal = Settings.Default.LutDescriptionFieldOrdinal;
+        private string _sortOrderFieldName = Settings.Default.LutSortOrderFieldName;
         private Regex _queryValueRegex = new Regex(@"\s+:\s+", RegexOptions.IgnoreCase); // @"\A(?<code>[^:\s]+)\s+:\s+(?<desc>[^:]+)\z", RegexOptions.IgnoreCase);
 
         private long _lastValueCounter = 0;
@@ -858,6 +859,8 @@ namespace HLU.UI.ViewModel
                             _descriptionFieldOrdinal < lut.Columns.Count ?
                             lut.Columns[_descriptionFieldOrdinal] : lutColumn.Ordinal < lut.Columns.Count - 1 ?
                             lut.Columns[lutColumn.Ordinal + 1] : lutColumn;
+                        DataColumn sortOrderColumn = lut.Columns.Contains(_sortOrderFieldName) ?
+                            lut.Columns[_sortOrderFieldName] : lutColumn;
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR52 Enable support for multiple priority habitat classifications
@@ -877,24 +880,19 @@ namespace HLU.UI.ViewModel
                         if (lut is HluDataSet.lut_habitat_typeDataTable && Table is HluDataSet.incid_bapDataTable)
                         {
                             q = lut.AsEnumerable().Where(r => r[lut.Columns["bap_priority"]].Equals(true));
-                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
+                            _queryValues = q.OrderBy(r => r[sortOrderColumn]).ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
                                 " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
                         }
                         else if (lut is HluDataSet.lut_osmm_habitat_xrefDataTable && Table is HluDataSet.incid_osmm_updatesDataTable)
                         {
-                            DataColumn summaryColumn = lut.Columns["ihs_summary"];
-                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + " : " + r[summaryColumn].ToString(), r => r[lutColumn]);
-
-                            //Dictionary<string, object> qvalues = new Dictionary<string, object>();
-
-                            //foreach (var qv in q.OrderBy(key => key[summaryColumn])) {
-                            //    qvalues.Add(qv[lutColumn].ToString() + " : " + qv[summaryColumn].ToString(), qv[lutColumn]);
-                            //}
-                            //_queryValues = qvalues;
+                            DataColumn habPrimaryColumn = lut.Columns["habitat_primary"];
+                            DataColumn habSecondaryColumn = lut.Columns["habitat_secondaries"];
+                            _queryValues = q.OrderBy(r => r[sortOrderColumn]).ToDictionary(r => r[habPrimaryColumn].ToString() + " : " + r[habSecondaryColumn].ToString(), r => r[lutColumn]);
                         }
                         else
                         {
-                            _queryValues = q.ToDictionary(r => r[lutColumn].ToString() + (descriptionColumn != lutColumn ?
+                            _queryValues = q.OrderBy(r => r[sortOrderColumn]).ToDictionary(r => r[lutColumn].ToString() + ((descriptionColumn != lutColumn &&
+                            r[descriptionColumn].ToString() != r[lutColumn].ToString()) ?
                                 " : " + r[descriptionColumn].ToString() : String.Empty), r => r[lutColumn]);
                         }
                         //---------------------------------------------------------------------

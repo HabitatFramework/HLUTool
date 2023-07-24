@@ -73,9 +73,6 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = dataRow.secondary_group;
-
-            //TODO: Secondaries - Lookup secondary group
-            //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow, IEnumerable<SecondaryHabitat> shList)
@@ -93,9 +90,6 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = dataRow.secondary_group;
-
-            //TODO: Secondaries - Lookup secondary group
-            //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
 
             //TODO: Secondaries - Needed?
             _secondaryHabitatList = shList;
@@ -115,9 +109,6 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = itemArray[3].ToString();
-
-            //TODO: Secondaries - Lookup secondary group
-            //_secondary_group = _secondaryGroupCodes.FirstOrDefault(c => c.Key == _secondary_habitat).Value;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, int secondary_id, string incid, string secondary_habitat, string secondary_group)
@@ -134,10 +125,6 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = secondary_group;
-
-            //TODO: Secondaries - Lookup secondary group
-            //_secondary_group = dataRow.IsNull(table.secondaryColumn) ? null : dataRow.secondary;
-            //_secondary_group = _secondaryGroupCodes.FirstOrDefault(c => c.Key == _secondary_habitat).Value;
         }
 
         #endregion
@@ -304,7 +291,6 @@ namespace HLU.Data
         {
             StringBuilder sbError = new StringBuilder();
 
-            //TODO: Secondaries - Check
             // Only validate if errors are to be shown
             if (SecondaryCodeValidation > 0)
             {
@@ -360,12 +346,10 @@ namespace HLU.Data
                         }
                         _incid_bak = _incid;
                         break;
-                    //TODO: Secondaries - Check
                     case "secondary_habitat":
                         // Only validate if errors are to be shown
                         if (SecondaryCodeValidation == 1)
                         {
-                            //TODO: Secondaries - Check integer can equal null
                             if (String.IsNullOrEmpty(secondary_habitat))
                             {
                                 return "Error: Secondary habitat is a mandatory field";

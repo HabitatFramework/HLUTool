@@ -128,10 +128,10 @@
                           Command="{Binding FilterByAttributesCommand}"
                           Header="Filter by _Attributes..."
                           IsEnabled="{Binding CanFilterByAttributes}" />
-                <MenuItem x:Name="MenuItemAdvancedFilterByAttributes"
-                          Command="{Binding FilterByAttributesAdvancedCommand}"
+                <MenuItem x:Name="MenuItemFilterByAttributesOSMM"
+                          Command="{Binding FilterByAttributesOSMMCommand}"
                           Header="Filter by _Attributes - Advanced..."
-                          IsEnabled="{Binding CanFilterByAttributesAdvanced}"
+                          IsEnabled="{Binding CanFilterByAttributesOSMM}"
 						  Visibility="{Binding ShowInOSMMUpdateMode}" />
                 <MenuItem x:Name="MenuItemFilterByIncid"
                           Command="{Binding FilterByIncidCommand}"
