@@ -133,7 +133,7 @@ namespace HLU.UI.ViewModel
         private ICommand _navigateNextCommand;
         private ICommand _navigateLastCommand;
         private ICommand _filterByAttributesCommand;
-        private ICommand _filterByAttributesAdvancedCommand;
+        private ICommand _filterByAttributesOSMMCommand;
         private ICommand _filterByIncidCommand;
         private ICommand _selectOnMapCommand;
         private ICommand _selectAllOnMapCommand;
@@ -3871,18 +3871,18 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// FilterByAttributesAdvanced command.
+        /// FilterByAttributesOSMM command.
         /// </summary>
-        public ICommand FilterByAttributesAdvancedCommand
+        public ICommand FilterByAttributesOSMMCommand
         {
             get
             {
-                if (_filterByAttributesAdvancedCommand == null)
+                if (_filterByAttributesOSMMCommand == null)
                 {
-                    Action<object> filterByAttributesAdvancedAction = new Action<object>(this.FilterByAttributesAdvancedClicked);
-                    _filterByAttributesAdvancedCommand = new RelayCommand(filterByAttributesAdvancedAction, param => this.CanFilterByAttributesAdvanced);
+                    Action<object> filterByAttributesOSMMAction = new Action<object>(this.FilterByAttributesOSMMClicked);
+                    _filterByAttributesOSMMCommand = new RelayCommand(filterByAttributesOSMMAction, param => this.CanFilterByAttributesOSMM);
                 }
-                return _filterByAttributesAdvancedCommand;
+                return _filterByAttributesOSMMCommand;
             }
         }
 
@@ -3890,20 +3890,20 @@ namespace HLU.UI.ViewModel
         /// Opens the relevant query window based on the mode/options.
         /// </summary>
         /// <param name="param">The parameter.</param>
-        private void FilterByAttributesAdvancedClicked(object param)
+        private void FilterByAttributesOSMMClicked(object param)
         {
             // Open the Advanced query window.
             OpenWindowQueryOSMMAdvanced(false);
         }
 
         /// <summary>
-        /// Gets a value indicating whether the filter by attributes advanced command can
+        /// Gets a value indicating whether the filter by attributes OSMM command can
         /// be executed.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance can filter by attributes; otherwise, <c>false</c>.
+        ///   <c>true</c> if this instance can filter by attributes OSMM; otherwise, <c>false</c>.
         /// </value>
-        private bool CanFilterByAttributesAdvanced
+        private bool CanFilterByAttributesOSMM
         {
             //---------------------------------------------------------------------
             // CHANGED: CR49 Process proposed OSMM Updates
@@ -8771,7 +8771,8 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Gets the OSMM XRef ID that relates to the selected Incid.
         /// It shows the cross-reference ID of the latest OSMM and
-        /// how it translates directly to IHS.
+        /// how it translates directly to the primary and secondary
+        /// habitats.
         /// </summary>
         /// <value>
         /// The string of OSMM XRef ID related to the current incid.
@@ -9345,7 +9346,7 @@ namespace HLU.UI.ViewModel
                 //TODO
                 if (String.IsNullOrEmpty(_incidPrimary)) return null;
 
-                // Select NVC codes based on current IHS habitat
+                // Select NVC codes based on current primary habitat
                 var q = _primaryCodes.Where(h => h.code == _incidPrimary);
                 if (q.Count() > 0)
                     return q.ElementAt(0).nvc_codes;
@@ -13642,7 +13643,6 @@ namespace HLU.UI.ViewModel
                         if (HabitatErrors != null && HabitatErrors.Count > 0)
                             error = "Error: One or more habitat fields are in error";
                         break;
-                    //TODO: Validation - check primary habitat is present
                     case "IncidPrimary":
                         // If the field is in error add the field name to the list of errors
                         // for the parent tab. Otherwise remove the field from the list.

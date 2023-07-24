@@ -1266,5 +1266,14 @@ namespace HLU.Properties {
                 this["QualityValidation"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("sort_order")]
+        public string LutSortOrderFieldName {
+            get {
+                return ((string)(this["LutSortOrderFieldName"]));
+            }
+        }
     }
 }

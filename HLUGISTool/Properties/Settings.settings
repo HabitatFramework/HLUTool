@@ -373,5 +373,8 @@
     <Setting Name="QualityValidation" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="LutSortOrderFieldName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">sort_order</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
