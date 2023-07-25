@@ -584,7 +584,7 @@ namespace HLU.UI.ViewModel
                                         select Int32.Parse(s)).ToArray();
                 _gisIDColumns = _gisIDColumnOrdinals.Select(i => _hluDS.incid_mm_polygons.Columns[i]).ToArray();
 
-                // columns to be saved to history when altering GIS layer (always includes _gisIDColumns)
+                // columns to be displayed in history (always includes _gisIDColumns)
                 _historyColumns = InitializeHistoryColumns(_historyColumns);
 
                 if (haveSplashWin)
@@ -12889,7 +12889,7 @@ namespace HLU.UI.ViewModel
                 else
                 {
                     // Figure out which history columns to display based on the user options
-                    // now that all the available history columns are always update when
+                    // now that all the available history columns are always updated when
                     // creating history even if the user only wants to display some of them.
                     DataColumn[] displayHistoryColumns;
                     int result;
@@ -12902,35 +12902,61 @@ namespace HLU.UI.ViewModel
                     return (from r in _incidHistoryRows.OrderByDescending(r => r.history_id)
                             group r by new
                             {
-                                modified_date = !r.Ismodified_dateNull() ?
-                                    r.modified_date.ToShortDateString() : String.Empty,
+                                //incid = r.incid,
                                 // Display the modified_date column from the history with both the
                                 // date and time to avoid separate updates with identical details
                                 // (except the time) being merged together when displayed.
+                                modified_date = !r.Ismodified_dateNull() ?
+                                    r.modified_date.ToShortDateString() : String.Empty,
                                 modified_time = (!r.Ismodified_dateNull() && r.modified_date != r.modified_date.Date) ?
                                     @" at " + r.modified_date.ToLongTimeString() : String.Empty,
                                 modified_user_id = r.lut_userRow != null ? r.lut_userRow.user_name :
                                     !r.Ismodified_user_idNull() ? r.modified_user_id : String.Empty,
+
                                 modified_process = r.lut_processRow != null ? r.lut_processRow.description : String.Empty,
                                 modified_reason = r.lut_reasonRow != null ? r.lut_reasonRow.description : String.Empty,
                                 modified_operation = r.lut_operationRow != null ? r.lut_operationRow.description : String.Empty,
+
                                 modified_incid = !r.Ismodified_incidNull() ? r.modified_incid : String.Empty,
 
-                                modified_ihs = r.Table.Columns.Cast<DataColumn>().Where(rc =>
-                                    displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
-                                    _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
-                                    .Aggregate(new StringBuilder(), (sb, hr) => sb.Append(String.Format("\n\t{0}: {1}",
-                                    hr.ColumnName.Replace("ihs_", "IHS ").Replace("modified_", "Previous ").Replace("_", " "),
-                                    r[hr.ColumnName].ToString()))).ToString()
+                                modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habitat_primary") == 1 ?
+                                    !r.Ismodified_habitat_primaryNull() ? r.modified_habitat_primary : String.Empty : String.Empty,
+
+                                modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habitat_secondaries") == 1 ?
+                                    !r.Ismodified_habitat_secondariesNull() ? r.modified_habitat_secondaries : String.Empty : String.Empty,
+
+                                modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "habitat_determination") == 1 ?
+                                    r.lut_quality_determinationRow != null ? r.lut_quality_determinationRow.description : String.Empty : String.Empty,
+
+                                modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "habitat_interpretation") == 1 ?
+                                    r.lut_quality_interpretationRow != null ? r.lut_quality_interpretationRow.description : String.Empty : String.Empty,
+
+                                //modified_habitat = r.Table.Columns.Cast<DataColumn>().Where(rc =>
+                                //    displayHistoryColumns.Count(hc => "modified_" + hc.ColumnName == rc.ColumnName) == 1 &&
+                                //    _gisIDColumns.Count(gc => "modified_" + gc.ColumnName == rc.ColumnName) == 0)
+                                //    .Aggregate(new StringBuilder(), (sb, hr) => sb.Append(String.Format("\n\t{0}: {1}",
+                                //    hr.ColumnName.Replace("modified_", "Previous ").Replace("_", " "),
+                                //    r[hr.ColumnName].ToString()))).ToString()
+
                             } into g
-                            select String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
+                            select 
+                                String.Format("Modified on {0}{1} by {2}:", g.Key.modified_date,
                                 g.Key.modified_time, g.Key.modified_user_id) +
 
                                 String.Format("\n\tProcess: {0}", g.Key.modified_process) +
                                 String.Format("\n\tReason: {0}", g.Key.modified_reason) +
                                 String.Format("\n\tOperation: {0}", g.Key.modified_operation) +
-                                String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
-                                g.Key.modified_ihs +
+
+                                //g.Key.incid == g.Key.modified_incid ? null : String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
+                                //String.Format("\n\tPrevious INCID: {0}", g.Key.modified_incid) +
+                                String.Format("{0}", g.Key.modified_incid == g.Key.modified_incid ? null : "\n\tPrevious INCID: " + g.Key.modified_incid) +
+
+                                String.Format("\n\tPrevious Primary: {0}", g.Key.modified_primary) +
+                                String.Format("\n\tPrevious Secondaries: {0}", g.Key.modified_secondaries) +
+                                String.Format("\n\tPrevious Determination: {0}", g.Key.modified_determination) +
+                                String.Format("\n\tPrevious Interpretation: {0}", g.Key.modified_intepretation) +
+
+                                //g.Key.modified_habitat +
 
                                 // Show the area and length values in the history as hectares and metres.
                                 String.Format("\n\tModified Length: {0} [km]", g.Distinct(_histRowEqComp)
