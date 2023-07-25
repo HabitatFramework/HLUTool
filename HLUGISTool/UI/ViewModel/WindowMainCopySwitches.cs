@@ -35,7 +35,6 @@ namespace HLU.UI.ViewModel
 
         #region Switches
 
-        //TODO: Copy switches
         private bool _copyIncidPrimary;
         private bool _copyIncidSecondaryHabitats;
         private bool _copyIncidLegacyHabitat;
@@ -244,7 +243,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public bool CopyIncidQualityDetetermination
+        public bool CopyIncidQualityDetermination
         {
             get { return _copyIncidQualityDetermination; }
             set

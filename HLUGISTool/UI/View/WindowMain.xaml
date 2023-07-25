@@ -1479,7 +1479,7 @@
                                                   Margin="0,0,0,2"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding CopySwitches.CopyLegacyHabitat,
+                                                  IsChecked="{Binding CopySwitches.CopyIncidLegacyHabitat,
                                                                       Mode=TwoWay,
                                                                       UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
@@ -2445,7 +2445,7 @@
 													  Margin="0,2,0,4"
 													  HorizontalAlignment="Right"
 													  VerticalAlignment="Center"
-													  IsChecked="{Binding CopySwitches.CopyCondition,
+													  IsChecked="{Binding CopySwitches.CopyIncidCondition,
 																		  Mode=TwoWay,
 																		  UpdateSourceTrigger=PropertyChanged}" />
 
@@ -2478,7 +2478,7 @@
 													Margin="0,0,0,2"
 													HorizontalAlignment="Right"
 													VerticalAlignment="Center"
-													IsChecked="{Binding CopySwitches.CopyConditionQualifier,
+													IsChecked="{Binding CopySwitches.CopyIncidConditionQualifier,
 																		Mode=TwoWay,
 																		UpdateSourceTrigger=PropertyChanged}" />
 
@@ -2519,7 +2519,7 @@
 													  Margin="0,0,0,2"
 													  HorizontalAlignment="Right"
 													  VerticalAlignment="Center"
-													  IsChecked="{Binding CopySwitches.CopyConditionDate,
+													  IsChecked="{Binding CopySwitches.CopyIncidConditionDate,
 																		  Mode=TwoWay,
 																		  UpdateSourceTrigger=PropertyChanged}" />                                    </Grid>
                                         </Grid>
@@ -2587,7 +2587,7 @@
 													  Margin="0,2,0,4"
 													  HorizontalAlignment="Right"
 													  VerticalAlignment="Center"
-													  IsChecked="{Binding CopySwitches.CopyQualityDetermination,
+													  IsChecked="{Binding CopySwitches.CopyIncidQualityDetermination,
 																		  Mode=TwoWay,
 																		  UpdateSourceTrigger=PropertyChanged}" />
 
@@ -2619,7 +2619,7 @@
 													Margin="0,0,0,2"
 													HorizontalAlignment="Right"
 													VerticalAlignment="Center"
-													IsChecked="{Binding CopySwitches.CopyQualityInterpretation,
+													IsChecked="{Binding CopySwitches.CopyIncidQualityInterpretation,
 																		Mode=TwoWay,
 																		UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
@@ -2664,7 +2664,7 @@
 													  Margin="0,0,0,2"
 													  HorizontalAlignment="Right"
 													  VerticalAlignment="Center"
-													  IsChecked="{Binding CopySwitches.CopyQualityComments,
+													  IsChecked="{Binding CopySwitches.CopyIncidQualityComments,
 																		  Mode=TwoWay,
 																		  UpdateSourceTrigger=PropertyChanged}" />                                    </Grid>
                                         </Grid>
