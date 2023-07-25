@@ -36,23 +36,21 @@ namespace HLU.UI.ViewModel
         #region Switches
 
         //TODO: Copy switches
-        private bool _copyIncidIhsHabitat;
-        private bool _copyIncidIhsMatrix1;
-        private bool _copyIncidIhsMatrix2;
-        private bool _copyIncidIhsMatrix3;
-        private bool _copyIncidIhsFormation1;
-        private bool _copyIncidIhsFormation2;
-        private bool _copyIncidIhsManagement1;
-        private bool _copyIncidIhsManagement2;
-        private bool _copyIncidIhsComplex1;
-        private bool _copyIncidIhsComplex2;
+        private bool _copyIncidPrimary;
+        private bool _copyIncidSecondaryHabitats;
+        private bool _copyIncidLegacyHabitat;
         private bool _copyIncidBapHabitatsUser;
         private bool _copyIncidGeneralComments;
         private bool _copyIncidBoundaryBaseMap;
         private bool _copyIncidDigitisationBaseMap;
-        private bool _copyIncidLegacyHabitat;
         private bool _copyIncidSiteRef;
         private bool _copyIncidSiteName;
+        private bool _copyIncidCondition;
+        private bool _copyIncidConditionQualifier;
+        private bool _copyIncidConditionDate;
+        private bool _copyIncidQualityDetermination;
+        private bool _copyIncidQualityInterpretation;
+        private bool _copyIncidQualityComments;
         private bool _copyIncidSource1Id;
         private bool _copyIncidSource1Date;
         private bool _copyIncidSource1HabitatClass;
@@ -76,23 +74,21 @@ namespace HLU.UI.ViewModel
 
         #region Values
 
-        private string _incidIhsHabitat;
-        private string _incidIhsMatrix1;
-        private string _incidIhsMatrix2;
-        private string _incidIhsMatrix3;
-        private string _incidIhsFormation1;
-        private string _incidIhsFormation2;
-        private string _incidIhsManagement1;
-        private string _incidIhsManagement2;
-        private string _incidIhsComplex1;
-        private string _incidIhsComplex2;
+        private string _incidPrimary;
+        private ObservableCollection<SecondaryHabitat> _incidSecondaryHabitats;
+        private string _incidLegacyHabitat;
         private ObservableCollection<BapEnvironment> _incidBapHabitatsUser;
         private string _incidGeneralComments;
         private string _incidBoundaryBaseMap;
         private string _incidDigitisationBaseMap;
-        private string _incidLegacyHabitat;
         private string _incidSiteRef;
         private string _incidSiteName;
+        private string _incidCondition;
+        private string _incidConditionQualifier;
+        private Date.VagueDateInstance _incidConditionDate;
+        private string _incidQualityDetermination;
+        private string _incidQualityInterpretation;
+        private string _incidQualityComments;
         private Nullable<int> _incidSource1Id;
         private Date.VagueDateInstance _incidSource1Date;
         private string _incidSource1HabitatClass;
@@ -120,105 +116,39 @@ namespace HLU.UI.ViewModel
 
         #region Switches
 
-        public bool CopyIncidIhsHabitat
+        public bool CopyIncidPrimary
         {
-            get { return _copyIncidIhsHabitat; }
+            get { return _copyIncidPrimary; }
             set
             {
-                _copyIncidIhsHabitat = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsHabitat"));
+                _copyIncidPrimary = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidPrimary"));
             }
         }
 
-        public bool CopyIncidIhsMatrix1
+        public bool CopyIncidSecondaryHabitats
         {
-            get { return _copyIncidIhsMatrix1; }
+            get { return _copyIncidSecondaryHabitats; }
             set
             {
-                _copyIncidIhsMatrix1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsMatrix1"));
+                _copyIncidSecondaryHabitats = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidSecondaryHabitats"));
             }
         }
 
-        public bool CopyIncidIhsMatrix2
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        // Make the legacy habitat field editable in the interface.
+        public bool CopyIncidLegacyHabitat
         {
-            get { return _copyIncidIhsMatrix2; }
+            get { return _copyIncidLegacyHabitat; }
             set
             {
-                _copyIncidIhsMatrix2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsMatrix2"));
+                _copyIncidLegacyHabitat = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidLegacyHabitat"));
             }
         }
-
-        public bool CopyIncidIhsMatrix3
-        {
-            get { return _copyIncidIhsMatrix3; }
-            set
-            {
-                _copyIncidIhsMatrix3 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsMatrix3"));
-            }
-        }
-
-        public bool CopyIncidIhsFormation1
-        {
-            get { return _copyIncidIhsFormation1; }
-            set
-            {
-                _copyIncidIhsFormation1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsFormation1"));
-            }
-        }
-
-        public bool CopyIncidIhsFormation2
-        {
-            get { return _copyIncidIhsFormation2; }
-            set
-            {
-                _copyIncidIhsFormation2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsFormation2"));
-            }
-        }
-
-        public bool CopyIncidIhsManagement1
-        {
-            get { return _copyIncidIhsManagement1; }
-            set
-            {
-                _copyIncidIhsManagement1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsManagement1"));
-            }
-        }
-
-        public bool CopyIncidIhsManagement2
-        {
-            get { return _copyIncidIhsManagement2; }
-            set
-            {
-                _copyIncidIhsManagement2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsManagement2"));
-            }
-        }
-
-        public bool CopyIncidIhsComplex1
-        {
-            get { return _copyIncidIhsComplex1; }
-            set
-            {
-                _copyIncidIhsComplex1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsComplex1"));
-            }
-        }
-
-        public bool CopyIncidIhsComplex2
-        {
-            get { return _copyIncidIhsComplex2; }
-            set
-            {
-                _copyIncidIhsComplex2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidIhsComplex2"));
-            }
-        }
+        //---------------------------------------------------------------------
 
         public bool CopyIncidBapHabitatsUser
         {
@@ -261,20 +191,6 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // CHANGED: CR44 (Editable Legacy Habitat field)
-        // Make the legacy habitat field editable in the interface.
-        public bool CopyIncidLegacyHabitat
-        {
-            get { return _copyIncidLegacyHabitat; }
-            set
-            {
-                _copyIncidLegacyHabitat = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidLegacyHabitat"));
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)
         // Display the site reference with the site name in the interface.
         public bool CopyIncidSiteRef
@@ -295,6 +211,66 @@ namespace HLU.UI.ViewModel
             {
                 _copyIncidSiteName = value;
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidSiteName"));
+            }
+        }
+
+        public bool CopyIncidCondition
+        {
+            get { return _copyIncidCondition; }
+            set
+            {
+                _copyIncidCondition = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidCondition"));
+            }
+        }
+
+        public bool CopyIncidConditionQualifier
+        {
+            get { return _copyIncidConditionQualifier; }
+            set
+            {
+                _copyIncidConditionQualifier = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidConditionQualifier"));
+            }
+        }
+
+        public bool CopyIncidConditionDate
+        {
+            get { return _copyIncidConditionDate; }
+            set
+            {
+                _copyIncidConditionDate = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidConditionDate"));
+            }
+        }
+
+        public bool CopyIncidQualityDetetermination
+        {
+            get { return _copyIncidQualityDetermination; }
+            set
+            {
+                _copyIncidQualityDetermination = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidQualityDetermination"));
+            }
+        }
+
+        public bool CopyIncidQualityInterpretation
+        {
+            get { return _copyIncidQualityInterpretation; }
+            set
+            {
+                _copyIncidQualityInterpretation = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidQualityInterpretation"));
+            }
+        }
+
+        public bool CopyIncidQualityComments
+        {
+            get { return _copyIncidQualityComments; }
+            set
+            {
+                _copyIncidQualityComments = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("CopyIncidQualityComments"));
             }
         }
 
@@ -482,105 +458,39 @@ namespace HLU.UI.ViewModel
 
         #region Values
 
-        public string IncidIhsHabitat
+        public string IncidPrimary
         {
-            get { return _copyIncidIhsHabitat ? _incidIhsHabitat : null; }
+            get { return _copyIncidPrimary ? _incidPrimary : null; }
             set
             {
-                _incidIhsHabitat = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsHabitat"));
+                _incidPrimary = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidPrimary"));
             }
         }
 
-        public string IncidIhsMatrix1
+        public ObservableCollection<SecondaryHabitat> IncidSecondaryHabitats
         {
-            get { return _copyIncidIhsMatrix1 ? _incidIhsMatrix1 : null; }
+            get { return _copyIncidSecondaryHabitats ? _incidSecondaryHabitats : null; }
             set
             {
-                _incidIhsMatrix1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsMatrix1"));
+                _incidSecondaryHabitats = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidSecondaryHabitats"));
             }
         }
 
-        public string IncidIhsMatrix2
+        //---------------------------------------------------------------------
+        // CHANGED: CR44 (Editable Legacy Habitat field)
+        // Make the legacy habitat field editable in the interface.
+        public string IncidLegacyHabitat
         {
-            get { return _copyIncidIhsMatrix2 ? _incidIhsMatrix2 : null; }
+            get { return _copyIncidLegacyHabitat ? _incidLegacyHabitat : null; }
             set
             {
-                _incidIhsMatrix2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsMatrix2"));
+                _incidLegacyHabitat = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidLegacyHabitat"));
             }
         }
-
-        public string IncidIhsMatrix3
-        {
-            get { return _copyIncidIhsMatrix3 ? _incidIhsMatrix3 : null; }
-            set
-            {
-                _incidIhsMatrix3 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsMatrix3"));
-            }
-        }
-
-        public string IncidIhsFormation1
-        {
-            get { return _copyIncidIhsFormation1 ? _incidIhsFormation1 : null; }
-            set
-            {
-                _incidIhsFormation1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsFormation1"));
-            }
-        }
-
-        public string IncidIhsFormation2
-        {
-            get { return _copyIncidIhsFormation2 ? _incidIhsFormation2 : null; }
-            set
-            {
-                _incidIhsFormation2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsFormation2"));
-            }
-        }
-
-        public string IncidIhsManagement1
-        {
-            get { return _copyIncidIhsManagement1 ? _incidIhsManagement1 : null; }
-            set
-            {
-                _incidIhsManagement1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsManagement1"));
-            }
-        }
-
-        public string IncidIhsManagement2
-        {
-            get { return _copyIncidIhsManagement2 ? _incidIhsManagement2 : null; }
-            set
-            {
-                _incidIhsManagement2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsManagement2"));
-            }
-        }
-
-        public string IncidIhsComplex1
-        {
-            get { return _copyIncidIhsComplex1 ? _incidIhsComplex1 : null; }
-            set
-            {
-                _incidIhsComplex1 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsComplex1"));
-            }
-        }
-
-        public string IncidIhsComplex2
-        {
-            get { return _copyIncidIhsComplex2 ? _incidIhsComplex2 : null; }
-            set
-            {
-                _incidIhsComplex2 = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidIhsComplex2"));
-            }
-        }
+        //---------------------------------------------------------------------
 
         public ObservableCollection<BapEnvironment> IncidBapHabitatsUser
         {
@@ -623,20 +533,6 @@ namespace HLU.UI.ViewModel
         }
 
         //---------------------------------------------------------------------
-        // CHANGED: CR44 (Editable Legacy Habitat field)
-        // Make the legacy habitat field editable in the interface.
-        public string IncidLegacyHabitat
-        {
-            get { return _copyIncidLegacyHabitat ? _incidLegacyHabitat : null; }
-            set
-            {
-                _incidLegacyHabitat = value;
-                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidLegacyHabitat"));
-            }
-        }
-        //---------------------------------------------------------------------
-
-        //---------------------------------------------------------------------
         // CHANGED: CR37 (Site reference and site name)
         // Display the site reference with the site name in the interface.
         public string IncidSiteRef
@@ -657,6 +553,66 @@ namespace HLU.UI.ViewModel
             {
                 _incidSiteName = value;
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidSiteName"));
+            }
+        }
+
+        public string IncidCondition
+        {
+            get { return _copyIncidCondition ? _incidCondition : null; }
+            set
+            {
+                _incidCondition = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidCondition"));
+            }
+        }
+
+        public string IncidConditionQualifier
+        {
+            get { return _copyIncidConditionQualifier ? _incidConditionQualifier : null; }
+            set
+            {
+                _incidConditionQualifier = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidConditionQualifier"));
+            }
+        }
+
+        public Date.VagueDateInstance IncidConditionDate
+        {
+            get { return _copyIncidConditionDate ? _incidConditionDate : null; }
+            set
+            {
+                _incidConditionDate = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidConditionDate"));
+            }
+        }
+
+        public string IncidQualityDetermination
+        {
+            get { return _copyIncidQualityDetermination ? _incidQualityDetermination : null; }
+            set
+            {
+                _incidQualityDetermination = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidQualityDetermination"));
+            }
+        }
+
+        public string IncidQualityInterpretation
+        {
+            get { return _copyIncidQualityInterpretation ? _incidQualityInterpretation : null; }
+            set
+            {
+                _incidQualityInterpretation = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidQualityInterpretation"));
+            }
+        }
+
+        public string IncidQualityComments
+        {
+            get { return _copyIncidQualityComments ? _incidQualityComments : null; }
+            set
+            {
+                _incidQualityComments = value;
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidQualityComments"));
             }
         }
 
