@@ -168,7 +168,7 @@ namespace HLU.UI.ViewModel
 
                 // TODO: Update length and area for each polygon (if possible)?
                 // Likewise update the DB shadow copy of the GIS layer
-                if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8}, {9}={10} WHERE {11}",
+                String updateStatement = String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8}, {9}={10} WHERE {11}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidPrimary),
@@ -180,7 +180,9 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityInterpretation),
                     _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityComments),
-                    _viewModelMain.DataBase.WhereClause(false, true, true, incidCond)),
+                    _viewModelMain.DataBase.WhereClause(false, true, true, incidCond));
+
+                if (_viewModelMain.DataBase.ExecuteNonQuery(updateStatement,
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                     throw new Exception("Failed to update database copy of GIS layer.");
 
@@ -427,14 +429,16 @@ namespace HLU.UI.ViewModel
         /// <exception cref="Exception">Failed to update incid table modified details.</exception>
         internal void UpdateIncidModifiedColumns(string incid, DateTime nowDtTm)
         {
-            if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
+            String updateStatement = String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5} = {6}",
                 _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_dateColumn.ColumnName),
                 _viewModelMain.DataBase.QuoteValue(nowDtTm),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.last_modified_user_idColumn.ColumnName),
                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID),
                 _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
-                _viewModelMain.DataBase.QuoteValue(incid)),
+                _viewModelMain.DataBase.QuoteValue(incid));
+
+            if (_viewModelMain.DataBase.ExecuteNonQuery(updateStatement,
                 _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                 throw new Exception("Failed to update incid table modified details.");
         }

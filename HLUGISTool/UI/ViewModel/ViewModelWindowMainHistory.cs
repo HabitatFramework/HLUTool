@@ -133,9 +133,7 @@ namespace HLU.UI.ViewModel
                         else if (newHistoryColumns[i] != -1)
                         {
                             // Replace blanks for null to ensure foreign key integrity
-                            if (((i == _viewModelMain.HluDataset.history.modified_habitat_determinationColumn.Ordinal) ||
-                                (i == _viewModelMain.HluDataset.history.modified_habitat_interpretationColumn.Ordinal)) &&
-                                (r[newHistoryColumns[i]] == ""))
+                            if (r[newHistoryColumns[i]].ToString() == String.Empty)
                                 newRow[i] = null;
                             else if (!r.IsNull(newHistoryColumns[i]))
                                 newRow[i] = r[newHistoryColumns[i]];

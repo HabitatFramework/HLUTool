@@ -139,6 +139,7 @@ namespace HLU.UI.ViewModel
                 if ((newFeatures == null) || (newFeatures.Rows.Count < 2))
                     throw new Exception("Failed to update GIS layer.");
 
+                // Rename the geometry columns
                 ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                 vmHist.HistoryRenameGeometryPropertyColumns(
                     _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.ColumnName,
@@ -172,23 +173,25 @@ namespace HLU.UI.ViewModel
                 vmHist.HistoryWrite(null, history, ViewModelWindowMain.Operations.PhysicalSplit, nowDtTm);
 
                 // update the original row
-                if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1} WHERE {2}",
+                string updateStatement = String.Format("UPDATE {0} SET {1} WHERE {2}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     String.Join(",", newFeatures.Rows[0].ItemArray.Select((i, index) =>
                         new
                         {
                             ColumnName = newFeatures.Columns[index].ColumnName,
-                            value = i
+                            value = i == String.Empty ? null : i
                         })
                     .Where(a => _viewModelMain.GisIDColumns.Count(c => c.ColumnName == a.ColumnName) == 0)
                     .Select(a => String.Format("{0} = {1}", _viewModelMain.DataBase.QuoteIdentifier(a.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(a.value))).ToArray()),
-                    _viewModelMain.DataBase.WhereClause(false, true, true, originalFeatureWhereClause[0])),
+                    _viewModelMain.DataBase.WhereClause(false, true, true, originalFeatureWhereClause[0]));
+
+                if (_viewModelMain.DataBase.ExecuteNonQuery(updateStatement,
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                     throw new Exception("Failed to update original row in database copy of GIS layer.");
 
                 // build an insert statement for DB shadow copy of GIS layer
-                string insertStatement = String.Format("INSERT INTO {0} ({1}) VALUES (", 
+                string insertCommand = String.Format("INSERT INTO {0} ({1}) VALUES (", 
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     String.Join(",", newFeatures.Columns.Cast<DataColumn>().Select(c => 
                     _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName)).ToArray())) + "{0})";
@@ -199,11 +202,13 @@ namespace HLU.UI.ViewModel
                 // insert new features returned from GIS into DB shadow copy of GIS layer
                 for (int i = 1; i < newFeatures.Rows.Count; i++)
                 {
-                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(insertStatement, String.Join(",",
+                    String insertStatement = String.Format(insertCommand, String.Join(",",
                         newFeatures.Rows[i].ItemArray.Select((item, index) =>
                             _viewModelMain.DataBase.QuoteValue(newFeatures.Columns[index].ColumnName ==
                             updTable.toid_fragment_idColumn.ColumnName ?
-                            (toidFragID + i).ToString(numFormat) : item)).ToArray())),
+                            (toidFragID + i).ToString(numFormat) : item == String.Empty ? null : item)).ToArray()));
+
+                    if (_viewModelMain.DataBase.ExecuteNonQuery(insertStatement,
                         _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                         throw new Exception("Failed to insert new rows into database copy of GIS layer.");
                 }
@@ -248,11 +253,13 @@ namespace HLU.UI.ViewModel
             // Check if selected feature is the only one pertaining to its incid
             if (_viewModelMain.GisSelection.Rows.Count == 1)
             {
-                int featCount = (int)_viewModelMain.DataBase.ExecuteScalar(String.Format(
+                String cntSQL = String.Format(
                     "SELECT COUNT(*) FROM {0} WHERE {1} = {2}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                     _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.incidColumn.ColumnName),
-                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.Incid)),
+                    _viewModelMain.DataBase.QuoteValue(_viewModelMain.Incid));
+
+                int featCount = (int)_viewModelMain.DataBase.ExecuteScalar(cntSQL,
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
                 if (featCount < 1)
                 {
