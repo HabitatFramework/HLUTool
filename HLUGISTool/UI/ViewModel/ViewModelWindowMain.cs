@@ -9648,7 +9648,7 @@ namespace HLU.UI.ViewModel
                     .ThenBy(s => s.secondary_habitat)
                     .Select(s => s.secondary_habitat_int)
                     .Distinct().ToList());
-                return _incidSecondarySummary;
+                return _incidSecondarySummary == String.Empty ? null : _incidSecondarySummary;
             }
         }
 

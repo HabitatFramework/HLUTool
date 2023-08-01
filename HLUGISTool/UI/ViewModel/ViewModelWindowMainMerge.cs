@@ -244,36 +244,17 @@ namespace HLU.UI.ViewModel
                     if (deleteIncids.Count > 0)
                     {
                         // Delete any incid records no longer in use
-                        string sqlDelete = new StringBuilder(String.Format(
+                        string deleteStatement = new StringBuilder(String.Format(
                             "DELETE FROM {0} WHERE {1} IN ({2})",
                             _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid.TableName),
                             _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid.incidColumn.ColumnName),
                             String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray()))).ToString();
 
-                        int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(sqlDelete,
+                        int numAffected = _viewModelMain.DataBase.ExecuteNonQuery(deleteStatement,
                             _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
 
                         // Refresh the total incid count
                         if (numAffected > 0) _viewModelMain.IncidRowCount(true);
-
-                        ////---------------------------------------------------------------------
-                        //// CHANGED: CR49 Process proposed OSMM Updates
-                        //// Update OSMM Updates status for deleted incids
-                        //// to -2 (ignored).
-                        ////
-                        //string sqlUpdate = new StringBuilder(String.Format("UPDATE {0} SET {1} = -2, {2} = {3}, {4} = {5} WHERE {6} IN ({7})",
-                        //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_osmm_updates.TableName),
-                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.statusColumn.ColumnName),
-                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_dateColumn.ColumnName),
-                        //    _viewModelMain.DataBase.QuoteValue(nowDtTm),
-                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.last_modified_user_idColumn.ColumnName),
-                        //    _viewModelMain.DataBase.QuoteValue(_viewModelMain.UserID),
-                        //    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_osmm_updates.incidColumn.ColumnName),
-                        //    String.Join(",", deleteIncids.Select(i => _viewModelMain.DataBase.QuoteValue(i)).ToArray())
-                        //    )).ToString();
-
-                        //numAffected = _viewModelMain.DataBase.ExecuteNonQuery(sqlDelete,
-                        //    _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
                     }
 
                     // Update the last modified details of the kept incid
@@ -553,9 +534,11 @@ namespace HLU.UI.ViewModel
                 List<List<SqlFilterCondition>> cleanList = _viewModelMain.DataBase.JoinWhereClauseLists(mergeFeaturesWhereClause);
                 foreach (List<SqlFilterCondition> oneWhereClause in cleanList)
                 {
-                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE {1}",
+                    String deleteStatement = String.Format("DELETE FROM {0} WHERE {1}",
                         _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
-                        _viewModelMain.DataBase.WhereClause(false, true, true, oneWhereClause)),
+                        _viewModelMain.DataBase.WhereClause(false, true, true, oneWhereClause));
+
+                    if (_viewModelMain.DataBase.ExecuteNonQuery(deleteStatement,
                         _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
                         throw new Exception(String.Format("Failed to delete from table {0}.", 
                             _viewModelMain.HluDataset.incid_mm_polygons.TableName));
