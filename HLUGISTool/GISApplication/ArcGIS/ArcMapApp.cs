@@ -861,8 +861,10 @@ namespace HLU.GISApplication.ArcGIS
             {
                 if ((resultList != null) && (resultList.Count > 1))
                 {
+                    // Create a new result table
                     DataTable resultTable = new DataTable();
 
+                    // Define the result table by adding the columns
                     int i = 0;
                     string s;
                     while ((i < resultList.Count) && ((s = resultList[i++]) != PipeTransmissionInterrupt))
@@ -871,9 +873,11 @@ namespace HLU.GISApplication.ArcGIS
                         resultTable.Columns.Add(new DataColumn(items[0], Type.GetType(items[1])));
                     }
 
+                    // Add the values to the result table
                     while (i < resultList.Count)
                     {
-                        string[] items = resultList[i++].Split(PipeFieldDelimiter);
+                        // Split the final resultlist string and trim spaces
+                        string[] items = resultList[i++].Split(PipeFieldDelimiter).Select(r => r.Trim()).ToArray();
                         resultTable.Rows.Add(items);
                     }
 

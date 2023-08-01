@@ -472,7 +472,13 @@ namespace HLU.UI.ViewModel
             get { return _copyIncidSecondaryHabitats ? _incidSecondaryHabitats : null; }
             set
             {
-                _incidSecondaryHabitats = value;
+                ObservableCollection<SecondaryHabitat> newSH = new ObservableCollection<SecondaryHabitat>();
+                foreach (var sh in value)
+                {
+                    SecondaryHabitat shClone = (SecondaryHabitat)sh.Clone();
+                    newSH.Add(shClone);
+                }
+                _incidSecondaryHabitats = newSH;
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidSecondaryHabitats"));
             }
         }
@@ -496,7 +502,13 @@ namespace HLU.UI.ViewModel
             get { return _copyIncidBapHabitatsUser ? _incidBapHabitatsUser : null; }
             set
             {
-                _incidBapHabitatsUser = value;
+                ObservableCollection<BapEnvironment> newBH = new ObservableCollection<BapEnvironment>();
+                foreach (var bh in value)
+                {
+                    BapEnvironment bhClone = (BapEnvironment)bh.Clone();
+                    newBH.Add(bhClone);
+                }
+                _incidBapHabitatsUser = newBH;
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs("IncidBapHabitatsUser"));
  }
         }
@@ -822,7 +834,13 @@ namespace HLU.UI.ViewModel
                         else
                             copyValue = GetDefault(copyPI.PropertyType);
 
-                        copyPI.SetValue(this, copyValue, null);
+                        // Ensure observable collection properties are set to null correctly
+                        if ((propertyName == "IncidSecondaryHabitats") && (copyValue == null))
+                            copyPI.SetValue(this, new ObservableCollection<SecondaryHabitat>(), null);
+                        else if ((propertyName == "IncidBapHabitatsUser") && (copyValue == null))
+                            copyPI.SetValue(this, new ObservableCollection<BapEnvironment>(), null);
+                        else
+                            copyPI.SetValue(this, copyValue, null);
                     }
                     else
                     {
@@ -860,7 +878,13 @@ namespace HLU.UI.ViewModel
                         if ((bool)pi.GetValue(this, null))
                         {
                             vmMain.Pasting = true;
+                            
                             valuePI.SetValue(vmMain, copyPI.GetValue(this, null), null);
+
+                            // Refresh the secondary habitat table if they have been pasted
+                            if (propertyName == "IncidSecondaryHabitats")
+                                vmMain.RefreshSecondaryHabitats();
+
                             vmMain.Pasting = false;
                         }
                     }

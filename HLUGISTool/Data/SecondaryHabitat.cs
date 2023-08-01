@@ -26,7 +26,7 @@ using HLU.Properties;
 
 namespace HLU.Data
 {
-    public class SecondaryHabitat : IDataErrorInfo
+    public class SecondaryHabitat : IDataErrorInfo, ICloneable
     {
         #region Fields
 
@@ -125,6 +125,22 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = secondary_group;
+        }
+
+        public SecondaryHabitat(SecondaryHabitat inSH)
+        {
+            //TODO: Secondaries - Check
+            _bulkUpdateMode = false;
+            _secondary_id = -1; // arbitrary PK for a new row
+            _incid = null;
+            _secondary_habitat = inSH.secondary_habitat;
+            _secondary_habitat_int = inSH.secondary_habitat_int;
+            _secondary_group = inSH.secondary_group;
+        }
+
+        public object Clone()
+        {
+            return new SecondaryHabitat(this);
         }
 
         #endregion
@@ -300,6 +316,9 @@ namespace HLU.Data
                 if (String.IsNullOrEmpty(secondary_habitat))
                     sbError.Append(Environment.NewLine).Append("Secondary habitat is a mandatory field");
 
+                if (_validSecondaryCodes == null)
+                    sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid without primary habitat");
+
                 if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
                     sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
 
@@ -354,13 +373,19 @@ namespace HLU.Data
                             {
                                 return "Error: Secondary habitat is a mandatory field";
                             }
+                            else if (_validSecondaryCodes == null)
+                            {
+                                return "Warning: Secondary habitat is not valid without primary habitat";
+                            }
                             else if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
+                            {
                                 return "Warning: Secondary habitat is not valid for primary habitat";
-
+                            }
                             else if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
                             {
                                 return "Error: Duplicate secondary habitat";
                             }
+
                             _secondary_habitat_bak = _secondary_habitat;
                         }
                         break;

@@ -27,7 +27,7 @@ using HLU.Properties;
 
 namespace HLU.Data
 {
-    public class BapEnvironment : IDataErrorInfo
+    public class BapEnvironment : IDataErrorInfo, ICloneable
     {
         #region Fields
 
@@ -153,6 +153,23 @@ namespace HLU.Data
                 _interpretation_comments = interpretation_comments.Length < 255 ? interpretation_comments : interpretation_comments.Substring(0, 254);
         }
 
+        public BapEnvironment(BapEnvironment inBH)
+        {
+            _bulkUpdateMode = inBH.BulkUpdateMode;
+            _secondaryPriorityHabitat = inBH.SecondaryPriorityHabitat;
+            _bap_id = -1; // arbitrary PK for a new row
+            _incid = null;
+            _bap_habitat = inBH.bap_habitat;
+            _quality_determination = inBH.quality_determination;
+            _quality_interpretation = inBH.quality_interpretation;
+            _interpretation_comments = inBH.interpretation_comments;
+        }
+
+        public object Clone()
+        {
+            return new BapEnvironment(this);
+        }
+        
         #endregion
 
         #region DataChanged
@@ -184,6 +201,11 @@ namespace HLU.Data
         public bool IsAdded
         {
             get { return _bap_id == -1; }
+        }
+
+        public bool SecondaryPriorityHabitat
+        {
+            get { return _secondaryPriorityHabitat; }
         }
 
         #region incid_bapRow
