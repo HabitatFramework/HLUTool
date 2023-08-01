@@ -3223,35 +3223,35 @@ SELECT osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local FROM
               </xs:element>
               <xs:element name="modified_length" msprop:Generator_ColumnVarNameInTable="columnmodified_length" msprop:Generator_ColumnPropNameInRow="modified_length" msprop:Generator_ColumnPropNameInTable="modified_lengthColumn" msprop:Generator_UserColumnName="modified_length" type="xs:double" minOccurs="0" />
               <xs:element name="modified_area" msprop:Generator_ColumnVarNameInTable="columnmodified_area" msprop:Generator_ColumnPropNameInRow="modified_area" msprop:Generator_ColumnPropNameInTable="modified_areaColumn" msprop:Generator_UserColumnName="modified_area" type="xs:double" minOccurs="0" />
-              <xs:element name="modified_habitat_primary" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_primary" msprop:Generator_ColumnPropNameInRow="modified_habitat_primary" msprop:Generator_ColumnPropNameInTable="modified_habitat_primaryColumn" msprop:Generator_UserColumnName="modified_habitat_primary" minOccurs="0">
+              <xs:element name="modified_habitat_primary" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="modified_habitat_primary" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_primary" msprop:Generator_ColumnPropNameInTable="modified_habitat_primaryColumn" msprop:Generator_UserColumnName="modified_habitat_primary" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="modified_habitat_secondaries" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_secondaries" msprop:Generator_ColumnPropNameInRow="modified_habitat_secondaries" msprop:Generator_ColumnPropNameInTable="modified_habitat_secondariesColumn" msprop:Generator_UserColumnName="modified_habitat_secondaries" minOccurs="0">
+              <xs:element name="modified_habitat_secondaries" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="modified_habitat_secondaries" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_secondaries" msprop:Generator_ColumnPropNameInTable="modified_habitat_secondariesColumn" msprop:Generator_UserColumnName="modified_habitat_secondaries" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="80" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="modified_habitat_determination" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_determination" msprop:Generator_ColumnPropNameInRow="modified_habitat_determination" msprop:Generator_ColumnPropNameInTable="modified_habitat_determinationColumn" msprop:Generator_UserColumnName="modified_habitat_determination" minOccurs="0">
+              <xs:element name="modified_habitat_determination" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="modified_habitat_determination" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_determination" msprop:Generator_ColumnPropNameInTable="modified_habitat_determinationColumn" msprop:Generator_UserColumnName="modified_habitat_determination" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="modified_habitat_interpretation" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_interpretation" msprop:Generator_ColumnPropNameInRow="modified_habitat_interpretation" msprop:Generator_ColumnPropNameInTable="modified_habitat_interpretationColumn" msprop:Generator_UserColumnName="modified_habitat_interpretation" minOccurs="0">
+              <xs:element name="modified_habitat_interpretation" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="modified_habitat_interpretation" msprop:Generator_ColumnVarNameInTable="columnmodified_habitat_interpretation" msprop:Generator_ColumnPropNameInTable="modified_habitat_interpretationColumn" msprop:Generator_UserColumnName="modified_habitat_interpretation" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="modified_interpretation_comments" msprop:Generator_ColumnVarNameInTable="columnmodified_interpretation_comments" msprop:Generator_ColumnPropNameInRow="modified_interpretation_comments" msprop:Generator_ColumnPropNameInTable="modified_interpretation_commentsColumn" msprop:Generator_UserColumnName="modified_interpretation_comments" minOccurs="0">
+              <xs:element name="modified_interpretation_comments" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="modified_interpretation_comments" msprop:Generator_ColumnVarNameInTable="columnmodified_interpretation_comments" msprop:Generator_ColumnPropNameInTable="modified_interpretation_commentsColumn" msprop:Generator_UserColumnName="modified_interpretation_comments" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="254" />
@@ -3343,7 +3343,7 @@ SELECT osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local FROM
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="habitat_primary" msprop:Generator_ColumnVarNameInTable="columnhabitat_primary" msprop:Generator_ColumnPropNameInRow="habitat_primary" msprop:Generator_ColumnPropNameInTable="habitat_primaryColumn" msprop:Generator_UserColumnName="habitat_primary" minOccurs="0">
+              <xs:element name="habitat_primary" msprop:nullValue="_null" msprop:Generator_ColumnPropNameInRow="habitat_primary" msprop:Generator_ColumnVarNameInTable="columnhabitat_primary" msprop:Generator_ColumnPropNameInTable="habitat_primaryColumn" msprop:Generator_UserColumnName="habitat_primary" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="8" />

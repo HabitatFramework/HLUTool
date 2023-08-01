@@ -19491,11 +19491,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string modified_habitat_primary {
                 get {
-                    try {
-                        return ((string)(this[this.tablehistory.modified_habitat_primaryColumn]));
+                    if (this.Ismodified_habitat_primaryNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'modified_habitat_primary\' in table \'history\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tablehistory.modified_habitat_primaryColumn]));
                     }
                 }
                 set {
@@ -19507,12 +19507,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string modified_habitat_secondaries {
                 get {
-                    try {
-                        return ((string)(this[this.tablehistory.modified_habitat_secondariesColumn]));
+                    if (this.Ismodified_habitat_secondariesNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'modified_habitat_secondaries\' in table \'history\' is DBNull." +
-                                "", e);
+                    else {
+                        return ((string)(this[this.tablehistory.modified_habitat_secondariesColumn]));
                     }
                 }
                 set {
@@ -19524,12 +19523,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string modified_habitat_determination {
                 get {
-                    try {
-                        return ((string)(this[this.tablehistory.modified_habitat_determinationColumn]));
+                    if (this.Ismodified_habitat_determinationNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'modified_habitat_determination\' in table \'history\' is DBNul" +
-                                "l.", e);
+                    else {
+                        return ((string)(this[this.tablehistory.modified_habitat_determinationColumn]));
                     }
                 }
                 set {
@@ -19541,12 +19539,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string modified_habitat_interpretation {
                 get {
-                    try {
-                        return ((string)(this[this.tablehistory.modified_habitat_interpretationColumn]));
+                    if (this.Ismodified_habitat_interpretationNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'modified_habitat_interpretation\' in table \'history\' is DBNu" +
-                                "ll.", e);
+                    else {
+                        return ((string)(this[this.tablehistory.modified_habitat_interpretationColumn]));
                     }
                 }
                 set {
@@ -19558,12 +19555,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string modified_interpretation_comments {
                 get {
-                    try {
-                        return ((string)(this[this.tablehistory.modified_interpretation_commentsColumn]));
+                    if (this.Ismodified_interpretation_commentsNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'modified_interpretation_comments\' in table \'history\' is DBN" +
-                                "ull.", e);
+                    else {
+                        return ((string)(this[this.tablehistory.modified_interpretation_commentsColumn]));
                     }
                 }
                 set {
@@ -20019,11 +20015,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string habitat_primary {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.habitat_primaryColumn]));
+                    if (this.Ishabitat_primaryNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_primary\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.habitat_primaryColumn]));
                     }
                 }
                 set {

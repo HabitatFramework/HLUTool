@@ -152,11 +152,11 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.HluDataset.incid_mm_polygons.habitat_determinationColumn,
                     _viewModelMain.HluDataset.incid_mm_polygons.habitat_interpretationColumn,
                     _viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn },
-                    new object[] { _viewModelMain.IncidPrimary,
-                        _viewModelMain.IncidSecondarySummary,
-                        _viewModelMain.IncidQualityDetermination,
-                        _viewModelMain.IncidQualityInterpretation,
-                        _viewModelMain.IncidQualityComments },
+                    new object[] { _viewModelMain.IncidPrimary != null ? _viewModelMain.IncidPrimary : "",
+                        _viewModelMain.IncidSecondarySummary != null ? _viewModelMain.IncidSecondarySummary : "",
+                        _viewModelMain.IncidQualityDetermination != null ? _viewModelMain.IncidQualityDetermination : "",
+                        _viewModelMain.IncidQualityInterpretation != null ? _viewModelMain.IncidQualityInterpretation : "",
+                        _viewModelMain.IncidQualityComments != null ? _viewModelMain.IncidQualityComments : "" },
                     _viewModelMain.HistoryColumns, incidCond);
 
                 // Check if a history table was returned from updating
@@ -166,6 +166,7 @@ namespace HLU.UI.ViewModel
                 else if (historyTable.Rows.Count == 0)
                     throw new Exception("No GIS features were updated.");
 
+                // TODO: Update length and area for each polygon (if possible)?
                 // Likewise update the DB shadow copy of the GIS layer
                 if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8}, {9}={10} WHERE {11}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),

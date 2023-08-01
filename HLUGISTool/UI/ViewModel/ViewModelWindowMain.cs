@@ -7803,11 +7803,16 @@ namespace HLU.UI.ViewModel
             //    !String.IsNullOrEmpty(_incidIhsHabitat)) || _incidIhsHabitat != _incidCurrentRow.ihs_habitat ||
             //    !CompareIncidCurrentRowClone()));
             //return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) &&
-            //    ((_incidCurrentRow.Ishabitat_primaryNull() && !String.IsNullOrEmpty(_incidPrimary)) || _incidPrimary != _incidCurrentRow.habitat_primary ||
+            //    ((Convert.IsDBNull(_incidCurrentRow.habitat_primary) && !String.IsNullOrEmpty(_incidPrimary)) ||
+            //    (_incidCurrentRow.Ishabitat_primaryNull() && !String.IsNullOrEmpty(_incidPrimary)) ||
+            //    _incidPrimary != _incidCurrentRow.habitat_primary ||
             //    !CompareIncidCurrentRowClone()));
+
             return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) &&
-                (!CompareIncidCurrentRowClone()));
-            //return false;
+                ((_incidCurrentRow.Ishabitat_primaryNull() && !String.IsNullOrEmpty(_incidPrimary)) ||
+                (!_incidCurrentRow.Ishabitat_primaryNull() && String.IsNullOrEmpty(_incidPrimary)) ||
+                (_incidPrimary != _incidCurrentRow.habitat_primary) ||
+                !CompareIncidCurrentRowClone()));
         }
 
         //TODO: Check
@@ -9271,6 +9276,9 @@ namespace HLU.UI.ViewModel
             {
                 _incidPrimaryCategory = null;
                 _secondaryCodesValid = null;
+
+                // Clear the list of valid secondary codes.
+                SecondaryHabitat.ValidSecondaryCodes = null;
             }
 
             // Refresh the related fields
@@ -9722,6 +9730,10 @@ namespace HLU.UI.ViewModel
 
             // Set the new list of secondary habitat rows for the class.
             SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
+
+            // Track when the secondary habitat records have changed so that the apply
+            // button will appear.
+            Changed = true;
 
             return (_incidSecondaryHabitats == null || (oldSecondaryHabs != null && _incidSecondaryHabitats != oldSecondaryHabs));
         }
