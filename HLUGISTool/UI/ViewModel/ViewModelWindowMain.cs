@@ -639,6 +639,7 @@ namespace HLU.UI.ViewModel
                     App.SplashViewModel.ProgressText = "Reading map selection...";
                     DispatcherHelper.DoEvents();
                 }
+                // Get the GIS layer selection
                 ReadMapSelection(false);
 
                 // Clear the splash window status bar (or reset the cursor to an arrow)
@@ -1809,6 +1810,7 @@ namespace HLU.UI.ViewModel
         private void LogicalSplitClicked(object param)
         {
             _autoSplit = false;
+            // Get the GIS layer selection again (just in case)
             ReadMapSelection(false);
             _autoSplit = true;
 
@@ -1837,6 +1839,7 @@ namespace HLU.UI.ViewModel
         private void PhysicalSplitClicked(object param)
         {
             _autoSplit = false;
+            // Get the GIS layer selection again (just in case)
             ReadMapSelection(false);
             _autoSplit = true;
 
@@ -1930,6 +1933,7 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void LogicalMergeClicked(object param)
         {
+            // Get the GIS layer selection again (just in case)
             ReadMapSelection(false);
 
             // Check the selected rows are unique before attempting to merge them.
@@ -1956,6 +1960,7 @@ namespace HLU.UI.ViewModel
         /// <param name="param"></param>
         private void PhysicalMergeClicked(object param)
         {
+            // Get the GIS layer selection again (just in case)
             ReadMapSelection(false);
 
             // Check the selected rows are unique before attempting to merge them.
@@ -5330,6 +5335,7 @@ namespace HLU.UI.ViewModel
 
         private void ReadMapSelectionClicked(object param)
         {
+            // Get the GIS layer selection
             ReadMapSelection(true);
         }
 

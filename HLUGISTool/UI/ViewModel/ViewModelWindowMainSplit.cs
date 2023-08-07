@@ -242,6 +242,7 @@ namespace HLU.UI.ViewModel
                     // local copy.
                     _viewModelMain.RefillIncidTable = true;
 
+                    // Get the GIS layer selection again
                     _viewModelMain.ReadMapSelection(true);
                 }
             }
@@ -378,6 +379,7 @@ namespace HLU.UI.ViewModel
                     // local copy.
                     _viewModelMain.RefillIncidTable = true;
 
+                    // Get the GIS layer selection again
                     _viewModelMain.ReadMapSelection(true);
                 }
             }

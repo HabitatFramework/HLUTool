@@ -294,6 +294,7 @@ namespace HLU.UI.ViewModel
                         // local copy.
                         _viewModelMain.RefillIncidTable = true;
 
+                        // Get the GIS layer selection again
                         _viewModelMain.ReadMapSelection(true);
                     }
                 }
@@ -333,11 +334,13 @@ namespace HLU.UI.ViewModel
             bool success = true;
             try
             {
+                // Get the DB copy rows to update
                 HluDataSet.incid_mm_polygonsDataTable selectTable = new HluDataSet.incid_mm_polygonsDataTable();
                 _viewModelMain.GetIncidMMPolygonRows(ViewModelWindowMainHelpers.GisSelectionToWhereClause(
                     _viewModelMain.GisSelection.Select(), _viewModelMain.GisIDColumnOrdinals, 
                     ViewModelWindowMain.IncidPageSize, selectTable), ref selectTable);
 
+                // Check the GIS layer and DB are in sync
                 if (selectTable.Count == 0)
                     return false;
                 else if (selectTable.Count != _viewModelMain.GisSelection.Rows.Count)
@@ -347,6 +350,7 @@ namespace HLU.UI.ViewModel
                 // lowest toid_fragment_id in selection assigned to result feature
                 string newToidFragmentID = selectTable.Min(r => r.toid_fragment_id);
 
+                // Choose (or prompt user to select) which feature to keep
                 if (selectTable.GroupBy(r => r.incid).Count() == 1)
                 {
                     int minFragmID = Int32.Parse(newToidFragmentID);
@@ -374,6 +378,7 @@ namespace HLU.UI.ViewModel
                     _mergeFeaturesWindow.ShowDialog();
                 }
 
+                // Perform the merge if a feature has been selected
                 if (_mergeResultFeatureIndex != -1)
                 {
                     _viewModelMain.ChangeCursor(Cursors.Wait, "Merging ...");
@@ -389,8 +394,10 @@ namespace HLU.UI.ViewModel
                         DateTime currDtTm = DateTime.Now;
                         DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
 
+                        // Update the last modified details of the kept incid
                         _viewModelMain.ViewModelUpdate.UpdateIncidModifiedColumns(_viewModelMain.IncidsSelectedMap.ElementAt(0), nowDtTm);
 
+                        // Build a where clause of features to keep
                         List<List<SqlFilterCondition>> resultFeatureWhereClause =
                             ViewModelWindowMainHelpers.GisSelectionToWhereClause(
                             new HluDataSet.incid_mm_polygonsRow[] { selectTable[_mergeResultFeatureIndex] },
@@ -399,6 +406,7 @@ namespace HLU.UI.ViewModel
                         if (resultFeatureWhereClause.Count != 1)
                             throw new Exception("Error getting result feature from database.");
 
+                        // Build a where clause of features to merge
                         List<List<SqlFilterCondition>> mergeFeaturesWhereClause =
                             ViewModelWindowMainHelpers.GisSelectionToWhereClause(
                             selectTable.Where((r, index) => index != _mergeResultFeatureIndex).ToArray(),
@@ -410,10 +418,10 @@ namespace HLU.UI.ViewModel
                         // but is needed to update geometry fields in incid_mm_polygons
                         DataTable historyTable = _viewModelMain.GISApplication.MergeFeatures(newToidFragmentID,
                             resultFeatureWhereClause[0].Select(c => c.Clone()).ToList(), _viewModelMain.HistoryColumns);
-
                         if (historyTable == null)
                             throw new Exception("GIS merge operation failed.");
 
+                        // Update the history table to reflect there is no only one feature
                         DataTable resultTable = historyTable.Clone();
                         DataRow resultRow = historyTable.AsEnumerable().FirstOrDefault(r =>
                             r.Field<string>(_viewModelMain.HluDataset.history.toid_fragment_idColumn.ColumnName) == newToidFragmentID);
@@ -435,6 +443,7 @@ namespace HLU.UI.ViewModel
                         ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                         vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.PhysicalMerge, nowDtTm);
 
+                        // Commit the changes
                         if (startTransaction)
                         {
                             _viewModelMain.DataBase.CommitTransaction();
@@ -454,6 +463,7 @@ namespace HLU.UI.ViewModel
                         // local copy.
                         _viewModelMain.RefillIncidTable = true;
 
+                        // Get the GIS layer selection again
                         _viewModelMain.ReadMapSelection(true);
                     }
                     catch
