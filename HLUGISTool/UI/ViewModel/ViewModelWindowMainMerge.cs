@@ -131,6 +131,7 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.IncidsSelectedMapCount <= 0)
                     return false;
 
+                // Prompt the user to choose which incid to keep
                 _mergeFeaturesWindow = new WindowMergeFeatures();
                 _mergeFeaturesWindow.Owner = App.Current.MainWindow;
                 _mergeFeaturesWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -157,8 +158,10 @@ namespace HLU.UI.ViewModel
                 _mergeFeaturesWindow.DataContext = _mergeFeaturesViewModelLogical;
                 _mergeResultFeatureIndex = -1;
 
+                // Show the window
                 _mergeFeaturesWindow.ShowDialog();
 
+                // Return false if the user didn't choose and incid
                 if (_mergeResultFeatureIndex == -1)
                     return false;
 
@@ -182,10 +185,7 @@ namespace HLU.UI.ViewModel
                     if ((historyTable == null) || (historyTable.Rows.Count == 0))
                         throw new Exception("Failed to update GIS layer.");
 
-                    // assign selected incid and new toid_fragment_id to selected features except keepIncid in DB shadow copy
-                    string toidFragmentFormat = String.Format("D{0}",
-                        _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.MaxLength);
-
+                    // Build a list of the columns to update (not the key columns or the length/area)
                     List<KeyValuePair<int, object>> updateFields = new List<KeyValuePair<int,object>>();
                     var keepPolygon = polygons.FirstOrDefault(r => r.incid == keepIncid);
                     if (keepPolygon != null)
@@ -199,6 +199,7 @@ namespace HLU.UI.ViewModel
                                         select new KeyValuePair<int, object>(c.Ordinal, keepPolygon[c.Ordinal])).ToList();
                     }
 
+                    // Build an array of polygons to update (all except those with incid to keep)
                     var updatePolygons = from r in polygons
                                             where r.incid != keepIncid
                                             orderby r.toid, r.toid_fragment_id
