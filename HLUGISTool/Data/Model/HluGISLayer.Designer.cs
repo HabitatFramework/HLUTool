@@ -283,17 +283,17 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columntoid;
             
-            private global::System.Data.DataColumn columntoid_fragment_id;
+            private global::System.Data.DataColumn columntoidfragid;
             
-            private global::System.Data.DataColumn columnhabitat_primary;
+            private global::System.Data.DataColumn columnhabprimary;
             
-            private global::System.Data.DataColumn columnhabitat_secondaries;
+            private global::System.Data.DataColumn columnhabsecond;
             
-            private global::System.Data.DataColumn columnhabitat_determination;
+            private global::System.Data.DataColumn columndetermqty;
             
-            private global::System.Data.DataColumn columnhabitat_interpretation;
+            private global::System.Data.DataColumn columninterpqty;
             
-            private global::System.Data.DataColumn columninterpretation_comments;
+            private global::System.Data.DataColumn columninterpcom;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -346,49 +346,49 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn toid_fragment_idColumn {
+            public global::System.Data.DataColumn toidfragidColumn {
                 get {
-                    return this.columntoid_fragment_id;
+                    return this.columntoidfragid;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn habitat_primaryColumn {
+            public global::System.Data.DataColumn habprimaryColumn {
                 get {
-                    return this.columnhabitat_primary;
+                    return this.columnhabprimary;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn habitat_secondariesColumn {
+            public global::System.Data.DataColumn habsecondColumn {
                 get {
-                    return this.columnhabitat_secondaries;
+                    return this.columnhabsecond;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn habitat_determinationColumn {
+            public global::System.Data.DataColumn determqtyColumn {
                 get {
-                    return this.columnhabitat_determination;
+                    return this.columndetermqty;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn habitat_interpretationColumn {
+            public global::System.Data.DataColumn interpqtyColumn {
                 get {
-                    return this.columnhabitat_interpretation;
+                    return this.columninterpqty;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn interpretation_commentsColumn {
+            public global::System.Data.DataColumn interpcomColumn {
                 get {
-                    return this.columninterpretation_comments;
+                    return this.columninterpcom;
                 }
             }
             
@@ -429,17 +429,17 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow Addincid_mm_polygonsRow(string incid, string toid, string toid_fragment_id, string habitat_primary, string habitat_secondaries, string habitat_determination, string habitat_interpretation, string interpretation_comments) {
+            public incid_mm_polygonsRow Addincid_mm_polygonsRow(string incid, string toid, string toidfragid, string habprimary, string habsecond, string determqty, string interpqty, string interpcom) {
                 incid_mm_polygonsRow rowincid_mm_polygonsRow = ((incid_mm_polygonsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         incid,
                         toid,
-                        toid_fragment_id,
-                        habitat_primary,
-                        habitat_secondaries,
-                        habitat_determination,
-                        habitat_interpretation,
-                        interpretation_comments};
+                        toidfragid,
+                        habprimary,
+                        habsecond,
+                        determqty,
+                        interpqty,
+                        interpcom};
                 rowincid_mm_polygonsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowincid_mm_polygonsRow);
                 return rowincid_mm_polygonsRow;
@@ -447,11 +447,11 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow FindByincidtoidtoid_fragment_id(string incid, string toid, string toid_fragment_id) {
+            public incid_mm_polygonsRow FindByincidtoidtoidfragid(string incid, string toid, string toidfragid) {
                 return ((incid_mm_polygonsRow)(this.Rows.Find(new object[] {
                             incid,
                             toid,
-                            toid_fragment_id})));
+                            toidfragid})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -473,12 +473,12 @@ namespace HLU.Data.Model {
             internal void InitVars() {
                 this.columnincid = base.Columns["incid"];
                 this.columntoid = base.Columns["toid"];
-                this.columntoid_fragment_id = base.Columns["toid_fragment_id"];
-                this.columnhabitat_primary = base.Columns["habitat_primary"];
-                this.columnhabitat_secondaries = base.Columns["habitat_secondaries"];
-                this.columnhabitat_determination = base.Columns["habitat_determination"];
-                this.columnhabitat_interpretation = base.Columns["habitat_interpretation"];
-                this.columninterpretation_comments = base.Columns["interpretation_comments"];
+                this.columntoidfragid = base.Columns["toidfragid"];
+                this.columnhabprimary = base.Columns["habprimary"];
+                this.columnhabsecond = base.Columns["habsecond"];
+                this.columndetermqty = base.Columns["determqty"];
+                this.columninterpqty = base.Columns["interpqty"];
+                this.columninterpcom = base.Columns["interpcom"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -488,33 +488,33 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnincid);
                 this.columntoid = new global::System.Data.DataColumn("toid", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columntoid);
-                this.columntoid_fragment_id = new global::System.Data.DataColumn("toid_fragment_id", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columntoid_fragment_id);
-                this.columnhabitat_primary = new global::System.Data.DataColumn("habitat_primary", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnhabitat_primary);
-                this.columnhabitat_secondaries = new global::System.Data.DataColumn("habitat_secondaries", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnhabitat_secondaries);
-                this.columnhabitat_determination = new global::System.Data.DataColumn("habitat_determination", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnhabitat_determination);
-                this.columnhabitat_interpretation = new global::System.Data.DataColumn("habitat_interpretation", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnhabitat_interpretation);
-                this.columninterpretation_comments = new global::System.Data.DataColumn("interpretation_comments", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columninterpretation_comments);
+                this.columntoidfragid = new global::System.Data.DataColumn("toidfragid", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntoidfragid);
+                this.columnhabprimary = new global::System.Data.DataColumn("habprimary", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnhabprimary);
+                this.columnhabsecond = new global::System.Data.DataColumn("habsecond", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnhabsecond);
+                this.columndetermqty = new global::System.Data.DataColumn("determqty", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndetermqty);
+                this.columninterpqty = new global::System.Data.DataColumn("interpqty", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columninterpqty);
+                this.columninterpcom = new global::System.Data.DataColumn("interpcom", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columninterpcom);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("PK_INCID_MM_Polygons", new global::System.Data.DataColumn[] {
                                 this.columnincid,
                                 this.columntoid,
-                                this.columntoid_fragment_id}, true));
+                                this.columntoidfragid}, true));
                 this.columnincid.AllowDBNull = false;
                 this.columnincid.MaxLength = 12;
                 this.columntoid.AllowDBNull = false;
                 this.columntoid.MaxLength = 20;
-                this.columntoid_fragment_id.AllowDBNull = false;
-                this.columntoid_fragment_id.MaxLength = 5;
-                this.columnhabitat_primary.MaxLength = 8;
-                this.columnhabitat_secondaries.MaxLength = 80;
-                this.columnhabitat_determination.MaxLength = 2;
-                this.columnhabitat_interpretation.MaxLength = 2;
-                this.columninterpretation_comments.MaxLength = 254;
+                this.columntoidfragid.AllowDBNull = false;
+                this.columntoidfragid.MaxLength = 5;
+                this.columnhabprimary.MaxLength = 8;
+                this.columnhabsecond.MaxLength = 80;
+                this.columndetermqty.MaxLength = 2;
+                this.columninterpqty.MaxLength = 2;
+                this.columninterpcom.MaxLength = 254;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -679,157 +679,153 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string toid_fragment_id {
+            public string toidfragid {
                 get {
-                    return ((string)(this[this.tableincid_mm_polygons.toid_fragment_idColumn]));
+                    return ((string)(this[this.tableincid_mm_polygons.toidfragidColumn]));
                 }
                 set {
-                    this[this.tableincid_mm_polygons.toid_fragment_idColumn] = value;
+                    this[this.tableincid_mm_polygons.toidfragidColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string habitat_primary {
-                get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.habitat_primaryColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_primary\' in table \'incid_mm_polygons\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableincid_mm_polygons.habitat_primaryColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string habitat_secondaries {
+            public string habprimary {
                 get {
                     try {
-                        return ((string)(this[this.tableincid_mm_polygons.habitat_secondariesColumn]));
+                        return ((string)(this[this.tableincid_mm_polygons.habprimaryColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_secondaries\' in table \'incid_mm_polygons\' is DBNull" +
-                                ".", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'habprimary\' in table \'incid_mm_polygons\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableincid_mm_polygons.habitat_secondariesColumn] = value;
+                    this[this.tableincid_mm_polygons.habprimaryColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string habitat_determination {
+            public string habsecond {
                 get {
                     try {
-                        return ((string)(this[this.tableincid_mm_polygons.habitat_determinationColumn]));
+                        return ((string)(this[this.tableincid_mm_polygons.habsecondColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_determination\' in table \'incid_mm_polygons\' is DBNu" +
-                                "ll.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'habsecond\' in table \'incid_mm_polygons\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableincid_mm_polygons.habitat_determinationColumn] = value;
+                    this[this.tableincid_mm_polygons.habsecondColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string habitat_interpretation {
+            public string determqty {
                 get {
                     try {
-                        return ((string)(this[this.tableincid_mm_polygons.habitat_interpretationColumn]));
+                        return ((string)(this[this.tableincid_mm_polygons.determqtyColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_interpretation\' in table \'incid_mm_polygons\' is DBN" +
-                                "ull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'determqty\' in table \'incid_mm_polygons\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableincid_mm_polygons.habitat_interpretationColumn] = value;
+                    this[this.tableincid_mm_polygons.determqtyColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string interpretation_comments {
+            public string interpqty {
                 get {
                     try {
-                        return ((string)(this[this.tableincid_mm_polygons.interpretation_commentsColumn]));
+                        return ((string)(this[this.tableincid_mm_polygons.interpqtyColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'interpretation_comments\' in table \'incid_mm_polygons\' is DB" +
-                                "Null.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'interpqty\' in table \'incid_mm_polygons\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableincid_mm_polygons.interpretation_commentsColumn] = value;
+                    this[this.tableincid_mm_polygons.interpqtyColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ishabitat_primaryNull() {
-                return this.IsNull(this.tableincid_mm_polygons.habitat_primaryColumn);
+            public string interpcom {
+                get {
+                    try {
+                        return ((string)(this[this.tableincid_mm_polygons.interpcomColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'interpcom\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableincid_mm_polygons.interpcomColumn] = value;
+                }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Sethabitat_primaryNull() {
-                this[this.tableincid_mm_polygons.habitat_primaryColumn] = global::System.Convert.DBNull;
+            public bool IshabprimaryNull() {
+                return this.IsNull(this.tableincid_mm_polygons.habprimaryColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ishabitat_secondariesNull() {
-                return this.IsNull(this.tableincid_mm_polygons.habitat_secondariesColumn);
+            public void SethabprimaryNull() {
+                this[this.tableincid_mm_polygons.habprimaryColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Sethabitat_secondariesNull() {
-                this[this.tableincid_mm_polygons.habitat_secondariesColumn] = global::System.Convert.DBNull;
+            public bool IshabsecondNull() {
+                return this.IsNull(this.tableincid_mm_polygons.habsecondColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ishabitat_determinationNull() {
-                return this.IsNull(this.tableincid_mm_polygons.habitat_determinationColumn);
+            public void SethabsecondNull() {
+                this[this.tableincid_mm_polygons.habsecondColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Sethabitat_determinationNull() {
-                this[this.tableincid_mm_polygons.habitat_determinationColumn] = global::System.Convert.DBNull;
+            public bool IsdetermqtyNull() {
+                return this.IsNull(this.tableincid_mm_polygons.determqtyColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ishabitat_interpretationNull() {
-                return this.IsNull(this.tableincid_mm_polygons.habitat_interpretationColumn);
+            public void SetdetermqtyNull() {
+                this[this.tableincid_mm_polygons.determqtyColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Sethabitat_interpretationNull() {
-                this[this.tableincid_mm_polygons.habitat_interpretationColumn] = global::System.Convert.DBNull;
+            public bool IsinterpqtyNull() {
+                return this.IsNull(this.tableincid_mm_polygons.interpqtyColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Isinterpretation_commentsNull() {
-                return this.IsNull(this.tableincid_mm_polygons.interpretation_commentsColumn);
+            public void SetinterpqtyNull() {
+                this[this.tableincid_mm_polygons.interpqtyColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setinterpretation_commentsNull() {
-                this[this.tableincid_mm_polygons.interpretation_commentsColumn] = global::System.Convert.DBNull;
+            public bool IsinterpcomNull() {
+                return this.IsNull(this.tableincid_mm_polygons.interpcomColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetinterpcomNull() {
+                this[this.tableincid_mm_polygons.interpcomColumn] = global::System.Convert.DBNull;
             }
         }
         

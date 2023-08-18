@@ -52,6 +52,10 @@ namespace HLU.UI.ViewModel
         private int _tableCount;
         private int _fieldCount;
         private int _incidOrdinal;
+        private int _conditionIdOrdinal;
+        private int _conditionDateStartOrdinal;
+        private int _conditionDateEndOrdinal;
+        private int _conditionDateTypeOrdinal;
         private int _matrixIdOrdinal;
         private int _formationIdOrdinal;
         private int _managementIdOrdinal;
@@ -192,6 +196,7 @@ namespace HLU.UI.ViewModel
                 StringBuilder targetList;
                 StringBuilder fromClause;
                 int[] sortOrdinals;
+                int[] conditionOrdinals;
                 int[] matrixOrdinals;
                 int[] formationOrdinals;
                 int[] managementOrdinals;
@@ -200,14 +205,14 @@ namespace HLU.UI.ViewModel
                 int[] sourceOrdinals;
                 List<ExportField> exportFields = new List<ExportField>();
                 ExportJoins(tableAlias, ref exportFields, out exportTable,
-                    out fieldMapTemplate, out targetList, out fromClause, out sortOrdinals,
+                    out fieldMapTemplate, out targetList, out fromClause, out sortOrdinals, out conditionOrdinals,
                     out matrixOrdinals, out formationOrdinals, out managementOrdinals, out complexOrdinals,
                     out bapOrdinals, out sourceOrdinals);
 
                 // Add the length of the GIS layer fields to the length of
                 // field attributes exported from the database (excluding
                 // the incid field which is already included).
-                _attributesLength += 93;
+                _attributesLength += 387;
 
                 // Set the export filter conditions, depending if all the
                 // records are to be exported or only the selected features.
@@ -293,7 +298,7 @@ namespace HLU.UI.ViewModel
                 // Export the attribute data to a temporary database.
                 int exportRowCount;
                 exportRowCount = ExportMdb(tempPath, targetList.ToString(), fromClause.ToString(), exportFilter,
-                    _viewModelMain.DataBase, exportFields, exportTable, sortOrdinals,
+                    _viewModelMain.DataBase, exportFields, exportTable, sortOrdinals, conditionOrdinals,
                     matrixOrdinals, formationOrdinals, managementOrdinals, complexOrdinals, bapOrdinals, sourceOrdinals,
                     fieldMapTemplate);
 
@@ -339,8 +344,10 @@ namespace HLU.UI.ViewModel
         }
 
         private void ExportJoins(string tableAlias, ref List<ExportField> exportFields, out DataTable exportTable,
-            out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause, out int[] sortOrdinals,
-            out int[] matrixOrdinals, out int[] formationOrdinals, out int[] managementOrdinals, out int[] complexOrdinals,
+            out int[][] fieldMapTemplate, out StringBuilder targetList, out StringBuilder fromClause,
+            out int[] sortOrdinals, out int[] conditionOrdinals,
+            out int[] matrixOrdinals, out int[] formationOrdinals,
+            out int[] managementOrdinals, out int[] complexOrdinals,
             out int[] bapOrdinals, out int[] sourceOrdinals)
         {
             exportTable = new DataTable("HluExport");
@@ -349,6 +356,7 @@ namespace HLU.UI.ViewModel
             List<string> leftJoined = new List<string>();
             fromClause = new StringBuilder();
             sortOrdinals = null;
+            conditionOrdinals = null;
             matrixOrdinals = null;
             formationOrdinals = null;
             managementOrdinals = null;
@@ -368,13 +376,13 @@ namespace HLU.UI.ViewModel
             foreach (HluDataSet.exports_fieldsRow r in
                 _viewModelMain.HluDataset.exports_fields.OrderBy(r => r.field_ordinal))
             {
-                // Get the field length of the source table/column.
+                // Get the field length of the input table/column.
                 fieldLength = GetFieldLength(r.table_name, r.column_ordinal);
 
                 // Enable new 'empty' fields to be included in exports.
                 if (r.table_name.ToLower() == "<none>")
                 {
-                    // Override the source field length(s) if an export
+                    // Override the input field length(s) if an export
                     // field length has been set.
                     if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                         r.field_length > 0)
@@ -445,7 +453,7 @@ namespace HLU.UI.ViewModel
                         // Enable text field lengths to be specified in
                         // the export format.
                         //
-                        // Override the source field length(s) if an export
+                        // Override the input field length(s) if an export
                         // field length has been set.
                         if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                             r.field_length > 0)
@@ -514,7 +522,7 @@ namespace HLU.UI.ViewModel
                                     _viewModelMain.DataBase.ConcatenateOperator,
                                     _viewModelMain.DataBase.QuoteValue(" : ")));
 
-                                // Set the field length of the export field to the source
+                                // Set the field length of the export field to the input
                                 // field length plus the lookup table field length plus 3
                                 // for the concatenation string length.
                                 fieldLength += lutColumns.First(c => c.ColumnName == lutFieldName).MaxLength + 3;
@@ -536,7 +544,7 @@ namespace HLU.UI.ViewModel
                             // Enable text field lengths to be specified in
                             // the export format.
                             //
-                            // Override the source field length(s) if an export
+                            // Override the input field length(s) if an export
                             // field length has been set.
                             if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                                 r.field_length > 0)
@@ -593,7 +601,7 @@ namespace HLU.UI.ViewModel
                             // Enable text field lengths to be specified in
                             // the export format.
                             //
-                            // Override the source field length(s) if an export
+                            // Override the input field length(s) if an export
                             // field length has been set.
                             if (!r.IsNull(_viewModelMain.HluDataset.exports_fields.field_lengthColumn) &&
                                 r.field_length > 0)
@@ -609,16 +617,20 @@ namespace HLU.UI.ViewModel
                             continue;
                         }
 
-                        string joinType;
-                        if (leftJoined.Contains(currTable))
-                        {
-                            joinType = "LEFT";
-                            leftJoined.Add(parentTableAlias);
-                        }
-                        else
-                        {
-                            joinType = "INNER";
-                        }
+
+                        // Make all joins LEFT joins for simplicity and to allow for null
+                        // foreign key values.
+                        string joinType = "LEFT";
+                        leftJoined.Add(parentTableAlias);
+                        //if (leftJoined.Contains(currTable))
+                        //{
+                        //    joinType = "LEFT";
+                        //    leftJoined.Add(parentTableAlias);
+                        //}
+                        //else
+                        //{
+                        //    joinType = "INNER";
+                        //}
 
                         if (firstJoin)
                             firstJoin = false;
@@ -644,6 +656,10 @@ namespace HLU.UI.ViewModel
             int fieldTotal = 0;
             int primaryKeyOrdinal = -1;
             _incidOrdinal = -1;
+            _conditionIdOrdinal = -1;
+            _conditionDateStartOrdinal = -1;
+            _conditionDateEndOrdinal = -1;
+            _conditionDateTypeOrdinal = -1;
             _matrixIdOrdinal = -1;
             _formationIdOrdinal = -1;
             _managementIdOrdinal = -1;
@@ -655,6 +671,7 @@ namespace HLU.UI.ViewModel
             _sourceDateTypeOrdinals = new List<int>();
             int sourceSortOrderOrdinal = -1;
             List<int> sortFields = new List<int>();
+            List<int> conditionFields = new List<int>();
             List<int> matrixFields = new List<int>();
             List<int> formationFields = new List<int>();
             List<int> managementFields = new List<int>();
@@ -706,8 +723,33 @@ namespace HLU.UI.ViewModel
                     primaryKeyOrdinal = fieldTotal;
                 }
 
+                // If the table is the incid_condition table.
+                if (f.TableName == _viewModelMain.HluDataset.incid_condition.TableName)
+                {
+                    // Add the output field position to the list of fields
+                    // that are from the condition table.
+                    conditionFields.Add(fieldTotal);
+
+                    // If the field refers to the condition_id column then store
+                    // the input field ordinal for use later as the unique
+                    // incid_condition field ordinal.
+                    if (f.ColumnName == _viewModelMain.HluDataset.incid_condition.incid_condition_idColumn.ColumnName)
+                        _conditionIdOrdinal = f.FieldOrdinal;
+                    // If the field refers to the condition_date_start column then
+                    // store the input field ordinal for use later.
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_condition.condition_date_startColumn.ColumnName)
+                        _conditionDateStartOrdinal = f.FieldOrdinal;
+                    // If the field refers to the condition_date_end column then
+                    // store the input field ordinal for use later.
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_condition.condition_date_endColumn.ColumnName)
+                        _conditionDateEndOrdinal = f.FieldOrdinal;
+                    // If the field refers to the condition_date_type column then
+                    // store the input field ordinal for use later.
+                    else if (f.ColumnName == _viewModelMain.HluDataset.incid_condition.condition_date_typeColumn.ColumnName)
+                        _conditionDateTypeOrdinal = f.FieldOrdinal;
+                }
                 // If the table is the incid_ihs_matrix table.
-                if (f.TableName == _viewModelMain.HluDataset.incid_ihs_matrix.TableName)
+                else if (f.TableName == _viewModelMain.HluDataset.incid_ihs_matrix.TableName)
                 {
                     // Add the output field position to the list of fields
                     // that are from the matrix table.
@@ -826,6 +868,67 @@ namespace HLU.UI.ViewModel
 
             // Get the last input field ordinal.
             int lastFieldOrdinal = exportFields.Max(e => e.FieldOrdinal);
+
+            // If any incid_condition fields are in the export file.
+            if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_condition.TableName) != 0))
+            {
+                // If the incid_condition_id column is not included then add
+                // it so that different conditions can be identified.
+                if (_conditionIdOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_condition.TableName,
+                        _viewModelMain.HluDataset.incid_condition.incid_condition_idColumn.ColumnName, _viewModelMain.HluDataset.incid_condition.incid_condition_idColumn.ColumnName));
+
+                    // Store the input field ordinal for use
+                    // later as the unique incid_condition field ordinal.
+                    _conditionIdOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // Store all of the condition date fields for use later when
+                // formatting the attribute data.
+                //
+                // If the condition_date_start column is not included then add
+                // it for use later.
+                if (_conditionDateStartOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_condition.TableName,
+                        _viewModelMain.HluDataset.incid_condition.condition_date_startColumn.ColumnName, _viewModelMain.HluDataset.incid_condition.condition_date_startColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _conditionDateStartOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // If the condition_date_end column is not included then add
+                // it for use later.
+                if (_conditionDateEndOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_condition.TableName,
+                        _viewModelMain.HluDataset.incid_condition.condition_date_endColumn.ColumnName, _viewModelMain.HluDataset.incid_condition.condition_date_endColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _conditionDateEndOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // If the condition_date_type column is not included then add
+                // it for use later.
+                if (_conditionDateTypeOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_condition.TableName,
+                        _viewModelMain.HluDataset.incid_condition.condition_date_typeColumn.ColumnName, _viewModelMain.HluDataset.incid_condition.condition_date_typeColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _conditionDateTypeOrdinal = lastFieldOrdinal += 1;
+                }
+
+                // Add the input field position to the list of fields
+                // that will be used to sort the input records. Multiply
+                // by minus 1 to indicate descending order).
+                sortFields.Add((_conditionIdOrdinal + 1) * -1);
+            }
 
             // If any incid_ihs_matrix fields are in the export file.
             if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_ihs_matrix.TableName) != 0))
@@ -1097,6 +1200,7 @@ namespace HLU.UI.ViewModel
 
             // Store the field ordinals for all the fields for
             // every child table.
+            conditionOrdinals = conditionFields.ToArray();
             matrixOrdinals = matrixFields.ToArray();
             formationOrdinals = formationFields.ToArray();
             managementOrdinals = managementFields.ToArray();
@@ -1188,446 +1292,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        private int ExportMdbOld(string tempPath, string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
-            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
-            int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals,
-            int[][] fieldMap)
-        {
-            int exportRowCount = -1;
-            int outputRowCount = 0;
-            DbOleDb dbOut = null;
-
-            try
-            {
-                string connString = String.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};", tempPath);
-                string defaultSchema = "";
-                bool promptPwd = false;
-                dbOut = new DbOleDb(ref connString, ref defaultSchema, ref promptPwd,
-                    Properties.Resources.PasswordMaskString, Settings.Default.UseAutomaticCommandBuilders,
-                    true, Settings.Default.DbIsUnicode, Settings.Default.DbUseTimeZone, 255,
-                    Settings.Default.DbBinaryLength, Settings.Default.DbTimePrecision,
-                    Settings.Default.DbNumericPrecision, Settings.Default.DbNumericScale);
-
-                DataSet datasetOut = new DataSet("Export");
-
-                IDbDataAdapter adapterOut = dbOut.CreateAdapter(exportTable);
-                adapterOut.MissingSchemaAction = MissingSchemaAction.AddWithKey;
-                adapterOut.Fill(datasetOut);
-                int[] pkOrdinals = exportTable.PrimaryKey.Select(c => c.Ordinal).ToArray();
-                exportTable.PrimaryKey = pkOrdinals.Select(o => exportTable.Columns[o]).ToArray();
-                adapterOut.TableMappings.Clear();
-                adapterOut.TableMappings.Add(exportTable.TableName, datasetOut.Tables[0].TableName);
-
-                // Save the export table structure so that the field
-                // properties can be examined during the export.
-                DataTable exportTable2 = exportTable;
-
-                exportTable = datasetOut.Tables[0];
-
-                //---------------------------------------------------------------------
-                // CHANGED: CR13 (Export features performance)
-                // Improve the performance as much as possible when
-                // creating the attribute database.
-                //
-                // Turn off notifications and index maintenance whilst
-                // inserting the records.
-                exportTable.BeginLoadData();
-                //---------------------------------------------------------------------
-
-                // If there is only one long list then chunk
-                // it up into smaller lists.
-                if (exportFilter.Count == 1)
-                {
-                    try
-                    {
-                        List<SqlFilterCondition> whereCond = new List<SqlFilterCondition>();
-                        whereCond = exportFilter[0];
-                        exportFilter = whereCond.ChunkClause(240).ToList();
-                    }
-                    catch { }
-                }
-
-                // Break exporting attributes into chunks to avoid errors
-                // with excessive sql lengths.
-                //
-                outputRowCount = 0;
-                exportRowCount = 0;
-
-                // Set the field map indexes to the start of the array.
-                int[] fieldMapIndex = new int[fieldMap.Length];
-                for (int k = 0; k < fieldMap.Length; k++)
-                {
-                    fieldMapIndex[k] = 1;
-                }
-
-                for (int j = 0; j < exportFilter.Count; j++)
-                {
-                    DataRow exportRow = exportTable.NewRow();
-                    bool rowAdded = false;
-
-                    // Union the constituent parts of the export query
-                    // together into a single SQL string.
-                    string sql = ScratchDb.UnionQuery(targetListStr, fromClauseStr,
-                        sortOrdinals, exportFilter[j], dataBase);
-
-                    // Execute the sql to retrieve the records.
-
-                    // Apply user's option database connection timeout.
-                    using (IDataReader reader = _viewModelMain.DataBase.ExecuteReader(sql,
-                        _viewModelMain.DBConnectionTimeout, CommandType.Text))
-                    {
-                        string currIncid = String.Empty;
-                        string prevIncid = String.Empty;
-                        int currMatrixId = -1;
-                        int currFormationId = -1;
-                        int currManagementId = -1;
-                        int currComplexId = -1;
-                        int currBapId = -1;
-                        int currSourceId = -1;
-                        int currSourceDateStart = 0;
-                        int currSourceDateEnd = 0;
-                        List<int> matrixIds = null;
-                        List<int> formationIds = null;
-                        List<int> managementIds = null;
-                        List<int> complexIds = null;
-                        List<int> bapIds = null;
-                        List<int> sourceIds = null;
-                        string currSourceDateType = String.Empty;
-                        int exportColumn;
-
-                        // Read each record and process the contents.
-                        while (reader.Read())
-                        {
-                            // Get the current incid.
-                            currIncid = reader.GetString(_incidOrdinal);
-
-                            // Get the current matrix id.
-                            if (_matrixIdOrdinal != -1)
-                            {
-                                object matrixIdValue = reader.GetValue(_matrixIdOrdinal);
-                                if (matrixIdValue != DBNull.Value)
-                                    currMatrixId = (int)matrixIdValue;
-                                else
-                                    currMatrixId = -1;
-                            }
-
-                            // Get the current formation id.
-                            if (_formationIdOrdinal != -1)
-                            {
-                                object FormationIdValue = reader.GetValue(_formationIdOrdinal);
-                                if (FormationIdValue != DBNull.Value)
-                                    currFormationId = (int)FormationIdValue;
-                                else
-                                    currFormationId = -1;
-                            }
-
-                            // Get the current Management id.
-                            if (_managementIdOrdinal != -1)
-                            {
-                                object ManagementIdValue = reader.GetValue(_managementIdOrdinal);
-                                if (ManagementIdValue != DBNull.Value)
-                                    currManagementId = (int)ManagementIdValue;
-                                else
-                                    currManagementId = -1;
-                            }
-
-                            // Get the current Complex id.
-                            if (_complexIdOrdinal != -1)
-                            {
-                                object ComplexIdValue = reader.GetValue(_complexIdOrdinal);
-                                if (ComplexIdValue != DBNull.Value)
-                                    currComplexId = (int)ComplexIdValue;
-                                else
-                                    currComplexId = -1;
-                            }
-
-                            // Get the current bap id (or equivalent lookup table field).
-                            if (_bapIdOrdinal != -1)
-                            {
-                                object bapIdValue = reader.GetValue(_bapIdOrdinal);
-                                if (bapIdValue != DBNull.Value)
-                                    currBapId = (int)bapIdValue;
-                                else
-                                    currBapId = -1;
-                            }
-
-                            // Get the current source id (or equivalent lookup table field).
-                            if (_sourceIdOrdinal != -1)
-                            {
-                                object sourceIdValue = reader.GetValue(_sourceIdOrdinal);
-                                if (sourceIdValue != DBNull.Value)
-                                    currSourceId = (int)sourceIdValue;
-                                else
-                                    currSourceId = -1;
-                            }
-
-                            //---------------------------------------------------------------------
-                            // CHANGED: CR17 (Exporting date fields)
-                            // Store all of the source date fields for use later when
-                            // formatting the attribute data.
-                            //
-                            // Get the current source date start.
-                            if ((_sourceDateStartOrdinals.Count() > 0) &&
-                                !reader.IsDBNull(_sourceDateStartOrdinals[0]))
-                                currSourceDateStart = reader.GetInt32(_sourceDateStartOrdinals[0]);
-
-                            // Get the current source date type.
-                            if ((_sourceDateEndOrdinals.Count() > 0) &&
-                                !reader.IsDBNull(_sourceDateEndOrdinals[0]))
-                                currSourceDateEnd = reader.GetInt32(_sourceDateEndOrdinals[0]);
-
-                            // Get the current source date type.
-                            if ((_sourceDateTypeOrdinals.Count() > 0) &&
-                                !reader.IsDBNull(_sourceDateTypeOrdinals[0]))
-                                currSourceDateType = reader.GetString(_sourceDateTypeOrdinals[0]);
-                            //---------------------------------------------------------------------
-
-                            // If this incid is different to the last record's incid
-                            // then process all the fields.
-                            if (currIncid != prevIncid)
-                            {
-                                // If the last export row has not been added then
-                                // add it now.
-                                if (!exportRow.IsNull(fieldMap[0][1]))
-                                {
-                                    exportTable.Rows.Add(exportRow);
-                                    rowAdded = true;
-
-                                    // Increment the output row count.
-                                    outputRowCount += 1;
-
-                                    // Commit the outputs and update the export row count
-                                    // every 10,000 records to avoid excessive memory use.
-                                    if (outputRowCount >= 10000)
-                                    {
-                                        exportRowCount += adapterOut.Update(datasetOut);
-                                        outputRowCount = 0;
-                                    }
-                                }
-
-                                // Store the last incid.
-                                prevIncid = currIncid;
-
-                                matrixIds = new List<int>();
-                                formationIds = new List<int>();
-                                managementIds = new List<int>();
-                                complexIds = new List<int>();
-                                bapIds = new List<int>();
-                                sourceIds = new List<int>();
-
-                                // Reset the field map indexes to the start of the array.
-                                for (int k = 0; k < fieldMap.Length; k++)
-                                {
-                                    fieldMapIndex[k] = 1;
-                                }
-
-                                // Create a new export row ready for the next values.
-                                exportRow = exportTable.NewRow();
-                                rowAdded = false;
-
-                                // Loop through all the fields in the field map
-                                // to transfer the values from the input reader
-                                // to the correct field in the export row.
-                                for (int i = 0; i < fieldMap.GetLength(0); i++)
-                                {
-                                    // Set the export column ordinal from the current
-                                    // field map index for this field.
-                                    exportColumn = fieldMap[i][fieldMapIndex[i]];
-
-                                    // Increment the field map index for this field.
-                                    fieldMapIndex[i] += 1;
-
-                                    // If this field is not mapped from the input reader
-                                    // set the export table value to null.
-                                    if (fieldMap[i][0] == -1)
-                                        continue;
-
-                                    // Store the input value of the current column.
-                                    object inValue = reader.GetValue(fieldMap[i][0]);
-
-                                    // If the value is null then skip this field.
-                                    if (inValue == DBNull.Value)
-                                        continue;
-
-                                    // Get the properties for the current export field.
-                                    ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
-
-                                    // Convert the input value to the output value data type and format.
-                                    object outValue;
-                                    outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
-                                        exportTable2.Columns[exportColumn].DataType,
-                                        (exportField != null) ? exportField.FieldFormat : null,
-                                        currSourceDateStart, currSourceDateEnd, currSourceDateType);
-
-                                    // If the value is not null.
-                                    if (outValue != null)
-                                    {
-                                        // Get the maximum length of the column.
-                                        int fieldLength = exportTable2.Columns[exportColumn].MaxLength;
-
-                                        // If the maximum length of the column is shorter
-                                        // than the value then truncate the value as it
-                                        // is transferred  to the export row.
-                                        if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
-                                            exportRow[exportColumn] = outValue.ToString().Substring(0, fieldLength);
-                                        else
-                                            exportRow[exportColumn] = outValue;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // Loop through all the fields in the field map
-                                // to transfer the values from the input reader
-                                // to the correct field in the export row.
-                                for (int i = 0; i < fieldMap.GetLength(0); i++)
-                                {
-                                    // Only process fields that have multiple outputs
-                                    // specified in the field map.
-                                    if (fieldMapIndex[i] < fieldMap[i].Length)
-                                    {
-                                        // Set the export column ordinal from the current
-                                        // field map index for this field.
-                                        exportColumn = fieldMap[i][fieldMapIndex[i]];
-
-                                        // If the value is not null and the string value is different
-                                        // to the last string value for this incid, or, the column is
-                                        // allowed to have duplicates and the bap or source is different
-                                        // to the last bap or source, then output the value.
-                                        if (Array.IndexOf(matrixOrdinals, exportColumn) != -1)
-                                        {
-                                            if (matrixIds.Contains(currMatrixId))
-                                                continue;
-                                        }
-                                        else if (Array.IndexOf(formationOrdinals, exportColumn) != -1)
-                                        {
-                                            if (formationIds.Contains(currFormationId))
-                                                continue;
-                                        }
-                                        else if (Array.IndexOf(managementOrdinals, exportColumn) != -1)
-                                        {
-                                            if (managementIds.Contains(currManagementId))
-                                                continue;
-                                        }
-                                        else if (Array.IndexOf(complexOrdinals, exportColumn) != -1)
-                                        {
-                                            if (complexIds.Contains(currComplexId))
-                                                continue;
-                                        }
-                                        else if (Array.IndexOf(bapOrdinals, exportColumn) != -1)
-                                        {
-                                            if (bapIds.Contains(currBapId))
-                                                continue;
-                                        }
-                                        else if (Array.IndexOf(sourceOrdinals, exportColumn) != -1)
-                                        {
-                                            if (sourceIds.Contains(currSourceId))
-                                                continue;
-                                        }
-
-                                        // Increment the field map index for this field.
-                                        fieldMapIndex[i] += 1;
-
-                                        // If this field is not mapped from the input reader
-                                        // set the export table value to null.
-                                        if (fieldMap[i][0] == -1)
-                                            continue;
-
-                                        // Store the input value of the current column.
-                                        object inValue = reader.GetValue(fieldMap[i][0]);
-
-                                        // If the value is null then skip this field.
-                                        if (inValue == DBNull.Value)
-                                            continue;
-
-                                        // Get the properties for the current export field.
-                                        ExportField exportField = exportFields.Find(f => f.FieldOrdinal == i);
-
-                                        // Convert the input value to the output value data type and format.
-                                        object outValue;
-                                        outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
-                                            exportTable2.Columns[exportColumn].DataType,
-                                            (exportField != null) ? exportField.FieldFormat : null,
-                                            currSourceDateStart, currSourceDateEnd, currSourceDateType);
-
-                                        // If the value is not null.
-                                        if (outValue != null)
-                                        {
-                                            // Get the maximum length of the output column.
-                                            int fieldLength = exportTable2.Columns[exportColumn].MaxLength;
-
-                                            // If the maximum length of the column is shorter
-                                            // than the value then truncate the value as it
-                                            // is transferred  to the export row.
-                                            if ((fieldLength != -1) && (fieldLength < outValue.ToString().Length))
-                                                exportRow[exportColumn] = outValue.ToString().Substring(0, fieldLength);
-                                            else
-                                                exportRow[exportColumn] = outValue;
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Store the current ids so that they are not output again.
-                            matrixIds.Add(currMatrixId);
-                            formationIds.Add(currFormationId);
-                            managementIds.Add(currManagementId);
-                            complexIds.Add(currComplexId);
-                            bapIds.Add(currBapId);
-                            sourceIds.Add(currSourceId);
-                        }
-                    }
-
-                    // If the last export row has not been saved then
-                    // save it now.
-                    if (!rowAdded && (!exportRow.IsNull(fieldMap[0][1])))
-                    {
-                        exportTable.Rows.Add(exportRow);
-                        rowAdded = true;
-
-                        // Increment the output row count.
-                        outputRowCount += 1;
-                    }
-                }
-
-                // Commit any remaining outputs and update the export row count.
-                exportRowCount += adapterOut.Update(datasetOut);
-
-                // Turn notifications and index maintenance back on again.
-                exportTable.EndLoadData();
-
-                // Exit if no records were exported.
-                if (exportRowCount < 1)
-                    throw new Exception("Export query did not retrieve any rows");
-
-                return exportRowCount;
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format("Export failed. The error message was:\n\n{0}.",
-                    ex.Message), "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                // Delete the temporary database if it was created.
-                if (File.Exists(tempPath))
-                {
-                    try { File.Delete(tempPath); }
-                    catch { _viewModelMain.ExportMdbs.Add(tempPath); }
-                }
-
-                // Return a zero export row count as the export didn't finish.
-                return 0;
-            }
-            finally
-            {
-                if ((dbOut != null) && (dbOut.Connection.State != ConnectionState.Closed))
-                {
-                    try { dbOut.Connection.Close(); }
-                    catch { }
-                }
-            }
-        }
-
         /// <summary>
         /// Exports the attribute data to a temporary access database. Uses DAO instead
         /// of a DataAdapter to improve performance.
@@ -1640,6 +1304,7 @@ namespace HLU.UI.ViewModel
         /// <param name="exportFields">The list of export fields to create in the temporary database.</param>
         /// <param name="exportTable">The DataTable of the export table.</param>
         /// <param name="sortOrdinals">The column ordinals of the sort columns.</param>
+        /// <param name="conditionOrdinals">The column ordinals of the condition columns.</param>
         /// <param name="matrixOrdinals">The column ordinals of the matrix columns.</param>
         /// <param name="formationOrdinals">The column ordinals of the formation columns.</param>
         /// <param name="managementOrdinals">The column ordinals of the management columns.</param>
@@ -1649,7 +1314,7 @@ namespace HLU.UI.ViewModel
         /// <param name="fieldMap">The field mapping from the input source to the output table.</param>
         /// <returns></returns>
         private int ExportMdb(string tempPath, string targetListStr, string fromClauseStr, List<List<SqlFilterCondition>> exportFilter,
-            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals,
+            DbBase dataBase, List<ExportField> exportFields, DataTable exportTable, int[] sortOrdinals, int[] conditionOrdinals,
             int[] matrixOrdinals, int[] formationOrdinals, int[] managementOrdinals, int[] complexOrdinals, int[] bapOrdinals, int[] sourceOrdinals,
             int[][] fieldMap)
         {
@@ -1710,6 +1375,10 @@ namespace HLU.UI.ViewModel
 
                         string currIncid = String.Empty;
                         string prevIncid = String.Empty;
+                        int currConditionId = -1;
+                        int currConditionDateStart = 0;
+                        int currConditionDateEnd = 0;
+                        string currConditionDateType = String.Empty;
                         int currMatrixId = -1;
                         int currFormationId = -1;
                         int currManagementId = -1;
@@ -1718,13 +1387,14 @@ namespace HLU.UI.ViewModel
                         int currSourceId = -1;
                         int currSourceDateStart = 0;
                         int currSourceDateEnd = 0;
+                        string currSourceDateType = String.Empty;
+                        List<int> conditionIds = null;
                         List<int> matrixIds = null;
                         List<int> formationIds = null;
                         List<int> managementIds = null;
                         List<int> complexIds = null;
                         List<int> bapIds = null;
                         List<int> sourceIds = null;
-                        string currSourceDateType = String.Empty;
                         int exportColumn;
 
                         // Read each record and process the contents.
@@ -1732,6 +1402,16 @@ namespace HLU.UI.ViewModel
                         {
                             // Get the current incid.
                             currIncid = reader.GetString(_incidOrdinal);
+
+                            // Get the current condition id (or equivalent lookup table field).
+                            if (_conditionIdOrdinal != -1)
+                            {
+                                object conditionIdValue = reader.GetValue(_conditionIdOrdinal);
+                                if (conditionIdValue != DBNull.Value)
+                                    currConditionId = (int)conditionIdValue;
+                                else
+                                    currConditionId = -1;
+                            }
 
                             // Get the current matrix id.
                             if (_matrixIdOrdinal != -1)
@@ -1803,7 +1483,7 @@ namespace HLU.UI.ViewModel
                                 !reader.IsDBNull(_sourceDateStartOrdinals[0]))
                                 currSourceDateStart = reader.GetInt32(_sourceDateStartOrdinals[0]);
 
-                            // Get the current source date type.
+                            // Get the current source date end.
                             if ((_sourceDateEndOrdinals.Count() > 0) &&
                                 !reader.IsDBNull(_sourceDateEndOrdinals[0]))
                                 currSourceDateEnd = reader.GetInt32(_sourceDateEndOrdinals[0]);
@@ -1812,6 +1492,24 @@ namespace HLU.UI.ViewModel
                             if ((_sourceDateTypeOrdinals.Count() > 0) &&
                                 !reader.IsDBNull(_sourceDateTypeOrdinals[0]))
                                 currSourceDateType = reader.GetString(_sourceDateTypeOrdinals[0]);
+
+                            // Store all of the condition date fields for use later when
+                            // formatting the attribute data.
+                            //
+                            // Get the current condition date start.
+                            if ((_conditionDateStartOrdinal != -1) &&
+                                !reader.IsDBNull(_conditionDateStartOrdinal))
+                                currConditionDateStart = reader.GetInt32(_conditionDateStartOrdinal);
+
+                            // Get the current source date end.
+                            if ((_conditionDateEndOrdinal != -1) &&
+                                !reader.IsDBNull(_conditionDateEndOrdinal))
+                                currConditionDateEnd = reader.GetInt32(_conditionDateEndOrdinal);
+
+                            // Get the current condition date type.
+                            if ((_conditionDateTypeOrdinal != -1) &&
+                                !reader.IsDBNull(_conditionDateTypeOrdinal))
+                                currConditionDateType = reader.GetString(_conditionDateTypeOrdinal);
                             //---------------------------------------------------------------------
 
                             // If this incid is different to the last record's incid
@@ -1832,6 +1530,7 @@ namespace HLU.UI.ViewModel
                                 // Store the last incid.
                                 prevIncid = currIncid;
 
+                                conditionIds = new List<int>();
                                 matrixIds = new List<int>();
                                 formationIds = new List<int>();
                                 managementIds = new List<int>();
@@ -1886,7 +1585,8 @@ namespace HLU.UI.ViewModel
                                     outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
                                         exportTable.Columns[exportColumn].DataType,
                                         (exportField != null) ? exportField.FieldFormat : null,
-                                        currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                        currSourceDateStart, currSourceDateEnd, currSourceDateType,
+                                        currConditionDateStart, currConditionDateEnd, currConditionDateType);
 
                                     // If the value is not null.
                                     if (outValue != null)
@@ -1921,9 +1621,14 @@ namespace HLU.UI.ViewModel
 
                                         // If the value is not null and the string value is different
                                         // to the last string value for this incid, or, the column is
-                                        // allowed to have duplicates and the bap or source is different
-                                        // to the last bap or source, then output the value.
-                                        if (Array.IndexOf(matrixOrdinals, exportColumn) != -1)
+                                        // allowed to have duplicates and the condition, bap or source is different
+                                        // to the last condition, bap or source, then output the value.
+                                        if (Array.IndexOf(conditionOrdinals, exportColumn) != -1)
+                                        {
+                                            if (conditionIds.Contains(currConditionId))
+                                                continue;
+                                        }
+                                        else if (Array.IndexOf(matrixOrdinals, exportColumn) != -1)
                                         {
                                             if (matrixIds.Contains(currMatrixId))
                                                 continue;
@@ -1981,7 +1686,8 @@ namespace HLU.UI.ViewModel
                                         outValue = ConvertInput(fieldMap[i][0], inValue, reader.GetFieldType(fieldMap[i][0]),
                                             exportTable.Columns[exportColumn].DataType,
                                             (exportField != null) ? exportField.FieldFormat : null,
-                                            currSourceDateStart, currSourceDateEnd, currSourceDateType);
+                                            currSourceDateStart, currSourceDateEnd, currSourceDateType,
+                                            currConditionDateStart, currConditionDateEnd, currConditionDateType);
 
                                         // If the value is not null.
                                         if (outValue != null)
@@ -2002,6 +1708,7 @@ namespace HLU.UI.ViewModel
                             }
 
                             // Store the current ids so that they are not output again.
+                            conditionIds.Add(currConditionId);
                             matrixIds.Add(currMatrixId);
                             formationIds.Add(currFormationId);
                             managementIds.Add(currManagementId);
@@ -2057,7 +1764,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets the length of the original source field.
+        /// Gets the length of the original input field.
         /// </summary>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="columnOrdinal">The column ordinal.</param>
@@ -2103,11 +1810,17 @@ namespace HLU.UI.ViewModel
         /// <param name="sourceDateStart">The source date start.</param>
         /// <param name="sourceDateEnd">The source date end.</param>
         /// <param name="sourceDateType">The source date type.</param>
+        /// <param name="conditionDateStart">The condition date start.</param>
+        /// <param name="conditionDateEnd">The condition date end.</param>
+        /// <param name="conditionDateType">The condition date type.</param>
         /// <returns></returns>
         private object ConvertInput(int inOrdinal, object inValue, System.Type inType,
-            System.Type outType, string outFormat, int sourceDateStart, int sourceDateEnd, string sourceDateType)
+            System.Type outType, string outFormat, int sourceDateStart, int sourceDateEnd, string sourceDateType,
+            int conditionDateStart, int conditionDateEnd, string conditionDateType)
         {
+            //---------------------------------------------------------------------
             // If the output field is a DateTime.
+            //---------------------------------------------------------------------
             if (outType == System.Type.GetType("System.DateTime"))
             {
                 // If the input field is also a DateTime
@@ -2147,6 +1860,34 @@ namespace HLU.UI.ViewModel
                             return null;
                     }
                 }
+                // If the input field is an integer and is part of
+                // the condition date.
+                else if ((inType == System.Type.GetType("System.Int32")) &&
+                    (_conditionDateStartOrdinal == inOrdinal || _conditionDateEndOrdinal == inOrdinal))
+                {
+                    // Convert the value to an integer.
+                    int inInt = (int)inValue;
+
+                    // Convert the value to a vague date instance.
+                    string vt = "D";
+                    VagueDateInstance vd = new VagueDateInstance(inInt, inInt, vt);
+
+                    // If the vague date is invalid then return null.
+                    if ((vd == null) || (vd.IsBad) || (vd.IsUnknown))
+                        return null;
+                    else
+                    {
+                        // If the vague date is valid then parse it into
+                        // a date format.
+                        string itemStr = VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        DateTime inDate;
+                        if (DateTime.TryParseExact(itemStr, "dd/MM/yyyy",
+                            null, DateTimeStyles.None, out inDate))
+                            return inDate;
+                        else
+                            return null;
+                    }
+                }
                 else
                 {
                     // Otherwise, try and parse the input value as
@@ -2161,12 +1902,16 @@ namespace HLU.UI.ViewModel
                         return null;
                 }
             }
+            //---------------------------------------------------------------------
             // If the output field is a string and there is
             // a required output format.
+            //---------------------------------------------------------------------
             else if ((outType == System.Type.GetType("System.String")) &&
                 (outFormat != null))
             {
+                //---------------------------------------------------------------------
                 // If the input field is a DateTime field.
+                //---------------------------------------------------------------------
                 if (inType == System.Type.GetType("System.DateTime"))
                 {
                     // If the input value is a valid DateTime then
@@ -2198,6 +1943,7 @@ namespace HLU.UI.ViewModel
                 //
                 // If the input field is an integer and is part of
                 // the source date.
+                //---------------------------------------------------------------------
                 else if ((inType == System.Type.GetType("System.Int32")) &&
                     (_sourceDateStartOrdinals.Contains(inOrdinal) || _sourceDateEndOrdinals.Contains(inOrdinal)))
                 {
@@ -2302,6 +2048,97 @@ namespace HLU.UI.ViewModel
                     }
                 }
                 //---------------------------------------------------------------------
+                // If the input field is an integer and is part of
+                // the condition date.
+                //---------------------------------------------------------------------
+                else if ((inType == System.Type.GetType("System.Int32")) &&
+                    (_conditionDateStartOrdinal == inOrdinal || _conditionDateEndOrdinal == inOrdinal))
+                {
+                    // Convert the value to an integer.
+                    int inInt = (int)inValue;
+
+                    // Convert the value to a vague date instance.
+                    VagueDateInstance vd = new VagueDateInstance(conditionDateStart, conditionDateEnd, conditionDateType);
+
+                    // If the vague date is invalid then set the output
+                    // field to null.
+                    if ((vd == null) || (vd.IsBad))
+                        return null;
+                    else if (vd.IsUnknown)
+                        return VagueDate.VagueDateTypes.Unknown.ToString();
+                    else
+                    {
+                        // If the output format is 'v' or 'V' then format the dates according
+                        // to the condition date type.
+                        if (outFormat.ToLower() == "v")
+                        {
+                            return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Vague);
+                        }
+                        // If the output format is blank then format the start or end date
+                        // according to the condition date type.
+                        else if (String.IsNullOrEmpty(outFormat))
+                        {
+                            if (_conditionDateStartOrdinal == inOrdinal)
+                            {
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.Start);
+                            }
+                            else if (_conditionDateEndOrdinal == inOrdinal)
+                            {
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.End);
+                            }
+                            else
+                                return null;
+                        }
+                        // If the output format is a vague date type then format it
+                        // like that.
+                        else if (VagueDate.FromCode(outFormat) != VagueDate.VagueDateTypes.Unknown)
+                        {
+                            // If the field is a start date then use the first character of
+                            // the vague date type.
+                            if (_conditionDateStartOrdinal == inOrdinal)
+                            {
+                                // Set the date type applicable to the condition date.
+                                string dateType = outFormat.Substring(0, 1);
+
+                                return VagueDate.FromVagueDateInstance(new VagueDateInstance(conditionDateStart, conditionDateEnd, dateType),
+                                    VagueDate.DateType.Start);
+                            }
+                            // If the field is an end date then use the last character of
+                            // the vague date type.
+                            else if (_conditionDateEndOrdinal == inOrdinal)
+                            {
+                                // Set the date type applicable to the condition date.
+                                vd.DateType = outFormat.Length == 1 ? outFormat + outFormat : outFormat;
+
+                                return VagueDate.FromVagueDateInstance(vd, VagueDate.DateType.End);
+                            }
+                            else
+                                return null;
+                        }
+                        // If the output format is not a vague date type then format it
+                        // as if it is a standard date format (e.g. dd/MM/yyyy).
+                        else
+                        {
+                            // Parse the date into a date format using the output format.
+                            VagueDate.DateType dateType = VagueDate.DateType.Vague;
+                            if (_conditionDateStartOrdinal == inOrdinal)
+                                dateType = VagueDate.DateType.Start;
+                            else if (_conditionDateEndOrdinal == inOrdinal)
+                                dateType = VagueDate.DateType.End;
+
+                            string inStr = VagueDate.FromVagueDateInstance(new VagueDateInstance(conditionDateStart, conditionDateEnd, "D"), dateType);
+                            DateTime inDate;
+                            if (!DateTime.TryParseExact(inStr, "dd/MM/yyyy", null, DateTimeStyles.None, out inDate))
+                                return null;
+
+                            // Convert the DateTime to a string of the output format.
+                            string outDate;
+                            outDate = inDate.ToString(outFormat);
+
+                            return outDate;
+                        }
+                    }
+                }
                 else
                 {
                     // Otherwise, try and parse the input value as
@@ -2417,7 +2254,12 @@ namespace HLU.UI.ViewModel
                     if (Regex.IsMatch(fieldName, @"(<no>)", RegexOptions.IgnoreCase))
                         fld.FieldName = fieldName.Replace("<no>", i.ToString());
                     else
-                        fld.FieldName = String.Format("{0}_{1}", fieldName, i);
+                    {
+                        if (numFields == 1)
+                            fld.FieldName = fieldName;
+                        else
+                            fld.FieldName = String.Format("{0}_{1}", fieldName, i);
+                    }
 
                     fld.FieldType = dataType;
 

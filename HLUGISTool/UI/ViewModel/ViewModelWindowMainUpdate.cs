@@ -147,11 +147,11 @@ namespace HLU.UI.ViewModel
 
                 // Update the GIS layer
                 DataTable historyTable = _viewModelMain.GISApplication.UpdateFeatures(new DataColumn[] { 
-                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_determinationColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.habitat_interpretationColumn,
-                    _viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn },
+                    _viewModelMain.HluDataset.incid_mm_polygons.habprimaryColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.habsecondColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.determqtyColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.interpqtyColumn,
+                    _viewModelMain.HluDataset.incid_mm_polygons.interpcomColumn },
                     new object[] { _viewModelMain.IncidPrimary != null ? _viewModelMain.IncidPrimary : "",
                         _viewModelMain.IncidSecondarySummary != null ? _viewModelMain.IncidSecondarySummary : "",
                         _viewModelMain.IncidQualityDetermination != null ? _viewModelMain.IncidQualityDetermination : "",
@@ -170,15 +170,15 @@ namespace HLU.UI.ViewModel
                 // Likewise update the DB shadow copy of the GIS layer
                 String updateStatement = String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8}, {9}={10} WHERE {11}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_primaryColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habprimaryColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidPrimary),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_secondariesColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habsecondColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidSecondarySummary),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_determinationColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.determqtyColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityDetermination),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.habitat_interpretationColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.interpqtyColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityInterpretation),
-                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.interpretation_commentsColumn.ColumnName),
+                    _viewModelMain.DataBase.QuoteIdentifier(_viewModelMain.HluDataset.incid_mm_polygons.interpcomColumn.ColumnName),
                     _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidQualityComments),
                     _viewModelMain.DataBase.WhereClause(false, true, true, incidCond));
 

@@ -248,7 +248,7 @@ namespace HLU.Data
                 try
                 {
                     object retVal = _db.ExecuteScalar(String.Format("SELECT MAX({0}) FROM {1} WHERE {2} = {3}",
-                        _db.QuoteIdentifier(_hluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName),
+                        _db.QuoteIdentifier(_hluDataset.incid_mm_polygons.toidfragidColumn.ColumnName),
                         _db.QualifyTableName(_hluDataset.incid_mm_polygons.TableName),
                         _db.QuoteIdentifier(_hluDataset.incid_mm_polygons.toidColumn.ColumnName),
                         _db.QuoteValue(toid)), _db.Connection.ConnectionTimeout, CommandType.Text);

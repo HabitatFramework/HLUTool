@@ -1852,7 +1852,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// At least one feature in selection that share the same incid, but *not* toid and toid_fragment_id
+        /// At least one feature in selection that share the same incid, but *not* toid and toidfragid
         /// </summary>
         private bool CanLogicallySplit
         {
@@ -1876,7 +1876,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// At least two features in selection that share the same incid, toid and toid_fragment_id
+        /// At least two features in selection that share the same incid, toid and toidfragid
         /// </summary>
         private bool CanPhysicallySplit
         {
@@ -1982,7 +1982,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// At least one feature in selection that do not share the same incid or toid_fragment_id
+        /// At least one feature in selection that do not share the same incid or toidfragid
         /// </summary>
         private bool CanLogicallyMerge
         {
@@ -1998,7 +1998,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// At least one feature in selection that share the same incid and toid but *not* the same toid_fragment_id
+        /// At least one feature in selection that share the same incid and toid but *not* the same toidfragid
         /// </summary>
         private bool CanPhysicallyMerge
         {
@@ -3699,6 +3699,7 @@ namespace HLU.UI.ViewModel
 
                 OnPropertyChanged("IncidQualityDetermination");
                 OnPropertyChanged("IncidQualityInterpretation");
+                OnPropertyChanged("IncidQualityComments");
             }
         }
 
@@ -7554,7 +7555,7 @@ namespace HLU.UI.ViewModel
                 .Remove(0, 1).ToString());
 
             childRowOrberByDict.Add(typeof(HluDataSet.incid_conditionDataTable), _hluDS.incid_condition.PrimaryKey
-                .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + _db.QuoteIdentifier(c.ColumnName)))
+                .Aggregate(new StringBuilder(), (sb, c) => sb.Append("," + String.Format("{0} DESC", _db.QuoteIdentifier(c.ColumnName))))
                 .Remove(0, 1).ToString());
 
             childRowOrberByDict.Add(typeof(HluDataSet.incid_ihs_matrixDataTable), _hluDS.incid_ihs_matrix.PrimaryKey
@@ -7783,14 +7784,24 @@ namespace HLU.UI.ViewModel
                     childConds[i] = cond;
                 }
 
-                string orderByClause;
-                if (_childRowOrderByDict.TryGetValue(typeof(C), out orderByClause))
-                    adapter.Fill(childTable, String.Format("{0} ORDER BY {1}",
-                        _db.WhereClause(false, true, true, childConds), orderByClause));
-                else
-                    adapter.Fill(childTable, childConds);
+                //string orderByClause;
+                //if (_childRowOrderByDict.TryGetValue(typeof(C), out orderByClause))
+                //    adapter.Fill(childTable, String.Format("{0} ORDER BY {1}",
+                //        _db.WhereClause(false, true, true, childConds), orderByClause));
+                //else
+                //    adapter.Fill(childTable, childConds);
 
-                return (R[])childTable.Select();
+                //return (R[])childTable.Select();
+
+                // Sort after the Fill as the Select seems to be re-sorting
+                // the rows after the Fill.
+                string orderByClause;
+                adapter.Fill(childTable, childConds);
+
+                if (_childRowOrderByDict.TryGetValue(typeof(C), out orderByClause))
+                    return (R[])childTable.Select(null, orderByClause);
+                else
+                    return (R[])childTable.Select();
             }
             else
             {
@@ -8249,17 +8260,22 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("TabItemDetailsEnabled");
             OnPropertyChanged("TabDetailsControlsEnabled");
             OnPropertyChanged("DetailsTabLabel");
+
             OnPropertyChanged("IncidGeneralComments");
             OnPropertyChanged("IncidBoundaryBaseMap");
             OnPropertyChanged("IncidDigitisationBaseMap");
             OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
+
             OnPropertyChanged("IncidSiteRef");
             OnPropertyChanged("IncidSiteName");
+
             OnPropertyChanged("ConditionCodes");
             OnPropertyChanged("IncidCondition");
             OnPropertyChanged("IncidConditionQualifier");
             OnPropertyChanged("IncidConditionDate");
+            OnPropertyChanged("IncidConditionEnabled");
+
             OnPropertyChanged("QualityDeterminationCodes");
             OnPropertyChanged("IncidQualityDetermination");
             OnPropertyChanged("QualityInterpretationCodes");
@@ -11549,6 +11565,7 @@ namespace HLU.UI.ViewModel
                         OnPropertyChanged("ConditionCodes");
                         OnPropertyChanged("IncidConditionQualifier");
                         OnPropertyChanged("IncidConditionDate");
+                        OnPropertyChanged("IncidConditionEnabled");
                     }
                 }
             }
@@ -11705,6 +11722,12 @@ namespace HLU.UI.ViewModel
                 }
             }
             catch { }
+        }
+
+        public bool IncidConditionEnabled
+        {
+            // Disable remaining condition fields when condition is blank
+            get { return (IncidCondition != null); }
         }
 
         #endregion
@@ -13617,6 +13640,9 @@ namespace HLU.UI.ViewModel
                         if (String.IsNullOrEmpty(IncidQualityInterpretation))
                             error.Append(Environment.NewLine).Append("Quality interpretation is mandatory for every INCID");
                     }
+
+                    if ((!String.IsNullOrEmpty(IncidQualityComments) && String.IsNullOrEmpty(IncidQualityInterpretation)))
+                        error.Append(Environment.NewLine).Append("Interpretation comments are invalid without interpretation quality");
                 }
 
                 if (String.IsNullOrEmpty(IncidPrimary) && _bulkUpdateMode == false)
@@ -13853,7 +13879,7 @@ namespace HLU.UI.ViewModel
                         case "IncidQualityDetermination":
                             if ((_qualityValidation == 1) && (String.IsNullOrEmpty(IncidQualityDetermination)))
                             {
-                                error = "Error: Quality determination is mandatory for every INCID";
+                                error = "Error: Determination quality is mandatory for every INCID";
                                 AddErrorList(ref _detailsErrors, columnName);
                             }
                             else
@@ -13865,7 +13891,19 @@ namespace HLU.UI.ViewModel
                         case "IncidQualityInterpretation":
                             if ((_qualityValidation == 1) && (String.IsNullOrEmpty(IncidQualityInterpretation)))
                             {
-                                error = "Error: Quality interpretation is mandatory for every INCID";
+                                error = "Error: Interpretation quality is mandatory for every INCID";
+                                AddErrorList(ref _detailsErrors, columnName);
+                            }
+                            else
+                            {
+                                DelErrorList(ref _detailsErrors, columnName);
+                            }
+                            OnPropertyChanged("DetailsTabLabel");
+                            break;
+                        case "IncidQualityComments":
+                            if ((!String.IsNullOrEmpty(IncidQualityComments)) && String.IsNullOrEmpty(IncidQualityInterpretation))
+                            {
+                                error = "Error: Interpretation comments are invalid without interpretation quality";
                                 AddErrorList(ref _detailsErrors, columnName);
                             }
                             else

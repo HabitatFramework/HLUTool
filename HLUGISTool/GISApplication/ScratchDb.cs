@@ -293,17 +293,15 @@ namespace HLU.GISApplication
             //
             // Add order by from list of sort ordinals.
             StringBuilder sql = new StringBuilder();
-            sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
-                    .Append(sortOrdinals != null ? String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x.ToString()).ToArray())) : String.Empty);
+            // Sort negative sortOrdinals in descending order
+            //sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)))
+            //        .Append(sortOrdinals != null ? String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x.ToString()).ToArray())) : String.Empty);
+            sql.Append(String.Format("SELECT {0} FROM {1}{2}", targetList, fromClause, db.WhereClause(true, true, true, IncidSelectionWhereClause)));
+            if (sortOrdinals != null)
+                sql.Append(String.Format(" ORDER BY {0}", string.Join(", ", sortOrdinals.Select(x => x < 0 ? String.Format("{0} DESC", Math.Abs(x).ToString()) : x.ToString()).ToArray())));
             //---------------------------------------------------------------------
             
             return sql.ToString();
-
-            //return db.WhereClause(true, true, true, IncidSelectionWhereClause)
-            //    .Aggregate(new StringBuilder(), (sb, s) => sb.Append(String.Format(
-            //        "\nUNION\nSELECT {0} FROM {1}{2}", targetList, fromClause, s))).Remove(0, 7)
-            //        .Append(orderByOrdinal > 0 ? String.Format(" ORDER BY {0}", orderByOrdinal + 1) : String.Empty)
-            //        .ToString();
         }
         
         public static void CleanUp()

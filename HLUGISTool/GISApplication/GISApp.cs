@@ -143,12 +143,12 @@ namespace HLU.GISApplication
             DataColumn[] historyColumns, string tempMdbPathName, string selectionTableName);
 
         /// <summary>
-        /// Following a feature split performed by the user with regular GIS tools, updates the toid_fragment_id of 
-        /// the newly created feature(s), incrementing from the highest toid_fragment_id for that toid passed as 
+        /// Following a feature split performed by the user with regular GIS tools, updates the toidfragid of 
+        /// the newly created feature(s), incrementing from the highest toidfragid for that toid passed as 
         /// parameter lastToidFragmentID.
         /// </summary>
-        /// <param name="currentToidFragmentID">Current toid_fragment_id for the selected toid.</param>
-        /// <param name="lastToidFragmentID">Highest toid_fragment_id for the selected toid.</param>
+        /// <param name="currentToidFragmentID">Current toidfragid for the selected toid.</param>
+        /// <param name="lastToidFragmentID">Highest toidfragid for the selected toid.</param>
         /// <param name="selectionWhereClause">Where clause underlying the current selection set.</param>
         /// <param name="historyColumns">All columns of the GIS layer structure except the geomtry property columns.</param>
         /// <returns>DataTable of all the features resulting from the split, with all the columns in historyColumns parameter
