@@ -1685,7 +1685,7 @@ namespace HLU
                         string numFormat = String.Format("D{0}", lastToidFragmentID.Length);
                         int newToidFragmentIDnum = Int32.Parse(lastToidFragmentID);
 
-                        int toidFragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int toidFragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         // temporary history list, sorted before adding to _pipeData
                         List<string> historyList = new List<string>();
@@ -1706,7 +1706,7 @@ namespace HLU
                         {
                             if (updateFeature.OID != minOID)
                             {
-                                // Set the toid_fragment_id to the next available number
+                                // Set the toidfragid to the next available number
                                 updateFeature.set_Value(toidFragOrdinal, (++newToidFragmentIDnum).ToString(numFormat));
                             }
                             else
@@ -1803,9 +1803,9 @@ namespace HLU
 
                     try
                     {
-                        string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                        string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
                         int incidOrdinal = _hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
-                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         var q = historyColumns.Where(n => _hluLayerStructure.Columns.Cast<DataColumn>()
                             .Count(c => c.ColumnName == n) == 0);
@@ -1848,7 +1848,7 @@ namespace HLU
 
         /// <summary>
         /// Checks if all the selected rows are unique in the active HLU
-        /// layer based on their toid and toid_fragment_id values.
+        /// layer based on their toid and toidfragid values.
         /// </summary>
         private void SelectedRowsUnique()
         {
@@ -1873,29 +1873,29 @@ namespace HLU
                     _hluFeatureSelection.SelectionSet.Search(null, false, out cursor);
                     IRow selectRow = cursor.NextRow();
 
-                    // Get the column ordinals for the toid and toid_fragment_id columns.
+                    // Get the column ordinals for the toid and toidfragid columns.
                     int toidOrdinal = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                    int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                    int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
-                    // Create 2 fields for the toid and toid_fragment_id fields.
+                    // Create 2 fields for the toid and toidfragid fields.
                     IField toidField = _hluFeatureClass.Fields.get_Field(
                         _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal]);
                     IField fragField = _hluFeatureClass.Fields.get_Field(
-                        _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal]);
+                        _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal]);
 
                     // Check if each row is unique based on the toid and
                     // toid fragment id.
                     while (selectRow != null)
                     {
-                        // Get the current toid and toid_fragment_id values.
+                        // Get the current toid and toidfragid values.
                         string toid = selectRow.get_Value(toidOrdinal).ToString();
                         string frag = selectRow.get_Value(fragOrdinal).ToString();
 
-                        // Build a query filter for the current toid and toid_fragment_id.
+                        // Build a query filter for the current toid and toidfragid.
                         IQueryFilter countQueryFilter = new QueryFilterClass();
                         countQueryFilter.WhereClause = String.Format("{0} = {1} AND {2} = {3}",
                             _hluLayerStructure.toidColumn.ColumnName, QuoteValue(toidField, toid),
-                            _hluLayerStructure.toid_fragment_idColumn.ColumnName, QuoteValue(toidField, frag));
+                            _hluLayerStructure.toidfragidColumn.ColumnName, QuoteValue(toidField, frag));
 
                         // Get the count value for the query filter.
                         int fragCount = _hluLayer.FeatureClass.FeatureCount(countQueryFilter);
@@ -2003,9 +2003,9 @@ namespace HLU
                             // Update the shape to the new merged geometry
                             resultFeature.Shape = resultGeom;
 
-                            // Set the toid_fragment_id to the same value (passed to this function) for all fragments
+                            // Set the toidfragid to the same value (passed to this function) for all fragments
                             resultFeature.set_Value(
-                                _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal], newToidFragmentID);
+                                _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal], newToidFragmentID);
 
                             //---------------------------------------------------------------------
                             // FIXED: KI106 (Shape area and length values)
@@ -2103,10 +2103,10 @@ namespace HLU
 
                     try
                     {
-                        string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                        string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
                         int incidOrdinal = _hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
                         int toidOrdinal = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         List<int> updateColumns = new List<int>();
                         for (int i = 0; i < mergeFeature.Fields.FieldCount; i++)
@@ -3793,7 +3793,7 @@ namespace HLU
                     int[] hluUidFieldOrdinals = new int[3];
                     hluUidFieldOrdinals[0] = hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
                     hluUidFieldOrdinals[1] = hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                    hluUidFieldOrdinals[2] = hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                    hluUidFieldOrdinals[2] = hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                     string[] hluFieldSysTypeNames = new string[hluFeatureClass.Fields.FieldCount];
                     Type sysType;

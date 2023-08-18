@@ -29,42 +29,42 @@
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="toid_fragment_id" msprop:Generator_ColumnVarNameInTable="columntoid_fragment_id" msprop:Generator_ColumnPropNameInRow="toid_fragment_id" msprop:Generator_ColumnPropNameInTable="toid_fragment_idColumn" msprop:Generator_UserColumnName="toid_fragment_id">
+              <xs:element name="toidfragid" msprop:Generator_ColumnVarNameInTable="columntoidfragid" msprop:Generator_ColumnPropNameInRow="toidfragid" msprop:Generator_ColumnPropNameInTable="toidfragidColumn" msprop:Generator_UserColumnName="toidfragid">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="5" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="habitat_primary" msprop:Generator_ColumnVarNameInTable="columnhabitat_primary" msprop:Generator_ColumnPropNameInRow="habitat_primary" msprop:Generator_ColumnPropNameInTable="habitat_primaryColumn" msprop:Generator_UserColumnName="habitat_primary" minOccurs="0">
+              <xs:element name="habprimary" msprop:Generator_ColumnVarNameInTable="columnhabprimary" msprop:Generator_ColumnPropNameInRow="habprimary" msprop:Generator_ColumnPropNameInTable="habprimaryColumn" msprop:Generator_UserColumnName="habprimary" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="8" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="habitat_secondaries" msprop:Generator_ColumnVarNameInTable="columnhabitat_secondaries" msprop:Generator_ColumnPropNameInRow="habitat_secondaries" msprop:Generator_ColumnPropNameInTable="habitat_secondariesColumn" msprop:Generator_UserColumnName="habitat_secondaries" minOccurs="0">
+              <xs:element name="habsecond" msprop:Generator_ColumnVarNameInTable="columnhabsecond" msprop:Generator_ColumnPropNameInRow="habsecond" msprop:Generator_ColumnPropNameInTable="habsecondColumn" msprop:Generator_UserColumnName="habsecond" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="80" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="habitat_determination" msprop:Generator_ColumnVarNameInTable="columnhabitat_determination" msprop:Generator_ColumnPropNameInRow="habitat_determination" msprop:Generator_ColumnPropNameInTable="habitat_determinationColumn" msprop:Generator_UserColumnName="habitat_determination" minOccurs="0">
+              <xs:element name="determqty" msprop:Generator_ColumnVarNameInTable="columndetermqty" msprop:Generator_ColumnPropNameInRow="determqty" msprop:Generator_ColumnPropNameInTable="determqtyColumn" msprop:Generator_UserColumnName="determqty" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="habitat_interpretation" msprop:Generator_ColumnVarNameInTable="columnhabitat_interpretation" msprop:Generator_ColumnPropNameInRow="habitat_interpretation" msprop:Generator_ColumnPropNameInTable="habitat_interpretationColumn" msprop:Generator_UserColumnName="habitat_interpretation" minOccurs="0">
+              <xs:element name="interpqty" msprop:Generator_ColumnVarNameInTable="columninterpqty" msprop:Generator_ColumnPropNameInRow="interpqty" msprop:Generator_ColumnPropNameInTable="interpqtyColumn" msprop:Generator_UserColumnName="interpqty" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="2" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="interpretation_comments" msprop:Generator_ColumnVarNameInTable="columninterpretation_comments" msprop:Generator_ColumnPropNameInRow="interpretation_comments" msprop:Generator_ColumnPropNameInTable="interpretation_commentsColumn" msprop:Generator_UserColumnName="interpretation_comments" minOccurs="0">
+              <xs:element name="interpcom" msprop:Generator_ColumnVarNameInTable="columninterpcom" msprop:Generator_ColumnPropNameInRow="interpcom" msprop:Generator_ColumnPropNameInTable="interpcomColumn" msprop:Generator_UserColumnName="interpcom" minOccurs="0">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:maxLength value="254" />
@@ -80,7 +80,7 @@
       <xs:selector xpath=".//mstns:incid_mm_polygons" />
       <xs:field xpath="mstns:incid" />
       <xs:field xpath="mstns:toid" />
-      <xs:field xpath="mstns:toid_fragment_id" />
+      <xs:field xpath="mstns:toidfragid" />
     </xs:unique>
   </xs:element>
 </xs:schema>

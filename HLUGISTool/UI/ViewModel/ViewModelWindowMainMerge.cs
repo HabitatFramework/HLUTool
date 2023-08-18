@@ -193,7 +193,7 @@ namespace HLU.UI.ViewModel
                         updateFields = (from c in polygons.Columns.Cast<DataColumn>()
                                         where (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.incidColumn.Ordinal) &&
                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toidColumn.Ordinal) &&
-                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.Ordinal) &&
+                                            (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.Ordinal) &&
                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.Ordinal) &&
                                             (c.Ordinal != _viewModelMain.HluDataset.incid_mm_polygons.shape_areaColumn.Ordinal)
                                         select new KeyValuePair<int, object>(c.Ordinal, keepPolygon[c.Ordinal])).ToList();
@@ -202,7 +202,7 @@ namespace HLU.UI.ViewModel
                     // Build an array of polygons to update (all except those with incid to keep)
                     var updatePolygons = from r in polygons
                                             where r.incid != keepIncid
-                                            orderby r.toid, r.toid_fragment_id
+                                            orderby r.toid, r.toidfragid
                                             select r;
 
                     // update shadow DB copy of GIS layer
@@ -347,15 +347,15 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("GIS Layer and database are out of sync:\n{0} map polygons, {1} rows in table {2}.", 
                         _viewModelMain.FragsSelectedMapCount, selectTable.Count, _viewModelMain.HluDataset.incid_mm_polygons.TableName));
 
-                // lowest toid_fragment_id in selection assigned to result feature
-                string newToidFragmentID = selectTable.Min(r => r.toid_fragment_id);
+                // lowest toidfragid in selection assigned to result feature
+                string newToidFragmentID = selectTable.Min(r => r.toidfragid);
 
                 // Choose (or prompt user to select) which feature to keep
                 if (selectTable.GroupBy(r => r.incid).Count() == 1)
                 {
                     int minFragmID = Int32.Parse(newToidFragmentID);
                     _mergeResultFeatureIndex = selectTable.Select((r, index) => 
-                        Int32.Parse(r.toid_fragment_id) == minFragmID ? index : -1).First(i => i != -1);
+                        Int32.Parse(r.toidfragid) == minFragmID ? index : -1).First(i => i != -1);
                 }
                 else
                 {
@@ -413,7 +413,7 @@ namespace HLU.UI.ViewModel
                                 _viewModelMain.GisIDColumnOrdinals, ViewModelWindowMain.IncidPageSize, selectTable);
 
                         // historyTable contains rows of features merged into result feature (i.e. no longer existing)
-                        // and last row with data of result feature (remaining in GIS, lowest toid_fragment_id of merged features)
+                        // and last row with data of result feature (remaining in GIS, lowest toidfragid of merged features)
                         // this last row must be removed before writing history 
                         // but is needed to update geometry fields in incid_mm_polygons
                         DataTable historyTable = _viewModelMain.GISApplication.MergeFeatures(newToidFragmentID,
@@ -424,7 +424,7 @@ namespace HLU.UI.ViewModel
                         // Update the history table to reflect there is no only one feature
                         DataTable resultTable = historyTable.Clone();
                         DataRow resultRow = historyTable.AsEnumerable().FirstOrDefault(r =>
-                            r.Field<string>(_viewModelMain.HluDataset.history.toid_fragment_idColumn.ColumnName) == newToidFragmentID);
+                            r.Field<string>(_viewModelMain.HluDataset.history.toidfragidColumn.ColumnName) == newToidFragmentID);
                         if (resultRow == null) throw new Exception(String.Format(
                             "Failed to obtain geometry data of result feature from {0}.", _viewModelMain.GISApplication.ApplicationType));
                         resultTable.LoadDataRow(resultRow.ItemArray, true);
@@ -439,7 +439,7 @@ namespace HLU.UI.ViewModel
                         Dictionary<int, string> fixedValues = new Dictionary<int, string>();
                         fixedValues.Add(_viewModelMain.HluDataset.history.incidColumn.Ordinal, selectTable[0].incid);
                         fixedValues.Add(_viewModelMain.HluDataset.history.toidColumn.Ordinal, selectTable[0].toid);
-                        fixedValues.Add(_viewModelMain.HluDataset.history.toid_fragment_idColumn.Ordinal, newToidFragmentID);
+                        fixedValues.Add(_viewModelMain.HluDataset.history.toidfragidColumn.Ordinal, newToidFragmentID);
                         ViewModelWindowMainHistory vmHist = new ViewModelWindowMainHistory(_viewModelMain);
                         vmHist.HistoryWrite(fixedValues, historyTable, ViewModelWindowMain.Operations.PhysicalMerge, nowDtTm);
 
@@ -496,7 +496,7 @@ namespace HLU.UI.ViewModel
             DataTable resultTable, string newToidFragmentID, List<SqlFilterCondition> resultFeatureWhereClause,
             List<List<SqlFilterCondition>> mergeFeaturesWhereClause)
         {
-            // build an update statement for the result feature: lowest toid_fragment_id 
+            // build an update statement for the result feature: lowest toidfragid 
             // in the selection set and sum of shape_length/shape_area of merged features
             string updateWhereClause = _viewModelMain.DataBase.WhereClause(false, true, true, resultFeatureWhereClause);
             string updateStatement = null;
@@ -506,7 +506,7 @@ namespace HLU.UI.ViewModel
                     updateStatement = String.Format("UPDATE {0} SET {1} = {2} WHERE {3}",
                         _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                         _viewModelMain.DataBase.QuoteIdentifier(
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName),
+                            _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(newToidFragmentID), updateWhereClause);
                     break;
                 case ViewModelWindowMain.GeometryTypes.Line:
@@ -514,7 +514,7 @@ namespace HLU.UI.ViewModel
                     updateStatement = String.Format("UPDATE {0} SET {1} = {2}, {3} = {4} WHERE {5}",
                         _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                         _viewModelMain.DataBase.QuoteIdentifier(
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName),
+                            _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(newToidFragmentID),
                         _viewModelMain.DataBase.QuoteIdentifier(
                             _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.ColumnName),
@@ -526,7 +526,7 @@ namespace HLU.UI.ViewModel
                     updateStatement = String.Format("UPDATE {0} SET {1} = {2}, {3} = {4}, {5} = {6} WHERE {7}",
                         _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
                         _viewModelMain.DataBase.QuoteIdentifier(
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName),
+                            _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.ColumnName),
                         _viewModelMain.DataBase.QuoteValue(newToidFragmentID),
                         _viewModelMain.DataBase.QuoteIdentifier(
                             _viewModelMain.HluDataset.incid_mm_polygons.shape_lengthColumn.ColumnName), shapeLength,

@@ -2462,6 +2462,8 @@
                                                       Margin="4,2,8,2"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
+													  IsEnabled="{Binding IncidConditionEnabled,
+                                                                     Mode=OneWay}"
                                                       IsEditable="False"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding ConditionQualifierCodes,
@@ -2505,6 +2507,8 @@
 													 Margin="4,0,8,2"
 													 VerticalAlignment="Center"
 													 BorderThickness="1"
+												     IsEnabled="{Binding IncidConditionEnabled,
+														                 Mode=OneWay}"
 													 Text="{Binding IncidConditionDate,
 																	ConverterParameter=source_date_start^source_date_end^source_date_type,
 																	Converter={StaticResource vagueDateConverter},
@@ -2643,7 +2647,7 @@
 												   Margin="2,0,4,2"
 												   HorizontalAlignment="Right"
 												   VerticalAlignment="Center"
-												   Content="Comments" />
+												   Content="Interpretation&#xa;Comments" />
 											<TextBox x:Name="TextBoxQualityComments"
 													 Grid.Row="1"
 													 Grid.Column="1"

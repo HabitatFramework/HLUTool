@@ -41,7 +41,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// There must be either more than one feature in the selection that share the same incid, but *not* the same toid or toid_fragment_id,
+        /// There must be either more than one feature in the selection that share the same incid, but *not* the same toid or toidfragid,
         /// or there must be only one feature in the selection.
         /// </summary>
         /// <returns></returns>
@@ -57,7 +57,7 @@ namespace HLU.UI.ViewModel
                 ((_viewModelMain.GisSelection.Rows.Count > 1) && ((_viewModelMain.ToidsSelectedMapCount > 1) || (_viewModelMain.FragsSelectedMapCount > 1))) || 
                 (_viewModelMain.GisSelection.Rows.Count == 1))
             {
-                // all features in selection share same incid, but *not* toid and toid_fragment_id
+                // all features in selection share same incid, but *not* toid and toidfragid
                 return PerformLogicalSplit();
             }
             else
@@ -69,7 +69,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// There must be more than one feature in the selection that share the same incid, toid and toid_fragment_id.
+        /// There must be more than one feature in the selection that share the same incid, toid and toidfragid.
         /// </summary>
         /// <returns></returns>
         internal bool PhysicalSplit()
@@ -83,7 +83,7 @@ namespace HLU.UI.ViewModel
             if ((_viewModelMain.GisSelection.Rows.Count > 1) && (_viewModelMain.IncidsSelectedMapCount == 1) &&
                 (_viewModelMain.ToidsSelectedMapCount == 1) && (_viewModelMain.FragsSelectedMapCount == 1))
             {
-                // all features in selection share same incid, toid and toid_fragment_id
+                // all features in selection share same incid, toid and toidfragid
                 return PerformPhysicalSplit();
             }
             else
@@ -109,7 +109,7 @@ namespace HLU.UI.ViewModel
                 DateTime currDtTm = DateTime.Now;
                 DateTime nowDtTm = new DateTime(currDtTm.Year, currDtTm.Month, currDtTm.Day, currDtTm.Hour, currDtTm.Minute, currDtTm.Second, DateTimeKind.Local);
 
-                // find the last used toid_fragment_id for the selected toid
+                // find the last used toidfragid for the selected toid
                 string lastToidFragmentID = _viewModelMain.RecIDs.MaxToidFragmentId(_viewModelMain.ToidsSelectedMap.ElementAt(0));
 
                 //---------------------------------------------------------------------
@@ -126,7 +126,7 @@ namespace HLU.UI.ViewModel
                 if (featuresFilter.Count != 1)
                     throw new Exception("Error finding features in database.");
 
-                // Find the current toid_fragment_id for the selected toid (there should be only one)
+                // Find the current toidfragid for the selected toid (there should be only one)
                 string currentToidFragmentID = _viewModelMain.FragsSelectedMap.ElementAt(0);
 
                 // update records in GIS and collect new features resulting from split
@@ -197,7 +197,7 @@ namespace HLU.UI.ViewModel
                     _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName)).ToArray())) + "{0})";
 
                 int toidFragID = Int32.Parse(lastToidFragmentID);
-                string numFormat = String.Format("D{0}", updTable.toid_fragment_idColumn.MaxLength);
+                string numFormat = String.Format("D{0}", updTable.toidfragidColumn.MaxLength);
 
                 // insert new features returned from GIS into DB shadow copy of GIS layer
                 for (int i = 1; i < newFeatures.Rows.Count; i++)
@@ -205,7 +205,7 @@ namespace HLU.UI.ViewModel
                     String insertStatement = String.Format(insertCommand, String.Join(",",
                         newFeatures.Rows[i].ItemArray.Select((item, index) =>
                             _viewModelMain.DataBase.QuoteValue(newFeatures.Columns[index].ColumnName ==
-                            updTable.toid_fragment_idColumn.ColumnName ?
+                            updTable.toidfragidColumn.ColumnName ?
                             (toidFragID + i).ToString(numFormat) : item == String.Empty ? null : item)).ToArray()));
 
                     if (_viewModelMain.DataBase.ExecuteNonQuery(insertStatement,
@@ -300,11 +300,11 @@ namespace HLU.UI.ViewModel
                 // update GIS layer
                 DataTable historyTable = _viewModelMain.GISApplication.SplitFeaturesLogically(_viewModelMain.Incid, newIncid,
                     _viewModelMain.HistoryColumns.Concat(new DataColumn[] { new DataColumn(
-                            _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.ColumnName.Replace(
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName, String.Empty) + 
+                            _viewModelMain.HluDataset.history.modified_toidfragidColumn.ColumnName.Replace(
+                            _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.ColumnName, String.Empty) + 
                             GISApplication.GISApp.HistoryAdditionalFieldsDelimiter + 
-                            _viewModelMain.HluDataset.incid_mm_polygons.toid_fragment_idColumn.ColumnName, 
-                            _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.DataType)}).ToArray());
+                            _viewModelMain.HluDataset.incid_mm_polygons.toidfragidColumn.ColumnName, 
+                            _viewModelMain.HluDataset.history.modified_toidfragidColumn.DataType)}).ToArray());
 
                 // If an error occurred when updating the GIS layer or
                 // if no history row were collected then throw an exception.
@@ -324,13 +324,13 @@ namespace HLU.UI.ViewModel
                 foreach (HluDataSet.incid_mm_polygonsRow r in polygons)
                 {
                     // If the feature in GIS belongs to the current incid then update the
-                    // toid_fragment_id and incid.
+                    // toidfragid and incid.
                     if (r.incid == _viewModelMain.Incid)
                     {
                         DataRow historyRow = historyTable.Rows.Find(r.ItemArray.Where((i, index) =>
                             _viewModelMain.GisIDColumnOrdinals.Contains(index)).ToArray());
-                        r.toid_fragment_id = historyRow.Field<string>(
-                            _viewModelMain.HluDataset.history.modified_toid_fragment_idColumn.ColumnName);
+                        r.toidfragid = historyRow.Field<string>(
+                            _viewModelMain.HluDataset.history.modified_toidfragidColumn.ColumnName);
                         r.incid = newIncid;
                     }
                 }

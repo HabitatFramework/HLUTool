@@ -572,13 +572,13 @@ namespace HLU.GISApplication.MapInfo
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Following a feature split performed by the user with regular GIS tools, updates the toid_fragment_id of 
-        /// the newly created feature(s), incrementing from the highest toid_fragment_id in use for that toid, which is
-        /// passed in as parameter lastToidFragmentID. toid_fragment_id is an integer stored as varchar(5) with 
+        /// Following a feature split performed by the user with regular GIS tools, updates the toidfragid of 
+        /// the newly created feature(s), incrementing from the highest toidfragid in use for that toid, which is
+        /// passed in as parameter lastToidFragmentID. toidfragid is an integer stored as varchar(5) with 
         /// leading zeros (.ToString("D5")).
         /// </summary>
-        /// <param name="currentToidFragmentID">Current toid_fragment_id for the selected toid.</param>
-        /// <param name="lastToidFragmentID">Highest toid_fragment_id for the selected toid.</param>
+        /// <param name="currentToidFragmentID">Current toidfragid for the selected toid.</param>
+        /// <param name="lastToidFragmentID">Highest toidfragid for the selected toid.</param>
         /// <param name="selectionWhereClause">Where clause underlying the current selection set.</param>
         /// <param name="historyColumns">All columns of the GIS layer structure except the geometry property columns.</param>
         /// <returns>DataTable with the columns in the historyColumns parameter, containing the attributes of all 
@@ -617,7 +617,7 @@ namespace HLU.GISApplication.MapInfo
                 // Set the new ToidFragmentID
                 string numFormat = String.Format("D{0}", lastToidFragmentID.Length);
                 int newToidFragmentIDnum = Int32.Parse(lastToidFragmentID);
-                string toidFragFieldName = GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal);
+                string toidFragFieldName = GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal);
 
                 rollbackChanges = true;
 
@@ -625,7 +625,7 @@ namespace HLU.GISApplication.MapInfo
                 // FIXED: KI106 (Shape area and length values)
                 // Includes updates for the geom1 and geom2 columns as the features
                 // have changed in size
-                string lastColName = GetFieldName(_hluLayerStructure.interpretation_commentsColumn.Ordinal);
+                string lastColName = GetFieldName(_hluLayerStructure.interpcomColumn.Ordinal);
                 int ixGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
                     QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
                 int ixGeom2 = ixGeom1 + 1;
@@ -650,7 +650,7 @@ namespace HLU.GISApplication.MapInfo
                     _mapInfoApp.Do(String.Format("Update {0} Set {1} = {3}, {2} = {4} Where RowID = {5}",
                         _selName, QuoteIdentifier(geomCol1Name), QuoteIdentifier(geomCol2Name), geom1, geom2, i));
 
-                    // Update the toid_fragment_id for all but the first feature (which can keep the existing
+                    // Update the toidfragid for all but the first feature (which can keep the existing
                     // value)
                     if (i > 1)
                     {
@@ -704,15 +704,15 @@ namespace HLU.GISApplication.MapInfo
                     // The filter should search for the currentToidFragmentID (pre-split)
                     // and the newTOIDFragmentID that was created (post-split).
                     cond = new SqlFilterCondition("AND", selTable,
-                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), "(", String.Empty, currentToidFragmentID);
+                        selTable.Columns[_hluLayerStructure.toidfragidColumn.ColumnName], typeof(DataColumn), "(", String.Empty, currentToidFragmentID);
                     cond.Operator = "=";
                     reSelectionWhereClause.Add(cond);
                     cond = new SqlFilterCondition("OR", selTable,
-                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), "(", String.Empty, lastToidFragmentID);
+                        selTable.Columns[_hluLayerStructure.toidfragidColumn.ColumnName], typeof(DataColumn), "(", String.Empty, lastToidFragmentID);
                     cond.Operator = ">";
                     reSelectionWhereClause.Add(cond);
                     cond = new SqlFilterCondition("AND", selTable,
-                        selTable.Columns[_hluLayerStructure.toid_fragment_idColumn.ColumnName], typeof(DataColumn), String.Empty, "))", newToidFragmentIDnum.ToString(numFormat));
+                        selTable.Columns[_hluLayerStructure.toidfragidColumn.ColumnName], typeof(DataColumn), String.Empty, "))", newToidFragmentIDnum.ToString(numFormat));
                     cond.Operator = "<=";
                     reSelectionWhereClause.Add(cond);
                     //---------------------------------------------------------------------
@@ -777,15 +777,15 @@ namespace HLU.GISApplication.MapInfo
                 int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
 
-                string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
 
                 string fetchCommand = String.Format("Fetch Rec {0} From {1}", "{0}", _selName);
                 string incidCommand = String.Format("{0}.{1}", _selName,
                     GetFieldName(_hluLayerStructure.incidColumn.Ordinal));
                 string fragCommand = String.Format("{0}.{1}", _selName,
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal));
+                    GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal));
                 string toidFragmentCommand = String.Format("{0}.{1}", _selName,
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal));
+                    GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal));
                 string readCommandTemplate = String.Format("{0}.{1}", _selName, "{0}");
                 string updateCommandTemplate = String.Format("Update {0} Set {1} = {2} Where RowID = {3}",
                     _selName, GetFieldName(_hluLayerStructure.incidColumn.Ordinal), QuoteValue(newIncid), "{0}");
@@ -1103,10 +1103,10 @@ namespace HLU.GISApplication.MapInfo
 
         /// <summary>
         /// Merges two or more selected features that must share the same incid and toid. The new feature receives the
-        /// toid_fragment_id passed in as parameter newToidFragmentID. 
+        /// toidfragid passed in as parameter newToidFragmentID. 
         /// The output feature is identified by the resultWhereClause; the features to be merged with it by the mergeWhereClause.
         /// </summary>
-        /// <param name="newToidFragmentID">toid_fragment_id to be assigned to the new, merged feature.</param>
+        /// <param name="newToidFragmentID">toidfragid to be assigned to the new, merged feature.</param>
         /// <param name="resultWhereClause">Where clause identifying the result feature (previously chosen by user) 
         /// that the other features are to be merged with.</param>
         /// <param name="mergeWhereClause">Where clause identifying the features to be merged with result feature.</param>
@@ -1145,7 +1145,7 @@ namespace HLU.GISApplication.MapInfo
 
                 // delete result feature row from history
                 DataRow delRow = historyTable.AsEnumerable().FirstOrDefault(r => 
-                    r.Field<string>(_hluLayerStructure.toid_fragment_idColumn.ColumnName) == newToidFragmentID);
+                    r.Field<string>(_hluLayerStructure.toidfragidColumn.ColumnName) == newToidFragmentID);
                 if (delRow != null) delRow.Delete();
                 historyTable.AcceptChanges();
 
@@ -1153,9 +1153,9 @@ namespace HLU.GISApplication.MapInfo
                 ToggleLayerEditability(true, _hluLayer);
                 
                 // Set the column expression for the 'Objects Combine ...' statement below
-                // to set the toid_fragment_id as required
+                // to set the toidfragid as required
                 string toidFragIdClause = String.Format("{0} = {1}",
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal), 
+                    GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal), 
                     QuoteValue(newToidFragmentID));
 
                 rollbackChanges = true;
@@ -1205,7 +1205,7 @@ namespace HLU.GISApplication.MapInfo
                     //---------------------------------------------------------------------
                     // FIXED: KI106 (Shape area and length values)
                     // Include updates for the geom1 and geom2 columns automatically
-                    string lastColName = GetFieldName(_hluLayerStructure.interpretation_commentsColumn.Ordinal);
+                    string lastColName = GetFieldName(_hluLayerStructure.interpcomColumn.Ordinal);
                     int indGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
                         QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
                     int indGeom2 = indGeom1 + 1;
@@ -1262,7 +1262,7 @@ namespace HLU.GISApplication.MapInfo
                 string[] historyColumnNames = historyTable.Columns.Cast<DataColumn>().Select(c => c.Ordinal < ixGeom1 ?
                     GetFieldName(_hluLayerStructure.Columns[c.ColumnName].Ordinal) : c.ColumnName).ToArray();
 
-                string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
 
                 string fetchCommand = String.Format("Fetch Rec {0} From {1}", "{0}", _selName);
                 string incidCommand = String.Format("{0}.{1}", _selName,
@@ -1273,7 +1273,7 @@ namespace HLU.GISApplication.MapInfo
 
                 string incidFieldName = GetFieldName(_hluLayerStructure.incidColumn.Ordinal);
                 string toidFieldName = GetFieldName(_hluLayerStructure.toidColumn.Ordinal);
-                string toidFragFieldName = GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal);
+                string toidFragFieldName = GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal);
 
                 int numRows = Int32.Parse(_mapInfoApp.Eval(String.Format("TableInfo({0}, {1})",
                     _selName, (int)MapInfoConstants.TableInfo.TAB_INFO_NROWS)));
@@ -1313,7 +1313,7 @@ namespace HLU.GISApplication.MapInfo
                     indexColumns = new string[] { 
                         GetFieldName(_hluLayerStructure.incidColumn.Ordinal),
                         GetFieldName(_hluLayerStructure.toidColumn.Ordinal),
-                        GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal) };
+                        GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal) };
                     DropIndexes(_hluLayer, indexColumns);
                 }
 
@@ -2658,12 +2658,12 @@ namespace HLU.GISApplication.MapInfo
                 string toidCommand = String.Format("{0}.{1}", _selName,
                     GetFieldName(_hluLayerStructure.toidColumn.Ordinal));
                 string toidFragmentCommand = String.Format("{0}.{1}", _selName,
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal));
+                    GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal));
 
                 string countCommandTemplate = String.Format("Select Count(*) From {0} Where {1} = {2} And {3} = {4} Group By {1}, {3} into QueryZZZ",
                     _hluLayer,
                     GetFieldName(_hluLayerStructure.toidColumn.Ordinal), "{0}",
-                    GetFieldName(_hluLayerStructure.toid_fragment_idColumn.Ordinal), "{1}");
+                    GetFieldName(_hluLayerStructure.toidfragidColumn.Ordinal), "{1}");
 
                 string fetchCountCommand = String.Format("Fetch Rec 1 From QueryZZZ");
 
@@ -2683,7 +2683,7 @@ namespace HLU.GISApplication.MapInfo
                     string toid = _mapInfoApp.Eval(toidCommand);
                     string toidFrag = _mapInfoApp.Eval(toidFragmentCommand);
 
-                    // Count all the rows for this toid and toid_fragment_id
+                    // Count all the rows for this toid and toidfragid
                     // in the active layer.
                     _mapInfoApp.Do(String.Format(countCommandTemplate, QuoteValue(toid), QuoteValue(toidFrag)));
 
