@@ -1932,7 +1932,7 @@ namespace HLU.GISApplication.MapInfo
             string assemblyPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
             string assemblyDir = Path.GetDirectoryName(assemblyPath);
             string wksPath = new Uri(assemblyDir).LocalPath + "\\Empty.wor";
-            //procInfo.Arguments = @"""C:\Program Files (x86)\HLU\HLU GIS Tool\Empty.wor""";
+            //procInfo.Arguments = @"""C:\Program Files (x86)\HLU\HLU Tool\Empty.wor""";
             procInfo.Arguments = @"""" + wksPath + @"""";
 
             proc.StartInfo = procInfo;
