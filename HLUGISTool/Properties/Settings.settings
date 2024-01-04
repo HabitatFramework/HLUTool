@@ -182,7 +182,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MinimumDbVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">O</Value>
+      <Value Profile="(Default)">P</Value>
     </Setting>
     <Setting Name="PreferredHabitatClass" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">ICAT</Value>
@@ -352,9 +352,9 @@
     <Setting Name="ClearIHSUpdateActions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;string&gt;Never clear&lt;/string&gt;
+  &lt;string&gt;Don't clear&lt;/string&gt;
   &lt;string&gt;Clear on change in primary code only&lt;/string&gt;
-  &lt;string&gt;Clear on change in primary or secondary codes&lt;/string&gt;
+  &lt;string&gt;Clear on change in primary or secondary codes only&lt;/string&gt;
   &lt;string&gt;Clear on any change&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
