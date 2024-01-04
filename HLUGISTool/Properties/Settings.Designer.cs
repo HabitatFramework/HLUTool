@@ -651,7 +651,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("O")]
+        [global::System.Configuration.DefaultSettingValueAttribute("P")]
         public string MinimumDbVersion {
             get {
                 return ((string)(this["MinimumDbVersion"]));
@@ -1195,9 +1195,9 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>Never clear</string>
+  <string>Don't clear</string>
   <string>Clear on change in primary code only</string>
-  <string>Clear on change in primary or secondary codes</string>
+  <string>Clear on change in primary or secondary codes only</string>
   <string>Clear on any change</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection ClearIHSUpdateActions {
