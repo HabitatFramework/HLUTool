@@ -591,7 +591,7 @@ namespace HLU.UI.ViewModel
                     // Continue if a row is found
                     if (osmmHabitatXref != null)
                     {
-                        //TODO: OSMM primary - to check
+                        //TODO: OSMM Update primary - to check
                         // Get the new primary habitat code from the lut_osmm_habitat_xref table
                         string newIncidPrimaryCode = osmmHabitatXref.ElementAt(0).habitat_primary;
 
@@ -610,10 +610,10 @@ namespace HLU.UI.ViewModel
                                 _viewModelMain.DataBase.QuoteValue(_viewModelMain.IncidCurrentRow[c.Ordinal]))))
                                 .Remove(0, 2)).Append(incidWhereClause).ToString();
 
-                        //TODO: OSMM secondaries
+                        //TODO: OSMM Update secondaries
                         // Split secondaries string into list of secondary codes
 
-                        //TODO: OSMM secondaries
+                        //TODO: OSMM Update secondaries
                         // Create new rows in the secondary table from the lut_osmm_habitat_xref table
                         //string newSecondaryCode;
                         //int secondaryRow = 0;
@@ -629,7 +629,7 @@ namespace HLU.UI.ViewModel
                         //}
 
                         //TODO: Delete secondary codes and/or multiplex codes when relevant
-                        //TODO: OSMM secondaries
+                        //TODO: OSMM Update secondaries
                         // Filter out any rows not set (because the maximum number of blank rows are
                         // created above so any not used need to be removed)
                         _viewModelMain.IncidSecondaryRows = FilterUpdateRows<HluDataSet.incid_secondaryDataTable,
@@ -1109,7 +1109,7 @@ namespace HLU.UI.ViewModel
             //var sr = incidsecondaryRows.Where(r => r.RowState != DataRowState.Deleted).Select(r => r.secondary);
             //string[] ihsMatrixVals = sr.Concat(new string[15 - sr.Count()]).ToArray();
 
-            //TODO: Pass array of secondary rows
+            //TODO: Bulk update - pass array of secondary rows
             ////---------------------------------------------------------------------
             //// Get a list of all the primary (mandatory) bap habitats
             IEnumerable<string> primaryBap = null;
@@ -1264,7 +1264,9 @@ namespace HLU.UI.ViewModel
             object[] updateValues;
             BulkUpdateGisColumns(out updateColumns, out updateValues);
 
+            //TODO: Bulk update - needed?
             string incidMMPolygonsUpdateCmdTemplate;
+
             List<List<SqlFilterCondition>> incidWhereClause;
             DataTable historyTable = null;
 
@@ -1468,7 +1470,7 @@ namespace HLU.UI.ViewModel
             List<DataColumn> updateColumnList = new List<DataColumn>();
             List<object> updateValueList = new List<object>();
 
-            //TODO ...
+            //TODO: Add GIS columns to be updated - Check needed?
             ////---------------------------------------------------------------------
             //// Check if a new IHS habitat has been set
             //if (!_viewModelMain.IncidCurrentRow.Isihs_habitatNull())

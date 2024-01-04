@@ -953,7 +953,7 @@
             				IsEnabled="False"
             				IsReadOnly="True"
             				TextAlignment="Left"
-							Text="{Binding IncidOSMMPrimary,
+							Text="{Binding IncidOSMMHabitatPrimary,
 								  Mode=OneWay,
 								  ValidatesOnDataErrors=False}" />
             			<Label x:Name="LabelOSMMSecondaries"
@@ -970,7 +970,7 @@
             				IsEnabled="False"
             				IsReadOnly="True"
             				TextAlignment="Left"
-							Text="{Binding IncidOSMMSecondaries,
+							Text="{Binding IncidOSMMHabitatSecondaries,
 								  Mode=OneWay,
 								  ValidatesOnDataErrors=False}" />
             			<Label x:Name="LabelOSMMXRefID"
@@ -1120,6 +1120,7 @@
                                           Header="{Binding PrimaryHeader}">
                                     <Grid x:Name="GridPrimary" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
+                                            <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>

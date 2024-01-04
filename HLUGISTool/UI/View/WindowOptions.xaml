@@ -35,8 +35,7 @@
             <TabControl x:Name="TabControlData"
                         Grid.Row="0"
                         Grid.Column="0"
-                        Margin="0,2,0,0"
-                        IsEnabled="{Binding TabControlDataEnabled}">
+                        Margin="0,2,0,0">
 
                 <!--  Database  -->
 
