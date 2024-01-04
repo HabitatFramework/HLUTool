@@ -179,7 +179,7 @@ namespace HLU.UI.ViewModel
                         new
                         {
                             ColumnName = newFeatures.Columns[index].ColumnName,
-                            value = i == String.Empty ? null : i
+                            value = ((String)i == String.Empty) ? null : i
                         })
                     .Where(a => _viewModelMain.GisIDColumns.Count(c => c.ColumnName == a.ColumnName) == 0)
                     .Select(a => String.Format("{0} = {1}", _viewModelMain.DataBase.QuoteIdentifier(a.ColumnName),
@@ -206,7 +206,7 @@ namespace HLU.UI.ViewModel
                         newFeatures.Rows[i].ItemArray.Select((item, index) =>
                             _viewModelMain.DataBase.QuoteValue(newFeatures.Columns[index].ColumnName ==
                             updTable.toidfragidColumn.ColumnName ?
-                            (toidFragID + i).ToString(numFormat) : item == String.Empty ? null : item)).ToArray()));
+                            (toidFragID + i).ToString(numFormat) : ((String)item == String.Empty) ? null : item)).ToArray()));
 
                     if (_viewModelMain.DataBase.ExecuteNonQuery(insertStatement,
                         _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
@@ -387,6 +387,25 @@ namespace HLU.UI.ViewModel
             return success;
         }
 
+        /// <summary>
+        /// Clones the current incid.
+        /// </summary>
+        /// <param name="startTransaction">if set to <c>true</c> [start transaction].</param>
+        /// <param name="errorMessage">The error message.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">
+        /// Failed to start a database transaction.
+        /// or Failed to update incid table.
+        /// or Failed to update incid_ihs_matrix table.
+        /// or Failed to update incid_ihs_formation table.
+        /// or Failed to update incid_ihs_management table.
+        /// or Failed to update incid_ihs_complex table.
+        /// or Failed to update incid_secondary table.
+        /// or Failed to update incid_bap table.
+        /// or Failed to update incid_condition table.
+        /// or Failed to update incid_sources table.
+        /// or Failed to update incid_osmm_updates table.
+        /// </exception>
         private bool CloneCurrentIncid(bool startTransaction, out string errorMessage)
         {
             errorMessage = null;
@@ -411,8 +430,6 @@ namespace HLU.UI.ViewModel
                 // in the current Incid row.
                 newIncidRow.habitat_primary = _viewModelMain.IncidPrimary;
                 newIncidRow.habitat_secondaries = _viewModelMain.IncidSecondarySummary;
-
-                //TODO: Update - Needed (e.g. if clearing IHS values on update)?
                 newIncidRow.ihs_habitat = _viewModelMain.IncidIhsHabitat;
 
                 // Discard any changes to the Incid table once a copy has been

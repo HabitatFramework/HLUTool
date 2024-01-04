@@ -404,6 +404,7 @@ namespace HLU.UI.ViewModel
             return null;
         }
 
+        //TODO: Check IHS codes are cleared when required on update
         /// <summary>
         /// Updates those columns of IncidCurrentRow in main view model that are not directly updated 
         /// by properties (to enable undo if update cancelled).
@@ -411,13 +412,56 @@ namespace HLU.UI.ViewModel
         /// <param name="viewModelMain">Reference to main window view model.</param>
         internal static void IncidCurrentRowDerivedValuesUpdate(ViewModelWindowMain viewModelMain)
         {
+            // Clear IHS values on update (if required) depending on user settings
+            switch (viewModelMain.ClearIHSUpdateAction)
+            {
+                case "Don't clear":
+                    viewModelMain.IncidCurrentRow.ihs_habitat = viewModelMain.IncidIhsHabitat;
+                    break;
+                case "Clear on change in primary code only":
+                    if (viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary)
+                        viewModelMain.IncidCurrentRow.ihs_habitat = null;
+                        viewModelMain.RemoveIncidIhsMatrixRow(0);
+                        viewModelMain.RemoveIncidIhsMatrixRow(1);
+                        viewModelMain.RemoveIncidIhsMatrixRow(2);
+                        viewModelMain.RemoveIncidIhsFormationRow(0);
+                        viewModelMain.RemoveIncidIhsFormationRow(1);
+                        viewModelMain.RemoveIncidIhsManagementRow(0);
+                        viewModelMain.RemoveIncidIhsManagementRow(1);
+                        viewModelMain.RemoveIncidIhsComplexRow(0);
+                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    break;
+                case "Clear on change in primary or secondary codes only":
+                    if ((viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary) ||
+                       (viewModelMain.IncidCurrentRow.habitat_secondaries != viewModelMain.IncidSecondarySummary))
+                        viewModelMain.IncidCurrentRow.ihs_habitat = null;
+                        viewModelMain.RemoveIncidIhsMatrixRow(0);
+                        viewModelMain.RemoveIncidIhsMatrixRow(1);
+                        viewModelMain.RemoveIncidIhsMatrixRow(2);
+                        viewModelMain.RemoveIncidIhsFormationRow(0);
+                        viewModelMain.RemoveIncidIhsFormationRow(1);
+                        viewModelMain.RemoveIncidIhsManagementRow(0);
+                        viewModelMain.RemoveIncidIhsManagementRow(1);
+                        viewModelMain.RemoveIncidIhsComplexRow(0);
+                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    break;
+                case "Clear on any change":
+                    viewModelMain.IncidCurrentRow.ihs_habitat = null;
+                        viewModelMain.RemoveIncidIhsMatrixRow(0);
+                        viewModelMain.RemoveIncidIhsMatrixRow(1);
+                        viewModelMain.RemoveIncidIhsMatrixRow(2);
+                        viewModelMain.RemoveIncidIhsFormationRow(0);
+                        viewModelMain.RemoveIncidIhsFormationRow(1);
+                        viewModelMain.RemoveIncidIhsManagementRow(0);
+                        viewModelMain.RemoveIncidIhsManagementRow(1);
+                        viewModelMain.RemoveIncidIhsComplexRow(0);
+                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    break;
+            }
             // Update other incid vales
             viewModelMain.IncidCurrentRow.habitat_primary = viewModelMain.IncidPrimary;
             viewModelMain.IncidCurrentRow.habitat_secondaries = viewModelMain.IncidSecondarySummary;
             viewModelMain.IncidCurrentRow.habitat_version = viewModelMain.HabitatVersion;
-
-            //TODO: Update - Needed (e.g. if clearing IHS values on update)?
-            viewModelMain.IncidCurrentRow.ihs_habitat = viewModelMain.IncidIhsHabitat;
         }
 
         /// <summary>

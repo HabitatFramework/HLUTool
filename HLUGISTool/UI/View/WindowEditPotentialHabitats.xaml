@@ -111,7 +111,7 @@
                                                                                                 ValidatesOnDataErrors=True}"
                                                                 SelectedValuePath="code" />
                         <tkit:DataGridTextColumn Width="SizeToCells"
-                                                    MinWidth="150"
+                                                    MinWidth="175"
                                                     Binding="{Binding interpretation_comments,
                                                                     UpdateSourceTrigger=PropertyChanged,
                                                                     ValidatesOnDataErrors=True}"

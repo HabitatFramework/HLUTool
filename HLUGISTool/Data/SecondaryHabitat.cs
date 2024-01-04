@@ -53,14 +53,13 @@ namespace HLU.Data
 
         public SecondaryHabitat()
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = false;
+
             _secondary_id = -1; // arbitrary PK for a new row
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow)
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
@@ -77,7 +76,6 @@ namespace HLU.Data
 
         public SecondaryHabitat(bool bulkUpdateMode, HluDataSet.incid_secondaryRow dataRow, IEnumerable<SecondaryHabitat> shList)
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             HluDataSet.incid_secondaryDataTable table = (HluDataSet.incid_secondaryDataTable)dataRow.Table;
@@ -97,7 +95,6 @@ namespace HLU.Data
 
         public SecondaryHabitat(bool bulkUpdateMode, object[] itemArray)
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             Int32.TryParse(itemArray[0].ToString(), out _secondary_id);
@@ -113,7 +110,6 @@ namespace HLU.Data
 
         public SecondaryHabitat(bool bulkUpdateMode, int secondary_id, string incid, string secondary_habitat, string secondary_group)
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = bulkUpdateMode;
 
             _secondary_id = secondary_id;
@@ -129,8 +125,8 @@ namespace HLU.Data
 
         public SecondaryHabitat(SecondaryHabitat inSH)
         {
-            //TODO: Secondaries - Check
             _bulkUpdateMode = false;
+
             _secondary_id = -1; // arbitrary PK for a new row
             _incid = null;
             _secondary_habitat = inSH.secondary_habitat;
