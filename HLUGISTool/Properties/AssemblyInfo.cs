@@ -26,11 +26,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HLUTool v4.0.0")]
-[assembly: AssemblyDescription("HLUTool GIS User Interface")]
+[assembly: AssemblyDescription("HLUTool User Interface")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HLUTool")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-2022 GiGL")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-2023 GiGL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

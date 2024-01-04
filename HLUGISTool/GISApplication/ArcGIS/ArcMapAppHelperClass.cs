@@ -31,7 +31,7 @@ using ESRI.ArcGIS.Carto;
 namespace HLU.GISApplication.ArcGIS
 {
     /// <summary>
-    /// Shared by ArcMapApp and HluArcMapExtension
+    /// Shared by ArcMapApp and HluArcMapExtensionV4
     /// </summary>
     public class ArcMapAppHelperClass
     {

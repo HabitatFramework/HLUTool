@@ -23,12 +23,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HluArcMapExtension")]
-[assembly: AssemblyDescription("HLUTool ArcMap Extension")]
+[assembly: AssemblyTitle("HluArcMapExtensionV4")]
+[assembly: AssemblyDescription("HLUTool ArcMap Extension V4")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HluArcMapExtension")]
-[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-22 GiGL")]
+[assembly: AssemblyProduct("HluArcMapExtensionV4")]
+[assembly: AssemblyCopyright("Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-23 GiGL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.1.4.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 //[assembly: AssemblyFileVersion("1.0.*")]

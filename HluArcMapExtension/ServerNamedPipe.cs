@@ -46,8 +46,8 @@ namespace Server
 
             try
             {
-                Listen = HluArcMapExtension.PipeManager.Listen;
-                HluArcMapExtension.PipeData = new List<string>();
+                Listen = HluArcMapExtensionV4.PipeManager.Listen;
+                HluArcMapExtensionV4.PipeData = new List<string>();
                 StringBuilder sbRequest;
 
                 bool continueString = false;
@@ -68,35 +68,35 @@ namespace Server
                             if (continueString)
                             {
                                 sbRequest = new StringBuilder(
-                                    HluArcMapExtension.PipeData[HluArcMapExtension.PipeData.Count - 1]);
-                                HluArcMapExtension.PipeData[HluArcMapExtension.PipeData.Count - 1] = 
+                                    HluArcMapExtensionV4.PipeData[HluArcMapExtensionV4.PipeData.Count - 1]);
+                                HluArcMapExtensionV4.PipeData[HluArcMapExtensionV4.PipeData.Count - 1] = 
                                     sbRequest.Append(request).ToString();
                                 continueString = false;
                             }
                             else
                             {
-                                HluArcMapExtension.PipeData.Add(request);
+                                HluArcMapExtensionV4.PipeData.Add(request);
                             }
                         }
                         request = PipeConnection.Read();
                     }
 
-                    if ((HluArcMapExtension.PipeData.Count > 0) && (request == "@"))
+                    if ((HluArcMapExtensionV4.PipeData.Count > 0) && (request == "@"))
                     {
                         // wire event to be notified of outgoing data ready
-                        HluArcMapExtension.OutgoingDataReady += new EventHandler(HluArcMapExtension_OutgoingDataReady);
+                        HluArcMapExtensionV4.OutgoingDataReady += new EventHandler(HluArcMapExtensionV4_OutgoingDataReady);
 
-                        // raise event in HluArcMapExtension
-                        HluArcMapExtension.PipeManager.HandleRequest(String.Empty);
+                        // raise event in HluArcMapExtensionV4
+                        HluArcMapExtensionV4.PipeManager.HandleRequest(String.Empty);
 
                         // unwire event
-                        HluArcMapExtension.OutgoingDataReady -= HluArcMapExtension_OutgoingDataReady;
+                        HluArcMapExtensionV4.OutgoingDataReady -= HluArcMapExtensionV4_OutgoingDataReady;
                         
                         // send response
-                        foreach (string s in HluArcMapExtension.PipeData)
+                        foreach (string s in HluArcMapExtensionV4.PipeData)
                             PipeConnection.Write(s);
 
-                        HluArcMapExtension.PipeData.Clear();
+                        HluArcMapExtensionV4.PipeData.Clear();
                         PipeConnection.Write("@");
                     }
 
@@ -108,7 +108,7 @@ namespace Server
                         Connect();
                     }
 
-                    HluArcMapExtension.PipeManager.WakeUp();
+                    HluArcMapExtensionV4.PipeManager.WakeUp();
                 }
             }
             catch (System.Threading.ThreadAbortException ex) { }
@@ -123,7 +123,7 @@ namespace Server
             }
         }
 
-        void HluArcMapExtension_OutgoingDataReady(object sender, EventArgs e)
+        void HluArcMapExtensionV4_OutgoingDataReady(object sender, EventArgs e)
         {
             _sendResponse = true;
         }
@@ -138,7 +138,7 @@ namespace Server
         {
             CheckIfDisposed();
             this.Listen = false;
-            HluArcMapExtension.PipeManager.RemoveServerChannel(this.PipeConnection.NativeHandle);
+            HluArcMapExtensionV4.PipeManager.RemoveServerChannel(this.PipeConnection.NativeHandle);
             this.Dispose();
         }
 

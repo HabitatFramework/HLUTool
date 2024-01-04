@@ -1166,7 +1166,8 @@
 		<row><td>HLU</td><td>ProgramFilesFolder</td><td>HLU</td><td/><td>0</td><td/></row>
 		<row><td>HLU_GIS_TOOL</td><td>ESDM</td><td>HLUGIS~1|HLU GIS Tool</td><td/><td>0</td><td/></row>
 		<row><td>HLU_GIS_TOOL1</td><td>HLU</td><td>HLUGIS~1|HLU GIS Tool</td><td/><td>0</td><td/></row>
-		<row><td>INSTALLDIR</td><td>HLU_GIS_TOOL1</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>HLU_TOOL_V4</td><td>HLU</td><td>HLUTOO~1|HLU Tool v4</td><td/><td>0</td><td/></row>
+		<row><td>INSTALLDIR</td><td>HLU_TOOL_V4</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyCompanyDir</td><td>ProgramFilesFolder</td><td>MYCOMP~1|My Company Name</td><td/><td>0</td><td/></row>
 		<row><td>ISMyProductDir</td><td>ISMyCompanyDir</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
@@ -2869,7 +2870,7 @@
 		<col def="I4">TimeStamp</col>
 		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977083862</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>1428678890</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>279707696</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -4619,9 +4620,9 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGMSG_IIS_ROLLBACKAPPPOOLS</td><td>##IDS_PROGMSG_IIS_ROLLBACKAPPPOOLS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKVROOTS</td><td>##IDS_PROGMSG_IIS_ROLLBACKVROOTS##</td><td/></row>
 		<row><td>PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS</td><td>##IDS_PROGMSG_IIS_ROLLBACKWEBSERVICEEXTENSIONS##</td><td/></row>
-		<row><td>ProductCode</td><td>{803ECD4A-1813-4332-BCC9-4A169615A663}</td><td/></row>
-		<row><td>ProductName</td><td>HLU Tool 3.1.4</td><td/></row>
-		<row><td>ProductVersion</td><td>3.1.4.0</td><td/></row>
+		<row><td>ProductCode</td><td>{36B84C73-657D-4D4C-8037-64F03F4730AF}</td><td/></row>
+		<row><td>ProductName</td><td>HLU Tool v4</td><td/></row>
+		<row><td>ProductVersion</td><td>4.0.0.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4638,7 +4639,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;ISACTIONPROP3;REALVERSION</td><td/></row>
 		<row><td>SelectedSetupType</td><td>##IDS__DisplayName_Typical##</td><td/></row>
 		<row><td>SetupType</td><td>Typical</td><td/></row>
-		<row><td>UpgradeCode</td><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td/></row>
+		<row><td>UpgradeCode</td><td>{55866CB0-8B2F-4526-97E1-DB2419E7C9AE}</td><td/></row>
 		<row><td>_IsMaintenance</td><td>Change</td><td/></row>
 		<row><td>_IsSetupTypeMin</td><td>Typical</td><td/></row>
 	</table>
@@ -4910,7 +4911,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">ActionProperty</col>
 		<col def="S72">ISDisplayName</col>
 		<row><td>{00000000-0000-0000-0000-000000000000}</td><td>***ALL_VERSIONS***</td><td></td><td></td><td>2</td><td/><td>ISFOUNDNEWERPRODUCTVERSION</td><td>ISPreventDowngrade</td></row>
-		<row><td>{AD7ECB94-16AC-45CD-979E-8E40698EB21B}</td><td>1.0.0.0</td><td>3.1.4.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
+		<row><td>{36B84C73-657D-4D4C-8037-64F03F4730AF}</td><td>0.0.0.0</td><td>4.0.0.0</td><td>1033</td><td>256</td><td/><td>ISACTIONPROP3</td><td>UpgradeFrom 1.0.0.0</td></row>
 	</table>
 
 	<table name="Verb">

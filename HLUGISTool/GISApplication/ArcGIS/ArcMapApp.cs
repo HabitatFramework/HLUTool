@@ -214,9 +214,9 @@ namespace HLU.GISApplication.ArcGIS
 #if ARC10
             string arcVersionString;
             int arcVersion = InitialiseArcObjects(out arcVersionString);
-            EnableExtension("HLU.HluArcMapExtension", arcVersion, arcVersionString);
+            EnableExtension("HLU.HluArcMapExtensionV4", arcVersion, arcVersionString);
 #else
-            EnableExtension("C61DB89F-7118-4A10-A5C1-D4A375867A02");
+            EnableExtension("B6C50E82-5B2B-497F-89D6-BA00C6C2EDC4");
 #endif
 
             ArcMapAppHelperClass.GetValidWorkspaces(out _validWorkspaces);
@@ -722,19 +722,19 @@ namespace HLU.GISApplication.ArcGIS
 
             try
             {
-                //MessageBox.Show("Requesting read of map selection", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Requesting read of map selection", "HLU Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 List<string> selectionList = IpcArcMap(new string[] { "rs" }.Concat(
                     resultTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName)).ToArray());
 
                 if (selectionList == null)
                 {
-                    //MessageBox.Show("Returned selection list is null", "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show("Returned selection list is null", "HLU Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     return;
                 }
 
-                //MessageBox.Show(string.Format("Returned selection list has {0} records", selectionList.Count), "HLU GIS Tool", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show(string.Format("Returned selection list has {0} records", selectionList.Count), "HLU Tool", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 foreach (string s in selectionList)
                 {
