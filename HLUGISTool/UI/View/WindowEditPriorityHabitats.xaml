@@ -34,7 +34,7 @@
                   Grid.Row="0"
                   Grid.Column="0"
                   Header="Priority Habitats">
-			<tkit:DataGrid x:Name="DataGridPrimaryBapHabitats"
+			<tkit:DataGrid x:Name="DataGridAutoBapHabitats"
                             Grid.Row="0"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
@@ -110,7 +110,7 @@
                                                                                             ValidatesOnDataErrors=True}"
                                                             SelectedValuePath="code" />
                     <tkit:DataGridTextColumn Width="SizeToCells"
-                                                MinWidth="150"
+                                                MinWidth="170"
                                                 Binding="{Binding interpretation_comments,
                                                                 UpdateSourceTrigger=PropertyChanged,
                                                                 ValidatesOnDataErrors=True}"

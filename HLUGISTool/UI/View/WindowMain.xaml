@@ -1026,11 +1026,11 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid x:Name="GridTabItemHabitat">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" MinHeight="8" />
-                                    <RowDefinition Height="*" MinHeight="8" />
+                                    <RowDefinition Height="Auto" MinHeight="8" />
+                                    <RowDefinition Height="Auto" MinHeight="8" />
                                     <RowDefinition Height="250" />
-                                    <RowDefinition Height="*" MinHeight="6" />
-                                    <RowDefinition Height="*" MinHeight="8" />
+                                    <RowDefinition Height="Auto" MinHeight="6" />
+                                    <RowDefinition Height="Auto" MinHeight="8" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="19*" />
