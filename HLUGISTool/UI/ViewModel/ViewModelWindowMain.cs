@@ -212,8 +212,8 @@ namespace HLU.UI.ViewModel
         private int _defaultWindowHeight;
         private int _windowWidth;
         private int _mapWindowsCount;
-        private bool? _showingReasonProcessGroup = null;
-        private bool? _showingNVCCodesText = null;
+        private bool _showingReasonProcessGroup = false;
+        private bool _showingOSMMPendingGroup = false;
 
         // Database options
         private int _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
@@ -247,7 +247,8 @@ namespace HLU.UI.ViewModel
         private int _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
 
         // Dates options
-        private bool? _showingOSMMPendingGroup = null;
+        // None
+
         private string _logoPath = String.Empty;
         private DbBase _db;
         private GISApp _gisApp;
@@ -343,11 +344,6 @@ namespace HLU.UI.ViewModel
         private bool _splitting = false;
         private bool _filterByMap = false;
         private bool _osmmUpdating = false;
-        //private bool _comingFromIncidIhsMatrix2 = false;
-        //private bool _comingFromIncidIhsMatrix3 = false;
-        //private bool _comingFromIncidIhsFormation2 = false;
-        //private bool _comingFromIncidIhsManagement2 = false;
-        //private bool _comingFromIncidIhsComplex2 = false;
         private Cursor _windowCursor = Cursors.Arrow;
         private DataColumn[] _gisIDColumns;
         private int[] _gisIDColumnOrdinals;
@@ -410,16 +406,6 @@ namespace HLU.UI.ViewModel
 
         private VagueDateInstance _incidConditionDateEntered;
 
-        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix1Codes;
-        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix2Codes;
-        //private HluDataSet.lut_ihs_matrixRow[] _ihsMatrix3Codes;
-        //private HluDataSet.lut_ihs_formationRow[] _ihsFormation1Codes;
-        //private HluDataSet.lut_ihs_formationRow[] _ihsFormation2Codes;
-        //private HluDataSet.lut_ihs_managementRow[] _ihsManagement1Codes;
-        //private HluDataSet.lut_ihs_managementRow[] _ihsManagement2Codes;
-        //private HluDataSet.lut_ihs_complexRow[] _ihsComplex1Codes;
-        //private HluDataSet.lut_ihs_complexRow[] _ihsComplex2Codes;
-
         private VagueDateInstance _incidSource1DateEntered;
         private VagueDateInstance _incidSource2DateEntered;
         private VagueDateInstance _incidSource3DateEntered;
@@ -441,23 +427,6 @@ namespace HLU.UI.ViewModel
         private List<string[]> _source1Errors = null;
         private List<string[]> _source2Errors = null;
         private List<string[]> _source3Errors = null;
-
-        //private int _matrixCodeErrorNum;
-        //private int _matrixCodeErrorCount;
-        //private int _matrixCodeWarningNum;
-        //private int _matrixCodeWarningCount;
-        //private int _formationCodeErrorNum;
-        //private int _formationCodeErrorCount;
-        //private int _formationCodeWarningNum;
-        //private int _formationCodeWarningCount;
-        //private int _managementCodeErrorNum;
-        //private int _managementCodeErrorCount;
-        //private int _managementCodeWarningNum;
-        //private int _managementCodeWarningCount;
-        //private int _complexCodeErrorNum;
-        //private int _complexCodeErrorCount;
-        //private int _complexCodeWarningNum;
-        //private int _complexCodeWarningCount;
 
         private bool _updateCancelled = true;
         private bool _updateAllFeatures = true;
@@ -833,40 +802,9 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //---------------------------------------------------------------------
-                // FIX: 105 Trap error when unable to register Access table.
-                // 
                 // Set the initial window height if not already set.
                 if (_windowHeight == 0)
-                {
-                    if (_showGroupHeaders)
-                        _windowHeight = 954;
-                    else
-                        _windowHeight = 874;
-
-                    // Adjust the standard height if the NVC codes text is not showing.
-                    if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = _showNVCCodes;
-                    if (!(bool)_showingNVCCodesText)
-                        _windowHeight -= 16;
-
-                    // Adjust the standard height if the Reason and Process group is not showing.
-                    if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
-                    if (!(bool)_showingReasonProcessGroup)
-                        _windowHeight -= 47;
-
-                    // Adjust the standard height if the OSMM Updates group is not showing.
-                    if (!_showingOSMMPendingGroup.HasValue) _showingOSMMPendingGroup = true;
-                    if (!(bool)_showingOSMMPendingGroup)
-                        _windowHeight -= 83;
-
-                    // Adjust the standard height for older versions of Windows
-                    if (System.Environment.OSVersion.Version.Major < 10)
-                        _windowHeight += 10;
-
-                    // Set the default window height
-                    _defaultWindowHeight = _windowHeight;
-                }
-                //---------------------------------------------------------------------
+                    AdjustWindowHeight(true);
 
                 return _windowHeight;
             }
@@ -876,48 +814,42 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //---------------------------------------------------------------------
-        // FIX: 105 Trap error when unable to register Access table.
-        // 
         /// <summary>
         /// Adjusts the window height for any optional groups/fields.
         /// </summary>
-        public void AdjustWindowHeight()
+        public void AdjustWindowHeight(bool resetWindow)
         {
-            // Calculate the new window height.
-            int _newWindowHeight;
-            if (_showGroupHeaders)
-                _newWindowHeight = 954;
-            else
-                _newWindowHeight = 874;
+            int _newWindowHeight = 956;
+
+            // Adjust the minimum height if the group headers are not showing.
+            if (!_showGroupHeaders)
+                _newWindowHeight -= 80;
 
             // Adjust the minimum height if the NVC codes text is not showing.
-            if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = _showNVCCodes;
-            if (!(bool)_showingNVCCodesText)
-                _defaultWindowHeight -= 16;
+            if (!_showNVCCodes)
+                _newWindowHeight -= 18;
 
             // Adjust the minimum height if the Reason and Process group is not showing.
-            if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = _editMode;
-            if (!(bool)_showingReasonProcessGroup)
+            if (!_showingReasonProcessGroup)
                 _newWindowHeight -= 47;
 
             // Adjust the minimum height if the OSMM Updates group is not showing.
-            if (!_showingOSMMPendingGroup.HasValue) _showingOSMMPendingGroup = true;
-            if (!(bool)_showingOSMMPendingGroup)
+            if (!_showingOSMMPendingGroup)
                 _newWindowHeight -= 83;
 
-            // Adjust the standard height for older versions of Windows
+            // Adjust the standard height for older versions of Windows.
             if (System.Environment.OSVersion.Version.Major < 10)
                 _newWindowHeight += 10;
 
-            // Only adjust the window height if it needs to grow/shrink
-            if (_windowHeight == _defaultWindowHeight)
+            // Only adjust the window height if the user hasn't
+            // changed it manually or if the user has specified
+            // if should be reset.
+            if (_windowHeight == _defaultWindowHeight || resetWindow)
                 _windowHeight = _newWindowHeight;
 
-            // Set the new default window height
+            // Set the new default window height.
             _defaultWindowHeight = _newWindowHeight;
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Get and set the window width.
@@ -3582,7 +3514,8 @@ namespace HLU.UI.ViewModel
 
         private void ResetToolWindowClicked(object param)
         {
-            WindowHeight = 0;
+            // Adjust the window height.
+            AdjustWindowHeight(true);
             OnPropertyChanged("WindowHeight");
             WindowWidth = 0;
             OnPropertyChanged("WindowWidth");
@@ -3690,7 +3623,7 @@ namespace HLU.UI.ViewModel
 
                 // Refresh the user interface
                 RefreshGroupHeaders();
-                OnPropertyChanged("ShowNVCCodesText");
+                OnPropertyChanged("ShowNVCCodes");
                 OnPropertyChanged("ShowIHSTab");
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
 
@@ -3707,6 +3640,10 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("IncidQualityDetermination");
                 OnPropertyChanged("IncidQualityInterpretation");
                 OnPropertyChanged("IncidQualityComments");
+
+                // Adjust the window height.
+                AdjustWindowHeight(false);
+                OnPropertyChanged("WindowHeight");
             }
         }
 
@@ -8213,9 +8150,6 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("Source2Header");
             OnPropertyChanged("ShowSource3Number");
             OnPropertyChanged("Source3Header");
-
-            WindowHeight = 0;
-            OnPropertyChanged("WindowHeight");
         }
 
         private void RefreshOSMMUpdate()
@@ -8684,39 +8618,37 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (!_showingOSMMPendingGroup.HasValue) _showingOSMMPendingGroup = false;
-
                 // Show the group if not in osmm update mode and
                 // show updates are "Always" required, or "When Outstanding"
-                // (i.e. update flag is "Proposed" (> 0) or "Pending" = 0)
+                // (i.e. update flag is "Proposed" (> 0) or "Pending" = 0).
                 if ((_osmmUpdateMode == true) ||
                     (_bulkUpdateMode == false &&
                     (_showOSMMUpdates == "Always" ||
                     (_showOSMMUpdates == "When Outstanding" && (IncidOSMMStatus >= 0)))))
                 {
-                    //---------------------------------------------------------------------
-                    // FIX: 104 Set interface height correctly.
-                    //
-                    _showingOSMMPendingGroup = true;
+                    // Adjust the window height if not already showing the group.
+                    if (!_showingOSMMPendingGroup)
+                    {
+                        _showingOSMMPendingGroup = true;
 
-                    // Adjust the window height
-                    AdjustWindowHeight();
+                        // Adjust the window height.
+                        AdjustWindowHeight(false);
                         OnPropertyChanged("WindowHeight");
-                    //---------------------------------------------------------------------
+                    }
 
                     return Visibility.Visible;
                 }
                 else
                 {
-                    //---------------------------------------------------------------------
-                    // FIX: 104 Set interface height correctly.
-                    //
-                    _showingOSMMPendingGroup = false;
+                    // Adjust the window height if currently showing the group.
+                    if (_showingOSMMPendingGroup)
+                    {
+                        _showingOSMMPendingGroup = false;
 
-                    // Adjust the window height
-                    AdjustWindowHeight();
+                        // Adjust the window height.
+                        AdjustWindowHeight(false);
                         OnPropertyChanged("WindowHeight");
-                    //---------------------------------------------------------------------
+                    }
 
                     return Visibility.Collapsed;
                 }
@@ -8931,33 +8863,28 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (!_showingReasonProcessGroup.HasValue) _showingReasonProcessGroup = (_editMode && _osmmUpdateMode == false);
-
                 if (_editMode == true && _osmmUpdateMode == false)
                 {
-                    //---------------------------------------------------------------------
-                    // FIX: 104 Set interface height correctly.
-                    //
-                    _showingReasonProcessGroup = true;
+                    if (!_showingReasonProcessGroup)
+                    {
+                        _showingReasonProcessGroup = true;
 
-                    // Adjust the window height
-                    AdjustWindowHeight();
+                        // Adjust the window height.
+                        AdjustWindowHeight(false);
                         OnPropertyChanged("WindowHeight");
-                    //---------------------------------------------------------------------
-
+                    }
                     return Visibility.Visible;
                 }
                 else
                 {
-                    //---------------------------------------------------------------------
-                    // FIX: 104 Set interface height correctly.
-                    //
-                    _showingReasonProcessGroup = false;
+                    if (_showingReasonProcessGroup)
+                    {
+                        _showingReasonProcessGroup = false;
 
-                    // Adjust the window height
-                    AdjustWindowHeight();
+                        // Adjust the window height.
+                        AdjustWindowHeight(false);
                         OnPropertyChanged("WindowHeight");
-                    //---------------------------------------------------------------------
+                    }
 
                     return Visibility.Collapsed;
                 }
@@ -9390,32 +9317,17 @@ namespace HLU.UI.ViewModel
         /// <summary>
         /// Only show the NVC Codes if the option is set, otherwise collapse it.
         /// </summary>
-        public Visibility ShowNVCCodesText
+        public Visibility ShowNVCCodes
         {
             get
             {
-                if (!_showingNVCCodesText.HasValue) _showingNVCCodesText = _showNVCCodes;
-
+                // If should be showing NVC codes
                 if (_showNVCCodes)
                 {
-                    if (!(bool)_showingNVCCodesText)
-                    {
-                        AdjustWindowHeight();
-                        OnPropertyChanged("WindowHeight");
-                    }
-
-                    _showingNVCCodesText = true;
                     return Visibility.Visible;
                 }
-                else
+                else  // If shouldn't be showing NVC codes
                 {
-                    if ((bool)_showingNVCCodesText)
-                    {
-                        AdjustWindowHeight();
-                        OnPropertyChanged("WindowHeight");
-                    }
-
-                    _showingNVCCodesText = false;
                     return Visibility.Collapsed;
                 }
             }
@@ -9434,7 +9346,6 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                //TODO: Check NVC codes load correctly
                 if (String.IsNullOrEmpty(_incidPrimary)) return null;
 
                 // Select NVC codes based on current primary habitat
@@ -13517,19 +13428,29 @@ namespace HLU.UI.ViewModel
                                 // Only show the previous incid if it was different
                                 modified_incid = !r.Ismodified_incidNull() ? String.Format("{0}", r.modified_incid == r.incid ? null : "\n\tPrevious INCID: " + r.modified_incid) : String.Empty,
 
-                                // Only show the previous values if they are not null and different
+                                //// Only show the previous values if they are not null and different
+                                //modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
+                                //    //!r.Ismodified_habitat_primaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habitat_primary) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habitat_primaryNull() ? String.Format("{0}", r.modified_habitat_primary == IncidCurrentRow.habitat_primary ? null : "\n\tPrevious Primary: " + r.modified_habitat_primary) : String.Empty : String.Empty,
+                                //modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
+                                //    //!r.Ismodified_habitat_secondariesNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habitat_secondaries) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habitat_secondariesNull() ? String.Format("{0}", r.modified_habitat_secondaries == IncidCurrentRow.habitat_secondaries ? null : "\n\tPrevious Secondaries: " + r.modified_habitat_secondaries) : String.Empty : String.Empty,
+                                //modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
+                                //    //r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
+                                //    r.lut_quality_determinationRow != null ? String.Format("{0}", r.modified_habitat_determination == IncidCurrentRow.quality_determination ? null : "\n\tPrevious Determination: " + r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
+                                //modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?
+                                //    //r.lut_quality_interpretationRow != null ? String.Format("\n\tPrevious Interpretation: {0}", r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
+                                //    r.lut_quality_interpretationRow != null ? String.Format("{0}", r.modified_habitat_interpretation == IncidCurrentRow.quality_interpretation ? null : "\n\tPrevious Interpretation: " + r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
+
+                                // Only show the previous values if they are not null
                                 modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
-                                    //!r.Ismodified_habitat_primaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habitat_primary) : String.Empty : String.Empty,
-                                    !r.Ismodified_habitat_primaryNull() ? String.Format("{0}", r.modified_habitat_primary == IncidCurrentRow.habitat_primary ? null : "\n\tPrevious Primary: " + r.modified_habitat_primary) : String.Empty : String.Empty,
+                                    !r.Ismodified_habitat_primaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habitat_primary) : String.Empty : String.Empty,
                                 modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
-                                    //!r.Ismodified_habitat_secondariesNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habitat_secondaries) : String.Empty : String.Empty,
-                                    !r.Ismodified_habitat_secondariesNull() ? String.Format("{0}", r.modified_habitat_secondaries == IncidCurrentRow.habitat_secondaries ? null : "\n\tPrevious Secondaries: " + r.modified_habitat_secondaries) : String.Empty : String.Empty,
+                                    !r.Ismodified_habitat_secondariesNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habitat_secondaries) : String.Empty : String.Empty,
                                 modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
-                                    //r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
-                                    r.lut_quality_determinationRow != null ? String.Format("{0}", r.modified_habitat_determination == IncidCurrentRow.quality_determination ? null : "\n\tPrevious Determination: " + r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
+                                    r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
                                 modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?
-                                    //r.lut_quality_interpretationRow != null ? String.Format("\n\tPrevious Interpretation: {0}", r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
-                                    r.lut_quality_interpretationRow != null ? String.Format("{0}", r.modified_habitat_interpretation == IncidCurrentRow.quality_interpretation ? null : "\n\tPrevious Interpretation: " + r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
+                                    r.lut_quality_interpretationRow != null ? String.Format("\n\tPrevious Interpretation: {0}", r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
 
                             } into g
                             select

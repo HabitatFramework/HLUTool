@@ -1174,7 +1174,7 @@
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center"
                                                Content="NVC Codes"
-                                               Visibility="{Binding Path=ShowNVCCodesText}" />
+                                               Visibility="{Binding Path=ShowNVCCodes}" />
                                         <TextBox x:Name="TextBoxNvcCodes"
                                                  Grid.Row="1"
                                                  Grid.Column="1"
@@ -1183,7 +1183,7 @@
                                                  IsEnabled="False"
                                                  Text="{Binding NvcCodes,
                                                                 Mode=OneWay}"
-                                                 Visibility="{Binding Path=ShowNVCCodesText}"
+                                                 Visibility="{Binding Path=ShowNVCCodes}"
 						                         ToolTip="{Binding NvcCodes}"
                                                  ToolTipService.ShowOnDisabled="True" />
                                     </Grid>
@@ -1907,7 +1907,7 @@
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="175"
+                                                                                       MinWidth="100"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -1935,7 +1935,7 @@
                                                                                                                       ValidatesOnDataErrors=True}"
                                                                                        SelectedValuePath="code" />
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="90"
+                                                                                       MinWidth="80"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -1949,7 +1949,7 @@
                                                                                                                       ValidatesOnDataErrors=True}"
                                                                                        SelectedValuePath="code" />
                                                 <tkit:DataGridTextColumn Width="SizeToHeader"
-                                                                         MinWidth="150"
+                                                                         MinWidth="100"
                                                                          Binding="{Binding interpretation_comments,
                                                                                            UpdateSourceTrigger=PropertyChanged,
                                                                                            ValidatesOnDataErrors=True}"
@@ -2032,7 +2032,7 @@
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="175"
+                                                                                       MinWidth="100"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -2061,7 +2061,7 @@
                                                                                                                       ValidatesOnDataErrors=True}"
                                                                                        SelectedValuePath="code" />
                                                 <hlu:DataGridComboBoxColumnWithBinding Width="SizeToHeader"
-                                                                                       MinWidth="90"
+                                                                                       MinWidth="80"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -2075,7 +2075,7 @@
                                                                                                                       ValidatesOnDataErrors=True}"
                                                                                        SelectedValuePath="code" />
                                                 <tkit:DataGridTextColumn Width="*"
-                                                                         MinWidth="150"
+                                                                         MinWidth="100"
                                                                          Binding="{Binding interpretation_comments,
                                                                                            UpdateSourceTrigger=PropertyChanged,
                                                                                            ValidatesOnDataErrors=True}"
@@ -2147,7 +2147,7 @@
                                     <RowDefinition Height="1*" />
                                     <RowDefinition Height="1.5*" />
                                     <RowDefinition Height="1.5*" />
-                                    <RowDefinition Height="3*" />
+                                    <RowDefinition Height="2.7*" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
