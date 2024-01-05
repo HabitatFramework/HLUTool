@@ -68,7 +68,7 @@
                                                     IsReadOnly="True"
                                                     Visibility="Collapsed" />
                         <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
-                                                                MinWidth="225"
+                                                                MinWidth="100"
                                                                 CanUserResize="True"
                                                                 DisplayMemberPath="description"
                                                                 EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -83,7 +83,7 @@
                                                                                                 ValidatesOnDataErrors=True}"
                                                                 SelectedValuePath="code" />
                         <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
-                                                                MinWidth="175"
+                                                                MinWidth="100"
                                                                 CanUserResize="True"
                                                                 DisplayMemberPath="description"
                                                                 EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -97,7 +97,7 @@
                                                                                                 ValidatesOnDataErrors=True}"
                                                                 SelectedValuePath="code" />
                         <hlu:DataGridComboBoxColumnWithBinding Width="SizeToCells"
-                                                                MinWidth="100"
+                                                                MinWidth="80"
                                                                 CanUserResize="True"
                                                                 DisplayMemberPath="description"
                                                                 EditingElementStyle="{DynamicResource ComboBoxStyle}"
@@ -111,7 +111,7 @@
                                                                                                 ValidatesOnDataErrors=True}"
                                                                 SelectedValuePath="code" />
                         <tkit:DataGridTextColumn Width="SizeToCells"
-                                                    MinWidth="170"
+                                                    MinWidth="100"
                                                     Binding="{Binding interpretation_comments,
                                                                     UpdateSourceTrigger=PropertyChanged,
                                                                     ValidatesOnDataErrors=True}"
