@@ -88,9 +88,6 @@ namespace HLU.Data
             else
                 _secondary_habitat_int = 0;
             _secondary_group = dataRow.secondary_group;
-
-            //TODO: Secondaries - Needed?
-            _secondaryHabitatList = shList;
         }
 
         public SecondaryHabitat(bool bulkUpdateMode, object[] itemArray)
@@ -162,11 +159,12 @@ namespace HLU.Data
             set {
                 _secondaryHabitatList = value;
 
-                for (int i = 0; i < _secondaryHabitatList.Count(); i++)
-                {
-                    SecondaryHabitat sh = new SecondaryHabitat();
-                    sh = _secondaryHabitatList.ElementAt(i);
-                }
+                //TODO: Secondaries - Needed?
+                //for (int i = 0; i < _secondaryHabitatList.Count(); i++)
+                //{
+                //    SecondaryHabitat sh = new SecondaryHabitat();
+                //    sh = _secondaryHabitatList.ElementAt(i);
+                //}
             }
         }
 

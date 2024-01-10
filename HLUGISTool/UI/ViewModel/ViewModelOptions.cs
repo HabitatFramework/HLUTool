@@ -247,10 +247,10 @@ namespace HLU.UI.ViewModel
             Settings.Default.SecondaryCodeDelimiter = _secondaryCodeDelimiter;
 
             // Updates options
-            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.SubsetUpdateAction = (int)_subsetUpdateAction;
-            Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
             Settings.Default.ClearIHSUpdateAction = _clearIHSUpdateAction;
+            Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
+            Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
             Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
             Settings.Default.QualityValidation = _qualityValidation;
 

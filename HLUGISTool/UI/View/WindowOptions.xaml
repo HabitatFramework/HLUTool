@@ -657,7 +657,7 @@
                         <Grid x:Name="GridIHSUpdateAction" Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" MinWidth="300" />
+                                <ColumnDefinition Width="Auto" MinWidth="315" />
                             </Grid.ColumnDefinitions>
 
                             <Label x:Name="LabelClearIHSUpdateAction"

@@ -3605,6 +3605,7 @@ namespace HLU.UI.ViewModel
 
                 // Updates options
                 _subsetUpdateAction = Settings.Default.SubsetUpdateAction;
+                _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
                 _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
                 _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
@@ -5801,8 +5802,15 @@ namespace HLU.UI.ViewModel
                         // If any codes were invalid then tell the user
                         if (errorCodes != null && errorCodes.Count > 0)
                         {
-                            MessageBox.Show(App.Current.MainWindow, "The codes '" + String.Join(_secondaryCodeDelimiter, errorCodes.Distinct()) + "' were duplicated or invalid and have not been added.", "Add Secondary Habitats",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                            // Sort the distinct secondary codes in error numerically
+                            errorCodes = errorCodes.Distinct().OrderBy(e => e.PadLeft(5, '0')).ToList();
+                            // Message the user, depending on if there is one or more
+                            if (errorCodes.Count() == 1)
+                                MessageBox.Show(App.Current.MainWindow, "Code '" + errorCodes.FirstOrDefault() + "' is a duplicate or unknown and has not been added.", "Add Secondary Habitats",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                            else
+                                MessageBox.Show(App.Current.MainWindow, "Codes '" + String.Join(", ", errorCodes.Take(errorCodes.Count() - 1)) + " and " + errorCodes.Last() + "' are duplicates or unknown and have not been added.", "Add Secondary Habitats",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                 }
@@ -7801,18 +7809,15 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Determines whether any of the incid tables are dirty].
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsDirtyIncid()
         {
-            //TODO: IsDirty Incid - Check
-            //return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) && ((_incidCurrentRow.Isihs_habitatNull() &&
-            //    !String.IsNullOrEmpty(_incidIhsHabitat)) || _incidIhsHabitat != _incidCurrentRow.ihs_habitat ||
-            //    !CompareIncidCurrentRowClone()));
-            //return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) &&
-            //    ((Convert.IsDBNull(_incidCurrentRow.habitat_primary) && !String.IsNullOrEmpty(_incidPrimary)) ||
-            //    (_incidCurrentRow.Ishabitat_primaryNull() && !String.IsNullOrEmpty(_incidPrimary)) ||
-            //    _incidPrimary != _incidCurrentRow.habitat_primary ||
-            //    !CompareIncidCurrentRowClone()));
-
+            // If anything has changed in any of the data tables
             return ((_incidCurrentRow != null) && (_incidCurrentRow.RowState != DataRowState.Detached) &&
                 ((_incidCurrentRow.Ishabitat_primaryNull() && !String.IsNullOrEmpty(_incidPrimary)) ||
                 (!_incidCurrentRow.Ishabitat_primaryNull() && String.IsNullOrEmpty(_incidPrimary)) ||
@@ -7820,7 +7825,93 @@ namespace HLU.UI.ViewModel
                 !CompareIncidCurrentRowClone()));
         }
 
+        /// <summary>
+        /// Determines whether the incid ihs matrix table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
+        internal bool IsDirtyIncidIhsMatrix()
+        {
+            if (_incidIhsMatrixRows != null)
+            {
+                if (_incidIhsMatrixRows.Count(r => r != null) != _origIncidIhsMatrixCount) return true;
+
+                foreach (DataRow r in _incidIhsMatrixRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+
+                return false;
+            }
+            return _origIncidIhsMatrixCount != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the incid ihs formation table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
+        internal bool IsDirtyIncidIhsFormation()
+        {
+            if (_incidIhsFormationRows != null)
+            {
+                if (_incidIhsFormationRows.Count(r => r != null) != _origIncidIhsFormationCount) return true;
+
+                foreach (DataRow r in _incidIhsFormationRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+
+                return false;
+            }
+            return _origIncidIhsFormationCount != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the incid ihs management table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
+        internal bool IsDirtyIncidIhsManagement()
+        {
+            if (_incidIhsManagementRows != null)
+            {
+                if (_incidIhsManagementRows.Count(r => r != null) != _origIncidIhsManagementCount) return true;
+
+                foreach (DataRow r in _incidIhsManagementRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+
+                return false;
+            }
+            return _origIncidIhsManagementCount != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the incid ihs complex table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
+        internal bool IsDirtyIncidIhsComplex()
+        {
+            if (_incidIhsComplexRows != null)
+            {
+                if (_incidIhsComplexRows.Count(r => r != null) != _origIncidIhsComplexCount) return true;
+
+                foreach (DataRow r in _incidIhsComplexRows)
+                    if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
+
+                return false;
+            }
+            return _origIncidIhsComplexCount != 0;
+        }
+        
         //TODO: IsDirty IncidSecondary - Check
+        /// <summary>
+        /// Determines whether the incid secondary table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsDirtyIncidSecondary()
         {
             if (_incidSecondaryRows.Count(r => r.RowState == DataRowState.Deleted) > 0) return true;
@@ -7841,6 +7932,12 @@ namespace HLU.UI.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the incid condition table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsDirtyIncidCondition()
         {
             if (_incidConditionRows != null)
@@ -7855,66 +7952,12 @@ namespace HLU.UI.ViewModel
             return _origIncidConditionCount != 0;
         }
 
-        //TODO: IsDirty - Needed?
-        //internal bool IsDirtyIncidIhsMatrix()
-        //{
-        //    if (_incidIhsMatrixRows != null)
-        //    {
-        //        if (_incidIhsMatrixRows.Count(r => r != null) != _origIncidIhsMatrixCount) return true;
-
-        //        foreach (DataRow r in _incidIhsMatrixRows)
-        //            if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
-
-        //        return false;
-        //    }
-        //    return _origIncidIhsMatrixCount != 0;
-        //}
-
-        //TODO: IsDirty - Needed?
-        //internal bool IsDirtyIncidIhsFormation()
-        //{
-        //    if (_incidIhsFormationRows != null)
-        //    {
-        //        if (_incidIhsFormationRows.Count(r => r != null) != _origIncidIhsFormationCount) return true;
-
-        //        foreach (DataRow r in _incidIhsFormationRows)
-        //            if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
-
-        //        return false;
-        //    }
-        //    return _origIncidIhsFormationCount != 0;
-        //}
-
-        //TODO: IsDirty - Needed?
-        //internal bool IsDirtyIncidIhsManagement()
-        //{
-        //    if (_incidIhsManagementRows != null)
-        //    {
-        //        if (_incidIhsManagementRows.Count(r => r != null) != _origIncidIhsManagementCount) return true;
-
-        //        foreach (DataRow r in _incidIhsManagementRows)
-        //            if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
-
-        //        return false;
-        //    }
-        //    return _origIncidIhsManagementCount != 0;
-        //}
-
-        //TODO: IsDirty - Needed?
-        //internal bool IsDirtyIncidIhsComplex()
-        //{
-        //    if (_incidIhsComplexRows != null)
-        //    {
-        //        if (_incidIhsComplexRows.Count(r => r != null) != _origIncidIhsComplexCount) return true;
-
-        //        foreach (DataRow r in _incidIhsComplexRows)
-        //            if (ViewModelWindowMainHelpers.RowIsDirty(r)) return true;
-
-        //        return false;
-        //    }
-        //    return _origIncidIhsComplexCount != 0;
-        //}
-
+        /// <summary>
+        /// Determines whether the incid bap table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsDirtyIncidBap()
         {
             if (_incidBapRows.Count(r => r.RowState == DataRowState.Deleted) > 0) return true;
@@ -7942,6 +7985,12 @@ namespace HLU.UI.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the incid sources table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         private bool IsDirtyIncidSources()
         {
             if (_incidSourcesRows != null)
@@ -7956,6 +8005,12 @@ namespace HLU.UI.ViewModel
             return _origIncidSourcesCount != 0;
         }
 
+        /// <summary>
+        /// Determines whether the incid osmm updates table is dirty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if dirty otherwise, <c>false</c>.
+        /// </returns>
         internal bool IsDirtyIncidOSMMUpdates()
         {
             if (_incidOSMMUpdatesRows != null)
@@ -9304,6 +9359,10 @@ namespace HLU.UI.ViewModel
             _secondaryGroup = _preferredSecondaryGroup;
             OnPropertyChanged("SecondaryGroup");
             OnPropertyChanged("SecondaryHabitatCodes");
+
+            OnPropertyChanged("SecondaryGroupEnabled");
+            OnPropertyChanged("SecondaryHabitatEnabled");
+
             OnPropertyChanged("CanAddSecondaryHabitat");
             OnPropertyChanged("CanAddSecondaryHabitatList");
             RefreshSecondaryHabitats();
@@ -9369,6 +9428,22 @@ namespace HLU.UI.ViewModel
                     return "Secondary Habitats";
                 else
                     return null;
+            }
+        }
+
+        public bool SecondaryGroupEnabled
+        {
+            get
+            {
+                return (!String.IsNullOrEmpty(_incidPrimary));
+            }
+        }
+
+        public bool SecondaryHabitatEnabled
+        {
+            get
+            {
+                return (!String.IsNullOrEmpty(_incidPrimary) && !String.IsNullOrEmpty(_secondaryGroup));
             }
         }
 
@@ -9458,6 +9533,9 @@ namespace HLU.UI.ViewModel
                     allRow.sort_order = -1;
                     _secondaryGroupsValid = _secondaryGroupsValid.Concat(
                         new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    // Set the combo box list to null (it will also be disabled).
+                    return null;
                 }
 
                 return _secondaryGroupsValid;
@@ -9491,6 +9569,7 @@ namespace HLU.UI.ViewModel
             set
             {
                 _secondaryGroup = value;
+                OnPropertyChanged("SecondaryHabitatEnabled");
                 OnPropertyChanged("SecondaryHabitatCodes");
                 OnPropertyChanged("CanAddSecondaryHabitat");
             }
@@ -9500,7 +9579,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (!String.IsNullOrEmpty(_secondaryGroup))
+                if (!String.IsNullOrEmpty(_incidPrimary) && !String.IsNullOrEmpty(_secondaryGroup))
                 {
                     // If the secondary codes must be valid
                     if (_secondaryCodeValidation > 0)
@@ -9537,6 +9616,7 @@ namespace HLU.UI.ViewModel
                 }
                 else
                 {
+                    // Set the combo box list to null (it will also be disabled).
                     return null;
                 }
             }
@@ -9809,6 +9889,9 @@ namespace HLU.UI.ViewModel
             {
                 DelErrorList(ref _habitatErrors, "SecondaryHabitat");
             }
+
+            // Update the list of secondary habitat rows for the class.
+            SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
 
             OnPropertyChanged("IncidSecondarySummary");
             OnPropertyChanged("HabitatTabLabel");
@@ -10253,14 +10336,20 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Removes the specified incid ihs matrix row.
+        /// Removes the incid ihs matrix rows.
         /// </summary>
-        /// <param name="rowNumber">The row number.</param>
-        public void RemoveIncidIhsMatrixRow(int rowNumber)
+        public void RemoveIncidIhsMatrixRows()
         {
-            if (_incidIhsMatrixRows[rowNumber].RowState != DataRowState.Detached)
-                _incidIhsMatrixRows[rowNumber].Delete();
-            _incidIhsMatrixRows[rowNumber] = null;
+            //TODO: Update remove IHS codes - check needed
+            if (CheckIhsMatrix())   // Needed?
+            {
+                for (int i = 0; i < _incidIhsMatrixRows.Length; i++)
+                {
+                    if (_incidIhsMatrixRows[i].RowState != DataRowState.Detached)
+                        _incidIhsMatrixRows[i].Delete();
+                    _incidIhsMatrixRows[i] = null;
+                }
+            }
         }
 
         #endregion
@@ -10424,14 +10513,20 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Removes the specified incid ihs formation row.
+        /// Removes the incid ihs formation rows.
         /// </summary>
-        /// <param name="rowNumber">The row number.</param>
-        public void RemoveIncidIhsFormationRow(int rowNumber)
+        public void RemoveIncidIhsFormationRows()
         {
-            if (_incidIhsFormationRows[rowNumber].RowState != DataRowState.Detached)
-                _incidIhsFormationRows[rowNumber].Delete();
-            _incidIhsFormationRows[rowNumber] = null;
+            //TODO: Update remove IHS codes - check needed
+            if (CheckIhsFormation())   // Needed?
+            {
+                for (int i = 0; i < _incidIhsFormationRows.Length; i++)
+                {
+                    if (_incidIhsFormationRows[i].RowState != DataRowState.Detached)
+                        _incidIhsFormationRows[i].Delete();
+                    _incidIhsFormationRows[i] = null;
+                }
+            }
         }
 
         #endregion
@@ -10596,14 +10691,20 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Removes the specified incid ihs management row.
+        /// Removes the incid ihs management rows.
         /// </summary>
-        /// <param name="rowNumber">The row number.</param>
-        public void RemoveIncidIhsManagementRow(int rowNumber)
+        public void RemoveIncidIhsManagementRows()
         {
-            if (_incidIhsManagementRows[rowNumber].RowState != DataRowState.Detached)
-                _incidIhsManagementRows[rowNumber].Delete();
-            _incidIhsManagementRows[rowNumber] = null;
+            //TODO: Update remove IHS codes - check needed
+            if (CheckIhsManagement())   // Needed?
+            {
+                for (int i = 0; i < _incidIhsManagementRows.Length; i++)
+                {
+                    if (_incidIhsManagementRows[i].RowState != DataRowState.Detached)
+                        _incidIhsManagementRows[i].Delete();
+                    _incidIhsManagementRows[i] = null;
+                }
+            }
         }
 
         #endregion
@@ -10757,18 +10858,31 @@ namespace HLU.UI.ViewModel
         {
             if (_bulkUpdateMode == true) return true;
 
-            return true;
+            if (_incidIhsComplexRows == null)
+            {
+                HluDataSet.incid_ihs_complexDataTable ihsComplexTable = _hluDS.incid_ihs_complex;
+                GetIncidChildRowsDb(new object[] { Incid },
+                    _hluTableAdapterMgr.incid_ihs_complexTableAdapter, ref ihsComplexTable);
+            }
+
+            return _incidIhsManagementRows != null;
         }
 
         /// <summary>
-        /// Removes the specified incid ihs complex row.
+        /// Removes the incid ihs complex rows.
         /// </summary>
-        /// <param name="rowNumber">The row number.</param>
-        public void RemoveIncidIhsComplexRow(int rowNumber)
+        public void RemoveIncidIhsComplexRows()
         {
-            if (_incidIhsComplexRows[rowNumber].RowState != DataRowState.Detached)
-                _incidIhsComplexRows[rowNumber].Delete();
-            _incidIhsComplexRows[rowNumber] = null;
+            //TODO: Update remove IHS codes - check needed
+            if (CheckIhsComplex())   // Needed?
+            {
+                for (int i = 0; i < _incidIhsComplexRows.Length; i++)
+                {
+                    if (_incidIhsComplexRows[i].RowState != DataRowState.Detached)
+                        _incidIhsComplexRows[i].Delete();
+                    _incidIhsComplexRows[i] = null;
+                }
+            }
         }
 
         #endregion
@@ -12265,6 +12379,9 @@ namespace HLU.UI.ViewModel
                     // Refresh quality determnation list
                     if (clearCode || newCode)
                         OnPropertyChanged("QualityInterpretationCodes");
+
+                    // Revalidate the comments
+                    OnPropertyChanged("IncidQualityComments");
                 }
             }
         }
@@ -14093,10 +14210,10 @@ namespace HLU.UI.ViewModel
 
                         if (String.IsNullOrEmpty(IncidQualityInterpretation))
                             error.Append(Environment.NewLine).Append("Quality interpretation is mandatory for every INCID");
-                    }
 
-                    if ((!String.IsNullOrEmpty(IncidQualityComments) && String.IsNullOrEmpty(IncidQualityInterpretation)))
-                        error.Append(Environment.NewLine).Append("Interpretation comments are invalid without interpretation quality");
+                        if ((!String.IsNullOrEmpty(IncidQualityComments) && String.IsNullOrEmpty(IncidQualityInterpretation)))
+                            error.Append(Environment.NewLine).Append("Interpretation comments are invalid without interpretation quality");
+                    }
                 }
 
                 if (String.IsNullOrEmpty(IncidPrimary) && _bulkUpdateMode == false)
@@ -14331,7 +14448,8 @@ namespace HLU.UI.ViewModel
                             OnPropertyChanged("DetailsTabLabel");
                             break;
                         case "IncidQualityDetermination":
-                            if ((_qualityValidation == 1) && (String.IsNullOrEmpty(IncidQualityDetermination)))
+                            if ((_qualityValidation == 1)
+                                && (String.IsNullOrEmpty(IncidQualityDetermination)))
                             {
                                 error = "Error: Determination quality is mandatory for every INCID";
                                 AddErrorList(ref _detailsErrors, columnName);
@@ -14343,7 +14461,8 @@ namespace HLU.UI.ViewModel
                             OnPropertyChanged("DetailsTabLabel");
                             break;
                         case "IncidQualityInterpretation":
-                            if ((_qualityValidation == 1) && (String.IsNullOrEmpty(IncidQualityInterpretation)))
+                            if ((_qualityValidation == 1)
+                                && (String.IsNullOrEmpty(IncidQualityInterpretation)))
                             {
                                 error = "Error: Interpretation quality is mandatory for every INCID";
                                 AddErrorList(ref _detailsErrors, columnName);
@@ -14355,7 +14474,9 @@ namespace HLU.UI.ViewModel
                             OnPropertyChanged("DetailsTabLabel");
                             break;
                         case "IncidQualityComments":
-                            if ((!String.IsNullOrEmpty(IncidQualityComments)) && String.IsNullOrEmpty(IncidQualityInterpretation))
+                            if ((_qualityValidation == 1)
+                                && (!String.IsNullOrEmpty(IncidQualityComments))
+                                && String.IsNullOrEmpty(IncidQualityInterpretation))
                             {
                                 error = "Error: Interpretation comments are invalid without interpretation quality";
                                 AddErrorList(ref _detailsErrors, columnName);

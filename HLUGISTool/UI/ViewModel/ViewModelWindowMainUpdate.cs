@@ -79,7 +79,38 @@ namespace HLU.UI.ViewModel
                     throw new Exception(String.Format("Failed to update '{0}' table.",
                         _viewModelMain.HluDataset.incid.TableName));
 
-                //TODO: Update - Check incid_condition update
+                if ((_viewModelMain.IncidIhsMatrixRows != null) && _viewModelMain.IsDirtyIncidIhsMatrix())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_matrixTableAdapter.Update(
+                        (HluDataSet.incid_ihs_matrixDataTable)_viewModelMain.HluDataset.incid_ihs_matrix.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_ihs_matrix.TableName));
+                }
+
+                if ((_viewModelMain.IncidIhsFormationRows != null) && _viewModelMain.IsDirtyIncidIhsFormation())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_formationTableAdapter.Update(
+                        (HluDataSet.incid_ihs_formationDataTable)_viewModelMain.HluDataset.incid_ihs_formation.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_ihs_formation.TableName));
+                }
+
+                if ((_viewModelMain.IncidIhsManagementRows != null) && _viewModelMain.IsDirtyIncidIhsManagement())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_managementTableAdapter.Update(
+                        (HluDataSet.incid_ihs_managementDataTable)_viewModelMain.HluDataset.incid_ihs_management.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_ihs_management.TableName));
+                }
+
+                if ((_viewModelMain.IncidIhsComplexRows != null) && _viewModelMain.IsDirtyIncidIhsComplex())
+                {
+                    if (_viewModelMain.HluTableAdapterManager.incid_ihs_complexTableAdapter.Update(
+                        (HluDataSet.incid_ihs_complexDataTable)_viewModelMain.HluDataset.incid_ihs_complex.GetChanges()) == -1)
+                        throw new Exception(String.Format("Failed to update '{0}' table.",
+                            _viewModelMain.HluDataset.incid_ihs_complex.TableName));
+                }
+                
                 // Update condition rows
                 if ((_viewModelMain.IncidConditionRows != null) && _viewModelMain.IsDirtyIncidCondition())
                 {
@@ -404,7 +435,6 @@ namespace HLU.UI.ViewModel
             return null;
         }
 
-        //TODO: Check IHS codes are cleared when required on update
         /// <summary>
         /// Updates those columns of IncidCurrentRow in main view model that are not directly updated 
         /// by properties (to enable undo if update cancelled).
@@ -413,51 +443,69 @@ namespace HLU.UI.ViewModel
         internal static void IncidCurrentRowDerivedValuesUpdate(ViewModelWindowMain viewModelMain)
         {
             // Clear IHS values on update (if required) depending on user settings
+            bool clearIHSCodes = false;
             switch (viewModelMain.ClearIHSUpdateAction)
             {
-                case "Don't clear":
-                    viewModelMain.IncidCurrentRow.ihs_habitat = viewModelMain.IncidIhsHabitat;
-                    break;
                 case "Clear on change in primary code only":
-                    if (viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary)
-                        viewModelMain.IncidCurrentRow.ihs_habitat = null;
-                        viewModelMain.RemoveIncidIhsMatrixRow(0);
-                        viewModelMain.RemoveIncidIhsMatrixRow(1);
-                        viewModelMain.RemoveIncidIhsMatrixRow(2);
-                        viewModelMain.RemoveIncidIhsFormationRow(0);
-                        viewModelMain.RemoveIncidIhsFormationRow(1);
-                        viewModelMain.RemoveIncidIhsManagementRow(0);
-                        viewModelMain.RemoveIncidIhsManagementRow(1);
-                        viewModelMain.RemoveIncidIhsComplexRow(0);
-                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    // Check if the primary habitat has changed
+                    if (viewModelMain.IncidCurrentRow.IsNull(viewModelMain.HluDataset.incid.habitat_primaryColumn)
+                        || (String.IsNullOrEmpty(viewModelMain.IncidCurrentRow.habitat_primary)))
+                    {
+                        if (viewModelMain.IncidPrimary != null)
+                            clearIHSCodes = true;
+                    }
+                    else if ((viewModelMain.IncidPrimary == null)
+                        || (viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary))
+                    {
+                        clearIHSCodes = true;
+                    }
                     break;
                 case "Clear on change in primary or secondary codes only":
-                    if ((viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary) ||
-                       (viewModelMain.IncidCurrentRow.habitat_secondaries != viewModelMain.IncidSecondarySummary))
-                        viewModelMain.IncidCurrentRow.ihs_habitat = null;
-                        viewModelMain.RemoveIncidIhsMatrixRow(0);
-                        viewModelMain.RemoveIncidIhsMatrixRow(1);
-                        viewModelMain.RemoveIncidIhsMatrixRow(2);
-                        viewModelMain.RemoveIncidIhsFormationRow(0);
-                        viewModelMain.RemoveIncidIhsFormationRow(1);
-                        viewModelMain.RemoveIncidIhsManagementRow(0);
-                        viewModelMain.RemoveIncidIhsManagementRow(1);
-                        viewModelMain.RemoveIncidIhsComplexRow(0);
-                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    // Check if the primary habitat has changed
+                    if (viewModelMain.IncidCurrentRow.IsNull(viewModelMain.HluDataset.incid.habitat_primaryColumn)
+                        || (String.IsNullOrEmpty(viewModelMain.IncidCurrentRow.habitat_primary)))
+                    {
+                        if (viewModelMain.IncidPrimary != null)
+                            clearIHSCodes = true;
+                    }
+                    else if ((viewModelMain.IncidPrimary == null)
+                        || (viewModelMain.IncidCurrentRow.habitat_primary != viewModelMain.IncidPrimary))
+                    {
+                        clearIHSCodes = true;
+                    }
+                    else
+                    {
+                        // Check if the secondary habitats have changed
+                        if (viewModelMain.IncidCurrentRow.IsNull(viewModelMain.HluDataset.incid.habitat_secondariesColumn)
+                            || (String.IsNullOrEmpty(viewModelMain.IncidCurrentRow.habitat_secondaries)))
+                        {
+                            if (viewModelMain.IncidSecondarySummary != null)
+                                clearIHSCodes = true;
+                        }
+                        else if ((viewModelMain.IncidSecondarySummary == null)
+                            || (viewModelMain.IncidCurrentRow.habitat_secondaries != viewModelMain.IncidSecondarySummary))
+                        {
+                            clearIHSCodes = true;
+                        }
+                    }
                     break;
                 case "Clear on any change":
-                    viewModelMain.IncidCurrentRow.ihs_habitat = null;
-                        viewModelMain.RemoveIncidIhsMatrixRow(0);
-                        viewModelMain.RemoveIncidIhsMatrixRow(1);
-                        viewModelMain.RemoveIncidIhsMatrixRow(2);
-                        viewModelMain.RemoveIncidIhsFormationRow(0);
-                        viewModelMain.RemoveIncidIhsFormationRow(1);
-                        viewModelMain.RemoveIncidIhsManagementRow(0);
-                        viewModelMain.RemoveIncidIhsManagementRow(1);
-                        viewModelMain.RemoveIncidIhsComplexRow(0);
-                        viewModelMain.RemoveIncidIhsComplexRow(1);
+                    clearIHSCodes = true;
+                    break;
+                default:    // "Don't clear"
                     break;
             }
+
+            // Clear the IHS codes if required
+            if (clearIHSCodes)
+            {
+                viewModelMain.IncidCurrentRow.ihs_habitat = null;
+                viewModelMain.RemoveIncidIhsMatrixRows();
+                viewModelMain.RemoveIncidIhsFormationRows();
+                viewModelMain.RemoveIncidIhsManagementRows();
+                viewModelMain.RemoveIncidIhsComplexRows();
+            }
+
             // Update other incid vales
             viewModelMain.IncidCurrentRow.habitat_primary = viewModelMain.IncidPrimary;
             viewModelMain.IncidCurrentRow.habitat_secondaries = viewModelMain.IncidSecondarySummary;
