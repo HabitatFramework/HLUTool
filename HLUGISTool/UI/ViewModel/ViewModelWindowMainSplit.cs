@@ -179,7 +179,7 @@ namespace HLU.UI.ViewModel
                         new
                         {
                             ColumnName = newFeatures.Columns[index].ColumnName,
-                            value = ((String)i == String.Empty) ? null : i
+                            value = String.IsNullOrEmpty(i.ToString()) ? null : i
                         })
                     .Where(a => _viewModelMain.GisIDColumns.Count(c => c.ColumnName == a.ColumnName) == 0)
                     .Select(a => String.Format("{0} = {1}", _viewModelMain.DataBase.QuoteIdentifier(a.ColumnName),
@@ -206,7 +206,7 @@ namespace HLU.UI.ViewModel
                         newFeatures.Rows[i].ItemArray.Select((item, index) =>
                             _viewModelMain.DataBase.QuoteValue(newFeatures.Columns[index].ColumnName ==
                             updTable.toidfragidColumn.ColumnName ?
-                            (toidFragID + i).ToString(numFormat) : ((String)item == String.Empty) ? null : item)).ToArray()));
+                            (toidFragID + i).ToString(numFormat) : String.IsNullOrEmpty(item.ToString()) ? null : item)).ToArray()));
 
                     if (_viewModelMain.DataBase.ExecuteNonQuery(insertStatement,
                         _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)

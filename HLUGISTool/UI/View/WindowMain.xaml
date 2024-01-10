@@ -1231,6 +1231,7 @@
                                                       Margin="8,2,8,4"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
+													  IsEnabled="{Binding SecondaryGroupEnabled}"
                                                       IsEditable="True"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding SecondaryGroupCodes,
@@ -1253,6 +1254,7 @@
                                                       Margin="8,2,8,4"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
+													  IsEnabled="{Binding SecondaryHabitatEnabled}"
                                                       IsEditable="True"
                                                       IsReadOnly="False"
                                                       ItemsSource="{Binding SecondaryHabitatCodes,
