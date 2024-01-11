@@ -881,9 +881,9 @@ namespace HLU.UI.ViewModel
                             
                             valuePI.SetValue(vmMain, copyPI.GetValue(this, null), null);
 
-                            // Refresh the secondary habitat table if they have been pasted
-                            if (propertyName == "IncidSecondaryHabitats")
-                                vmMain.RefreshSecondaryHabitats();
+                            //// Refresh the secondary habitat table if they have been pasted
+                            //if (propertyName == "IncidSecondaryHabitats")
+                            //    vmMain.RefreshSecondaryHabitats();
 
                             vmMain.Pasting = false;
                         }
