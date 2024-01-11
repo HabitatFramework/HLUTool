@@ -5642,10 +5642,12 @@ namespace HLU.UI.ViewModel
                         SecondaryHabitat.SecondaryHabitatList.Count(sh => sh.secondary_habitat == _secondaryHabitat) == 0)
                         AddSecondaryHabitat(false, -1, Incid, _secondaryHabitat, secondaryGroup);
 
-                    // Refresh secondary table, summary and BAP habitats
+                    // Refresh secondary table and summary.
                     RefreshSecondaryHabitats();
                     OnPropertyChanged("IncidSecondarySummary");
 
+                    // Refresh the BAP habitat environments (in case secondary codes
+                    // are, or should be, reflected).
                     GetBapEnvironments();
                     OnPropertyChanged("IncidBapHabitatsAuto");
                     OnPropertyChanged("IncidBapHabitatsUser");
@@ -5788,10 +5790,12 @@ namespace HLU.UI.ViewModel
                         // If any valid codes were entered and were added to the table
                         if (addedCodes == true)
                         {
-                            // Refresh secondary table, summary and BAP habitats
+                            // Refresh secondary table and summary.
                             RefreshSecondaryHabitats();
                             OnPropertyChanged("IncidSecondarySummary");
 
+                            // Refresh the BAP habitat environments (in case secondary codes
+                            // are, or should be, reflected).
                             GetBapEnvironments();
                             OnPropertyChanged("IncidBapHabitatsAuto");
                             OnPropertyChanged("IncidBapHabitatsUser");
@@ -7699,6 +7703,8 @@ namespace HLU.UI.ViewModel
             _incidBapRows = GetIncidChildRowsDb(relValues,
                 _hluTableAdapterMgr.incid_bapTableAdapter, ref incidBapTable);
 
+            // Get the BAP habitats and compare them to those relating to the
+            // primary and secondary codes.
             GetBapEnvironments();
 
             HluDataSet.incid_sourcesDataTable incidSourcesTable = _hluDS.incid_sources;
@@ -9312,6 +9318,8 @@ namespace HLU.UI.ViewModel
                     // Set the list of secondary codes for the primary habitat.
                     NewPrimaryHabitat(_incidPrimary);
 
+                    // Refresh the BAP habitat environments (in case secondary codes
+                    // are, or should be, reflected).
                     GetBapEnvironments();
                     OnPropertyChanged("IncidBapHabitatsAuto");
                     OnPropertyChanged("IncidBapHabitatsUser");
@@ -9365,7 +9373,10 @@ namespace HLU.UI.ViewModel
 
             OnPropertyChanged("CanAddSecondaryHabitat");
             OnPropertyChanged("CanAddSecondaryHabitatList");
+
+            // Refresh secondary table to re-trigger the validation.
             RefreshSecondaryHabitats();
+
         }
 
         public string IncidPrimaryCategory
@@ -9674,6 +9685,21 @@ namespace HLU.UI.ViewModel
             {
                 _incidSecondaryHabitats = value;
 
+                // Set the new list of secondary habitat rows for the class.
+                SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
+
+                // Refresh the secondary habitat table (as they have been pasted).
+                RefreshSecondaryHabitats();
+                //OnPropertyChanged("IncidSecondarySummary");   // Doesn't seem to be needed.
+
+                // Refresh the BAP habitat environments (in case secondary codes
+                // are, or should be, reflected).
+                GetBapEnvironments();
+                OnPropertyChanged("IncidBapHabitatsAuto");
+                OnPropertyChanged("IncidBapHabitatsUser");
+                OnPropertyChanged("BapHabitatsAutoEnabled");
+                OnPropertyChanged("BapHabitatsUserEnabled");
+                
                 // Flag that the current record has changed so that the apply button
                 // will appear.
                 Changed = true;
@@ -9757,7 +9783,7 @@ namespace HLU.UI.ViewModel
             // Set the new list of secondary habitat rows for the class.
             SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
 
-            // Set in the secondary habitat environment
+            // Set the validation type in the secondary habitat environment.
             SecondaryHabitat.SecondaryCodeValidation = _secondaryCodeValidation;
 
             // Check if there are any errors in the secondary habitat records to see
@@ -9893,15 +9919,19 @@ namespace HLU.UI.ViewModel
             // Update the list of secondary habitat rows for the class.
             SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
 
+            // Refresh secondary table and summary.
+            RefreshSecondaryHabitats();
             OnPropertyChanged("IncidSecondarySummary");
-            OnPropertyChanged("HabitatTabLabel");
 
-            // Refresh BAP habitats
+            // Refresh the BAP habitat environments (in case secondary codes
+            // are, or should be, reflected).
             GetBapEnvironments();
             OnPropertyChanged("IncidBapHabitatsAuto");
             OnPropertyChanged("IncidBapHabitatsUser");
             OnPropertyChanged("BapHabitatsAutoEnabled");
             OnPropertyChanged("BapHabitatsUserEnabled");
+
+            OnPropertyChanged("HabitatTabLabel");
         }
 
         #endregion
