@@ -1117,7 +1117,7 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2016;Initial Catalog=HLUData_v400;Integrated Securit" +
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2016;Initial Catalog=HLUData_V401;Integrated Securit" +
             "y=True")]
         public string HLUData_v400ConnectionString {
             get {

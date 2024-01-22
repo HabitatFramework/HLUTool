@@ -646,8 +646,7 @@ namespace HLU.UI.ViewModel
                 // creating history even if the user only wants to display some of them.
                 return _gisIDColumns.Concat(_hluDS.incid_mm_polygons.Columns.Cast<DataColumn>()
                     .Where(c => !_gisIDColumnOrdinals.Contains(c.Ordinal)
-                        && !c.ColumnName.StartsWith("shape_")
-                        && !c.ColumnName.Equals("interpcom"))).ToArray();
+                        && !c.ColumnName.StartsWith("shape_"))).ToArray();
             }
             catch { return historyColumns; }
         }
@@ -8797,8 +8796,8 @@ namespace HLU.UI.ViewModel
                 if (_osmmHabitatXrefIds == null)
                 {
                     _osmmHabitatXrefIds = from x in HluDataset.lut_osmm_habitat_xref
-                                      where x.is_local
-                                      select x;
+                                          where x.is_local
+                                          select x;
                 }
 
                 if (_osmmUpdatesEmpty == true || _incidOSMMUpdatesOSMMXref <= 0) return null;
@@ -9063,7 +9062,7 @@ namespace HLU.UI.ViewModel
                     }
 
                     // Set the static variable (used in the options window) for all
-                    // local habitat classes with local habitat types
+                    // local habitat classes with local habitat types.
                     HabitatClasses = (from c in HluDataset.lut_habitat_class
                                           join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
                                           where c.is_local && t.is_local
@@ -9154,8 +9153,8 @@ namespace HLU.UI.ViewModel
                     }
 
                     // Only load habitat classes that are flagged as local.
-                    //TODO: join to lut_habitat_type_primary to only load codes with a primary habitat type
                     _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
+                                         // Only load codes with a local primary habitat type.
                                          //join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
                                          where t.is_local && t.habitat_class_code == HabitatClass
                                          select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
@@ -9183,61 +9182,32 @@ namespace HLU.UI.ViewModel
 
                 if (!String.IsNullOrEmpty(_habitatType))
                 {
-                    // Load all primary habitat codes that are flagged as local and
-                    // relate to the current habitat type.
+                    // Load all primary habitat codes where the primary habitat code
+                    // and primary habitat category are both flagged as local and
+                    // are related as local to the current habitat type.
                     _primaryCodes = from p in HluDataset.lut_primary
+                                    join c in HluDataset.lut_primary_category on p.category equals c.code
                                     from t in HluDataset.lut_habitat_type_primary
                                     where t.code_habitat_type == _habitatType
-                                    && p.is_local
+                                    && p.is_local && c.is_local && t.is_local
                                     && (p.code == t.code_primary
                                     || (t.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + t.code_primary.TrimEnd('*') + @"") == true))
                                     select p;
                 }
                 else
                 {
-                    // Load all primary habitat codes that are flagged as local.
-                    _primaryCodes = from h in HluDataset.lut_primary
-                                    where h.is_local
-                                    select h;
+                    // Load all primary habitat codes where the primary habitat code
+                    // and primary habitat category are both flagged as local.
+                    _primaryCodes = from p in HluDataset.lut_primary
+                                    join c in HluDataset.lut_primary_category on p.category equals c.code
+                                    where p.is_local && c.is_local
+                                    select p;
                 }
 
                 OnPropertyChanged("PrimaryCodes");
                 OnPropertyChanged("PrimaryEnabled");
                 OnPropertyChanged("NvcCodes");
             }
-        }
-
-        /// <summary>
-        /// Finds the first possible habitat type from the currently
-        /// selected habitat class and also cross-references to the
-        /// selected primary habitat code.
-        /// </summary>
-        /// <param name="primaryHabitatCode">The selected primary habitat code.</param>
-        /// <returns>
-        /// The first habitat type in the current habitat class that
-        /// cross-references to the selected primary habitat code.
-        /// </returns>
-        private string FindHabitatType(string primaryHabitatCode)
-        {
-            if (!String.IsNullOrEmpty(primaryHabitatCode))
-            {
-                if (_habitatTypeCodes == null)
-                {
-                    // Force retrieval of habitat type codes if not already loaded.
-                    var dummy = HabitatTypeCodes;
-                }
-                if ((_habitatTypeCodes != null) && ((HluDataset != null) && (HluDataset.lut_habitat_type_primary != null)))
-                {
-                    IEnumerable<string> q = null;
-                    q = from c in _habitatTypeCodes
-                        join t in HluDataset.lut_habitat_type_primary on c.code equals t.code_habitat_type
-                        where t.code_primary == primaryHabitatCode
-                        select c.code;
-
-                    if ((q != null) && (q.Count() > 0)) return q.First();
-                }
-            }
-            return null;
         }
 
         #endregion
@@ -9291,7 +9261,13 @@ namespace HLU.UI.ViewModel
                 }
                 else if (!String.IsNullOrEmpty(IncidPrimary))
                 {
+                    // Load all primary habitat codes where the primary habitat code
+                    // and primary habitat category are both flagged as local.
                     _primaryCodes = HluDataset.lut_primary.Where(r => r.code == IncidPrimary);
+                    _primaryCodes = from p in HluDataset.lut_primary
+                                    join c in HluDataset.lut_primary_category on p.category equals c.code
+                                    where p.is_local && c.is_local && p.code == IncidPrimary
+                                    select p;
                     return _primaryCodes.ToArray();
                 }
                 else
@@ -9345,7 +9321,7 @@ namespace HLU.UI.ViewModel
                 _secondaryCodesValid = (from s in SecondaryHabitatCodesAll
                                         join p in HluDataset.lut_primary_secondary on s.code equals p.code_secondary
                                         where p.category == _incidPrimaryCategory
-                                        && s.is_local
+                                        && p.is_local
                                         select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
                 // Store the list of valid secondary codes.
@@ -9484,8 +9460,9 @@ namespace HLU.UI.ViewModel
                 // Set the public and static variables
                 if (SecondaryGroupsAll == null || SecondaryGroupsAll.Count() == 0)
                 {
-                    // Set the full list of secondary groups.
+                    // Set the full list of local secondary groups.
                     _secondaryGroups = (from sg in HluDataset.lut_secondary_group
+                                            where sg.is_local
                                             select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
                     // Set the full list of secondary groups including an <All> group.
@@ -9504,9 +9481,9 @@ namespace HLU.UI.ViewModel
                     // Set the static variable
                     SecondaryGroupsAll = secondaryGroupsAll;
 
-                    // Set the dictionary of secondary group codes.
+                    // Set the dictionary of local secondary group codes.
                     SecondaryHabitat.SecondaryGroupCodes = (from sg in HluDataset.lut_secondary
-                                                            where sg.is_local == true
+                                                            where sg.is_local
                                                             select sg).OrderBy(r => r.code).ThenBy(r => r.code_group).ToDictionary(r => r.code, r => r.code_group);
                 }
 
@@ -9517,8 +9494,9 @@ namespace HLU.UI.ViewModel
                                             join s in HluDataset.lut_secondary on sg.code equals s.code_group
                                             join ps in HluDataset.lut_primary_secondary on s.code equals ps.code_secondary
                                              where ps.category == IncidPrimaryCategory
-                                             && s.is_local == true
-                                             && ps.is_local == true
+                                             && sg.is_local
+                                             && s.is_local
+                                             && ps.is_local
                                              select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
                     if (_secondaryGroupsValid != null)
@@ -9651,8 +9629,8 @@ namespace HLU.UI.ViewModel
                 if (_secondaryCodesAll == null)
                 {
                     _secondaryCodesAll = (from s in HluDataset.lut_secondary
-                                       where s.is_local
-                                       select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                                            where s.is_local
+                                            select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _secondaryCodesAll;
@@ -11012,7 +10990,7 @@ namespace HLU.UI.ViewModel
                     //                    where r.habitat_class_code == "PHAP"
                     //                    select r).ToArray();
                     _bapHabitatCodes = (from r in HluDataset.lut_habitat_type
-                                        where r.bap_priority == true
+                                        where r.bap_priority == true && r.is_local
                                         select r).ToArray();
                     //---------------------------------------------------------------------
                 }
@@ -11117,6 +11095,7 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
 
+                    //TODO: Add is_local flag
                     _qualityInterpretationCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
@@ -11554,11 +11533,11 @@ namespace HLU.UI.ViewModel
                     //             select r.code_bap_priority_habitat;
 
                     //q = (from r in HluDataset.lut_primary
-                    //     join b in HluDataset.lut_primary_bap_habitat on r.code equals b.code_habitat
+                    //     join b in HluDataset.lut_primary_bap_habitat on r.code equals b.code_primary
                     //     where r.code == primaryHabitat
                     //     select b.bap_habitat).ToArray();
                     q = (from b in HluDataset.lut_primary_bap_habitat
-                         where b.code_habitat == primaryHabitat
+                         where b.code_primary == primaryHabitat
                          select b.bap_habitat).ToArray();
 
                     // If any primary bap habitats have been found
@@ -11577,7 +11556,7 @@ namespace HLU.UI.ViewModel
                 try
                 {
                     q = (from b in HluDataset.lut_secondary_bap_habitat
-                         join s in secondaryHabitats on b.code_habitat equals s.secondary_habitat
+                         join s in secondaryHabitats on b.code_secondary equals s.secondary_habitat
                          select b.bap_habitat).ToArray();
 
                     // If any secondary bap habitats have been found
@@ -11954,7 +11933,8 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_conditionDataTable) }, false);
                     }
 
-                    _conditionCodes = HluDataset.lut_condition.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Load all local condition codes.
+                    _conditionCodes = HluDataset.lut_condition.Where(r => r.is_local).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 // Return the list of condition codes, with the clear row if applicable.
@@ -12055,7 +12035,8 @@ namespace HLU.UI.ViewModel
                         _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_condition_qualifierDataTable) }, false);
                     }
 
-                    _conditionQualifierCodes = HluDataset.lut_condition_qualifier.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Load all local condition qualifier codes.
+                    _conditionQualifierCodes = HluDataset.lut_condition_qualifier.Where(r => r.is_local).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _conditionQualifierCodes;
@@ -12352,6 +12333,7 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
 
+                    //TODO: Add is_local flag???
                     _qualityInterpretationCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }

@@ -625,7 +625,7 @@ namespace HLU.GISApplication.MapInfo
                 // FIXED: KI106 (Shape area and length values)
                 // Includes updates for the geom1 and geom2 columns as the features
                 // have changed in size
-                string lastColName = GetFieldName(_hluLayerStructure.interpcomColumn.Ordinal);
+                string lastColName = GetFieldName(_hluLayerStructure.interpqtyColumn.Ordinal);
                 int ixGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
                     QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
                 int ixGeom2 = ixGeom1 + 1;
@@ -1205,7 +1205,7 @@ namespace HLU.GISApplication.MapInfo
                     //---------------------------------------------------------------------
                     // FIXED: KI106 (Shape area and length values)
                     // Include updates for the geom1 and geom2 columns automatically
-                    string lastColName = GetFieldName(_hluLayerStructure.interpcomColumn.Ordinal);
+                    string lastColName = GetFieldName(_hluLayerStructure.interpqtyColumn.Ordinal);
                     int indGeom1 = Int32.Parse(_mapInfoApp.Eval(String.Format("ColumnInfo({0}, {1}, {2})", _selName,
                         QuoteValue(lastColName), (int)MapInfoConstants.ColumnInfo.COL_INFO_NUM))) + 1;
                     int indGeom2 = indGeom1 + 1;
