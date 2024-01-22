@@ -64,13 +64,6 @@
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
-              <xs:element name="interpcom" msprop:Generator_ColumnVarNameInTable="columninterpcom" msprop:Generator_ColumnPropNameInRow="interpcom" msprop:Generator_ColumnPropNameInTable="interpcomColumn" msprop:Generator_UserColumnName="interpcom" minOccurs="0">
-                <xs:simpleType>
-                  <xs:restriction base="xs:string">
-                    <xs:maxLength value="254" />
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

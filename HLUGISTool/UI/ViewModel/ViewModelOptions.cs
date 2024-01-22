@@ -135,14 +135,12 @@ namespace HLU.UI.ViewModel
             
             _historyColumns = new SelectionList<string>(_incidMMPolygonsTable.Columns.Cast<DataColumn>()
                 .Where(c => !_gisIDColumnOrdinals.Contains(c.Ordinal)
-                    && !c.ColumnName.StartsWith("shape_")
-                    && !c.ColumnName.Equals("interpcom"))
+                    && !c.ColumnName.StartsWith("shape_"))
                 .Select(c => EscapeAccessKey(c.ColumnName)).ToArray());
 
             List<int> historyColumnOrdinals = Settings.Default.HistoryColumnOrdinals.Cast<string>()
                 .Select(s => Int32.Parse(s)).Where(i => !_gisIDColumnOrdinals.Contains(i) &&
-                    !_incidMMPolygonsTable.Columns[i].ColumnName.StartsWith("shape_") &&
-                    !_incidMMPolygonsTable.Columns[i].ColumnName.StartsWith("interpcom")).ToList();
+                    !_incidMMPolygonsTable.Columns[i].ColumnName.StartsWith("shape_")).ToList();
 
             foreach (SelectionItem<string> si in _historyColumns)
                 si.IsSelected = historyColumnOrdinals.Contains(

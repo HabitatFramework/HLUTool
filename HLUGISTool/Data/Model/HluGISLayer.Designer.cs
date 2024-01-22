@@ -293,8 +293,6 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columninterpqty;
             
-            private global::System.Data.DataColumn columninterpcom;
-            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incid_mm_polygonsDataTable() {
@@ -386,14 +384,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn interpcomColumn {
-                get {
-                    return this.columninterpcom;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -429,7 +419,7 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow Addincid_mm_polygonsRow(string incid, string toid, string toidfragid, string habprimary, string habsecond, string determqty, string interpqty, string interpcom) {
+            public incid_mm_polygonsRow Addincid_mm_polygonsRow(string incid, string toid, string toidfragid, string habprimary, string habsecond, string determqty, string interpqty) {
                 incid_mm_polygonsRow rowincid_mm_polygonsRow = ((incid_mm_polygonsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         incid,
@@ -438,8 +428,7 @@ namespace HLU.Data.Model {
                         habprimary,
                         habsecond,
                         determqty,
-                        interpqty,
-                        interpcom};
+                        interpqty};
                 rowincid_mm_polygonsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowincid_mm_polygonsRow);
                 return rowincid_mm_polygonsRow;
@@ -478,7 +467,6 @@ namespace HLU.Data.Model {
                 this.columnhabsecond = base.Columns["habsecond"];
                 this.columndetermqty = base.Columns["determqty"];
                 this.columninterpqty = base.Columns["interpqty"];
-                this.columninterpcom = base.Columns["interpcom"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -498,8 +486,6 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columndetermqty);
                 this.columninterpqty = new global::System.Data.DataColumn("interpqty", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columninterpqty);
-                this.columninterpcom = new global::System.Data.DataColumn("interpcom", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columninterpcom);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("PK_INCID_MM_Polygons", new global::System.Data.DataColumn[] {
                                 this.columnincid,
                                 this.columntoid,
@@ -514,7 +500,6 @@ namespace HLU.Data.Model {
                 this.columnhabsecond.MaxLength = 80;
                 this.columndetermqty.MaxLength = 2;
                 this.columninterpqty.MaxLength = 2;
-                this.columninterpcom.MaxLength = 254;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -754,22 +739,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string interpcom {
-                get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.interpcomColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'interpcom\' in table \'incid_mm_polygons\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableincid_mm_polygons.interpcomColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IshabprimaryNull() {
                 return this.IsNull(this.tableincid_mm_polygons.habprimaryColumn);
             }
@@ -814,18 +783,6 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetinterpqtyNull() {
                 this[this.tableincid_mm_polygons.interpqtyColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool IsinterpcomNull() {
-                return this.IsNull(this.tableincid_mm_polygons.interpcomColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void SetinterpcomNull() {
-                this[this.tableincid_mm_polygons.interpcomColumn] = global::System.Convert.DBNull;
             }
         }
         
