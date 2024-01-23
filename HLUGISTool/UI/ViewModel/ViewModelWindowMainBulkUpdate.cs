@@ -308,7 +308,7 @@ namespace HLU.UI.ViewModel
                 List<string> ihsMultiplexDelStatements = new List<string>();
 
 
-                //TODO: Delete secondary codes and/or multiplex codes when relevant
+                //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
                 // If all multiplex codes are to be deleted
                 if (_bulkDeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All)
                 {
@@ -347,7 +347,7 @@ namespace HLU.UI.ViewModel
                     //string newIncidIhsHabitatCode = _viewModelMain.IncidCurrentRow[_viewModelMain.HluDataset.incid.ihs_habitatColumn.Ordinal].ToString();
 
                     // Build DELETE statements for IHS multiplex rows rendered obsolete by new IHS habitat
-                    //TODO: Bulk Update mulitplex
+                    //TODO: Bulk update - delete mulitplex codes depending on user choice
                     //ihsMultiplexDelStatements.Add(
                     //    String.Format("DELETE FROM {0} WHERE {1} = {2} AND NOT EXISTS (SELECT {3} FROM {4} WHERE {3} = {0}.{5} AND {6} = {7})",
                     //    _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_ihs_matrix.TableName),
@@ -628,7 +628,7 @@ namespace HLU.UI.ViewModel
                         //    secondaryRow += 1;
                         //}
 
-                        //TODO: Delete secondary codes and/or multiplex codes when relevant
+                        //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
                         //TODO: OSMM Update secondaries
                         // Filter out any rows not set (because the maximum number of blank rows are
                         // created above so any not used need to be removed)
@@ -1305,7 +1305,7 @@ namespace HLU.UI.ViewModel
             }
             else
             {
-                //TODO: Bulk update GIS - Set primary and secondaries (and other fields)?
+                //TODO: Bulk update - GIS set primary and secondaries (and other fields)?
                 ////---------------------------------------------------------------------
                 //// Check if the IHS Summary is one of the columns to update (it should always be)
                 //int ixIhsSummary = System.Array.IndexOf(updateColumns, _viewModelMain.HluDataset.incid_mm_polygons.ihs_summaryColumn);
@@ -1470,7 +1470,7 @@ namespace HLU.UI.ViewModel
             List<DataColumn> updateColumnList = new List<DataColumn>();
             List<object> updateValueList = new List<object>();
 
-            //TODO: Add GIS columns to be updated - Check needed?
+            //TODO: Bulk update - Add GIS columns to be updated - Check needed?
             ////---------------------------------------------------------------------
             //// Check if a new IHS habitat has been set
             //if (!_viewModelMain.IncidCurrentRow.Isihs_habitatNull())
@@ -1613,7 +1613,7 @@ namespace HLU.UI.ViewModel
                         throw new Exception(String.Format("Failed to insert into table {0}.", dbRows.TableName));
                 }
             }
-            //TODO: Delete secondary codes and/or multiplex codes when relevant
+            //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
             else if ((deleteExistingRows == (int)DeleteSecondaryCodesAction.All) && (numRowsDb > numRowsNew))
             {
                 StringBuilder deleteCommand = new StringBuilder(String.Format(
@@ -1689,7 +1689,7 @@ namespace HLU.UI.ViewModel
             // Get the number of non-blank row with non-duplicate data corresponding to child table dbRows
             int numRowsNew = newRowsNoDups.Count();
 
-            //TODO: Delete secondary codes and/or multiplex codes when relevant
+            //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
             // Exit if no existing rows are to be retained and there are no new rows to add
             if ((deleteExistingRows == (int)DeleteSecondaryCodesAction.All) && (numRowsNew == 0)) return;
 
@@ -1751,7 +1751,7 @@ namespace HLU.UI.ViewModel
                     break;
             }
 
-            //TODO: Delete secondary codes and/or multiplex codes when relevant
+            //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
             // Re-insert any old rows not in the new rows
             if (deleteExistingRows != (int)DeleteSecondaryCodesAction.All)
             {

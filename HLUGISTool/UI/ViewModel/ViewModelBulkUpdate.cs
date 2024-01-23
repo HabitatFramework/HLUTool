@@ -525,7 +525,7 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
-                    //TODO: Delete secondary codes and/or multiplex codes when relevant
+                    //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
                     case "DeleteSecondaryCodes":
                         if ((EnableDeleteSecondaryCodes == true) &&
                             (DeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All))
