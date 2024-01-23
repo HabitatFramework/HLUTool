@@ -276,7 +276,6 @@ namespace HLU.UI.ViewModel
 
             try
             {
-                // TODO: Logical Split - To check
                 // Fractions of a second can cause rounding differences when
                 // comparing DateTime fields later in some databases.
                 DateTime currDtTm = DateTime.Now;
@@ -454,15 +453,11 @@ namespace HLU.UI.ViewModel
                 if (_viewModelMain.HluTableAdapterManager.incidTableAdapter.Update(_viewModelMain.HluDataset.incid) == -1)
                     throw new Exception(String.Format("Failed to update {0} table.", _viewModelMain.HluDataset.incid.TableName));
 
-                //TODO: Logical split incid - to check
-
                 //---------------------------------------------------------------------
                 // Clone IncidIhsMatrix rows
                 //---------------------------------------------------------------------
                 if ((_viewModelMain.IncidIhsMatrixRows != null) && (_viewModelMain.IncidIhsMatrixRows.Length > 0))
                 {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Copy the values of any IncidIhsMatrix rows rather than
                     // copying the rows themselves so that any pending changes
                     // to the rows can be discarded afterwards.
@@ -501,7 +496,6 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsMatrixRows[i] = null;
                         }
                     }
-                    //---------------------------------------------------------------------
 
                     // Clone the temporary rows, replacing the original incid with the
                     // new incid.
@@ -520,8 +514,6 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if ((_viewModelMain.IncidIhsFormationRows != null) && (_viewModelMain.IncidIhsFormationRows.Length > 0))
                 {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Copy the values of any IncidIhsFormation rows rather than
                     // copying the rows themselves so that any pending changes
                     // to the rows can be discarded afterwards.
@@ -560,7 +552,6 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsFormationRows[i] = null;
                         }
                     }
-                    //---------------------------------------------------------------------
 
                     // Clone the temporary rows, replacing the original incid with the
                     // new incid.
@@ -579,8 +570,6 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if ((_viewModelMain.IncidIhsManagementRows != null) && (_viewModelMain.IncidIhsManagementRows.Length > 0))
                 {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Copy the values of any IncidIhsManagement rows rather than
                     // copying the rows themselves so that any pending changes
                     // to the rows can be discarded afterwards.
@@ -619,7 +608,6 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsManagementRows[i] = null;
                         }
                     }
-                    //---------------------------------------------------------------------
 
                     // Clone the temporary rows, replacing the original incid with the
                     // new incid.
@@ -638,8 +626,6 @@ namespace HLU.UI.ViewModel
                 //---------------------------------------------------------------------
                 if ((_viewModelMain.IncidIhsComplexRows != null) && (_viewModelMain.IncidIhsComplexRows.Length > 0))
                 {
-                    //---------------------------------------------------------------------
-                    // CHANGED: CR10 (Attribute updates for incid subsets)
                     // Copy the values of any IncidIhsComplex rows rather than
                     // copying the rows themselves so that any pending changes
                     // to the rows can be discarded afterwards.
@@ -678,7 +664,6 @@ namespace HLU.UI.ViewModel
                             _viewModelMain.IncidIhsComplexRows[i] = null;
                         }
                     }
-                    //---------------------------------------------------------------------
 
                     // Clone the temporary rows, replacing the original incid with the
                     // new incid.

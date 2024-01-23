@@ -526,14 +526,14 @@ namespace HLU.Date
             {
                 DateTimeFormatInfo dtFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
 
-                string formatString = String.Empty;
+                string formatString1 = String.Empty;
                 switch (outputFormat)
                 {
                     case DateType.Start:
                         // Use the start date type to format the start date.
                         if (dateType.Length > 0)
-                            formatString = dateType.Substring(0, 1);
-                        switch (VagueDate.FromCode(formatString))
+                            formatString1 = dateType.Substring(0, 1);
+                        switch (VagueDate.FromCode(formatString1))
                         {
                             case VagueDateTypes.StartDate: // "D"
                                 return startDate.ToShortDateString();
@@ -549,8 +549,8 @@ namespace HLU.Date
                         break;
                     case DateType.End:
                         if (dateType.Length > 1)
-                            formatString = dateType.Substring(dateType.Length - 1, 1);
-                        switch (VagueDate.FromCode(formatString))
+                            formatString1 = dateType.Substring(dateType.Length - 1, 1);
+                        switch (VagueDate.FromCode(formatString1))
                         {
                             case VagueDateTypes.StartDate: // "D"
                                 return endDate.ToShortDateString();
@@ -566,11 +566,11 @@ namespace HLU.Date
                         break;
                     case DateType.Vague:
                         if (dateType.Length > 0)
-                            formatString = dateType.Substring(0, 1);
+                            formatString1 = dateType.Substring(0, 1);
 
                         StringBuilder returnString = new StringBuilder();
 
-                        switch (VagueDate.FromCode(formatString))
+                        switch (VagueDate.FromCode(formatString1))
                         {
                             case VagueDateTypes.StartDate: // "D"
                                 returnString.Append(startDate.ToShortDateString());
@@ -586,14 +586,19 @@ namespace HLU.Date
                                 returnString.Append(SeasonString(startDate));
                                 break;
                             case VagueDateTypes.Unknown: // "U"
+                                if (dateType.ToLower().StartsWith("unknown"))
+                                    returnString.Append(VagueDateTypes.Unknown.ToString());
                                 break;
                         }
 
-                        if ((endDate == startDate) || (dateType.Length < 2))
+                        string formatString2 = String.Empty;
+                        if (dateType.Length > 1)
+                            formatString2 = dateType.Substring(dateType.Length - 1, 1);
+
+                        if ((endDate == startDate && formatString1 != Delimiter && formatString2 != Delimiter) || (dateType.Length < 2))
                             return returnString.ToString();
 
-                        formatString = dateType.Substring(dateType.Length - 1, 1);
-                        switch (VagueDate.FromCode(formatString))
+                        switch (VagueDate.FromCode(formatString2))
                         {
                             case VagueDateTypes.StartDate: // "D"
                                 return returnString.Append(Delimiter).Append(endDate.ToShortDateString()).ToString();

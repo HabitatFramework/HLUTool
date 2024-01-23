@@ -156,16 +156,7 @@ namespace HLU.Data
         public static IEnumerable<SecondaryHabitat> SecondaryHabitatList
         {
             get { return _secondaryHabitatList; }
-            set {
-                _secondaryHabitatList = value;
-
-                //TODO: Secondaries - Needed?
-                //for (int i = 0; i < _secondaryHabitatList.Count(); i++)
-                //{
-                //    SecondaryHabitat sh = new SecondaryHabitat();
-                //    sh = _secondaryHabitatList.ElementAt(i);
-                //}
-            }
+            set { _secondaryHabitatList = value; }
         }
 
         public static Dictionary<string, String> SecondaryGroupCodes

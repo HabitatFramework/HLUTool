@@ -840,6 +840,10 @@ namespace HLU.UI.ViewModel
             if (System.Environment.OSVersion.Version.Major < 10)
                 _newWindowHeight += 10;
 
+            //// Adjust the minimum height when in bulk update mode
+            //if (_bulkUpdateMode == true)
+            //    _newWindowHeight += 20;
+
             // Only adjust the window height if the user hasn't
             // changed it manually or if the user has specified
             // if should be reset.
@@ -4987,70 +4991,80 @@ namespace HLU.UI.ViewModel
             TabItemHistoryEnabled = false;
 
             // Clear the habitat fields
-            //TODO: Clear form - Check relevant fields are cleared
-            ////---------------------------------------------------------------------
             _incidIhsHabitat = null;
-            //IncidIhsHabitat = null;
-            ////---------------------------------------------------------------------
-            HabitatClass = null;
-            HabitatType = null;
+            _incidPrimary = null;
+            //_incidSecondarySummary = null;
 
+            // Clear the input habitat class and type (the class will be reset
+            // to the default class later).
+            HabitatClass = null;
+            //HabitatType = null;
+
+            // Get a new incid row.
             IncidCurrentRow = HluDataset.incid.NewincidRow();
 
-            //TODO: Remove and just set multiplex fields to null?
-            ////---------------------------------------------------------------------
-            //IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[3]
-            //    .Select(r => HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
+            // Get new mulitplex rows.
+            IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[0]
+                .Select(r => HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
             //for (int i = 0; i < IncidIhsMatrixRows.Length; i++)
             //{
             //    IncidIhsMatrixRows[i].matrix_id = i;
             //    IncidIhsMatrixRows[i].incid = RecIDs.CurrentIncid;
             //}
 
-            //IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[2]
-            //    .Select(r => HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
+            IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[0]
+                .Select(r => HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
             //for (int i = 0; i < IncidIhsFormationRows.Length; i++)
             //{
             //    IncidIhsFormationRows[i].formation_id = i;
             //    IncidIhsFormationRows[i].incid = RecIDs.CurrentIncid;
             //}
 
-            //IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[2]
-            //    .Select(r => HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
+            IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[0]
+                .Select(r => HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
             //for (int i = 0; i < IncidIhsManagementRows.Length; i++)
             //{
             //    IncidIhsManagementRows[i].management_id = i;
             //    IncidIhsManagementRows[i].incid = RecIDs.CurrentIncid;
             //}
 
-            //IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[2]
-            //    .Select(r => HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
+            IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[0]
+                .Select(r => HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
             //for (int i = 0; i < IncidIhsComplexRows.Length; i++)
             //{
             //    IncidIhsComplexRows[i].complex_id = i;
             //    IncidIhsComplexRows[i].incid = RecIDs.CurrentIncid;
             //}
-            ////---------------------------------------------------------------------
 
+            // Get new secondary rows.
             IncidSecondaryRows = new HluDataSet.incid_secondaryRow[0]
                 .Select(r => HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
-            //TODO: Clear form - Needed?
-            //IncidSecondaryRows = new ObservableCollection<BapEnvironment>();
 
+            // Clear the secondary habitats table.
+            _incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>();
+
+            // Clear the secondary groups list and disable the drop-down.
+            _secondaryGroupsValid = null;
+            OnPropertyChanged("SecondaryGroupCodes");
+            OnPropertyChanged("SecondaryGroupEnabled");
+
+            // Get a new condition row.
             IncidConditionRows = new HluDataSet.incid_conditionRow[0]
                 .Select(r => HluDataset.incid_condition.Newincid_conditionRow()).ToArray();
             //TODO: Clear form - Needed?
             //for (int i = 0; i < IncidConditionRows.Length; i++)
             //{
             //    IncidConditionRows[i].incid_condition_id = i;
-            //    IncidSecondaryRows[i].incid = RecIDs.CurrentIncid;
+            //    IncidConditionRows[i].incid = RecIDs.CurrentIncid;
             //}
 
+            // Get a new BAP row and reset the auto and user collections.
             IncidBapRows = new HluDataSet.incid_bapRow[0]
                 .Select(r => HluDataset.incid_bap.Newincid_bapRow()).ToArray();
             IncidBapRowsAuto = new ObservableCollection<BapEnvironment>();
             IncidBapRowsUser = new ObservableCollection<BapEnvironment>();
 
+            // Get new sources rows.
             IncidSourcesRows = new HluDataSet.incid_sourcesRow[3]
                 .Select(r => HluDataset.incid_sources.Newincid_sourcesRow()).ToArray();
             for (int i = 0; i < IncidSourcesRows.Length; i++)
@@ -7071,10 +7085,7 @@ namespace HLU.UI.ViewModel
                     return false;
                 }
 
-                //TODO: IsDirty - Check picking up changes to all fields
-                //return IsDirtyIncid() || IsDirtyIncidIhsMatrix() || IsDirtyIncidIhsFormation() ||
-                //    IsDirtyIncidIhsManagement() || IsDirtyIncidIhsComplex() || IsDirtyIncidBap() ||
-                //    IsDirtyIncidSources();
+                // Return true if a field in any of the tables has changed.
                 return IsDirtyIncid() || IsDirtyIncidSecondary() || IsDirtyIncidCondition() || IsDirtyIncidBap() ||
                     IsDirtyIncidSources();
             }
@@ -7910,7 +7921,6 @@ namespace HLU.UI.ViewModel
             return _origIncidIhsComplexCount != 0;
         }
         
-        //TODO: IsDirty IncidSecondary - Check
         /// <summary>
         /// Determines whether the incid secondary table is dirty.
         /// </summary>
@@ -11095,7 +11105,7 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
 
-                    //TODO: Add is_local flag
+                    //TODO: Add is_local flag???
                     _qualityInterpretationCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
@@ -11188,7 +11198,6 @@ namespace HLU.UI.ViewModel
             {
                 // Identify which primary BAP rows there should be from the
                 // primary and secondary codes.
-                //TODO: Check if mandatory priority habitats are set from primary and secondary
                 mandatoryBap = MandatoryBapEnvironments(IncidPrimary, IncidSecondaryHabitats);
 
                 // Identify any BAP rows (both auto generated and user added) that
@@ -11549,7 +11558,6 @@ namespace HLU.UI.ViewModel
                 catch { }
             }
 
-            //TODO: Secondary BAP habitats - check
             // Get the BAP habitats associated with the secondary habitats
             if (secondaryHabitats != null)
             {
@@ -11940,7 +11948,9 @@ namespace HLU.UI.ViewModel
                 // Return the list of condition codes, with the clear row if applicable.
                 if (_incidConditionRows.Length >= 1 &&
                     _incidConditionRows[0] != null &&
-                    !String.IsNullOrEmpty(_incidConditionRows[0].condition))
+                    //!String.IsNullOrEmpty(_incidConditionRows[0].condition))
+                    !_incidConditionRows[0].IsNull(HluDataset.incid_condition.conditionColumn))
+
                 {
                     HluDataSet.lut_conditionRow clearRow = HluDataset.lut_condition.Newlut_conditionRow();
                     clearRow.code = "";
@@ -11981,7 +11991,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Condition set - Check works, especially in bulk update mode
+                //TODO: Bulk Update - condition set - check works
                 if (IncidCurrentRow != null)
                 {
                     bool clearCode = value == "";
@@ -12062,7 +12072,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Condition set - Check works
+                //TODO: Bulk Update - condition set - check works
                 UpdateIncidConditionRow(0, IncidConditionTable.condition_qualifierColumn.Ordinal, value);
                 // Flag that the current record has changed so that the apply button
                 // will appear.
@@ -12098,7 +12108,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Condition set - Check works
+                //TODO: Bulk Update - condition set - check works
                 UpdateIncidConditionRow(0, IncidConditionTable.condition_date_startColumn.Ordinal, value);
                 _incidConditionDateEntered = value;
                 OnPropertyChanged("IncidConditionDate");
@@ -12117,7 +12127,7 @@ namespace HLU.UI.ViewModel
         /// <param name="newValue">The new value.</param>
         private void UpdateIncidConditionRow<T>(int rowNumber, int columnOrdinal, T newValue)
         {
-            //TODO: Condition set - Check works
+            //TODO: Bulk Update - condition set - check works
             try
             {
                 if (_incidConditionRows == null) return;
@@ -12130,7 +12140,9 @@ namespace HLU.UI.ViewModel
                         // Set the row id
                         HluDataSet.incid_conditionRow newRow = IncidConditionTable.Newincid_conditionRow();
                         newRow.incid_condition_id = NextIncidConditionId;
-                        newRow.incid = IncidCurrentRow.incid;
+                        //TODO: Bulk Update - condition set - check works
+                        if (_bulkUpdateMode == false)
+                            newRow.incid = IncidCurrentRow.incid;
                         //newRow.sort_order = rowNumber + 1;    //TODO: Not needed but left if for now just in case
                         _incidConditionRows[rowNumber] = newRow;
                     }
