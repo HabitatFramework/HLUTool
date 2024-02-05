@@ -27,7 +27,7 @@
 
         <Grid x:Name="GridMain" Margin="4,2,4,4">
             <Grid.RowDefinitions>
-                <RowDefinition Height="300" />
+                <RowDefinition Height="325" />
                 <RowDefinition Height="4" />
                 <RowDefinition Height="23" />
             </Grid.RowDefinitions>
@@ -1047,13 +1047,13 @@
 								<Grid x:Name="GridBulkUpdateDefaults" Grid.Row="0">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="Auto" MinWidth="80" />
 										<ColumnDefinition Width="25" />
 										<ColumnDefinition Width="10" />
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="25" />
 									</Grid.ColumnDefinitions>
 									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
 										<RowDefinition Height="Auto" />
 										<RowDefinition Height="Auto" />
 									</Grid.RowDefinitions>
@@ -1066,7 +1066,7 @@
 											VerticalAlignment="Center" Content="Delete Orphan Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeleteOrphanBapHabitats"
 												Grid.Row="0"
-												Grid.Column="2"
+												Grid.Column="1"
 												Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
@@ -1075,43 +1075,54 @@
 									<Label x:Name="LabelBulkDeletePotentialBapHabitats"
 											Grid.Row="0"
 											Grid.Column="3"
-											Grid.ColumnSpan="2"
 											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Delete Potential Priority Habitats"/>
 									<CheckBox x:Name="CheckBoxBulkDeletePotentialBapHabitats"
 												Grid.Row="0"
-												Grid.Column="5"
+												Grid.Column="4"
 			                                    Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
 												IsChecked="{Binding BulkDeletePotentialBapHabitats}" />
 
-									<Label x:Name="LabelBulkDeleteSecondaryCodes"
+									<Label x:Name="LabelBulkDeleteIHSCodes"
 											Grid.Row="1"
 											Grid.Column="0"
 											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
+											VerticalAlignment="Center" Content="Delete Existing IHS Codes"/>
+									<CheckBox x:Name="CheckBoxBulkDeleteIHSCodes"
+												Grid.Row="1"
+												Grid.Column="1"
+												Margin="4,8,4,8"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding BulkDeleteIHSCodes}" />
+
+									<Label x:Name="LabelBulkDeleteSecondaryCodes"
+											Grid.Row="1"
+											Grid.Column="3"
+											Margin="4,0,4,0"
+											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Delete Existing Secondary Codes"/>
-									<ComboBox Name="ComboBoxDeleteSecondaryCodes"
-											  Grid.Row="1"
-											  Grid.Column="1"
-											  Grid.ColumnSpan="2"
-											  Margin="4,8,4,8"
-											  BorderThickness="1"
-											  ItemsSource="{Binding BulkDeleteSecondaryCodesActions}"
-											  SelectedValue="{Binding BulkDeleteSecondaryCodes, ValidatesOnDataErrors=True}"
-											  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
+									<CheckBox x:Name="CheckBoxBulkDeleteSecondaryCodes"
+												Grid.Row="1"
+												Grid.Column="4"
+			                                    Margin="4,8,4,8"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												IsChecked="{Binding BulkDeleteSecondaryCodes}" />
 
 									<Label x:Name="LabelBulkCreateHistory"
-											Grid.Row="1"
-											Grid.Column="4"
+											Grid.Row="2"
+											Grid.Column="3"
 											Margin="4,0,4,0"
 											HorizontalAlignment="Right"
 											VerticalAlignment="Center" Content="Create History Records"/>
 									<CheckBox x:Name="CheckBoxBulkCreateHistory"
-												Grid.Row="1"
-												Grid.Column="5"
+												Grid.Row="2"
+												Grid.Column="4"
 												Margin="4,8,4,8"
 												HorizontalAlignment="Center"
 												VerticalAlignment="Center"
@@ -1145,7 +1156,7 @@
 												   Grid.Column="0"
 												   Margin="4,0,4,0"
 												   HorizontalAlignment="Right"
-												   VerticalAlignment="Center" Content="Determination Quality"/>
+												   VerticalAlignment="Center" Content="Priority Determination Quality"/>
 											<ComboBox x:Name="ComboBoxDeterminationQuality"
 													  Grid.Column="1"
 													  Margin="4,8,4,8"
@@ -1168,7 +1179,7 @@
 												   Grid.Column="0"
 												   Margin="4,0,4,0"
 												   HorizontalAlignment="Right"
-												   VerticalAlignment="Center" Content="Interpretation Quality"/>
+												   VerticalAlignment="Center" Content="Priority Interpretation Quality"/>
 											<ComboBox x:Name="ComboBoxInterpretationQuality"
 													  Grid.Column="1"
 													  Margin="4,8,4,8"

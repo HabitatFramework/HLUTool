@@ -292,7 +292,8 @@ namespace HLU.Date
             {
                 if (String.IsNullOrEmpty(dateString)) return String.Empty;
 
-                if (dateString.ToLower() == "unknown") return VagueDateTypes.Unknown.ToString();
+                //if (dateString.ToLower() == "unknown") return VagueDateTypes.Unknown.ToString();
+                if (dateString.ToLower() == "unknown") return String.Empty;
 
                 DateTimeFormatInfo dtFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
 

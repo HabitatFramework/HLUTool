@@ -107,8 +107,9 @@ namespace HLU.UI.ViewModel
         // Bulk Update options
         private bool _bulkDeleteOrphanBapHabitats = Settings.Default.BulkUpdateDeleteOrphanBapHabitats;
         private bool _bulkDeletePotentialBapHabitats = Settings.Default.BulkUpdateDeletePotentialBapHabitats;
-        private int _bulkDeleteSecondaryCodes = Settings.Default.BulkUpdateDeleteSecondaryCodes;
+        private bool _bulkDeleteSecondaryCodes = Settings.Default.BulkUpdateDeleteSecondaryCodes;
         private bool _bulkCreateHistoryRecords = Settings.Default.BulkUpdateCreateHistoryRecords;
+        private bool _bulkDeleteIHSCodes = Settings.Default.BulkUpdateDeleteIHSCodes;
         private string _bulkDeterminationQuality = Settings.Default.BulkUpdateDeterminationQuality;
         private string _bulkInterpretationQuality = Settings.Default.BulkUpdateInterpretationQuality;
         private Nullable<int> _bulkOSMMSourceId = Settings.Default.BulkOSMMSourceId;
@@ -269,6 +270,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.BulkUpdateDeletePotentialBapHabitats = _bulkDeletePotentialBapHabitats;
             Settings.Default.BulkUpdateDeleteSecondaryCodes = _bulkDeleteSecondaryCodes;
             Settings.Default.BulkUpdateCreateHistoryRecords = _bulkCreateHistoryRecords;
+            Settings.Default.BulkUpdateDeleteIHSCodes = _bulkDeleteIHSCodes;
 
             // OSMM bulk update options
             Settings.Default.BulkUpdateDeterminationQuality = _bulkDeterminationQuality;
@@ -1101,34 +1103,18 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets whether existing secondary codes should be deleted.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if existing secondary codes should be deleted; otherwise, <c>false</c>.
-        /// </value>
-        public DeleteSecondaryCodesAction[] BulkDeleteSecondaryCodesActions
-        {
-            get
-            {
-                return Enum.GetValues(typeof(DeleteSecondaryCodesAction)).Cast<DeleteSecondaryCodesAction>()
-                    .ToArray();
-            }
-            set { }
-        }
-
-        /// <summary>
         /// Gets or sets the default option to delete invalid secondary
         /// codes when applying bulk updates.
         /// </summary>
         /// <value>
         /// The default option for deleting invalid secondary codes.
         /// </value>
-        public DeleteSecondaryCodesAction? BulkDeleteSecondaryCodes
+        public bool BulkDeleteSecondaryCodes
         {
-            get { return (DeleteSecondaryCodesAction)_bulkDeleteSecondaryCodes; }
+            get { return _bulkDeleteSecondaryCodes; }
             set
             {
-                _bulkDeleteSecondaryCodes = (int)value;
+                _bulkDeleteSecondaryCodes = value;
             }
         }
 
@@ -1170,7 +1156,19 @@ namespace HLU.UI.ViewModel
             get { return _bulkCreateHistoryRecords; }
             set { _bulkCreateHistoryRecords = value; }
         }
-        //---------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets or sets the default option to delete IHS codes
+        /// when applying bulk updates.
+        /// </summary>
+        /// <value>
+        /// The default option for deleting IHS codes.
+        /// </value>
+        public bool BulkDeleteIHSCodes
+        {
+            get { return _bulkDeleteIHSCodes; }
+            set { _bulkDeleteIHSCodes = value; }
+        }
 
         //---------------------------------------------------------------------
         // CHANGED: CR49 Process bulk OSMM Updates
@@ -1361,8 +1359,6 @@ namespace HLU.UI.ViewModel
                 }
 
                 // Bulk Update options
-                if (BulkDeleteSecondaryCodes == null)
-                    error.Append("Select when to delete existing secondary codes.");
                 if (BulkDeterminationQuality == null)
                     error.Append("Select the default determination quality for new priority habitats.");
                 if (BulkInterpretationQuality == null)
@@ -1505,10 +1501,6 @@ namespace HLU.UI.ViewModel
                         break;
 
                     // Bulk Update options
-                    case "BulkDeleteSecondaryCodes":
-                        if (BulkDeleteSecondaryCodes == null)
-                            error = "Error: Select when to delete existing secondary codes.";
-                        break;
                     case "BulkDeterminationQuality":
                         if (BulkDeterminationQuality == null)
                             error = "Error: Select the default determination quality for new priority habitats.";
