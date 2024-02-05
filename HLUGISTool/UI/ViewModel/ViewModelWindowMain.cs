@@ -390,6 +390,7 @@ namespace HLU.UI.ViewModel
         private string _osmmUpdateWhereClause;
         private List<string> _exportMdbs = new List<string>();
         private string _userName;
+        private string _appVersion;
         private string _dbVersion;
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
@@ -738,7 +739,8 @@ namespace HLU.UI.ViewModel
                 throw new Exception(String.Format("The minimum database version must be {0}.", minDbVersion));
             }
 
-            // Store the database version for displaying in the 'About' box.
+            // Store the application and database versions for displaying in the 'About' box.
+            _appVersion = assemblyVersion;
             _dbVersion = lutDbVersion;
 
             return true;
@@ -3721,7 +3723,7 @@ namespace HLU.UI.ViewModel
 
             // Create ViewModel to which main window binds
             _viewModelAbout = new ViewModelWindowAbout();
-            _viewModelAbout.AppVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            _viewModelAbout.AppVersion = _appVersion;
             _viewModelAbout.DbVersion = _dbVersion;
             _viewModelAbout.ConnectionType = dbBackend;
             _viewModelAbout.ConnectionSettings = dbSettings;
@@ -5006,42 +5008,24 @@ namespace HLU.UI.ViewModel
             // Get new mulitplex rows.
             IncidIhsMatrixRows = new HluDataSet.incid_ihs_matrixRow[0]
                 .Select(r => HluDataset.incid_ihs_matrix.Newincid_ihs_matrixRow()).ToArray();
-            //for (int i = 0; i < IncidIhsMatrixRows.Length; i++)
-            //{
-            //    IncidIhsMatrixRows[i].matrix_id = i;
-            //    IncidIhsMatrixRows[i].incid = RecIDs.CurrentIncid;
-            //}
 
             IncidIhsFormationRows = new HluDataSet.incid_ihs_formationRow[0]
                 .Select(r => HluDataset.incid_ihs_formation.Newincid_ihs_formationRow()).ToArray();
-            //for (int i = 0; i < IncidIhsFormationRows.Length; i++)
-            //{
-            //    IncidIhsFormationRows[i].formation_id = i;
-            //    IncidIhsFormationRows[i].incid = RecIDs.CurrentIncid;
-            //}
 
             IncidIhsManagementRows = new HluDataSet.incid_ihs_managementRow[0]
                 .Select(r => HluDataset.incid_ihs_management.Newincid_ihs_managementRow()).ToArray();
-            //for (int i = 0; i < IncidIhsManagementRows.Length; i++)
-            //{
-            //    IncidIhsManagementRows[i].management_id = i;
-            //    IncidIhsManagementRows[i].incid = RecIDs.CurrentIncid;
-            //}
 
             IncidIhsComplexRows = new HluDataSet.incid_ihs_complexRow[0]
                 .Select(r => HluDataset.incid_ihs_complex.Newincid_ihs_complexRow()).ToArray();
-            //for (int i = 0; i < IncidIhsComplexRows.Length; i++)
-            //{
-            //    IncidIhsComplexRows[i].complex_id = i;
-            //    IncidIhsComplexRows[i].incid = RecIDs.CurrentIncid;
-            //}
 
             // Get new secondary rows.
             IncidSecondaryRows = new HluDataSet.incid_secondaryRow[0]
                 .Select(r => HluDataset.incid_secondary.Newincid_secondaryRow()).ToArray();
 
-            // Clear the secondary habitats table.
+            // Clear the secondary habitats table and the secondary habitat
+            // rows for the class
             _incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>();
+            SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
 
             // Clear the secondary groups list and disable the drop-down.
             _secondaryGroupsValid = null;
@@ -5051,12 +5035,6 @@ namespace HLU.UI.ViewModel
             // Get a new condition row.
             IncidConditionRows = new HluDataSet.incid_conditionRow[0]
                 .Select(r => HluDataset.incid_condition.Newincid_conditionRow()).ToArray();
-            //TODO: Clear form - Needed?
-            //for (int i = 0; i < IncidConditionRows.Length; i++)
-            //{
-            //    IncidConditionRows[i].incid_condition_id = i;
-            //    IncidConditionRows[i].incid = RecIDs.CurrentIncid;
-            //}
 
             // Get a new BAP row and reset the auto and user collections.
             IncidBapRows = new HluDataSet.incid_bapRow[0]
@@ -5620,9 +5598,9 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Check not in bulk update mode or OSMM update mode and GIS present
-                // and primary code and secondary habitat group and code have been set.
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp
+                // Check not in OSMM update mode and GIS present and primary
+                // code and secondary habitat group and code have been set.
+                return (_osmmUpdateMode == false && HaveGisApp
                     && _incidPrimary != null && _secondaryGroup != null && _secondaryHabitat != null);
             }
         }
@@ -5695,9 +5673,9 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Check not in bulk update mode or OSMM update mode and GIS present
-                // and primary code and secondary habitat group and code have been set.
-                return (_bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp
+                // Check not in OSMM update mode and GIS present and primary
+                // code and secondary habitat group and code have been set.
+                return (_osmmUpdateMode == false && HaveGisApp
                     && _incidPrimary != null);
             }
         }
@@ -7168,10 +7146,6 @@ namespace HLU.UI.ViewModel
                 }
                 //---------------------------------------------------------------------
 
-                //TODO: Check - Move incid - Needed?
-                // Clear the list of IHS codes.
-                //_ihsHabitatCodes = null;
-
                 // Clear the habitat type.
                 HabitatType = null;
                 OnPropertyChanged("HabitatType");
@@ -7268,12 +7242,9 @@ namespace HLU.UI.ViewModel
         {
             _incidLastModifiedUser = _incidCurrentRow.last_modified_user_id;
             _incidLastModifiedDate = Convert.IsDBNull(_incidCurrentRow.last_modified_date) ? DateTime.MinValue : _incidCurrentRow.last_modified_date;
-
-            //TODO: Check
             _incidPrimary = _incidCurrentRow.Ishabitat_primaryNull() ? null : _incidCurrentRow.habitat_primary;
             NewPrimaryHabitat(_incidPrimary);
             _incidIhsHabitat = _incidCurrentRow.Isihs_habitatNull() ? null : _incidCurrentRow.ihs_habitat;
-
         }
 
         private void CloneIncidCurrentRow()
@@ -9754,9 +9725,6 @@ namespace HLU.UI.ViewModel
                            incidSecondaryRowsUndel.OrderBy(r => r.secondary_id).Select(r => new SecondaryHabitat(_bulkUpdateMode == true, r)));
                         break;
                 }
-
-                //_incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>(
-                //   incidSecondaryRowsUndel.Select(r => new SecondaryHabitat(_bulkUpdateMode == true, r)));
             }
             else
             {
@@ -11105,7 +11073,6 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
 
-                    //TODO: Add is_local flag???
                     _qualityInterpretationCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
@@ -11953,7 +11920,7 @@ namespace HLU.UI.ViewModel
 
                 {
                     HluDataSet.lut_conditionRow clearRow = HluDataset.lut_condition.Newlut_conditionRow();
-                    clearRow.code = "";
+                    clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
                     return _conditionCodes.Concat(
@@ -11991,17 +11958,18 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Bulk Update - condition set - check works
                 if (IncidCurrentRow != null)
                 {
-                    bool clearCode = value == "";
+                    bool clearCode = value == _codeDeleteRow;
                     bool newCode = false;
                     if (clearCode)
                         value = null;
                     else
                         newCode = ((_incidConditionRows.Length < 1 ||
                             _incidConditionRows[0] == null ||
-                            String.IsNullOrEmpty(_incidConditionRows[0].condition)) && (!String.IsNullOrEmpty(value)));
+                            //String.IsNullOrEmpty(_incidConditionRows[0].condition))
+                            _incidConditionRows[0].IsNull(HluDataset.incid_condition.conditionColumn))
+                            && (!String.IsNullOrEmpty(value)));
 
                     UpdateIncidConditionRow(0, IncidConditionTable.conditionColumn.Ordinal, value);
 
@@ -12072,7 +12040,6 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Bulk Update - condition set - check works
                 UpdateIncidConditionRow(0, IncidConditionTable.condition_qualifierColumn.Ordinal, value);
                 // Flag that the current record has changed so that the apply button
                 // will appear.
@@ -12108,7 +12075,7 @@ namespace HLU.UI.ViewModel
             }
             set
             {
-                //TODO: Bulk Update - condition set - check works
+                // Update the condition row with the new value
                 UpdateIncidConditionRow(0, IncidConditionTable.condition_date_startColumn.Ordinal, value);
                 _incidConditionDateEntered = value;
                 OnPropertyChanged("IncidConditionDate");
@@ -12127,7 +12094,6 @@ namespace HLU.UI.ViewModel
         /// <param name="newValue">The new value.</param>
         private void UpdateIncidConditionRow<T>(int rowNumber, int columnOrdinal, T newValue)
         {
-            //TODO: Bulk Update - condition set - check works
             try
             {
                 if (_incidConditionRows == null) return;
@@ -12140,10 +12106,8 @@ namespace HLU.UI.ViewModel
                         // Set the row id
                         HluDataSet.incid_conditionRow newRow = IncidConditionTable.Newincid_conditionRow();
                         newRow.incid_condition_id = NextIncidConditionId;
-                        //TODO: Bulk Update - condition set - check works
                         if (_bulkUpdateMode == false)
                             newRow.incid = IncidCurrentRow.incid;
-                        //newRow.sort_order = rowNumber + 1;    //TODO: Not needed but left if for now just in case
                         _incidConditionRows[rowNumber] = newRow;
                     }
                     else
@@ -12345,7 +12309,6 @@ namespace HLU.UI.ViewModel
                             new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
                     }
 
-                    //TODO: Add is_local flag???
                     _qualityInterpretationCodes =
                         HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
@@ -13571,23 +13534,23 @@ namespace HLU.UI.ViewModel
 
                                 //// Only show the previous values if they are not null and different
                                 //modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
-                                //    //!r.Ismodified_habitat_primaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habitat_primary) : String.Empty : String.Empty,
-                                //    !r.Ismodified_habitat_primaryNull() ? String.Format("{0}", r.modified_habitat_primary == IncidCurrentRow.habitat_primary ? null : "\n\tPrevious Primary: " + r.modified_habitat_primary) : String.Empty : String.Empty,
+                                //    //!r.Ismodified_habprimaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habprimaryNull() ? String.Format("{0}", r.modified_habprimary == IncidCurrentRow.habitat_primary ? null : "\n\tPrevious Primary: " + r.modified_habprimary) : String.Empty : String.Empty,
                                 //modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
-                                //    //!r.Ismodified_habitat_secondariesNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habitat_secondaries) : String.Empty : String.Empty,
-                                //    !r.Ismodified_habitat_secondariesNull() ? String.Format("{0}", r.modified_habitat_secondaries == IncidCurrentRow.habitat_secondaries ? null : "\n\tPrevious Secondaries: " + r.modified_habitat_secondaries) : String.Empty : String.Empty,
+                                //    //!r.Ismodified_habsecondNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habsecondNull() ? String.Format("{0}", r.modified_habsecond == IncidCurrentRow.habitat_secondaries ? null : "\n\tPrevious Secondaries: " + r.modified_habsecond) : String.Empty : String.Empty,
                                 //modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
                                 //    //r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
-                                //    r.lut_quality_determinationRow != null ? String.Format("{0}", r.modified_habitat_determination == IncidCurrentRow.quality_determination ? null : "\n\tPrevious Determination: " + r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
+                                //    r.lut_quality_determinationRow != null ? String.Format("{0}", r.modified_modified_determqty == IncidCurrentRow.quality_determination ? null : "\n\tPrevious Determination: " + r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
                                 //modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?
                                 //    //r.lut_quality_interpretationRow != null ? String.Format("\n\tPrevious Interpretation: {0}", r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
-                                //    r.lut_quality_interpretationRow != null ? String.Format("{0}", r.modified_habitat_interpretation == IncidCurrentRow.quality_interpretation ? null : "\n\tPrevious Interpretation: " + r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
+                                //    r.lut_quality_interpretationRow != null ? String.Format("{0}", r.modified_modified_interpqty == IncidCurrentRow.quality_interpretation ? null : "\n\tPrevious Interpretation: " + r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
 
                                 // Only show the previous values if they are not null
                                 modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
-                                    !r.Ismodified_habitat_primaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habitat_primary) : String.Empty : String.Empty,
+                                    !r.Ismodified_habprimaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty : String.Empty,
                                 modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
-                                    !r.Ismodified_habitat_secondariesNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habitat_secondaries) : String.Empty : String.Empty,
+                                    !r.Ismodified_habsecondNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty : String.Empty,
                                 modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
                                     r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
                                 modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?

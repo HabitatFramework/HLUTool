@@ -209,7 +209,6 @@ namespace HLU.Data
             {
                 _secondary_habitat = value;
 
-                //TODO: Secondaries - Needed?
                 // Flag that the current record has changed so that the apply button
                 // will appear.
                 if (this.DataChanged != null)

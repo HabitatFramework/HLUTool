@@ -234,10 +234,6 @@ namespace HLU.Data.Model {
         
         private global::System.Data.DataRelation relationlut_secondary_lut_primary_secondary;
         
-        private global::System.Data.DataRelation relationfk_history_lut_quality_determination;
-        
-        private global::System.Data.DataRelation relationfk_history_lut_quality_interpretation;
-        
         private global::System.Data.DataRelation relationfk_incid_lut_legacy_habitat;
         
         private global::System.Data.DataRelation relationfk_incid_lut_primary;
@@ -257,6 +253,10 @@ namespace HLU.Data.Model {
         private global::System.Data.DataRelation relationlut_secondary_lut_secondary_bap_habitat;
         
         private global::System.Data.DataRelation relationlut_primary_lut_primary_bap_habitat;
+        
+        private global::System.Data.DataRelation relationfk_history_lut_quality_determination;
+        
+        private global::System.Data.DataRelation relationfk_history_lut_quality_interpretation;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
@@ -1580,8 +1580,6 @@ namespace HLU.Data.Model {
             this.relationlut_secondary_incid_secondary = this.Relations["lut_secondary_incid_secondary"];
             this.relationlut_secondary_lut_habitat_type_secondary = this.Relations["lut_secondary_lut_habitat_type_secondary"];
             this.relationlut_secondary_lut_primary_secondary = this.Relations["lut_secondary_lut_primary_secondary"];
-            this.relationfk_history_lut_quality_determination = this.Relations["fk_history_lut_quality_determination"];
-            this.relationfk_history_lut_quality_interpretation = this.Relations["fk_history_lut_quality_interpretation"];
             this.relationfk_incid_lut_legacy_habitat = this.Relations["fk_incid_lut_legacy_habitat"];
             this.relationfk_incid_lut_primary = this.Relations["fk_incid_lut_primary"];
             this.relationfk_incid_lut_quality_determination = this.Relations["fk_incid_lut_quality_determination"];
@@ -1592,6 +1590,8 @@ namespace HLU.Data.Model {
             this.relationfk_history_incid_mm_polygons = this.Relations["fk_history_incid_mm_polygons"];
             this.relationlut_secondary_lut_secondary_bap_habitat = this.Relations["lut_secondary_lut_secondary_bap_habitat"];
             this.relationlut_primary_lut_primary_bap_habitat = this.Relations["lut_primary_lut_primary_bap_habitat"];
+            this.relationfk_history_lut_quality_determination = this.Relations["fk_history_lut_quality_determination"];
+            this.relationfk_history_lut_quality_interpretation = this.Relations["fk_history_lut_quality_interpretation"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1928,14 +1928,6 @@ namespace HLU.Data.Model {
                         this.tablelut_secondary.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tablelut_primary_secondary.code_secondaryColumn}, false);
             this.Relations.Add(this.relationlut_secondary_lut_primary_secondary);
-            this.relationfk_history_lut_quality_determination = new global::System.Data.DataRelation("fk_history_lut_quality_determination", new global::System.Data.DataColumn[] {
-                        this.tablelut_quality_determination.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tablehistory.modified_habitat_determinationColumn}, false);
-            this.Relations.Add(this.relationfk_history_lut_quality_determination);
-            this.relationfk_history_lut_quality_interpretation = new global::System.Data.DataRelation("fk_history_lut_quality_interpretation", new global::System.Data.DataColumn[] {
-                        this.tablelut_quality_interpretation.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tablehistory.modified_habitat_interpretationColumn}, false);
-            this.Relations.Add(this.relationfk_history_lut_quality_interpretation);
             this.relationfk_incid_lut_legacy_habitat = new global::System.Data.DataRelation("fk_incid_lut_legacy_habitat", new global::System.Data.DataColumn[] {
                         this.tablelut_legacy_habitat.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid.legacy_habitatColumn}, false);
@@ -1980,6 +1972,14 @@ namespace HLU.Data.Model {
                         this.tablelut_primary.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tablelut_primary_bap_habitat.code_primaryColumn}, false);
             this.Relations.Add(this.relationlut_primary_lut_primary_bap_habitat);
+            this.relationfk_history_lut_quality_determination = new global::System.Data.DataRelation("fk_history_lut_quality_determination", new global::System.Data.DataColumn[] {
+                        this.tablelut_quality_determination.codeColumn}, new global::System.Data.DataColumn[] {
+                        this.tablehistory.modified_determqtyColumn}, false);
+            this.Relations.Add(this.relationfk_history_lut_quality_determination);
+            this.relationfk_history_lut_quality_interpretation = new global::System.Data.DataRelation("fk_history_lut_quality_interpretation", new global::System.Data.DataColumn[] {
+                        this.tablelut_quality_interpretation.codeColumn}, new global::System.Data.DataColumn[] {
+                        this.tablehistory.modified_interpqtyColumn}, false);
+            this.Relations.Add(this.relationfk_history_lut_quality_interpretation);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3507,13 +3507,13 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnmodified_area;
             
-            private global::System.Data.DataColumn columnmodified_habitat_primary;
+            private global::System.Data.DataColumn columnmodified_habprimary;
             
-            private global::System.Data.DataColumn columnmodified_habitat_secondaries;
+            private global::System.Data.DataColumn columnmodified_habsecond;
             
-            private global::System.Data.DataColumn columnmodified_habitat_determination;
+            private global::System.Data.DataColumn columnmodified_determqty;
             
-            private global::System.Data.DataColumn columnmodified_habitat_interpretation;
+            private global::System.Data.DataColumn columnmodified_interpqty;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -3654,33 +3654,33 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn modified_habitat_primaryColumn {
+            public global::System.Data.DataColumn modified_habprimaryColumn {
                 get {
-                    return this.columnmodified_habitat_primary;
+                    return this.columnmodified_habprimary;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn modified_habitat_secondariesColumn {
+            public global::System.Data.DataColumn modified_habsecondColumn {
                 get {
-                    return this.columnmodified_habitat_secondaries;
+                    return this.columnmodified_habsecond;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn modified_habitat_determinationColumn {
+            public global::System.Data.DataColumn modified_determqtyColumn {
                 get {
-                    return this.columnmodified_habitat_determination;
+                    return this.columnmodified_determqty;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn modified_habitat_interpretationColumn {
+            public global::System.Data.DataColumn modified_interpqtyColumn {
                 get {
-                    return this.columnmodified_habitat_interpretation;
+                    return this.columnmodified_interpqty;
                 }
             }
             
@@ -3735,8 +3735,8 @@ namespace HLU.Data.Model {
                         string modified_toidfragid, 
                         double modified_length, 
                         double modified_area, 
-                        string modified_habitat_primary, 
-                        string modified_habitat_secondaries, 
+                        string modified_habprimary, 
+                        string modified_habsecond, 
                         lut_quality_determinationRow parentlut_quality_determinationRowByfk_history_lut_quality_determination, 
                         lut_quality_interpretationRow parentlut_quality_interpretationRowByfk_history_lut_quality_interpretation) {
                 historyRow rowhistoryRow = ((historyRow)(this.NewRow()));
@@ -3754,8 +3754,8 @@ namespace HLU.Data.Model {
                         modified_toidfragid,
                         modified_length,
                         modified_area,
-                        modified_habitat_primary,
-                        modified_habitat_secondaries,
+                        modified_habprimary,
+                        modified_habsecond,
                         null,
                         null};
                 if ((parentincidRowByfk_habitat_history_incid != null)) {
@@ -3821,10 +3821,10 @@ namespace HLU.Data.Model {
                 this.columnmodified_toidfragid = base.Columns["modified_toidfragid"];
                 this.columnmodified_length = base.Columns["modified_length"];
                 this.columnmodified_area = base.Columns["modified_area"];
-                this.columnmodified_habitat_primary = base.Columns["modified_habitat_primary"];
-                this.columnmodified_habitat_secondaries = base.Columns["modified_habitat_secondaries"];
-                this.columnmodified_habitat_determination = base.Columns["modified_habitat_determination"];
-                this.columnmodified_habitat_interpretation = base.Columns["modified_habitat_interpretation"];
+                this.columnmodified_habprimary = base.Columns["modified_habprimary"];
+                this.columnmodified_habsecond = base.Columns["modified_habsecond"];
+                this.columnmodified_determqty = base.Columns["modified_determqty"];
+                this.columnmodified_interpqty = base.Columns["modified_interpqty"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3856,14 +3856,14 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnmodified_length);
                 this.columnmodified_area = new global::System.Data.DataColumn("modified_area", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnmodified_area);
-                this.columnmodified_habitat_primary = new global::System.Data.DataColumn("modified_habitat_primary", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnmodified_habitat_primary);
-                this.columnmodified_habitat_secondaries = new global::System.Data.DataColumn("modified_habitat_secondaries", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnmodified_habitat_secondaries);
-                this.columnmodified_habitat_determination = new global::System.Data.DataColumn("modified_habitat_determination", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnmodified_habitat_determination);
-                this.columnmodified_habitat_interpretation = new global::System.Data.DataColumn("modified_habitat_interpretation", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnmodified_habitat_interpretation);
+                this.columnmodified_habprimary = new global::System.Data.DataColumn("modified_habprimary", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_habprimary);
+                this.columnmodified_habsecond = new global::System.Data.DataColumn("modified_habsecond", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_habsecond);
+                this.columnmodified_determqty = new global::System.Data.DataColumn("modified_determqty", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_determqty);
+                this.columnmodified_interpqty = new global::System.Data.DataColumn("modified_interpqty", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnmodified_interpqty);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnhistory_id}, true));
                 this.columnhistory_id.AllowDBNull = false;
@@ -3880,10 +3880,10 @@ namespace HLU.Data.Model {
                 this.columnmodified_operation.MaxLength = 2;
                 this.columnmodified_incid.MaxLength = 12;
                 this.columnmodified_toidfragid.MaxLength = 5;
-                this.columnmodified_habitat_primary.MaxLength = 2;
-                this.columnmodified_habitat_secondaries.MaxLength = 80;
-                this.columnmodified_habitat_determination.MaxLength = 2;
-                this.columnmodified_habitat_interpretation.MaxLength = 2;
+                this.columnmodified_habprimary.MaxLength = 8;
+                this.columnmodified_habsecond.MaxLength = 80;
+                this.columnmodified_determqty.MaxLength = 2;
+                this.columnmodified_interpqty.MaxLength = 2;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -19501,65 +19501,65 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string modified_habitat_primary {
+            public string modified_habprimary {
                 get {
-                    if (this.Ismodified_habitat_primaryNull()) {
+                    if (this.Ismodified_habprimaryNull()) {
                         return null;
                     }
                     else {
-                        return ((string)(this[this.tablehistory.modified_habitat_primaryColumn]));
+                        return ((string)(this[this.tablehistory.modified_habprimaryColumn]));
                     }
                 }
                 set {
-                    this[this.tablehistory.modified_habitat_primaryColumn] = value;
+                    this[this.tablehistory.modified_habprimaryColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string modified_habitat_secondaries {
+            public string modified_habsecond {
                 get {
-                    if (this.Ismodified_habitat_secondariesNull()) {
+                    if (this.Ismodified_habsecondNull()) {
                         return null;
                     }
                     else {
-                        return ((string)(this[this.tablehistory.modified_habitat_secondariesColumn]));
+                        return ((string)(this[this.tablehistory.modified_habsecondColumn]));
                     }
                 }
                 set {
-                    this[this.tablehistory.modified_habitat_secondariesColumn] = value;
+                    this[this.tablehistory.modified_habsecondColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string modified_habitat_determination {
+            public string modified_determqty {
                 get {
-                    if (this.Ismodified_habitat_determinationNull()) {
+                    if (this.Ismodified_determqtyNull()) {
                         return null;
                     }
                     else {
-                        return ((string)(this[this.tablehistory.modified_habitat_determinationColumn]));
+                        return ((string)(this[this.tablehistory.modified_determqtyColumn]));
                     }
                 }
                 set {
-                    this[this.tablehistory.modified_habitat_determinationColumn] = value;
+                    this[this.tablehistory.modified_determqtyColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string modified_habitat_interpretation {
+            public string modified_interpqty {
                 get {
-                    if (this.Ismodified_habitat_interpretationNull()) {
+                    if (this.Ismodified_interpqtyNull()) {
                         return null;
                     }
                     else {
-                        return ((string)(this[this.tablehistory.modified_habitat_interpretationColumn]));
+                        return ((string)(this[this.tablehistory.modified_interpqtyColumn]));
                     }
                 }
                 set {
-                    this[this.tablehistory.modified_habitat_interpretationColumn] = value;
+                    this[this.tablehistory.modified_interpqtyColumn] = value;
                 }
             }
             
@@ -19620,6 +19620,17 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public incid_mm_polygonsRow incid_mm_polygonsRowParent {
+                get {
+                    return ((incid_mm_polygonsRow)(this.GetParentRow(this.Table.ParentRelations["fk_history_incid_mm_polygons"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["fk_history_incid_mm_polygons"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_quality_determinationRow lut_quality_determinationRow {
                 get {
                     return ((lut_quality_determinationRow)(this.GetParentRow(this.Table.ParentRelations["fk_history_lut_quality_determination"])));
@@ -19637,17 +19648,6 @@ namespace HLU.Data.Model {
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["fk_history_lut_quality_interpretation"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_mm_polygonsRow incid_mm_polygonsRowParent {
-                get {
-                    return ((incid_mm_polygonsRow)(this.GetParentRow(this.Table.ParentRelations["fk_history_incid_mm_polygons"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["fk_history_incid_mm_polygons"]);
                 }
             }
             
@@ -19761,50 +19761,50 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ismodified_habitat_primaryNull() {
-                return this.IsNull(this.tablehistory.modified_habitat_primaryColumn);
+            public bool Ismodified_habprimaryNull() {
+                return this.IsNull(this.tablehistory.modified_habprimaryColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setmodified_habitat_primaryNull() {
-                this[this.tablehistory.modified_habitat_primaryColumn] = global::System.Convert.DBNull;
+            public void Setmodified_habprimaryNull() {
+                this[this.tablehistory.modified_habprimaryColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ismodified_habitat_secondariesNull() {
-                return this.IsNull(this.tablehistory.modified_habitat_secondariesColumn);
+            public bool Ismodified_habsecondNull() {
+                return this.IsNull(this.tablehistory.modified_habsecondColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setmodified_habitat_secondariesNull() {
-                this[this.tablehistory.modified_habitat_secondariesColumn] = global::System.Convert.DBNull;
+            public void Setmodified_habsecondNull() {
+                this[this.tablehistory.modified_habsecondColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ismodified_habitat_determinationNull() {
-                return this.IsNull(this.tablehistory.modified_habitat_determinationColumn);
+            public bool Ismodified_determqtyNull() {
+                return this.IsNull(this.tablehistory.modified_determqtyColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setmodified_habitat_determinationNull() {
-                this[this.tablehistory.modified_habitat_determinationColumn] = global::System.Convert.DBNull;
+            public void Setmodified_determqtyNull() {
+                this[this.tablehistory.modified_determqtyColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Ismodified_habitat_interpretationNull() {
-                return this.IsNull(this.tablehistory.modified_habitat_interpretationColumn);
+            public bool Ismodified_interpqtyNull() {
+                return this.IsNull(this.tablehistory.modified_interpqtyColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setmodified_habitat_interpretationNull() {
-                this[this.tablehistory.modified_habitat_interpretationColumn] = global::System.Convert.DBNull;
+            public void Setmodified_interpqtyNull() {
+                this[this.tablehistory.modified_interpqtyColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -19853,11 +19853,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string habitat_secondaries {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.habitat_secondariesColumn]));
+                    if (this.Ishabitat_secondariesNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_secondaries\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.habitat_secondariesColumn]));
                     }
                 }
                 set {
@@ -19885,11 +19885,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string site_ref {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.site_refColumn]));
+                    if (this.Issite_refNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'site_ref\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.site_refColumn]));
                     }
                 }
                 set {
@@ -19901,11 +19901,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string site_name {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.site_nameColumn]));
+                    if (this.Issite_nameNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'site_name\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.site_nameColumn]));
                     }
                 }
                 set {
@@ -19917,11 +19917,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string general_comments {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.general_commentsColumn]));
+                    if (this.Isgeneral_commentsNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'general_comments\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.general_commentsColumn]));
                     }
                 }
                 set {
@@ -19933,11 +19933,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string quality_determination {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.quality_determinationColumn]));
+                    if (this.Isquality_determinationNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'quality_determination\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.quality_determinationColumn]));
                     }
                 }
                 set {
@@ -19949,11 +19949,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string quality_interpretation {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.quality_interpretationColumn]));
+                    if (this.Isquality_interpretationNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'quality_interpretation\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.quality_interpretationColumn]));
                     }
                 }
                 set {
@@ -19965,11 +19965,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string interpretation_comments {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.interpretation_commentsColumn]));
+                    if (this.Isinterpretation_commentsNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'interpretation_comments\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.interpretation_commentsColumn]));
                     }
                 }
                 set {
@@ -20003,11 +20003,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string ihs_habitat {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid.ihs_habitatColumn]));
+                    if (this.Isihs_habitatNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ihs_habitat\' in table \'incid\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid.ihs_habitatColumn]));
                     }
                 }
                 set {
@@ -24771,17 +24771,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public historyRow[] GethistoryRows() {
-                if ((this.Table.ChildRelations["fk_history_lut_quality_determination"] == null)) {
-                    return new historyRow[0];
-                }
-                else {
-                    return ((historyRow[])(base.GetChildRows(this.Table.ChildRelations["fk_history_lut_quality_determination"])));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow[] GetincidRows() {
                 if ((this.Table.ChildRelations["fk_incid_lut_quality_determination"] == null)) {
                     return new incidRow[0];
@@ -24799,6 +24788,17 @@ namespace HLU.Data.Model {
                 }
                 else {
                     return ((incid_mm_polygonsRow[])(base.GetChildRows(this.Table.ChildRelations["fk_incid_mm_polygons_lut_quality_determination"])));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public historyRow[] GethistoryRows() {
+                if ((this.Table.ChildRelations["fk_history_lut_quality_determination"] == null)) {
+                    return new historyRow[0];
+                }
+                else {
+                    return ((historyRow[])(base.GetChildRows(this.Table.ChildRelations["fk_history_lut_quality_determination"])));
                 }
             }
         }
@@ -24863,17 +24863,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public historyRow[] GethistoryRows() {
-                if ((this.Table.ChildRelations["fk_history_lut_quality_interpretation"] == null)) {
-                    return new historyRow[0];
-                }
-                else {
-                    return ((historyRow[])(base.GetChildRows(this.Table.ChildRelations["fk_history_lut_quality_interpretation"])));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow[] GetincidRows() {
                 if ((this.Table.ChildRelations["fk_incid_lut_quality_interpretation"] == null)) {
                     return new incidRow[0];
@@ -24891,6 +24880,17 @@ namespace HLU.Data.Model {
                 }
                 else {
                     return ((incid_mm_polygonsRow[])(base.GetChildRows(this.Table.ChildRelations["fk_incid_mm_polygons_lut_quality_interpretation"])));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public historyRow[] GethistoryRows() {
+                if ((this.Table.ChildRelations["fk_history_lut_quality_interpretation"] == null)) {
+                    return new historyRow[0];
+                }
+                else {
+                    return ((historyRow[])(base.GetChildRows(this.Table.ChildRelations["fk_history_lut_quality_interpretation"])));
                 }
             }
         }
@@ -28116,11 +28116,11 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             tableMapping.ColumnMappings.Add("modified_incid", "modified_incid");
             tableMapping.ColumnMappings.Add("modified_toidfragid", "modified_toidfragid");
             tableMapping.ColumnMappings.Add("modified_area", "modified_area");
-            tableMapping.ColumnMappings.Add("modified_habitat_primary", "modified_habitat_primary");
-            tableMapping.ColumnMappings.Add("modified_habitat_secondaries", "modified_habitat_secondaries");
             tableMapping.ColumnMappings.Add("modified_length", "modified_length");
-            tableMapping.ColumnMappings.Add("modified_habitat_determination", "modified_habitat_determination");
-            tableMapping.ColumnMappings.Add("modified_habitat_interpretation", "modified_habitat_interpretation");
+            tableMapping.ColumnMappings.Add("modified_habprimary", "modified_habprimary");
+            tableMapping.ColumnMappings.Add("modified_habsecond", "modified_habsecond");
+            tableMapping.ColumnMappings.Add("modified_determqty", "modified_determqty");
+            tableMapping.ColumnMappings.Add("modified_interpqty", "modified_interpqty");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
@@ -28132,15 +28132,13 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
                 "AND ((@IsNull_modified_process = 1 AND [modified_process] IS NULL) OR ([modified" +
                 "_process] = @Original_modified_process)) AND ((@IsNull_modified_reason = 1 AND [" +
                 "modified_reason] IS NULL) OR ([modified_reason] = @Original_modified_reason)) AN" +
-                "D ((@IsNull_modified_habitat_primary = 1 AND [modified_habitat_primary] IS NULL)" +
-                " OR ([modified_habitat_primary] = @Original_modified_habitat_primary)) AND ((@Is" +
-                "Null_modified_habitat_secondaries = 1 AND [modified_habitat_secondaries] IS NULL" +
-                ") OR ([modified_habitat_secondaries] = @Original_modified_habitat_secondaries)) " +
-                "AND ((@IsNull_modified_habitat_determination = 1 AND [modified_habitat_determina" +
-                "tion] IS NULL) OR ([modified_habitat_determination] = @Original_modified_habitat" +
-                "_determination)) AND ((@IsNull_modified_habitat_interpretation = 1 AND [modified" +
-                "_habitat_interpretation] IS NULL) OR ([modified_habitat_interpretation] = @Origi" +
-                "nal_modified_habitat_interpretation)) AND ((@IsNull_modified_operation = 1 AND [" +
+                "D ((@IsNull_modified_habprimary = 1 AND [modified_habprimary] IS NULL) OR ([modi" +
+                "fied_habprimary] = @Original_modified_habprimary)) AND ((@IsNull_modified_habsec" +
+                "ond = 1 AND [modified_habsecond] IS NULL) OR ([modified_habsecond] = @Original_m" +
+                "odified_habsecond)) AND ((@IsNull_modified_determqty = 1 AND [modified_determqty" +
+                "] IS NULL) OR ([modified_determqty] = @Original_modified_determqty)) AND ((@IsNu" +
+                "ll_modified_interpqty = 1 AND [modified_interpqty] IS NULL) OR ([modified_interp" +
+                "qty] = @Original_modified_interpqty)) AND ((@IsNull_modified_operation = 1 AND [" +
                 "modified_operation] IS NULL) OR ([modified_operation] = @Original_modified_opera" +
                 "tion)) AND ((@IsNull_modified_incid = 1 AND [modified_incid] IS NULL) OR ([modif" +
                 "ied_incid] = @Original_modified_incid)) AND ((@IsNull_modified_toidfragid = 1 AN" +
@@ -28161,14 +28159,14 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_process", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_process", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_reason", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_reason", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_primary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_determination", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_determination", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_interpretation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_interpretation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habprimary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habprimary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habsecond", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habsecond", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_determqty", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_determqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_interpqty", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_interpqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_operation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_operation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_incid", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_incid", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
@@ -28181,8 +28179,8 @@ SELECT export_field_id, export_id, table_name, column_name, column_ordinal, fiel
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_area", global::System.Data.SqlDbType.Float, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_area", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [history] ([history_id], [incid], [toid], [toidfragid], [modified_user_id], [modified_date], [modified_process], [modified_reason], [modified_habitat_primary], [modified_habitat_secondaries], [modified_habitat_determination], [modified_habitat_interpretation], [modified_operation], [modified_incid], [modified_toidfragid], [modified_length], [modified_area]) VALUES (@history_id, @incid, @toid, @toidfragid, @modified_user_id, @modified_date, @modified_process, @modified_reason, @modified_habitat_primary, @modified_habitat_secondaries, @modified_habitat_determination, @modified_habitat_interpretation, @modified_operation, @modified_incid, @modified_toidfragid, @modified_length, @modified_area);
-SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habitat_primary, modified_habitat_secondaries, modified_habitat_determination, modified_habitat_interpretation, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area FROM history WHERE (history_id = @history_id)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [history] ([history_id], [incid], [toid], [toidfragid], [modified_user_id], [modified_date], [modified_process], [modified_reason], [modified_habprimary], [modified_habsecond], [modified_determqty], [modified_interpqty], [modified_operation], [modified_incid], [modified_toidfragid], [modified_length], [modified_area]) VALUES (@history_id, @incid, @toid, @toidfragid, @modified_user_id, @modified_date, @modified_process, @modified_reason, @modified_habprimary, @modified_habsecond, @modified_determqty, @modified_interpqty, @modified_operation, @modified_incid, @modified_toidfragid, @modified_length, @modified_area);
+SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habprimary, modified_habsecond, modified_determqty, modified_interpqty, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area FROM history WHERE (history_id = @history_id)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@history_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "history_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -28192,10 +28190,10 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_process", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_process", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_reason", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_determination", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_interpretation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habprimary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habsecond", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_determqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_interpqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_operation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_toidfragid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_toidfragid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -28206,10 +28204,9 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
             this._adapter.UpdateCommand.CommandText = "UPDATE [history] SET [history_id] = @history_id, [incid] = @incid, [toid] = @toid" +
                 ", [toidfragid] = @toidfragid, [modified_user_id] = @modified_user_id, [modified_" +
                 "date] = @modified_date, [modified_process] = @modified_process, [modified_reason" +
-                "] = @modified_reason, [modified_habitat_primary] = @modified_habitat_primary, [m" +
-                "odified_habitat_secondaries] = @modified_habitat_secondaries, [modified_habitat_" +
-                "determination] = @modified_habitat_determination, [modified_habitat_interpretati" +
-                "on] = @modified_habitat_interpretation, [modified_operation] = @modified_operati" +
+                "] = @modified_reason, [modified_habprimary] = @modified_habprimary, [modified_ha" +
+                "bsecond] = @modified_habsecond, [modified_determqty] = @modified_determqty, [mod" +
+                "ified_interpqty] = @modified_interpqty, [modified_operation] = @modified_operati" +
                 "on, [modified_incid] = @modified_incid, [modified_toidfragid] = @modified_toidfr" +
                 "agid, [modified_length] = @modified_length, [modified_area] = @modified_area WHE" +
                 "RE (([history_id] = @Original_history_id) AND ([incid] = @Original_incid) AND ([" +
@@ -28220,15 +28217,13 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
                 "rocess = 1 AND [modified_process] IS NULL) OR ([modified_process] = @Original_mo" +
                 "dified_process)) AND ((@IsNull_modified_reason = 1 AND [modified_reason] IS NULL" +
                 ") OR ([modified_reason] = @Original_modified_reason)) AND ((@IsNull_modified_hab" +
-                "itat_primary = 1 AND [modified_habitat_primary] IS NULL) OR ([modified_habitat_p" +
-                "rimary] = @Original_modified_habitat_primary)) AND ((@IsNull_modified_habitat_se" +
-                "condaries = 1 AND [modified_habitat_secondaries] IS NULL) OR ([modified_habitat_" +
-                "secondaries] = @Original_modified_habitat_secondaries)) AND ((@IsNull_modified_h" +
-                "abitat_determination = 1 AND [modified_habitat_determination] IS NULL) OR ([modi" +
-                "fied_habitat_determination] = @Original_modified_habitat_determination)) AND ((@" +
-                "IsNull_modified_habitat_interpretation = 1 AND [modified_habitat_interpretation]" +
-                " IS NULL) OR ([modified_habitat_interpretation] = @Original_modified_habitat_int" +
-                "erpretation)) AND ((@IsNull_modified_operation = 1 AND [modified_operation] IS N" +
+                "primary = 1 AND [modified_habprimary] IS NULL) OR ([modified_habprimary] = @Orig" +
+                "inal_modified_habprimary)) AND ((@IsNull_modified_habsecond = 1 AND [modified_ha" +
+                "bsecond] IS NULL) OR ([modified_habsecond] = @Original_modified_habsecond)) AND " +
+                "((@IsNull_modified_determqty = 1 AND [modified_determqty] IS NULL) OR ([modified" +
+                "_determqty] = @Original_modified_determqty)) AND ((@IsNull_modified_interpqty = " +
+                "1 AND [modified_interpqty] IS NULL) OR ([modified_interpqty] = @Original_modifie" +
+                "d_interpqty)) AND ((@IsNull_modified_operation = 1 AND [modified_operation] IS N" +
                 "ULL) OR ([modified_operation] = @Original_modified_operation)) AND ((@IsNull_mod" +
                 "ified_incid = 1 AND [modified_incid] IS NULL) OR ([modified_incid] = @Original_m" +
                 "odified_incid)) AND ((@IsNull_modified_toidfragid = 1 AND [modified_toidfragid] " +
@@ -28237,10 +28232,9 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
                 "riginal_modified_length)) AND ((@IsNull_modified_area = 1 AND [modified_area] IS" +
                 " NULL) OR ([modified_area] = @Original_modified_area)));\r\nSELECT history_id, inc" +
                 "id, toid, toidfragid, modified_user_id, modified_date, modified_process, modifie" +
-                "d_reason, modified_habitat_primary, modified_habitat_secondaries, modified_habit" +
-                "at_determination, modified_habitat_interpretation, modified_operation, modified_" +
-                "incid, modified_toidfragid, modified_length, modified_area FROM history WHERE (h" +
-                "istory_id = @history_id)";
+                "d_reason, modified_habprimary, modified_habsecond, modified_determqty, modified_" +
+                "interpqty, modified_operation, modified_incid, modified_toidfragid, modified_len" +
+                "gth, modified_area FROM history WHERE (history_id = @history_id)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@history_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "history_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -28250,10 +28244,10 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_process", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_process", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_reason", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_determination", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habitat_interpretation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habprimary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_habsecond", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_determqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_interpqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_operation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@modified_toidfragid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_toidfragid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -28271,14 +28265,14 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_process", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_process", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_reason", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_reason", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_reason", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_primary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_determination", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_determination", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_determination", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habitat_interpretation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habitat_interpretation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habitat_interpretation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habprimary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habprimary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habprimary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_habsecond", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_habsecond", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_habsecond", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_determqty", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_determqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_determqty", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_interpqty", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_interpqty", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_interpqty", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_operation", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_modified_operation", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_operation", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_modified_incid", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "modified_incid", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
@@ -28304,8 +28298,8 @@ SELECT history_id, incid, toid, toidfragid, modified_user_id, modified_date, mod
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = @"SELECT        history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habitat_primary, modified_habitat_secondaries, modified_habitat_determination, 
-                         modified_habitat_interpretation, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area
+            this._commandCollection[0].CommandText = @"SELECT        history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habprimary, modified_habsecond, modified_determqty, 
+                         modified_interpqty, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area
 FROM            history";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
@@ -28376,10 +28370,10 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> Original_modified_date, 
                     string Original_modified_process, 
                     string Original_modified_reason, 
-                    string Original_modified_habitat_primary, 
-                    string Original_modified_habitat_secondaries, 
-                    string Original_modified_habitat_determination, 
-                    string Original_modified_habitat_interpretation, 
+                    string Original_modified_habprimary, 
+                    string Original_modified_habsecond, 
+                    string Original_modified_determqty, 
+                    string Original_modified_interpqty, 
                     string Original_modified_operation, 
                     string Original_modified_incid, 
                     string Original_modified_toidfragid, 
@@ -28436,37 +28430,37 @@ FROM            history";
                 this.Adapter.DeleteCommand.Parameters[10].Value = ((object)(0));
                 this.Adapter.DeleteCommand.Parameters[11].Value = ((string)(Original_modified_reason));
             }
-            if ((Original_modified_habitat_primary == null)) {
+            if ((Original_modified_habprimary == null)) {
                 this.Adapter.DeleteCommand.Parameters[12].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[13].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[12].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[13].Value = ((string)(Original_modified_habitat_primary));
+                this.Adapter.DeleteCommand.Parameters[13].Value = ((string)(Original_modified_habprimary));
             }
-            if ((Original_modified_habitat_secondaries == null)) {
+            if ((Original_modified_habsecond == null)) {
                 this.Adapter.DeleteCommand.Parameters[14].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[15].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[14].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[15].Value = ((string)(Original_modified_habitat_secondaries));
+                this.Adapter.DeleteCommand.Parameters[15].Value = ((string)(Original_modified_habsecond));
             }
-            if ((Original_modified_habitat_determination == null)) {
+            if ((Original_modified_determqty == null)) {
                 this.Adapter.DeleteCommand.Parameters[16].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[17].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[16].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[17].Value = ((string)(Original_modified_habitat_determination));
+                this.Adapter.DeleteCommand.Parameters[17].Value = ((string)(Original_modified_determqty));
             }
-            if ((Original_modified_habitat_interpretation == null)) {
+            if ((Original_modified_interpqty == null)) {
                 this.Adapter.DeleteCommand.Parameters[18].Value = ((object)(1));
                 this.Adapter.DeleteCommand.Parameters[19].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[18].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[19].Value = ((string)(Original_modified_habitat_interpretation));
+                this.Adapter.DeleteCommand.Parameters[19].Value = ((string)(Original_modified_interpqty));
             }
             if ((Original_modified_operation == null)) {
                 this.Adapter.DeleteCommand.Parameters[20].Value = ((object)(1));
@@ -28537,10 +28531,10 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> modified_date, 
                     string modified_process, 
                     string modified_reason, 
-                    string modified_habitat_primary, 
-                    string modified_habitat_secondaries, 
-                    string modified_habitat_determination, 
-                    string modified_habitat_interpretation, 
+                    string modified_habprimary, 
+                    string modified_habsecond, 
+                    string modified_determqty, 
+                    string modified_interpqty, 
                     string modified_operation, 
                     string modified_incid, 
                     string modified_toidfragid, 
@@ -28589,29 +28583,29 @@ FROM            history";
             else {
                 this.Adapter.InsertCommand.Parameters[7].Value = ((string)(modified_reason));
             }
-            if ((modified_habitat_primary == null)) {
+            if ((modified_habprimary == null)) {
                 this.Adapter.InsertCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(modified_habitat_primary));
+                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(modified_habprimary));
             }
-            if ((modified_habitat_secondaries == null)) {
+            if ((modified_habsecond == null)) {
                 this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[9].Value = ((string)(modified_habitat_secondaries));
+                this.Adapter.InsertCommand.Parameters[9].Value = ((string)(modified_habsecond));
             }
-            if ((modified_habitat_determination == null)) {
+            if ((modified_determqty == null)) {
                 this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[10].Value = ((string)(modified_habitat_determination));
+                this.Adapter.InsertCommand.Parameters[10].Value = ((string)(modified_determqty));
             }
-            if ((modified_habitat_interpretation == null)) {
+            if ((modified_interpqty == null)) {
                 this.Adapter.InsertCommand.Parameters[11].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.InsertCommand.Parameters[11].Value = ((string)(modified_habitat_interpretation));
+                this.Adapter.InsertCommand.Parameters[11].Value = ((string)(modified_interpqty));
             }
             if ((modified_operation == null)) {
                 this.Adapter.InsertCommand.Parameters[12].Value = global::System.DBNull.Value;
@@ -28672,10 +28666,10 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> modified_date, 
                     string modified_process, 
                     string modified_reason, 
-                    string modified_habitat_primary, 
-                    string modified_habitat_secondaries, 
-                    string modified_habitat_determination, 
-                    string modified_habitat_interpretation, 
+                    string modified_habprimary, 
+                    string modified_habsecond, 
+                    string modified_determqty, 
+                    string modified_interpqty, 
                     string modified_operation, 
                     string modified_incid, 
                     string modified_toidfragid, 
@@ -28689,10 +28683,10 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> Original_modified_date, 
                     string Original_modified_process, 
                     string Original_modified_reason, 
-                    string Original_modified_habitat_primary, 
-                    string Original_modified_habitat_secondaries, 
-                    string Original_modified_habitat_determination, 
-                    string Original_modified_habitat_interpretation, 
+                    string Original_modified_habprimary, 
+                    string Original_modified_habsecond, 
+                    string Original_modified_determqty, 
+                    string Original_modified_interpqty, 
                     string Original_modified_operation, 
                     string Original_modified_incid, 
                     string Original_modified_toidfragid, 
@@ -28741,29 +28735,29 @@ FROM            history";
             else {
                 this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(modified_reason));
             }
-            if ((modified_habitat_primary == null)) {
+            if ((modified_habprimary == null)) {
                 this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(modified_habitat_primary));
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(modified_habprimary));
             }
-            if ((modified_habitat_secondaries == null)) {
+            if ((modified_habsecond == null)) {
                 this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(modified_habitat_secondaries));
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(modified_habsecond));
             }
-            if ((modified_habitat_determination == null)) {
+            if ((modified_determqty == null)) {
                 this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(modified_habitat_determination));
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(modified_determqty));
             }
-            if ((modified_habitat_interpretation == null)) {
+            if ((modified_interpqty == null)) {
                 this.Adapter.UpdateCommand.Parameters[11].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(modified_habitat_interpretation));
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(modified_interpqty));
             }
             if ((modified_operation == null)) {
                 this.Adapter.UpdateCommand.Parameters[12].Value = global::System.DBNull.Value;
@@ -28846,37 +28840,37 @@ FROM            history";
                 this.Adapter.UpdateCommand.Parameters[27].Value = ((object)(0));
                 this.Adapter.UpdateCommand.Parameters[28].Value = ((string)(Original_modified_reason));
             }
-            if ((Original_modified_habitat_primary == null)) {
+            if ((Original_modified_habprimary == null)) {
                 this.Adapter.UpdateCommand.Parameters[29].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[30].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[29].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[30].Value = ((string)(Original_modified_habitat_primary));
+                this.Adapter.UpdateCommand.Parameters[30].Value = ((string)(Original_modified_habprimary));
             }
-            if ((Original_modified_habitat_secondaries == null)) {
+            if ((Original_modified_habsecond == null)) {
                 this.Adapter.UpdateCommand.Parameters[31].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[32].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[31].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[32].Value = ((string)(Original_modified_habitat_secondaries));
+                this.Adapter.UpdateCommand.Parameters[32].Value = ((string)(Original_modified_habsecond));
             }
-            if ((Original_modified_habitat_determination == null)) {
+            if ((Original_modified_determqty == null)) {
                 this.Adapter.UpdateCommand.Parameters[33].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[34].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[33].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[34].Value = ((string)(Original_modified_habitat_determination));
+                this.Adapter.UpdateCommand.Parameters[34].Value = ((string)(Original_modified_determqty));
             }
-            if ((Original_modified_habitat_interpretation == null)) {
+            if ((Original_modified_interpqty == null)) {
                 this.Adapter.UpdateCommand.Parameters[35].Value = ((object)(1));
                 this.Adapter.UpdateCommand.Parameters[36].Value = global::System.DBNull.Value;
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[35].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[36].Value = ((string)(Original_modified_habitat_interpretation));
+                this.Adapter.UpdateCommand.Parameters[36].Value = ((string)(Original_modified_interpqty));
             }
             if ((Original_modified_operation == null)) {
                 this.Adapter.UpdateCommand.Parameters[37].Value = ((object)(1));
@@ -28946,10 +28940,10 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> modified_date, 
                     string modified_process, 
                     string modified_reason, 
-                    string modified_habitat_primary, 
-                    string modified_habitat_secondaries, 
-                    string modified_habitat_determination, 
-                    string modified_habitat_interpretation, 
+                    string modified_habprimary, 
+                    string modified_habsecond, 
+                    string modified_determqty, 
+                    string modified_interpqty, 
                     string modified_operation, 
                     string modified_incid, 
                     string modified_toidfragid, 
@@ -28963,16 +28957,16 @@ FROM            history";
                     global::System.Nullable<global::System.DateTime> Original_modified_date, 
                     string Original_modified_process, 
                     string Original_modified_reason, 
-                    string Original_modified_habitat_primary, 
-                    string Original_modified_habitat_secondaries, 
-                    string Original_modified_habitat_determination, 
-                    string Original_modified_habitat_interpretation, 
+                    string Original_modified_habprimary, 
+                    string Original_modified_habsecond, 
+                    string Original_modified_determqty, 
+                    string Original_modified_interpqty, 
                     string Original_modified_operation, 
                     string Original_modified_incid, 
                     string Original_modified_toidfragid, 
                     global::System.Nullable<double> Original_modified_length, 
                     global::System.Nullable<double> Original_modified_area) {
-            return this.Update(Original_history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habitat_primary, modified_habitat_secondaries, modified_habitat_determination, modified_habitat_interpretation, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area, Original_history_id, Original_incid, Original_toid, Original_toidfragid, Original_modified_user_id, Original_modified_date, Original_modified_process, Original_modified_reason, Original_modified_habitat_primary, Original_modified_habitat_secondaries, Original_modified_habitat_determination, Original_modified_habitat_interpretation, Original_modified_operation, Original_modified_incid, Original_modified_toidfragid, Original_modified_length, Original_modified_area);
+            return this.Update(Original_history_id, incid, toid, toidfragid, modified_user_id, modified_date, modified_process, modified_reason, modified_habprimary, modified_habsecond, modified_determqty, modified_interpqty, modified_operation, modified_incid, modified_toidfragid, modified_length, modified_area, Original_history_id, Original_incid, Original_toid, Original_toidfragid, Original_modified_user_id, Original_modified_date, Original_modified_process, Original_modified_reason, Original_modified_habprimary, Original_modified_habsecond, Original_modified_determqty, Original_modified_interpqty, Original_modified_operation, Original_modified_incid, Original_modified_toidfragid, Original_modified_length, Original_modified_area);
         }
     }
     

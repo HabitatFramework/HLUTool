@@ -43,12 +43,13 @@ namespace HLU.UI.ViewModel
 
         private bool _deleteOrphanBapHabitats;
         private bool _deletePotentialBapHabitats;
+        private bool _deleteIHSCodes;
+        private bool _deleteSecondaryCodes;
         private int _sourceCount;
-        private int _deleteSecondaryCodes;
         private bool _createHistory;
         private string _determinationQuality;
         private string _interpretationQuality;
-        private bool _ihsHabitatChanged;
+        private bool _primaryHabitatChanged;
 
         #endregion
 
@@ -58,23 +59,25 @@ namespace HLU.UI.ViewModel
             bool osmmBulkUpdateMode,
             bool deleteOrphanBapHabitats,
             bool deletePotentialBapHabitats,
+            bool deleteIHSCodes,
+            bool deleteSecondaryCodes,
             int sourceCount,
-            int deleteMultiplexCodes,
             bool createHistory,
             string determinationQuality,
             string interpretationQuality,
-            bool ihsHabitatChanged)
+            bool primaryHabitatChanged)
         {
             _viewModelMain = viewModelMain;
             _osmmBulkUpdateMode = osmmBulkUpdateMode;
             _deleteOrphanBapHabitats = deleteOrphanBapHabitats;
             _deletePotentialBapHabitats = deletePotentialBapHabitats;
+            _deleteIHSCodes = deleteIHSCodes;
+            _deleteSecondaryCodes = deleteSecondaryCodes;
             _sourceCount = sourceCount;
-            _deleteSecondaryCodes = deleteMultiplexCodes;
             _createHistory = createHistory;
             _determinationQuality = determinationQuality;
             _interpretationQuality = interpretationQuality;
-            _ihsHabitatChanged = ihsHabitatChanged;
+            _primaryHabitatChanged = primaryHabitatChanged;
 
             //OnPropertyChanged("ShowInOSMMBulkUpdateMode");
             //OnPropertyChanged("HideInOSMMBulkUpdateMode");
@@ -114,7 +117,8 @@ namespace HLU.UI.ViewModel
         public delegate void RequestCloseEventHandler(bool apply,
             bool bulkDeleteOrphanBapHabitats,
             bool bulkDeletePotentialBapHabitats,
-            int bulkDeleteMultiplexCodes,
+            bool bulkDeleteIHSCodes,
+            bool bulkDeleteSecondaryCodes,
             bool bulkCreateHistory,
             string bulkDeterminationQuality,
             string bulkInterpretationQuality);
@@ -156,6 +160,7 @@ namespace HLU.UI.ViewModel
             this.RequestClose(true,
                 _deleteOrphanBapHabitats,
                 _deletePotentialBapHabitats,
+                _deleteIHSCodes,
                 _deleteSecondaryCodes,
                 _createHistory,
                 _determinationQuality,
@@ -206,7 +211,7 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void CancelCommandClick(object param)
         {
-            this.RequestClose(false, false, false, 1, false, null, null);
+            this.RequestClose(false, false, false, false, false, false, null, null);
         }
 
         #endregion
@@ -238,6 +243,34 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
+        /// Gets or sets whether existing IHS codes should be deleted.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if existing IHS codes should be deleted; otherwise, <c>false</c>.
+        /// </value>
+        public bool DeleteIHSCodes
+        {
+            get { return _deleteIHSCodes; }
+            set { _deleteIHSCodes = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether existing secondary codes should be deleted.
+        /// </summary>
+        /// <value>
+        ///   <c>True</c> if all existing secondary codes should be deleted; otherwise,
+        /// <c>False</c> if no secondary codes should be deleted.
+        /// </value>
+        public bool DeleteSecondaryCodes
+        {
+            get { return _deleteSecondaryCodes; }
+            set
+            {
+                _deleteSecondaryCodes = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets whether existing sources should be deleted.
         /// </summary>
         /// <value>
@@ -246,38 +279,6 @@ namespace HLU.UI.ViewModel
         public bool DeleteSources
         {
             get { return (_sourceCount != 0); }
-        }
-
-        /// <summary>
-        /// Gets or sets whether existing multiplex codes should be deleted.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if existing multiplex codes should be deleted; otherwise, <c>false</c>.
-        /// </value>
-        public DeleteSecondaryCodesAction[] DeleteSecondaryCodesActions
-        {
-            get
-            {
-                return Enum.GetValues(typeof(DeleteSecondaryCodesAction)).Cast<DeleteSecondaryCodesAction>()
-                    .ToArray();
-            }
-            set { }
-        }
-
-        /// <summary>
-        /// Gets or sets whether existing multiplex codes should be deleted.
-        /// </summary>
-        /// <value>
-        ///   <c>Always</c> if all existing multiplex codes should be deleted; otherwise,
-        /// <c>Invalid</c> if only invalid mulitplex codes should be deleted.
-        /// </value>
-        public DeleteSecondaryCodesAction? DeleteSecondaryCodes
-        {
-            get { return (DeleteSecondaryCodesAction)_deleteSecondaryCodes; }
-            set
-            {
-                _deleteSecondaryCodes = (int)value;
-            }
         }
 
         /// <summary>
@@ -431,15 +432,14 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Enable control when in OSMM Bulk Update mode and
-        /// the IHS habitat has changed.
+        /// Enable control when the IHS habitat has changed.
         /// </summary>
         public bool EnableDeleteOrphanBapHabitats
         {
             get
             {
                 // Enable the control if the IHS habitat has changed
-                if (_ihsHabitatChanged == true)
+                if (_primaryHabitatChanged == true)
                 {
                     return true;
                 }
@@ -452,15 +452,14 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Enable control when in OSMM Bulk Update mode and
-        /// the IHS habitat has changed.
+        /// Enable control when the IHS habitat has changed.
         /// </summary>
         public bool EnableDeletePotentialBapHabitats
         {
             get
             {
                 // Enable the control if the IHS habitat has changed
-                if (_ihsHabitatChanged == true)
+                if (_primaryHabitatChanged == true)
                 {
                     return true;
                 }
@@ -473,7 +472,27 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Enable control when in OSMM Bulk Update mode and
+        /// Enable control when in not OSMM Bulk Update mode.
+        /// </summary>
+        public bool EnableDeleteIHSCodes
+        {
+            get
+            {
+                // Enable the control if not in OSMM Bulk Update mode
+                if (_osmmBulkUpdateMode == false)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Enable control when not in OSMM Bulk Update mode and
         /// the IHS habitat has changed.
         /// </summary>
         public bool EnableDeleteSecondaryCodes
@@ -482,7 +501,7 @@ namespace HLU.UI.ViewModel
             {
                 // Enable the control if not in OSMM Bulk Update mode and
                 // the IHS habitat has changed
-                if ((_osmmBulkUpdateMode == false) && (_ihsHabitatChanged == true))
+                if ((_osmmBulkUpdateMode == false) && (_primaryHabitatChanged == true))
                 {
                     return true;
                 }
@@ -525,12 +544,6 @@ namespace HLU.UI.ViewModel
 
                 switch (columnName)
                 {
-                    //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
-                    case "DeleteSecondaryCodes":
-                        if ((EnableDeleteSecondaryCodes == true) &&
-                            (DeleteSecondaryCodes == (int)DeleteSecondaryCodesAction.All))
-                            error="Warning: This option will delete ALL secondary codes from all affected incids";
-                        break;
                     case "DeterminationQuality":
                         if (String.IsNullOrEmpty(DeterminationQuality))
                             error= "Error: You must choose a Determination Quality";

@@ -364,9 +364,6 @@ namespace HLU.UI.ViewModel
 
             // Delete any rows that haven't been marked as deleted but are
             // no longer in the current rows.
-            List<HluDataSet.incid_secondaryRow> temp = _viewModelMain.IncidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted &&
-                currSecondaryRows.Count(g => g.secondary_id == r.secondary_id) == 0).ToList();
-
             _viewModelMain.IncidSecondaryRows.Where(r => r.RowState != DataRowState.Deleted &&
                 currSecondaryRows.Count(g => g.secondary_id == r.secondary_id) == 0).ToList()
                 .ForEach(delegate(HluDataSet.incid_secondaryRow row) { row.Delete(); });
