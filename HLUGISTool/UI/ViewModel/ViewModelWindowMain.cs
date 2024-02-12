@@ -276,6 +276,7 @@ namespace HLU.UI.ViewModel
 
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
+        private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
         private IEnumerable<HluDataSet.lut_ihs_habitatRow> _lutIhsHabitatCodes;
         private IEnumerable<HluDataSet.lut_ihs_matrixRow> _lutIhsMatrixCodes;
         private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormationCodes;
@@ -290,8 +291,6 @@ namespace HLU.UI.ViewModel
 
         private HluDataSet.lut_conditionRow[] _conditionCodes;
         private HluDataSet.lut_condition_qualifierRow[] _conditionQualifierCodes;
-        //private HluDataSet.lut_primary_categoryRow[] _primaryCategoryCodes;
-        //private HluDataSet.lut_primaryRow[] _primaryCodes;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroupsValid;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroups;
         public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll;  // Used in the options window
@@ -303,14 +302,11 @@ namespace HLU.UI.ViewModel
         private ObservableCollection<BapEnvironment> _incidBapRowsAuto;
         private ObservableCollection<BapEnvironment> _incidBapRowsUser;
 
-        private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses; // Used in the options window
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
         private IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> _osmmHabitatXrefIds;
-        //private IEnumerable<HluDataSet.lut_habitat_type_primaryRow> _xrefHabitatTypePrimaryCodes;
-        //private IEnumerable<HluDataSet.lut_habitat_type_secondaryRow> _xrefHabitatTypeSecondaryCodes;
 
         private double _incidArea;
         private double _incidLength;
@@ -378,7 +374,6 @@ namespace HLU.UI.ViewModel
         private string _incidLastModifiedUser;
         private DateTime _incidLastModifiedDate;
         private string _incidLegacyHabitat;
-        //private string _incidQualityDetermination;
         private int _incidOSMMUpdatesOSMMXref;
         private int _incidOSMMUpdatesProcessFlag;
         private string _incidOSMMUpdatesSpatialFlag;
@@ -7112,7 +7107,7 @@ namespace HLU.UI.ViewModel
                 // apply button does not appear.
                 Changed = false;
 
-                //TODO: Check - Move incid - Needed?
+                //TODO: Move incid - Check needed?
                 // without this IncidIhsHabitat becomes null, called from IhsHabitatCodes, when coming 
                 // from a previous row with valid IHS habitat code 
                 // (seemingly alternating rows when browsing, i.e. 1 ok, 2 wrong, 3 ok, ...)
@@ -9136,7 +9131,7 @@ namespace HLU.UI.ViewModel
                     // Only load habitat classes that are flagged as local.
                     _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
                                          // Only load codes with a local primary habitat type.
-                                         //join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
+                                         join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
                                          where t.is_local && t.habitat_class_code == HabitatClass
                                          select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
@@ -10301,7 +10296,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //TODO: Check IHS matrix - Needed?        
         /// <summary>
         /// Checks if there are any valid ihs matrix rows.
         /// </summary>
@@ -10326,8 +10320,8 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void RemoveIncidIhsMatrixRows()
         {
-            //TODO: Update remove IHS codes - check needed
-            if (CheckIhsMatrix())   // Needed?
+            // Check if there are any valid ihs matrix rows.
+            if (CheckIhsMatrix())
             {
                 for (int i = 0; i < _incidIhsMatrixRows.Length; i++)
                 {
@@ -10480,7 +10474,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //TODO: Check IHS formation - Needed?
         /// <summary>
         /// Checks if there are any valid ihs formation rows.
         /// </summary>
@@ -10503,8 +10496,8 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void RemoveIncidIhsFormationRows()
         {
-            //TODO: Update remove IHS codes - check needed
-            if (CheckIhsFormation())   // Needed?
+            // Check if there are any valid ihs formation rows.
+            if (CheckIhsFormation())
             {
                 for (int i = 0; i < _incidIhsFormationRows.Length; i++)
                 {
@@ -10657,7 +10650,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //TODO: Check IHS management - Needed?
         /// <summary>
         /// Checks if there are any valid ihs management rows.
         /// </summary>
@@ -10681,8 +10673,8 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void RemoveIncidIhsManagementRows()
         {
-            //TODO: Update remove IHS codes - check needed
-            if (CheckIhsManagement())   // Needed?
+            // Check if there are any valid ihs management rows.
+            if (CheckIhsManagement())
             {
                 for (int i = 0; i < _incidIhsManagementRows.Length; i++)
                 {
@@ -10835,7 +10827,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        //TODO: Check IHS complex - Needed?
         /// <summary>
         /// Checks if there are any valid ihs complex rows.
         /// </summary>
@@ -10859,8 +10850,8 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void RemoveIncidIhsComplexRows()
         {
-            //TODO: Update remove IHS codes - check needed
-            if (CheckIhsComplex())   // Needed?
+            // Check if there are any valid ihs complex rows.
+            if (CheckIhsComplex())
             {
                 for (int i = 0; i < _incidIhsComplexRows.Length; i++)
                 {
@@ -13484,7 +13475,7 @@ namespace HLU.UI.ViewModel
 
         # region History Tab
 
-        //TODO: IncidHistory - display new history fields and labels
+        //TODO: History - display new history fields and labels
         public IEnumerable<string> IncidHistory
         {
             get
@@ -13504,13 +13495,6 @@ namespace HLU.UI.ViewModel
                                                                        !_gisIDColumnOrdinals.Contains(result)
                                                                   select _hluDS.incid_mm_polygons.Columns[Int32.Parse(s)])).ToArray();
 
-                    HabitatClasses = (from c in HluDataset.lut_habitat_class
-                                      join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
-                                      where c.is_local && t.is_local
-                                      select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
-
-                    //return (from r in _incidHistoryRows.OrderByDescending(r => r.history_id)
-                    //        group r by new
                     return (from r in _incidHistoryRows.OrderByDescending(r => r.history_id)
                             group r by new
                             {
