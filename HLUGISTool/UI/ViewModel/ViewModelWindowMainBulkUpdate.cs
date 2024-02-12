@@ -709,7 +709,7 @@ namespace HLU.UI.ViewModel
         #region Database & GIS Updates
 
         /// <summary>
-        /// Perform the OSMM bulk update on the database tables using an ADO connection.
+        /// Perform the bulk update on the database tables using an ADO connection.
         /// </summary>
         /// <param name="currIncid">The incid to update.</param>
         /// <param name="selectCommandIncid">The SELECT command template.</param>
@@ -949,17 +949,16 @@ namespace HLU.UI.ViewModel
             //---------------------------------------------------------------------
             // Update the secondary habitats
             //---------------------------------------------------------------------
-            // Store the rows from the user interface
-            HluDataSet.incid_secondaryRow[] incidSecondaryRows = _viewModelMain.IncidSecondaryRows;
             // Store a copy of the table for the current incid
             HluDataSet.incid_secondaryDataTable secondaryTable =
                 (HluDataSet.incid_secondaryDataTable)_viewModelMain.HluDataset.incid_secondary.Copy();
-            // Update the rows in the database
-            //BulkUpdateDbIncidRelatedTable(bulkDeleteSecondaryCodes, currIncid, relValues,
-            //    _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter,
-            //    secondaryTable, ref incidSecondaryRows);
-
+            // Load the child rows for the bap table for the supplied incid
+            _viewModelMain.GetIncidChildRowsDb(relValues,
+                _viewModelMain.HluTableAdapterManager.incid_secondaryTableAdapter, ref secondaryTable);
+            // Store the rows from the user interface
             ObservableCollection<SecondaryHabitat> secondaryHabitats = _viewModelMain.IncidSecondaryHabitats;
+            // Update the rows in the database
+            BulkUpdateSecondary(currIncid, primaryHabitat, secondaryTable, secondaryHabitats);
 
             //---------------------------------------------------------------------
             // Update the BAP habitats
@@ -974,6 +973,27 @@ namespace HLU.UI.ViewModel
             BulkUpdateBap(currIncid, primaryHabitat, bapTable, secondaryHabitats, bulkDeleteOrphanBapHabitats, bulkDeletePotentialBapHabitats);
 
             //---------------------------------------------------------------------
+            // Update the conditions
+            //---------------------------------------------------------------------
+            // Store the row from the user interface
+            HluDataSet.incid_conditionRow[] incidConditionRows = _viewModelMain.IncidConditionRows;
+            // Store a copy of the table for the current incid
+            HluDataSet.incid_conditionDataTable incidConditionTable =
+                (HluDataSet.incid_conditionDataTable)_viewModelMain.HluDataset.incid_condition.Copy();
+
+            // Count the non-blank rows from the user interface
+            int newConditionRows = (from nc in incidConditionRows
+                                    where nc.condition != null
+                                    select nc).Count();
+
+            // If there are new condition rows then delete the old conditions
+            bool deleteCondition = newConditionRows > 0 ? true : false;
+            // Update the rows in the database
+            BulkUpdateDbIncidRelatedTable(deleteCondition, currIncid, relValues,
+                _viewModelMain.HluTableAdapterManager.incid_conditionTableAdapter,
+                incidConditionTable, ref incidConditionRows);
+
+            //---------------------------------------------------------------------
             // Update the sources
             //---------------------------------------------------------------------
             // Store the rows from the user interface
@@ -981,13 +1001,14 @@ namespace HLU.UI.ViewModel
             // Store a copy of the table for the current incid
             HluDataSet.incid_sourcesDataTable incidSourcesTable =
                 (HluDataSet.incid_sourcesDataTable)_viewModelMain.HluDataset.incid_sources.Copy();
+
             // Count the non-blank rows from the user interface
-            int newRows = (from nr in incidSourcesRows
-                           where nr.source_id != Int32.MinValue
-                           select nr).Count();
-            //---------------------------------------------------------------------
+            int newSourceRows = (from ns in incidSourcesRows
+                                 where ns.source_id != Int32.MinValue
+                                 select ns).Count();
+
             // If there are new source rows then delete the old sources
-            bool deleteSources = newRows > 0 ? true : false;
+            bool deleteSources = newSourceRows > 0 ? true : false;
             // Update the rows in the database
             BulkUpdateDbIncidRelatedTable(deleteSources, currIncid, relValues,
                 _viewModelMain.HluTableAdapterManager.incid_sourcesTableAdapter,
@@ -1011,8 +1032,8 @@ namespace HLU.UI.ViewModel
             where T : DataTable, new()
             where R : DataRow
         {
-            if ((uiRows != null) && (uiRows.Count(r =>
-                !r.IsNull(dbTable.PrimaryKey[0].Ordinal)) > 0))
+            if ((uiRows != null) && (uiRows.Count(rm =>
+                !rm.IsNull(dbTable.PrimaryKey[0].Ordinal)) > 0))
             {
                 // Create a cloned set of rows for the supplied incid
                 T newRows = CloneUpdateRows<T, R>(uiRows, currIncid);
@@ -1534,141 +1555,6 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Bulk updates the required child table using a DB connection.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="R"></typeparam>
-        /// <param name="deleteExistingRows">if set to <c>1</c> delete any existing rows.</param>
-        /// <param name="newRows">The new rows to be inserted.</param>
-        /// <param name="dbRows">The database rows.</param>
-        /// <exception cref="ArgumentException">
-        /// dbRows
-        /// or
-        /// newRows
-        /// or
-        /// Table must have a single column primary key of type Int32 - dbRows
-        /// </exception>
-        /// <exception cref="Exception">
-        /// </exception>
-        private void BulkUpdateDbChildTable<T, R>(bool deleteExistingRows, R[] newRows, ref T dbRows)
-            where T : DataTable, new()
-            where R : DataRow
-        {
-            if (dbRows == null) throw new ArgumentException("dbRows");
-            if (newRows == null) throw new ArgumentException("newRows");
-
-            if ((dbRows.PrimaryKey.Length != 1) || (dbRows.PrimaryKey[0].DataType != typeof(Int32)))
-                throw new ArgumentException("Table must have a single column primary key of type Int32", "dbRows");
-
-            DataColumn[] pk = dbRows.PrimaryKey;
-            int pkOrdinal = pk[0].Ordinal;
-
-            // remove any new rows with no or duplicate data
-            R[] dbRowsEnum = dbRows.AsEnumerable().Select(r => (R)r).ToArray();
-            DataColumn[] cols = dbRows.Columns.Cast<DataColumn>().Where(c => c.Ordinal != pkOrdinal).ToArray();
-            R[] newRowsNoDups = (from nr in newRows
-                                 where cols.Count(col => !nr.IsNull(col.Ordinal)) > 0 &&
-                                     dbRowsEnum.Count(dr => cols.Count(c => !dr[c.Ordinal].Equals(nr[c.Ordinal])) == 0) == 0
-                                 select nr).OrderBy(r => r[pkOrdinal]).ToArray();
-
-            // number of non-blank controls corresponding to child table dbRows
-            int numRowsNew = newRowsNoDups.Count();
-
-            if (numRowsNew == 0) return;
-
-            // number of child rows in database for current incid
-            int numRowsDb = dbRows.Rows.Count;
-
-            // update existing rows matching controls to rows in order of PK values (same as UI display order)
-            string updateCommand = String.Format("UPDATE {0} SET ", _viewModelMain.DataBase.QualifyTableName(dbRows.TableName));
-
-            int limit = numRowsDb <= numRowsNew ? numRowsDb : numRowsNew;
-            for (int i = 0; i < limit; i++)
-            {
-                R newRow = newRowsNoDups[i];
-                R dbRow = dbRowsEnum[(int)newRowsNoDups[i][pkOrdinal]];
-                if (_viewModelMain.DataBase.ExecuteNonQuery(dbRows.Columns.Cast<DataColumn>()
-                    .Where(c => pk.Count(k => k.Ordinal == c.Ordinal) == 0 && !newRow.IsNull(c.Ordinal))
-                    .Aggregate(new StringBuilder(), (sb, c) => sb.Append(String.Format(", {0} = {1}",
-                        _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
-                        _viewModelMain.DataBase.QuoteValue(newRow[c.Ordinal])))).Remove(0, 2)
-                        .Append(String.Format(" WHERE {0} = {1}", dbRows.PrimaryKey.Aggregate(
-                        new StringBuilder(), (sb, c) => sb.Append(String.Format("AND {0} = {1}",
-                            _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
-                            _viewModelMain.DataBase.QuoteValue(dbRow[c.Ordinal])))).Remove(0, 4)))
-                            .Insert(0, updateCommand).ToString(), _viewModelMain.DataBase.Connection.ConnectionTimeout, 
-                            CommandType.Text) == -1)
-                    throw new Exception(String.Format("Failed to update table '{0}'.", dbRows.TableName));
-            }
-
-            if (numRowsNew > numRowsDb) // user entered new values
-            {
-                string recordIdPropertyName = dbRows.TableName.Split('_')
-                    .Aggregate(new StringBuilder(), (sb, s) => sb.Append(char.ToUpper(s[0])).Append(s.Substring(1)))
-                    .Insert(0, "Next").Append("Id").ToString();
-
-                PropertyInfo recordIDPropInfo = typeof(RecordIds).GetProperty(recordIdPropertyName);
-
-                string insertCommand = String.Format("INSERT INTO {0} ({1}) VALUES ({2})",
-                    _viewModelMain.DataBase.QualifyTableName(dbRows.TableName), 
-                    _viewModelMain.DataBase.QuoteValue("{0}"), 
-                    _viewModelMain.DataBase.QuoteValue("{1}"));
-
-                for (int i = numRowsDb; i < numRowsNew; i++)
-                {
-                    R newRow = newRows[i];
-
-                    StringBuilder columnNames = new StringBuilder();
-                    StringBuilder columnValues = new StringBuilder();
-                    for (int j = 0; j < dbRows.Columns.Count; j++)
-                    {
-                        columnNames.Append(String.Format(", {0}", 
-                            _viewModelMain.DataBase.QuoteIdentifier(dbRows.Columns[i].ColumnName)));
-                        if (j == pkOrdinal)
-                        {
-                            int newPK = (int)recordIDPropInfo.GetValue(_viewModelMain.RecIDs, null);
-                            columnValues.Append(String.Format(", {0}", newPK));
-                        }
-                        else
-                        {
-                            columnValues.Append(String.Format(", {0}", _viewModelMain.DataBase.QuoteValue(newRow[i])));
-                        }
-                    }
-
-                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(insertCommand, columnNames, columnValues),
-                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
-                        throw new Exception(String.Format("Failed to insert into table {0}.", dbRows.TableName));
-                }
-            }
-            //TODO: Bulk Update - delete secondary codes and/or multiplex codes when relevant
-            else if ((deleteExistingRows) && (numRowsDb > numRowsNew))
-            {
-                StringBuilder deleteCommand = new StringBuilder(String.Format(
-                    "DELETE FROM {0} WHERE ", _viewModelMain.DataBase.QualifyTableName(dbRows.TableName)));
-
-                for (int i = numRowsNew; i < numRowsDb; i++)
-                {
-                    R dbRow = (R)dbRows.Rows[i];
-
-                    deleteCommand.Append(String.Format("{0} = {1}", dbRows.PrimaryKey.Aggregate(
-                        new StringBuilder(), (sb, c) => sb.Append(String.Format("AND {0} = {1}",
-                            _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName), 
-                            _viewModelMain.DataBase.QuoteValue(dbRow[c.Ordinal])))))).Remove(0, 4);
-
-                    if (_viewModelMain.DataBase.ExecuteNonQuery(deleteCommand.ToString(), 
-                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
-                        throw new Exception(String.Format("Failed to delete from table {0}.", dbRows.TableName));
-                }
-            }
-
-            if (newRowsNoDups.Length > 0)
-            {
-                newRowsNoDups[0].Table.AcceptChanges();
-                dbRows = (T)newRowsNoDups[0].Table;
-            }
-        }
-
-        /// <summary>
         /// Bulk updates the required child table using an ADO connection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -1716,7 +1602,6 @@ namespace HLU.UI.ViewModel
             // Get the number of non-blank row with non-duplicate data corresponding to child table dbRows
             int numRowsNew = newRowsNoDups.Count();
 
-            //TODO: Bulk Update - check
             // Exit if no existing rows are to be retained and there are no new rows to add
             if ((deleteExistingRows) && (numRowsNew == 0)) return;
 
@@ -1781,7 +1666,6 @@ namespace HLU.UI.ViewModel
                     break;
             }
 
-            //TODO: Bulk Update - check
             // Re-insert any old rows not in the new rows
             if (!deleteExistingRows)
             {
@@ -1818,6 +1702,141 @@ namespace HLU.UI.ViewModel
                     newRows[0].Table.AcceptChanges();
                 else
                     oldRows[0].Table.AcceptChanges();
+            }
+        }
+
+        /// <summary>
+        /// Bulk updates the required child table using a DB connection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="R"></typeparam>
+        /// <param name="deleteExistingRows">if set to <c>1</c> delete any existing rows.</param>
+        /// <param name="newRows">The new rows to be inserted.</param>
+        /// <param name="dbRows">The database rows.</param>
+        /// <exception cref="ArgumentException">
+        /// dbRows
+        /// or
+        /// newRows
+        /// or
+        /// Table must have a single column primary key of type Int32 - dbRows
+        /// </exception>
+        /// <exception cref="Exception">
+        /// </exception>
+        private void BulkUpdateDbChildTable<T, R>(bool deleteExistingRows, R[] newRows, ref T dbRows)
+            where T : DataTable, new()
+            where R : DataRow
+        {
+            if (dbRows == null) throw new ArgumentException("dbRows");
+            if (newRows == null) throw new ArgumentException("newRows");
+
+            // Check the data table primary key is an integer
+            if ((dbRows.PrimaryKey.Length != 1) || (dbRows.PrimaryKey[0].DataType != typeof(Int32)))
+                throw new ArgumentException("Table must have a single column primary key of type Int32", "dbRows");
+
+            DataColumn[] pk = dbRows.PrimaryKey;
+            int pkOrdinal = pk[0].Ordinal;
+
+            // remove any new rows with no or duplicate data
+            R[] dbRowsEnum = dbRows.AsEnumerable().Select(r => (R)r).ToArray();
+            DataColumn[] cols = dbRows.Columns.Cast<DataColumn>().Where(c => c.Ordinal != pkOrdinal).ToArray();
+            R[] newRowsNoDups = (from nr in newRows
+                                 where cols.Count(col => !nr.IsNull(col.Ordinal)) > 0 &&
+                                     dbRowsEnum.Count(dr => cols.Count(c => !dr[c.Ordinal].Equals(nr[c.Ordinal])) == 0) == 0
+                                 select nr).OrderBy(r => r[pkOrdinal]).ToArray();
+
+            // number of non-blank controls corresponding to child table dbRows
+            int numRowsNew = newRowsNoDups.Count();
+
+            if (numRowsNew == 0) return;
+
+            // number of child rows in database for current incid
+            int numRowsDb = dbRows.Rows.Count;
+
+            // update existing rows matching controls to rows in order of PK values (same as UI display order)
+            string updateCommand = String.Format("UPDATE {0} SET ", _viewModelMain.DataBase.QualifyTableName(dbRows.TableName));
+
+            int limit = numRowsDb <= numRowsNew ? numRowsDb : numRowsNew;
+            for (int i = 0; i < limit; i++)
+            {
+                R newRow = newRowsNoDups[i];
+                R dbRow = dbRowsEnum[(int)newRowsNoDups[i][pkOrdinal]];
+                if (_viewModelMain.DataBase.ExecuteNonQuery(dbRows.Columns.Cast<DataColumn>()
+                    .Where(c => pk.Count(k => k.Ordinal == c.Ordinal) == 0 && !newRow.IsNull(c.Ordinal))
+                    .Aggregate(new StringBuilder(), (sb, c) => sb.Append(String.Format(", {0} = {1}",
+                        _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
+                        _viewModelMain.DataBase.QuoteValue(newRow[c.Ordinal])))).Remove(0, 2)
+                        .Append(String.Format(" WHERE {0} = {1}", dbRows.PrimaryKey.Aggregate(
+                        new StringBuilder(), (sb, c) => sb.Append(String.Format("AND {0} = {1}",
+                            _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
+                            _viewModelMain.DataBase.QuoteValue(dbRow[c.Ordinal])))).Remove(0, 4)))
+                            .Insert(0, updateCommand).ToString(), _viewModelMain.DataBase.Connection.ConnectionTimeout,
+                            CommandType.Text) == -1)
+                    throw new Exception(String.Format("Failed to update table '{0}'.", dbRows.TableName));
+            }
+
+            if (numRowsNew > numRowsDb) // user entered new values
+            {
+                string recordIdPropertyName = dbRows.TableName.Split('_')
+                    .Aggregate(new StringBuilder(), (sb, s) => sb.Append(char.ToUpper(s[0])).Append(s.Substring(1)))
+                    .Insert(0, "Next").Append("Id").ToString();
+
+                PropertyInfo recordIDPropInfo = typeof(RecordIds).GetProperty(recordIdPropertyName);
+
+                string insertCommand = String.Format("INSERT INTO {0} ({1}) VALUES ({2})",
+                    _viewModelMain.DataBase.QualifyTableName(dbRows.TableName),
+                    _viewModelMain.DataBase.QuoteValue("{0}"),
+                    _viewModelMain.DataBase.QuoteValue("{1}"));
+
+                for (int i = numRowsDb; i < numRowsNew; i++)
+                {
+                    R newRow = newRows[i];
+
+                    StringBuilder columnNames = new StringBuilder();
+                    StringBuilder columnValues = new StringBuilder();
+                    for (int j = 0; j < dbRows.Columns.Count; j++)
+                    {
+                        columnNames.Append(String.Format(", {0}",
+                            _viewModelMain.DataBase.QuoteIdentifier(dbRows.Columns[i].ColumnName)));
+                        if (j == pkOrdinal)
+                        {
+                            int newPK = (int)recordIDPropInfo.GetValue(_viewModelMain.RecIDs, null);
+                            columnValues.Append(String.Format(", {0}", newPK));
+                        }
+                        else
+                        {
+                            columnValues.Append(String.Format(", {0}", _viewModelMain.DataBase.QuoteValue(newRow[i])));
+                        }
+                    }
+
+                    if (_viewModelMain.DataBase.ExecuteNonQuery(String.Format(insertCommand, columnNames, columnValues),
+                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                        throw new Exception(String.Format("Failed to insert into table {0}.", dbRows.TableName));
+                }
+            }
+            else if ((deleteExistingRows) && (numRowsDb > numRowsNew))
+            {
+                StringBuilder deleteCommand = new StringBuilder(String.Format(
+                    "DELETE FROM {0} WHERE ", _viewModelMain.DataBase.QualifyTableName(dbRows.TableName)));
+
+                for (int i = numRowsNew; i < numRowsDb; i++)
+                {
+                    R dbRow = (R)dbRows.Rows[i];
+
+                    deleteCommand.Append(String.Format("{0} = {1}", dbRows.PrimaryKey.Aggregate(
+                        new StringBuilder(), (sb, c) => sb.Append(String.Format("AND {0} = {1}",
+                            _viewModelMain.DataBase.QuoteIdentifier(c.ColumnName),
+                            _viewModelMain.DataBase.QuoteValue(dbRow[c.Ordinal])))))).Remove(0, 4);
+
+                    if (_viewModelMain.DataBase.ExecuteNonQuery(deleteCommand.ToString(),
+                        _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text) == -1)
+                        throw new Exception(String.Format("Failed to delete from table {0}.", dbRows.TableName));
+                }
+            }
+
+            if (newRowsNoDups.Length > 0)
+            {
+                newRowsNoDups[0].Table.AcceptChanges();
+                dbRows = (T)newRowsNoDups[0].Table;
             }
         }
 

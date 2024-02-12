@@ -195,7 +195,7 @@ namespace HLU.UI.ViewModel
                 else if (historyTable.Rows.Count == 0)
                     throw new Exception("No GIS features were updated.");
 
-                // TODO: Update length and area for each polygon (if possible)?
+                // TODO: GIS layer shadow copy update - Set length and area for each polygon (if possible)?
                 // Likewise update the DB shadow copy of the GIS layer
                 String updateStatement = String.Format("UPDATE {0} SET {1}={2}, {3}={4}, {5}={6}, {7}={8} WHERE {9}",
                     _viewModelMain.DataBase.QualifyTableName(_viewModelMain.HluDataset.incid_mm_polygons.TableName),
