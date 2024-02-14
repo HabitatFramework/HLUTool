@@ -1,19 +1,15 @@
 HLU Tool
 ========
 
-HLU Tool 3.1.4
+HLU Tool 4.0.0
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
-
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
-
 Copyright © 2014, 2018 Sussex Biodiversity Record Centre
-
 Copyright © 2019 London & South East Record Centres (LaSER)
-
 Copyright © 2019-2022 Greenspace Information for Greater London CIC
-
 Copyright © 2021-2022 Andy Foy Consulting
+Copyright © 2023-2024 Greenspace Information for Greater London CIC
 
 Overview
 --------
@@ -40,16 +36,17 @@ The HLU Tool requires the following:
 
  - Microsoft Windows XP/2003/2008/Vista/Windows 7, Windows 8 or Windows 10
  - 3 GHz or higher processor
- - 2 GB RAM
+ - 4 GB RAM
  - 3 GB of free hard disk space
     (For increased performance a multiple core processor with as much RAM as possible is recommended)
 
- - Microsoft .NET Framework 4.5 or later installed
+ - Microsoft .NET Framework 4.8.1 or later installed
 
  - Microsoft Access 2000 or later, OR
- - Microsoft SQL Server 2008 Express Edition or later, OR
- - Microsoft SQL Server 2008 or later
+ - Microsoft SQL Server 2016 Express Edition or later, OR
+ - Microsoft SQL Server 2016 or later
 
+ - ArcGIS 10.7, OR
  - MapInfo 8.0 or later (32bit versions only)
 
 Installation
