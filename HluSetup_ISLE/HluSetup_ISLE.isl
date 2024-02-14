@@ -1196,7 +1196,7 @@
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
-		<row><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>ProgramMenuFolder</td><td>HLU</td><td/><td>3</td><td/></row>
+		<row><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>ProgramMenuFolder</td><td>HLUTOO~1|HLU Tool v4</td><td/><td>3</td><td/></row>
 	</table>
 
 	<table name="DrLocator">
@@ -2870,7 +2870,7 @@
 		<col def="I4">TimeStamp</col>
 		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977083862</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>279707696</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool v4</td><td>0</td><td/><td>1630282479</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3974,8 +3974,8 @@
 		<row><td>ID_STRING11</td><td>1033</td><td/><td>0</td><td/><td>2082571317</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>LAUNCH~1|Launch HLU GIS Tool</td><td>0</td><td/><td>-1675556273</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>RECONF~1|Reconfigure HLU GIS Tool</td><td>0</td><td/><td>-1675546001</td></row>
-		<row><td>ID_STRING14</td><td>1033</td><td>HLUTOO~1|HLU Tool - Launch</td><td>0</td><td/><td>-1406720460</td></row>
-		<row><td>ID_STRING15</td><td>1033</td><td>HLUTOO~1|HLU Tool - Reconfigure</td><td>0</td><td/><td>-1406718412</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>HLUTOO~1|HLU Tool v4 - Launch</td><td>0</td><td/><td>1630302895</td></row>
+		<row><td>ID_STRING15</td><td>1033</td><td>HLUTOO~1|HLU Tool v4 - Reconfigure</td><td>0</td><td/><td>1630306991</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td/><td>0</td><td/><td>354543433</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td/><td>0</td><td/><td>765530390</td></row>
 		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>-1977087990</td></row>
