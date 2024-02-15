@@ -143,7 +143,6 @@ namespace HLU.UI.ViewModel
         private ICommand _editPotentialHabitatsCommand;
         private ICommand _addSecondaryHabitatCommand;
         private ICommand _addSecondaryHabitatListCommand;
-        private ICommand _selectByIncidCommand;
         private ICommand _switchGISLayerCommand;
         private ICommand _logicalSplitCommand;
         private ICommand _physicalSplitCommand;
@@ -302,6 +301,8 @@ namespace HLU.UI.ViewModel
         private ObservableCollection<BapEnvironment> _incidBapRowsAuto;
         private ObservableCollection<BapEnvironment> _incidBapRowsUser;
 
+        private HluDataSet.lut_legacy_habitatRow[] _legacyHabitatCodes;
+
         private HistoryRowEqualityComparer _histRowEqComp = new HistoryRowEqualityComparer();
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses; // Used in the options window
@@ -370,6 +371,7 @@ namespace HLU.UI.ViewModel
         private string _incidIhsHabitat;
         private string _incidPrimary;
         private string _incidPrimaryCategory;
+        private string _incidNVCCodes;
         private string _incidSecondarySummary;
         private string _incidLastModifiedUser;
         private DateTime _incidLastModifiedDate;
@@ -1206,42 +1208,6 @@ namespace HLU.UI.ViewModel
         internal string ClearIHSUpdateAction
         {
             get { return _clearIHSUpdateAction; }
-        }
-
-        #endregion
-
-        #region Logo
-
-        public string LogoPath
-        {
-            get { return Settings.Default.LogoPath; }
-            set { }
-        }
-
-        public int LogoHeight { get { return Settings.Default.LogoHeight; } }
-
-        public object LogoSource
-        {
-            get
-            {
-                BitmapImage image = new BitmapImage();
-
-                try
-                {
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                    image.DecodePixelHeight = 100;
-                    image.UriSource = new Uri(Settings.Default.LogoPath, UriKind.Absolute);
-                    image.EndInit();
-                }
-                catch
-                {
-                    return DependencyProperty.UnsetValue;
-                }
-
-                return image;
-            }
         }
 
         #endregion
@@ -3629,6 +3595,9 @@ namespace HLU.UI.ViewModel
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
 
                 OnPropertyChanged("SecondaryGroupCodes");
+                SecondaryGroup = _preferredSecondaryGroup;
+                OnPropertyChanged("SecondaryGroup");
+
                 OnPropertyChanged("SecondaryHabitatCodes");
                 RefreshSecondaryHabitats();
                 OnPropertyChanged("HabitatTabLabel");
@@ -4031,32 +4000,57 @@ namespace HLU.UI.ViewModel
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
-
-                            // Warn the user that no records were found.
-                            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
                         else
                         {
+                            //---------------------------------------------------------------------
+                            // FIX: 110 Clear selection when not found in GIS.
+                            //
                             // Restore the previous selection (filter).
-                            _incidSelection = incidSelectionBackup;
+                            //_incidSelection = incidSelectionBackup;
+
+                            // Clear the selection (filter).
+                            _incidSelection = null;
+
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
+                            // Set the filter back to the first incid.
+                            SetFilter();
+                            //---------------------------------------------------------------------
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
+
+                            // Warn the user that no records were found.
+                            MessageBox.Show(App.Current.MainWindow, "No map features found in current layer.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                     else
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 110 Clear selection when not found in the database.
+                        //
                         // Restore the previous selection (filter).
-                        _incidSelection = incidSelectionBackup;
+                        //_incidSelection = incidSelectionBackup;
+
+                        // Clear the selection (filter).
+                        _incidSelection = null;
+
+                        // Indicate the selection didn't come from the map.
+                        _filterByMap = false;
+
+                        // Set the filter back to the first incid.
+                        SetFilter();
+                        //---------------------------------------------------------------------
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
 
                         // Warn the user that no records were found
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
+                        MessageBox.Show(App.Current.MainWindow, "No records found in database.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
@@ -4298,32 +4292,57 @@ namespace HLU.UI.ViewModel
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
-
-                            // Warn the user that no records were found.
-                            if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Query",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
                             //---------------------------------------------------------------------
                         }
                         else
                         {
+                            //---------------------------------------------------------------------
+                            // FIX: 110 Clear selection when not found in GIS.
+                            //
                             // Restore the previous selection (filter).
-                            _incidSelection = incidSelectionBackup;
+                            //_incidSelection = incidSelectionBackup;
+
+                            // Clear the selection (filter).
+                            _incidSelection = null;
+
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
+
+                            // Set the filter back to the first incid.
+                            SetFilter();
+                            //---------------------------------------------------------------------
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
+
+                            // Warn the user that no records were found.
+                            MessageBox.Show(App.Current.MainWindow, "Map feature not found in current layer.", "HLU Query",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                     else
                     {
+                        //---------------------------------------------------------------------
+                        // FIX: 110 Clear selection when not found in GIS.
+                        //
                         // Restore the previous selection (filter).
-                        _incidSelection = incidSelectionBackup;
+                        //_incidSelection = incidSelectionBackup;
+
+                        // Clear the selection (filter).
+                        _incidSelection = null;
+
+                        // Indicate the selection didn't come from the map.
+                        _filterByMap = false;
+
+                        // Set the filter back to the first incid.
+                        SetFilter();
+                        //---------------------------------------------------------------------
 
                         // Reset the cursor back to normal
                         ChangeCursor(Cursors.Arrow, null);
 
-                        // Warn the user that no records were found
-                        MessageBox.Show(App.Current.MainWindow, "No records found.", "HLU Query",
+                        // Warn the user that the record was not found
+                        MessageBox.Show(App.Current.MainWindow, "Record not found in database.", "HLU Query",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
@@ -4646,11 +4665,6 @@ namespace HLU.UI.ViewModel
 
                                 // Reset the cursor back to normal.
                                 ChangeCursor(Cursors.Arrow, null);
-
-                                // Warn the user that no records were found.
-                                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "OSMM Updates",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
                                 //---------------------------------------------------------------------
                             }
                             else
@@ -4687,7 +4701,7 @@ namespace HLU.UI.ViewModel
                                 ChangeCursor(Cursors.Arrow, null);
 
                                 // Warn the user that no records were found.
-                                MessageBox.Show(App.Current.MainWindow, "No records found.", "OSMM Updates",
+                                MessageBox.Show(App.Current.MainWindow, "No map features found in current layer.", "OSMM Updates",
                                     MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
@@ -4729,7 +4743,7 @@ namespace HLU.UI.ViewModel
                             ChangeCursor(Cursors.Arrow, null);
 
                             // Warn the user that no records were found.
-                            MessageBox.Show(App.Current.MainWindow, "No records selected.", "OSMM Updates",
+                            MessageBox.Show(App.Current.MainWindow, "No records found in database.", "OSMM Updates",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
@@ -4882,11 +4896,6 @@ namespace HLU.UI.ViewModel
 
                         // Reset the cursor back to normal.
                         ChangeCursor(Cursors.Arrow, null);
-
-                        // Warn the user that no records were found.
-                        if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "OSMM Updates",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
                         //---------------------------------------------------------------------
                     }
                     else
@@ -4965,7 +4974,7 @@ namespace HLU.UI.ViewModel
                     ChangeCursor(Cursors.Arrow, null);
 
                     // Warn the user that no records were found.
-                    MessageBox.Show(App.Current.MainWindow, "No records selected.", "OSMM Updates",
+                    MessageBox.Show(App.Current.MainWindow, "No records found in database.", "OSMM Updates",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -4990,6 +4999,7 @@ namespace HLU.UI.ViewModel
             // Clear the habitat fields
             _incidIhsHabitat = null;
             _incidPrimary = null;
+            _incidNVCCodes = null;
             //_incidSecondarySummary = null;
 
             // Clear the input habitat class and type (the class will be reset
@@ -5229,9 +5239,9 @@ namespace HLU.UI.ViewModel
                     _gisApp.ZoomSelected(_minZoom, distUnits, _autoZoomSelection == 2);
                 }
 
-                // Warn the user that no records were found.
+                // Warn the user that no features were found in GIS.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Selection",
+                    MessageBox.Show(App.Current.MainWindow, "No map features found in current layer.", "HLU Selection",
                         MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -5267,7 +5277,8 @@ namespace HLU.UI.ViewModel
 
         private void ReadMapSelectionClicked(object param)
         {
-            // Get the GIS layer selection
+            // Get the GIS layer selection and warn the user if no
+            // features are found
             ReadMapSelection(true);
         }
 
@@ -5816,109 +5827,6 @@ namespace HLU.UI.ViewModel
 
         #endregion
 
-        #region Select By Incid Command
-
-        /// <summary>
-        /// SelectByIncid command.
-        /// </summary>
-        public ICommand SelectByIncidCommand
-        {
-            get
-            {
-                if (_selectByIncidCommand == null)
-                {
-                    Action<object> selectByIncidAction = new Action<object>(this.SelectByIncidClicked);
-                    _selectByIncidCommand = new RelayCommand(selectByIncidAction, param => this.CanSelectByIncid);
-                }
-                return _selectByIncidCommand;
-            }
-        }
-
-        private void SelectByIncidClicked(object param)
-        {
-            SelectByIncid();
-        }
-
-        private bool CanSelectByIncid
-        {
-            get { return _bulkUpdateMode == false && _osmmUpdateMode == false && HaveGisApp && _gisSelection != null && _incidsSelectedMapCount == 1; }
-        }
-
-        /// <summary>
-        /// Select current DB record on map when button pressed.
-        /// </summary>
-        private void SelectByIncid()
-        {
-            if ((_gisSelection == null) || (_gisSelection.Rows.Count <= 0) || (_incidsSelectedMapCount != 1))
-                return;
-
-            //---------------------------------------------------------------------
-            // CHANGED: CR21 (Select current incid in map)
-            // Set the status message and cursor, analyse the results, set
-            // the filter and reset the cursor AFTER performing the GIS selection
-            // so that other calls to the PerformGisSelection method
-            // can control if/when these things are done.
-            //
-            try
-            {
-                // Set the status to processing and the cursor to wait.
-                ChangeCursor(Cursors.Wait, "Selecting ...");
-
-                // Set the table of selected incids to the current incid.
-                _incidSelection = NewIncidSelectionTable();
-                DataRow selRow = _incidSelection.NewRow();
-                foreach (DataColumn c in _incidSelection.Columns)
-                {
-                    if (_gisSelection.Columns.Contains(c.ColumnName))
-                        selRow[c] = _gisSelection.Rows[0][c.ColumnName];
-                }
-                _incidSelection.Rows.Add(selRow);
-
-                // Select all the features for the current incid in GIS.
-                PerformGisSelection(false, -1, -1);
-
-                // Analyse the results of the GIS selection by counting the number of
-                // incids, toids and fragments selected.
-                AnalyzeGisSelectionSet(true);
-
-                // Store the number of incids found in the database
-                //_incidsSelectedDBCount = _incidSelection != null ? _incidSelection.Rows.Count : 0;
-
-                // Update the number of features found in the database.
-                //_toidsSelectedDBCount = 0;
-                //_fragsSelectedDBCount = 0;
-                //ExpectedSelectionFeatures(_incidSelectionWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
-
-                // Indicate the selection didn't come from the map.
-                _filterByMap = false;
-
-                // Set the filter back to the first incid.
-                SetFilter();
-
-                // Warn the user that no records were found.
-                if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                    MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU Selection",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Reset the cursor back to normal.
-                ChangeCursor(Cursors.Arrow, null);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "HLU", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            // Make sure the cursor is always reset.
-            finally
-            {
-                // Reset the cursor back to normal
-                ChangeCursor(Cursors.Arrow, null);
-            }
-            //---------------------------------------------------------------------
-
-        }
-
-        #endregion
-
         #region Select All On Map Command
 
         // Enable all the incids in the current filter to be selected
@@ -6000,7 +5908,7 @@ namespace HLU.UI.ViewModel
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features selected in current layer.", "HLU",
+                            MessageBox.Show(App.Current.MainWindow, "No map features found in current layer.", "HLU",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
@@ -6382,16 +6290,10 @@ namespace HLU.UI.ViewModel
                 // CHANGED: CR12 (Select by attribute performance)
                 // Calculate the length of the SQL statement to be sent to GIS.
                 int sqlLen = _gisApp.SqlLength(_gisIDColumns, whereClause);
-                //---------------------------------------------------------------------
 
-                //---------------------------------------------------------------------
-                // CHANGED: CR12 (Select by attribute performance)
-                // If the length exceeds the maximum for the GIS application then
-                // perform the selection using a join.
+                // Check if the length exceeds the maximum for the GIS application.
                 bool selectByJoin = (sqlLen > _gisApp.MaxSqlLength);
 
-                //---------------------------------------------------------------------
-                // CHANGED: CR12 (Select by attribute performance)
                 // If the length exceeds the maximum for the GIS application then
                 // perform the selection using a join.
                 if (selectByJoin)
@@ -6551,19 +6453,12 @@ namespace HLU.UI.ViewModel
                     // Switch the GIS layer
                     if (_gisApp.IsHluLayer(selectedHLULayer))
                     {
-                        //// Inform the user that the switch worked
-                        //if (selectedHLULayer.MapName == null)
-                        //    MessageBox.Show(string.Format("GIS Layer switched to {0} [{1}].", selectedHLULayer.LayerName, selectedHLULayer.MapNum),
-                        //        "HLU: Switch GIS Layer",MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        //else
-                        //    MessageBox.Show(string.Format("GIS Layer switched to {0} in {1} [{2}]", selectedHLULayer.LayerName, selectedHLULayer.MapName, selectedHLULayer.MapNum),
-                        //        "HLU: Switch GIS Layer", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-
-                        // Refresh the later name
+                        // Refresh the layer name
                         OnPropertyChanged("LayerName");
 
-                        // Get the new GIS layer selection
-                        ReadMapSelection(false);
+                        // Get the GIS layer selection and warn the user if no
+                        // features are found
+                        ReadMapSelection(true);
                     }
                 }
             }
@@ -9292,6 +9187,15 @@ namespace HLU.UI.ViewModel
                 // Set the primary habitat category.
                 _incidPrimaryCategory = HluDataset.lut_primary.Where(p => p.code == incidPrimary).ElementAt(0).category;
 
+                // Set NVC codes based on current primary habitat
+                _incidNVCCodes = null;
+                if (_primaryCodes != null)
+                {
+                    var q = _primaryCodes.Where(h => h.code == _incidPrimary);
+                    if (q.Count() > 0)
+                        _incidNVCCodes = q.ElementAt(0).nvc_codes;
+                }
+
                 // Store all secondary habitat codes that are flagged as local for
                 // all secondary groups that relate to the primary habitat category.
                 _secondaryCodesValid = (from s in SecondaryHabitatCodesAll
@@ -9306,6 +9210,7 @@ namespace HLU.UI.ViewModel
             else
             {
                 _incidPrimaryCategory = null;
+                _incidNVCCodes = null;
                 _secondaryCodesValid = null;
 
                 // Clear the list of valid secondary codes.
@@ -9368,14 +9273,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (String.IsNullOrEmpty(_incidPrimary)) return null;
-
-                // Select NVC codes based on current primary habitat
-                var q = _primaryCodes.Where(h => h.code == _incidPrimary);
-                if (q.Count() > 0)
-                    return q.ElementAt(0).nvc_codes;
-                else
-                    return null;
+                return _incidNVCCodes;
             }
         }
 
@@ -9450,8 +9348,8 @@ namespace HLU.UI.ViewModel
                         allRow.code = "<All>";
                         allRow.description = "<All>";
                         allRow.sort_order = -1;
-                        secondaryGroupsAll = secondaryGroupsAll.Concat(
-                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                        secondaryGroupsAll = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(secondaryGroupsAll).ToArray();
                     }
 
                     // Set the static variable
@@ -9482,8 +9380,8 @@ namespace HLU.UI.ViewModel
                         allRow.code = "<All>";
                         allRow.description = "<All>";
                         allRow.sort_order = -1;
-                        _secondaryGroupsValid = _secondaryGroupsValid.Concat(
-                            new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                        _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
                     }
                 }
                 else
@@ -9496,8 +9394,8 @@ namespace HLU.UI.ViewModel
                     allRow.code = "<All>";
                     allRow.description = "<All>";
                     allRow.sort_order = -1;
-                    _secondaryGroupsValid = _secondaryGroupsValid.Concat(
-                        new HluDataSet.lut_secondary_groupRow[] { allRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
 
                     // Set the combo box list to null (it will also be disabled).
                     return null;
@@ -9525,12 +9423,6 @@ namespace HLU.UI.ViewModel
         public string SecondaryGroup
         {
             get { return _secondaryGroup; }
-            //get
-            //{
-            //    if (_secondaryGroup == null)
-            //        _secondaryGroup = _preferredSecondaryGroup;
-            //    return _secondaryGroup;
-            //}
             set
             {
                 _secondaryGroup = value;
@@ -9915,16 +9807,23 @@ namespace HLU.UI.ViewModel
             get
             {
                 // Get the list of values from the lookup table.
-                if (HluDataset.lut_legacy_habitat.IsInitialized && HluDataset.lut_legacy_habitat.Count == 0)
+                if (_legacyHabitatCodes == null)
                 {
                     // Load the lookup table if not already loaded.
-                    if (_hluTableAdapterMgr.lut_legacy_habitatTableAdapter == null)
-                        _hluTableAdapterMgr.lut_legacy_habitatTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_legacy_habitatDataTable) }, false);
+                    if (HluDataset.lut_legacy_habitat.IsInitialized && HluDataset.lut_legacy_habitat.Count == 0)
+                    {
+                        if (_hluTableAdapterMgr.lut_legacy_habitatTableAdapter == null)
+                            _hluTableAdapterMgr.lut_legacy_habitatTableAdapter =
+                                new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
+                        _hluTableAdapterMgr.Fill(HluDataset,
+                            new Type[] { typeof(HluDataSet.lut_legacy_habitatDataTable) }, false);
+                    }
+
+                    _legacyHabitatCodes =
+                        HluDataset.lut_legacy_habitat.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
+                // Return the list of legacy codes, with the clear row if applicable.
                 if (!String.IsNullOrEmpty(IncidLegacyHabitat))
                 {
                     HluDataSet.lut_legacy_habitatRow clearRow = HluDataset.lut_legacy_habitat.Newlut_legacy_habitatRow();
@@ -9932,12 +9831,11 @@ namespace HLU.UI.ViewModel
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
-                    return HluDataset.lut_legacy_habitat.AsEnumerable().Concat(
-                        new HluDataSet.lut_legacy_habitatRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    return new HluDataSet.lut_legacy_habitatRow[] { clearRow }.Concat(_legacyHabitatCodes).ToArray();
                 }
                 else
                 {
-                    return HluDataset.lut_legacy_habitat.AsEnumerable().ToArray();
+                    return _legacyHabitatCodes;
                 }
             }
         }
@@ -11906,7 +11804,6 @@ namespace HLU.UI.ViewModel
                 // Return the list of condition codes, with the clear row if applicable.
                 if (_incidConditionRows.Length >= 1 &&
                     _incidConditionRows[0] != null &&
-                    //!String.IsNullOrEmpty(_incidConditionRows[0].condition))
                     !_incidConditionRows[0].IsNull(HluDataset.incid_condition.conditionColumn))
 
                 {
@@ -11914,8 +11811,8 @@ namespace HLU.UI.ViewModel
                     clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
-                    return _conditionCodes.Concat(
-                        new HluDataSet.lut_conditionRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    return new HluDataSet.lut_conditionRow[] { clearRow }.Concat(_conditionCodes).ToArray();
                 }
                 else
                 {
@@ -12226,8 +12123,7 @@ namespace HLU.UI.ViewModel
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
-                    return _qualityDeterminationCodes.Concat(
-                        new HluDataSet.lut_quality_determinationRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    return new HluDataSet.lut_quality_determinationRow[] { clearRow }.Concat(_qualityDeterminationCodes).ToArray();
                 }
                 else
                 {
@@ -12312,8 +12208,7 @@ namespace HLU.UI.ViewModel
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
-                    return _qualityInterpretationCodes.Concat(
-                        new HluDataSet.lut_quality_interpretationRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    return new HluDataSet.lut_quality_interpretationRow[] { clearRow }.Concat(_qualityInterpretationCodes).ToArray();
                 }
                 else
                 {
@@ -12701,8 +12596,8 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
-                    return SourceNames.Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+
+                    return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
                 {
@@ -12974,8 +12869,8 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
-                    return SourceNames.Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+
+                    return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
                 {
@@ -13246,8 +13141,8 @@ namespace HLU.UI.ViewModel
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
-                    return SourceNames.Concat(
-                        new HluDataSet.lut_sourcesRow[] { clearRow }).OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+
+                    return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
                 {

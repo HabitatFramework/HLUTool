@@ -159,12 +159,6 @@
                           Command="{Binding AutoSelectOnGisCommand}"
                           Header="_Auto Select INCID on GIS"
                           IsCheckable="True" />
-                <!--
-                    <MenuItem x:Name="MenuItemSelectByIncid"
-                    Command="{Binding SelectByIncidCommand}"
-                    Header="Select by _INCID"
-                    IsEnabled="{Binding CanSelectByIncid}" />
-                -->
             </MenuItem>
             <MenuItem Header="Split/_Merge">
                 <MenuItem x:Name="MenuItemLogicalSplit"
@@ -353,17 +347,6 @@
                            Height="16"
                            Source="..\..\Icons\ReadMapSelection.png" />
                 </Button>
-                <!--
-                    <Button x:Name="ButtonSelectByIncid"
-                    Command="{Binding SelectByIncidCommand}"
-                    IsEnabled="{Binding CanSelectByIncid}"
-                    ToolTip="Select by INCID"
-                    ToolTipService.ShowOnDisabled="True">
-                    <Image Width="16"
-                    Height="16"
-                    Source="..\..\Icons\SelectByIncid.png" />
-                    </Button>
-                -->
             </ToolBar>
             <ToolBar x:Name="ToolBarSplitMerge"
                      Band="1"
