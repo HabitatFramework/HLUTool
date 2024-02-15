@@ -344,7 +344,7 @@
 		<row><td>AppModule.InterProcessComm.Primary_output</td><td>{818CE24F-9F8E-47BE-8CBD-D274851027EA}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.interprocesscomm.p</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>AppModule.NamedPipes.Primary_output</td><td>{32231B20-E36C-4BF3-B739-2843F5BE88AE}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.namedpipes.primary</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td>{22BC8B1F-18F7-4FD4-A9E6-51429EDE15E2}</td><td>DesktopFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>HLUGISTool.Primary_output</td><td>{8177ABD7-6EFE-4D7B-98D9-1DC849B25162}</td><td>INSTALLDIR</td><td>2</td><td/><td>hlugistool.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>HLUTool.Primary_output</td><td>{6DAB93FE-257B-477C-A3B8-2CD6542126BD}</td><td>INSTALLDIR</td><td>2</td><td/><td>hlutool.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>HluArcMapExtension.Primary_output</td><td>{5B287E73-A66E-4135-AF62-6C9BD3E07DD1}</td><td>INSTALLDIR</td><td>2</td><td/><td>hluarcmapextension.primary_o</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{5A4A78E2-8483-45A9-AC17-79D2A1A4F2A4}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Interop.MSDASC.dll</td><td>{1D335A7E-1A15-4414-9663-F0FE99031544}</td><td>INSTALLDIR</td><td>2</td><td/><td>interop.msdasc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1081,11 +1081,12 @@
 		<row><td>ISSetAllUsers</td><td>257</td><td>SetAllUsers.dll</td><td>SetAllUsers</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
 		<row><td>LaunchReadmeFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchReadMe</td><td/><td/></row>
-		<row><td>RegArcMapExtension</td><td>1058</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUGISToolArcExtReg.bat</td><td/><td/></row>
+		<row><td>RegArcMapExtension</td><td>1058</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUToolArcExtReg.bat</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
 		<row><td>SetARPReadme</td><td>51</td><td>ARPREADME</td><td>[INSTALLDIR]\ReadMe.txt</td><td/><td/></row>
 		<row><td>SetAllUsersProfileNT</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%SystemRoot]\Profiles\All Users</td><td/><td/></row>
 		<row><td>ShowMsiLog</td><td>226</td><td>SystemFolder</td><td>[SystemFolder]notepad.exe "[MsiLogFileLocation]"</td><td/><td>Shows Property-driven MSI Log</td></row>
+		<row><td>UnRegArcMapExtension</td><td>1122</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUToolArcExtUnreg.bat</td><td/><td/></row>
 		<row><td>setAllUsersProfile2K</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%ALLUSERSPROFILE]</td><td/><td/></row>
 		<row><td>setUserProfileNT</td><td>51</td><td>USERPROFILE</td><td>[%USERPROFILE]</td><td/><td/></row>
 	</table>
@@ -1177,6 +1178,7 @@
 		<row><td>NEW_DIRECTORY1</td><td>TARGETDIR</td><td>NEW_DIRECTORY1</td><td/><td>0</td><td/></row>
 		<row><td>NEW_DIRECTORY2</td><td>TARGETDIR</td><td>NEW_DIRECTORY2</td><td/><td>0</td><td/></row>
 		<row><td>NEW_DIRECTORY3</td><td>TARGETDIR</td><td>NEW_DIRECTORY3</td><td/><td>0</td><td/></row>
+		<row><td>NEW_DIRECTORY4</td><td>TARGETDIR</td><td>NEW_DIRECTORY4</td><td/><td>0</td><td/></row>
 		<row><td>NetHoodFolder</td><td>TARGETDIR</td><td>.:NetHood</td><td/><td>0</td><td/></row>
 		<row><td>PROGRAM_FILES__X86_</td><td>DIRPROPERTY1</td><td>PROGRA~1|Program Files (x86)</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
@@ -1891,7 +1893,7 @@
 		<row><td>AlwaysInstall</td><td>AppModule.InterProcessComm.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>AppModule.NamedPipes.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td></row>
-		<row><td>AlwaysInstall</td><td>HLUGISTool.Primary_output</td></row>
+		<row><td>AlwaysInstall</td><td>HLUTool.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>HluArcMapExtension.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>Interop.MSDASC.dll</td></row>
@@ -1917,10 +1919,11 @@
 		<row><td>appmodule.interprocesscomm.p</td><td>AppModule.InterProcessComm.Primary_output</td><td>AppModule.InterProcessComm.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.InterProcessComm&gt;|Built</td><td>3</td><td/></row>
 		<row><td>appmodule.namedpipes.primary</td><td>AppModule.NamedPipes.Primary_output</td><td>AppModule.NamedPipes.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.NamedPipes&gt;|Built</td><td>3</td><td/></row>
 		<row><td>empty.wor</td><td>ISX_DEFAULTCOMPONENT</td><td>Empty.wor</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\Empty.wor</td><td>1</td><td/></row>
-		<row><td>hlu32.ico</td><td>ISX_DEFAULTCOMPONENT</td><td>HLU32.ico</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>1</td><td/></row>
+		<row><td>hlu32.ico</td><td>ISX_DEFAULTCOMPONENT</td><td>HLU32.ico</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\Icons\HLU32.ico</td><td>1</td><td/></row>
 		<row><td>hluarcmapextension.primary_o</td><td>HluArcMapExtension.Primary_output</td><td>HluArcMapExtension.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HluArcMapExtension&gt;|Built</td><td>3</td><td/></row>
-		<row><td>hlugistool.primary_output</td><td>HLUGISTool.Primary_output</td><td>HLUGISTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUGISTool&gt;|Built</td><td>3</td><td/></row>
-		<row><td>hlugistoolarcextreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUGIS~1.BAT|HLUGISToolArcExtReg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUGISToolArcExtReg.bat</td><td>1</td><td/></row>
+		<row><td>hlutool.primary_output</td><td>HLUTool.Primary_output</td><td>HLUTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUTool&gt;|Built</td><td>3</td><td/></row>
+		<row><td>hlutoolarcextreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUTOO~1.BAT|HLUToolArcExtReg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUToolArcExtReg.bat</td><td>1</td><td/></row>
+		<row><td>hlutoolarcextunreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUTOO~1.BAT|HLUToolArcExtUnreg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUToolArcExtUnreg.bat</td><td>1</td><td/></row>
 		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
 		<row><td>license.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\License.txt</td><td>1</td><td/></row>
 		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
@@ -2189,7 +2192,7 @@
 		<row><td>AppModule.InterProcessComm.Primary_output</td><td/><td/><td>_6C24C2B5_7E23_4E0A_A4C3_5BB2D980579B_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>AppModule.NamedPipes.Primary_output</td><td/><td/><td>_267EA415_D695_4B05_92C9_6E71D53F1F0D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td/><td/><td>_951FB2C4_E849_4A06_8570_0D0C508564CF_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>HLUGISTool.Primary_output</td><td/><td/><td>_BF6061FC_F869_4AA3_8EE8_19B0215D7A7B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>HLUTool.Primary_output</td><td/><td/><td>_F384D277_03B9_4C2D_94DC_AD005C7D8EDC_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>HluArcMapExtension.Primary_output</td><td/><td/><td>_5FD44DB7_5106_45F8_B23C_86F0B65C3EEE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_372EEF8A_829A_42F4_99DC_A299A59C5291_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Interop.MSDASC.dll</td><td/><td/><td>_BE67E254_38B6_451F_A7A5_C938302DCAFC_FILTER</td><td/><td/><td/><td/></row>
@@ -2552,6 +2555,7 @@
 		<row><td>AppModule.NamedPipes</td><td>NamedPipeDotNet\AppModule.NamedPipes\AppModule.NamedPipes.csproj</td><td/><td>2</td></row>
 		<row><td>CommonFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>HLUGISTool</td><td>HLUGISTool\HLUGISTool.csproj</td><td/><td>2</td></row>
+		<row><td>HLUTool</td><td>HLUTool\HLUTool.csproj</td><td/><td>2</td></row>
 		<row><td>HluArcMapExtension</td><td>HluArcMapExtension\HluArcMapExtension.csproj</td><td/><td>2</td></row>
 		<row><td>ISPROJECTDIR</td><td/><td/><td>1</td></row>
 		<row><td>ISProductFolder</td><td/><td/><td>1</td></row>
@@ -2868,9 +2872,9 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977083862</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy Consulting</td><td>0</td><td/><td>2032961772</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool v4</td><td>0</td><td/><td>1630282479</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>2032969964</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
@@ -3981,6 +3985,10 @@
 		<row><td>ID_STRING18</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool/issues</td><td>0</td><td/><td>-1977087990</td></row>
 		<row><td>ID_STRING19</td><td>1033</td><td>https://github.com/HabitatFramework/HLUTool</td><td>0</td><td/><td>-1977087990</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>Andy Foy</td><td>0</td><td/><td>2082554613</td></row>
+		<row><td>ID_STRING20</td><td>1033</td><td>HLUTOO~1|HLU Tool v4</td><td>0</td><td/><td>2032963441</td></row>
+		<row><td>ID_STRING21</td><td>1033</td><td>HLUTOO~1|HLU Tool v4 - Reconfigure</td><td>0</td><td/><td>2032952364</td></row>
+		<row><td>ID_STRING22</td><td>1033</td><td/><td>0</td><td/><td>2032972652</td></row>
+		<row><td>ID_STRING23</td><td>1033</td><td/><td>0</td><td/><td>2032984940</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td/><td>0</td><td/><td>2082544405</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Andy Foy (on behalf of south-east LERCs)</td><td>0</td><td/><td>-1977030646</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>2082566933</td></row>
@@ -4095,11 +4103,13 @@
 		<col def="V0">Data</col>
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
-		<row><td>ARPPRODUCTICON.exe</td><td/><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
+		<row><td>ARPPRODUCTICON.exe</td><td/><td>D:\GitHub\HLUTool\HLUTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>NewShortcut1_29E33317BC1042B487642A2C1F39888B.exe</td><td/><td>D:\HLUTool\Code\HLUGISTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>NewShortcut1_90181EBFCDF1483C939C99DFC2AA93B6.exe</td><td/><td>D:\HLUTool\Code\HLUGISTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>NewShortcut1_9F4CF25129A44B549FAD656700E7287E.exe</td><td/><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
+		<row><td>NewShortcut1_A0603EC1C41B4A9E889C72C891232561.exe</td><td/><td>D:\GitHub\HLUTool\HLUTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>NewShortcut2_30B8D75D35EF4F5C9F2C0D39037EF6F5.exe</td><td/><td>D:\HLUTool\Code\HLUGISTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
+		<row><td>NewShortcut2_6F9E727470D04C76887A4744A036EA27.exe</td><td/><td>D:\GitHub\HLUTool\HLUTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>NewShortcut2_D169EAB6543D4904B054A70870B29553.exe</td><td/><td>D:\GitHub\HLUTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
 		<row><td>_CA4B375DBA84464CA_FC1A28F686AD4BA98FB2BE9EBF54EB7C.exe</td><td/><td>D:\HLUTool\Code\HLUGISTool\HLUGISTool\Icons\HLU32.ico</td><td>0</td></row>
 	</table>
@@ -4197,6 +4207,7 @@
 		<row><td>SetODBCFolders</td><td/><td>1200</td><td>SetODBCFolders</td><td/></row>
 		<row><td>StartServices</td><td>VersionNT</td><td>5900</td><td>StartServices</td><td/></row>
 		<row><td>StopServices</td><td>VersionNT</td><td>1900</td><td>StopServices</td><td/></row>
+		<row><td>UnRegArcMapExtension</td><td>REMOVE="ALL"</td><td>6402</td><td/><td/></row>
 		<row><td>UnpublishComponents</td><td/><td>1700</td><td>UnpublishComponents</td><td/></row>
 		<row><td>UnpublishFeatures</td><td/><td>1800</td><td>UnpublishFeatures</td><td/></row>
 		<row><td>UnregisterClassInfo</td><td/><td>2700</td><td>UnregisterClassInfo</td><td/></row>
@@ -4237,7 +4248,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{8B23027E-8FC4-4BE5-9BDE-45AFB8EC8151}</td></row>
 		<row><td>ISUSSignature</td><td>{4089835E-B983-4C42-8BEC-11C3BDE3AE74}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions,viewRegistry,viewUpgradePaths,viewObjects,viewSQLServer,viewComponentServices,viewTextMessages,viewAppV,viewSetupDesign</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewRealSetupDesign,viewUpdateService,viewAppFiles,viewShortcuts,viewUI,viewSystemSearch,viewRelease,viewInstallScriptStd,viewCustomActions,viewRegistry,viewUpgradePaths,viewObjects,viewSQLServer,viewComponentServices,viewTextMessages,viewAppV,viewSetupDesign,viewFileExtensions,viewEnvironmentVariables,viewIniFiles,viewXMLConfig</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4700,8 +4711,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="L255">FileName</col>
 		<col def="s72">DirProperty</col>
 		<col def="i2">InstallMode</col>
-		<row><td>NewShortcut1</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
-		<row><td>NewShortcut2</td><td>HLUGISTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
+		<row><td>NewShortcut1</td><td>HLUTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
+		<row><td>NewShortcut2</td><td>HLUTool.Primary_output</td><td/><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4787,8 +4798,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>NewShortcut1</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING14##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td>NewShortcut1_9F4CF25129A44B549FAD656700E7287E.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>NewShortcut2</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING15##</td><td>HLUGISTool.Primary_output</td><td>AlwaysInstall</td><td>/c</td><td/><td/><td>NewShortcut2_D169EAB6543D4904B054A70870B29553.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>NewShortcut1</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING20##</td><td>HLUTool.Primary_output</td><td>AlwaysInstall</td><td/><td>##ID_STRING22##</td><td/><td>NewShortcut1_A0603EC1C41B4A9E889C72C891232561.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>NewShortcut2</td><td>_47F00705E5304621BEC4AF2B0F02601F</td><td>##ID_STRING21##</td><td>HLUTool.Primary_output</td><td>AlwaysInstall</td><td>/c</td><td>##ID_STRING23##</td><td/><td>NewShortcut2_6F9E727470D04C76887A4744A036EA27.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

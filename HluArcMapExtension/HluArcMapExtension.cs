@@ -58,7 +58,7 @@ using ESRI.ArcGIS.Display;
 
 namespace HLU
 {
-    [Guid("B6C50E82-5B2B-497F-89D6-BA00C6C2EDC4")]
+    [Guid("BFEE12C7-B9B4-4C10-BF23-0F466280ADE8")]
     [ClassInterface(ClassInterfaceType.None)]
     [ProgId("HLU.HluArcMapExtensionV4")]
     public class HluArcMapExtensionV4 : IExtension, IExtensionConfig, IPersistVariant
@@ -376,7 +376,7 @@ namespace HLU
             {
                 return String.Format("HLU ArcMap Extension v{0}\r\n{1}\r\n\r\nProvides an interface to the HLU Tool v4.",
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    "Copyright © 2011 HBIC; 2013-14, 2016 TVERC; 2014, 2018 SxBRC; 2019 LaSER; 2019-23 GiGL.");
+                    "Copyright © 2011 HBIC, TVERC, SxBRC, LaSER, GiGL, Andy Foy Consulting; 2013-24.");
             }
         }
 

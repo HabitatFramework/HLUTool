@@ -50,12 +50,6 @@
     <Setting Name="DbConnectionType" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="LogoPath" Roaming="true" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Documents and Settings\hartmutt\My Documents\Visual Studio 2008\Projects\HLUGISTool\HLUGISTool\Logo.png</Value>
-    </Setting>
-    <Setting Name="LogoHeight" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
     <Setting Name="MapPath" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -146,7 +140,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="PipeBaseName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">HluPipe</Value>
+      <Value Profile="(Default)">HluPipev4</Value>
     </Setting>
     <Setting Name="PipeErrorInit" Type="System.Char" Scope="Application">
       <Value Profile="(Default)">~</Value>

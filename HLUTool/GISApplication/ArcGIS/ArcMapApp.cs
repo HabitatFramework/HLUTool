@@ -216,7 +216,7 @@ namespace HLU.GISApplication.ArcGIS
             int arcVersion = InitialiseArcObjects(out arcVersionString);
             EnableExtension("HLU.HluArcMapExtensionV4", arcVersion, arcVersionString);
 #else
-            EnableExtension("B6C50E82-5B2B-497F-89D6-BA00C6C2EDC4");
+            EnableExtension("BFEE12C7-B9B4-4C10-BF23-0F466280ADE8");
 #endif
 
             ArcMapAppHelperClass.GetValidWorkspaces(out _validWorkspaces);
@@ -2274,7 +2274,7 @@ namespace HLU.GISApplication.ArcGIS
                 WinAPI.GetWindowThreadProcessId(_arcMapWindow, out pid);
                 Process _arcProcess = Process.GetProcessById(pid);
                 string arcDirName = System.IO.Path.GetDirectoryName(_arcProcess.MainModule.FileName);
-                string tmpDirName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "HluGisTool" +
+                string tmpDirName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "HLUTool" +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
                 for (int i = 0; i < sdeLibs.Length; i++)

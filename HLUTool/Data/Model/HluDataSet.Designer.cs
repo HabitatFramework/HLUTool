@@ -23779,11 +23779,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string nvc_codes {
                 get {
-                    try {
-                        return ((string)(this[this.tablelut_primary.nvc_codesColumn]));
+                    if (this.Isnvc_codesNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'nvc_codes\' in table \'lut_primary\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tablelut_primary.nvc_codesColumn]));
                     }
                 }
                 set {

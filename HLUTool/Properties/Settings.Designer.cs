@@ -209,29 +209,6 @@ namespace HLU.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Documents and Settings\\hartmutt\\My Documents\\Visual Studio 2008\\Projects\\HLUGI" +
-            "STool\\HLUGISTool\\Logo.png")]
-        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public string LogoPath {
-            get {
-                return ((string)(this["LogoPath"]));
-            }
-            set {
-                this["LogoPath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int LogoHeight {
-            get {
-                return ((int)(this["LogoHeight"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
         public string MapPath {
@@ -511,7 +488,7 @@ namespace HLU.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("HluPipe")]
+        [global::System.Configuration.DefaultSettingValueAttribute("HluPipev4")]
         public string PipeBaseName {
             get {
                 return ((string)(this["PipeBaseName"]));

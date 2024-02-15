@@ -186,12 +186,12 @@ namespace HLU
         {
             // Check that the tool is not already running.
             bool createdNew;
-            _toolMutex = new Mutex(true, "Local\\HLUGisTool", out createdNew);
+            _toolMutex = new Mutex(true, "Local\\HLUToolv4", out createdNew);
 
             // If the tool (or database updater) is alread running then exit.
             if (!createdNew)
             {
-                MessageBox.Show("The HLU Tool is already running on this machine.\n\nApplication cannot start.", "HLU Tool",
+                MessageBox.Show("The HLU Tool v4 is already running on this machine.\n\nApplication cannot start.", "HLU Tool",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
 
                 _toolMutex = null;
@@ -200,7 +200,7 @@ namespace HLU
                 return false;
             }
 
-            // Keep the mutex referene alive until the normal
+            // Keep the mutex reference alive until the normal
             // termination of the program.
             GC.KeepAlive(_toolMutex);
 
@@ -221,7 +221,10 @@ namespace HLU
 
             // Release the HLU Database Updater mutex.
             if (_updaterMutex != null)
+            {
                 _updaterMutex.ReleaseMutex();
+                _updaterMutex = null;
+            }
 
             return true;
         }
