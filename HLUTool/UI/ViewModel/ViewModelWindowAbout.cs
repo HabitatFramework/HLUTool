@@ -29,6 +29,7 @@ namespace HLU.UI.ViewModel
         private string _displayName = "About HLU Tool";
         private string _appVersion;
         private string _dbVersion;
+        private string _dataVersion;
         private string _connectionType;
         private string _connectionSettings;
         private string _userId;
@@ -113,6 +114,12 @@ namespace HLU.UI.ViewModel
         {
             get { return _dbVersion; }
             set { _dbVersion = value; }
+        }
+
+        public string DataVersion
+        {
+            get { return _dataVersion; }
+            set { _dataVersion = value; }
         }
 
         public string ConnectionType

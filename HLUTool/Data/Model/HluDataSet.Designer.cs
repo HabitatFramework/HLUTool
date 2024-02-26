@@ -222,10 +222,6 @@ namespace HLU.Data.Model {
         
         private global::System.Data.DataRelation relationfk_exports_fields_exports_field_types;
         
-        private global::System.Data.DataRelation relationfk_incid_osmm_updates_lut_osmm_habitat_xref;
-        
-        private global::System.Data.DataRelation relationfk_lut_osmm_habitat_xref_habitat_primary;
-        
         private global::System.Data.DataRelation relationlut_secondary_group_incid_secondary;
         
         private global::System.Data.DataRelation relationlut_secondary_incid_secondary;
@@ -257,6 +253,8 @@ namespace HLU.Data.Model {
         private global::System.Data.DataRelation relationfk_history_lut_quality_determination;
         
         private global::System.Data.DataRelation relationfk_history_lut_quality_interpretation;
+        
+        private global::System.Data.DataRelation relationfk_incid_osmm_updates_lut_osmm_habitat_xref;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
@@ -1574,8 +1572,6 @@ namespace HLU.Data.Model {
             this.relationfk_incid_bap_lut_quality_determination = this.Relations["fk_incid_bap_lut_quality_determination"];
             this.relationfk_incid_bap_lut_quality_interpretation = this.Relations["fk_incid_bap_lut_quality_interpretation"];
             this.relationfk_exports_fields_exports_field_types = this.Relations["fk_exports_fields_exports_field_types"];
-            this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref = this.Relations["fk_incid_osmm_updates_lut_osmm_habitat_xref"];
-            this.relationfk_lut_osmm_habitat_xref_habitat_primary = this.Relations["fk_lut_osmm_habitat_xref_habitat_primary"];
             this.relationlut_secondary_group_incid_secondary = this.Relations["lut_secondary_group_incid_secondary"];
             this.relationlut_secondary_incid_secondary = this.Relations["lut_secondary_incid_secondary"];
             this.relationlut_secondary_lut_habitat_type_secondary = this.Relations["lut_secondary_lut_habitat_type_secondary"];
@@ -1592,6 +1588,7 @@ namespace HLU.Data.Model {
             this.relationlut_primary_lut_primary_bap_habitat = this.Relations["lut_primary_lut_primary_bap_habitat"];
             this.relationfk_history_lut_quality_determination = this.Relations["fk_history_lut_quality_determination"];
             this.relationfk_history_lut_quality_interpretation = this.Relations["fk_history_lut_quality_interpretation"];
+            this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref = this.Relations["fk_incid_osmm_updates_lut_osmm_habitat_xref"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1904,14 +1901,6 @@ namespace HLU.Data.Model {
                         this.tableexports_field_types.field_typeColumn}, new global::System.Data.DataColumn[] {
                         this.tableexports_fields.field_typeColumn}, false);
             this.Relations.Add(this.relationfk_exports_fields_exports_field_types);
-            this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref = new global::System.Data.DataRelation("fk_incid_osmm_updates_lut_osmm_habitat_xref", new global::System.Data.DataColumn[] {
-                        this.tablelut_osmm_habitat_xref.osmm_habitat_xref_idColumn}, new global::System.Data.DataColumn[] {
-                        this.tableincid_osmm_updates.osmm_habitat_xref_idColumn}, false);
-            this.Relations.Add(this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref);
-            this.relationfk_lut_osmm_habitat_xref_habitat_primary = new global::System.Data.DataRelation("fk_lut_osmm_habitat_xref_habitat_primary", new global::System.Data.DataColumn[] {
-                        this.tablelut_primary.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tablelut_osmm_habitat_xref.habitat_primaryColumn}, false);
-            this.Relations.Add(this.relationfk_lut_osmm_habitat_xref_habitat_primary);
             this.relationlut_secondary_group_incid_secondary = new global::System.Data.DataRelation("lut_secondary_group_incid_secondary", new global::System.Data.DataColumn[] {
                         this.tablelut_secondary_group.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_secondary.secondary_groupColumn}, false);
@@ -1980,6 +1969,10 @@ namespace HLU.Data.Model {
                         this.tablelut_quality_interpretation.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tablehistory.modified_interpqtyColumn}, false);
             this.Relations.Add(this.relationfk_history_lut_quality_interpretation);
+            this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref = new global::System.Data.DataRelation("fk_incid_osmm_updates_lut_osmm_habitat_xref", new global::System.Data.DataColumn[] {
+                        this.tablelut_osmm_habitat_xref.osmm_xref_idColumn}, new global::System.Data.DataColumn[] {
+                        this.tableincid_osmm_updates.osmm_xref_idColumn}, false);
+            this.Relations.Add(this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2783,6 +2776,8 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnhabitat_version;
             
+            private global::System.Data.DataColumn columndata_version;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_versionDataTable() {
@@ -2842,6 +2837,14 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn data_versionColumn {
+                get {
+                    return this.columndata_version;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -2877,12 +2880,13 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_versionRow Addlut_versionRow(string app_version, string db_version, string habitat_version) {
+            public lut_versionRow Addlut_versionRow(string app_version, string db_version, string habitat_version, string data_version) {
                 lut_versionRow rowlut_versionRow = ((lut_versionRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         app_version,
                         db_version,
-                        habitat_version};
+                        habitat_version,
+                        data_version};
                 rowlut_versionRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowlut_versionRow);
                 return rowlut_versionRow;
@@ -2915,6 +2919,7 @@ namespace HLU.Data.Model {
                 this.columnapp_version = base.Columns["app_version"];
                 this.columndb_version = base.Columns["db_version"];
                 this.columnhabitat_version = base.Columns["habitat_version"];
+                this.columndata_version = base.Columns["data_version"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2926,6 +2931,8 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columndb_version);
                 this.columnhabitat_version = new global::System.Data.DataColumn("habitat_version", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnhabitat_version);
+                this.columndata_version = new global::System.Data.DataColumn("data_version", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columndata_version);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnapp_version}, true));
                 this.columnapp_version.AllowDBNull = false;
@@ -2935,6 +2942,8 @@ namespace HLU.Data.Model {
                 this.columndb_version.MaxLength = 10;
                 this.columnhabitat_version.AllowDBNull = false;
                 this.columnhabitat_version.MaxLength = 11;
+                this.columndata_version.AllowDBNull = false;
+                this.columndata_version.MaxLength = 4;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -12960,6 +12969,8 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columnincid;
             
+            private global::System.Data.DataColumn columnosmm_xref_id;
+            
             private global::System.Data.DataColumn columnspatial_flag;
             
             private global::System.Data.DataColumn columnprocess_flag;
@@ -12975,8 +12986,6 @@ namespace HLU.Data.Model {
             private global::System.Data.DataColumn columnlast_modified_date;
             
             private global::System.Data.DataColumn columnlast_modified_user_id;
-            
-            private global::System.Data.DataColumn columnosmm_habitat_xref_id;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -13024,6 +13033,14 @@ namespace HLU.Data.Model {
             public global::System.Data.DataColumn incidColumn {
                 get {
                     return this.columnincid;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn osmm_xref_idColumn {
+                get {
+                    return this.columnosmm_xref_id;
                 }
             }
             
@@ -13093,14 +13110,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn osmm_habitat_xref_idColumn {
-                get {
-                    return this.columnosmm_habitat_xref_id;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -13136,10 +13145,11 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public incid_osmm_updatesRow Addincid_osmm_updatesRow(int incid_osmm_update_id, incidRow parentincidRowByfk_incid_osmm_updates_incid, lut_osmm_updates_spatialRow parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates, int process_flag, lut_osmm_updates_changeRow parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates, int status, System.DateTime created_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_created, System.DateTime last_modified_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_modified, lut_osmm_habitat_xrefRow parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref) {
+            public incid_osmm_updatesRow Addincid_osmm_updatesRow(int incid_osmm_update_id, incidRow parentincidRowByfk_incid_osmm_updates_incid, lut_osmm_habitat_xrefRow parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref, lut_osmm_updates_spatialRow parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates, int process_flag, lut_osmm_updates_changeRow parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates, int status, System.DateTime created_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_created, System.DateTime last_modified_date, lut_userRow parentlut_userRowByfk_incid_osmm_updates_user_modified) {
                 incid_osmm_updatesRow rowincid_osmm_updatesRow = ((incid_osmm_updatesRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         incid_osmm_update_id,
+                        null,
                         null,
                         null,
                         process_flag,
@@ -13148,25 +13158,24 @@ namespace HLU.Data.Model {
                         created_date,
                         null,
                         last_modified_date,
-                        null,
                         null};
                 if ((parentincidRowByfk_incid_osmm_updates_incid != null)) {
                     columnValuesArray[1] = parentincidRowByfk_incid_osmm_updates_incid[0];
                 }
+                if ((parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref != null)) {
+                    columnValuesArray[2] = parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref[0];
+                }
                 if ((parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates != null)) {
-                    columnValuesArray[2] = parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates[0];
+                    columnValuesArray[3] = parentlut_osmm_updates_spatialRowByfk_lut_osmm_updates_spatial_incid_osmm_updates[0];
                 }
                 if ((parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates != null)) {
-                    columnValuesArray[4] = parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates[0];
+                    columnValuesArray[5] = parentlut_osmm_updates_changeRowByfk_lut_osmm_updates_change_incid_osmm_updates[0];
                 }
                 if ((parentlut_userRowByfk_incid_osmm_updates_user_created != null)) {
-                    columnValuesArray[7] = parentlut_userRowByfk_incid_osmm_updates_user_created[0];
+                    columnValuesArray[8] = parentlut_userRowByfk_incid_osmm_updates_user_created[0];
                 }
                 if ((parentlut_userRowByfk_incid_osmm_updates_user_modified != null)) {
-                    columnValuesArray[9] = parentlut_userRowByfk_incid_osmm_updates_user_modified[0];
-                }
-                if ((parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref != null)) {
-                    columnValuesArray[10] = parentlut_osmm_habitat_xrefRowByfk_incid_osmm_updates_lut_osmm_habitat_xref[0];
+                    columnValuesArray[10] = parentlut_userRowByfk_incid_osmm_updates_user_modified[0];
                 }
                 rowincid_osmm_updatesRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowincid_osmm_updatesRow);
@@ -13199,6 +13208,7 @@ namespace HLU.Data.Model {
             internal void InitVars() {
                 this.columnincid_osmm_update_id = base.Columns["incid_osmm_update_id"];
                 this.columnincid = base.Columns["incid"];
+                this.columnosmm_xref_id = base.Columns["osmm_xref_id"];
                 this.columnspatial_flag = base.Columns["spatial_flag"];
                 this.columnprocess_flag = base.Columns["process_flag"];
                 this.columnchange_flag = base.Columns["change_flag"];
@@ -13207,7 +13217,6 @@ namespace HLU.Data.Model {
                 this.columncreated_user_id = base.Columns["created_user_id"];
                 this.columnlast_modified_date = base.Columns["last_modified_date"];
                 this.columnlast_modified_user_id = base.Columns["last_modified_user_id"];
-                this.columnosmm_habitat_xref_id = base.Columns["osmm_habitat_xref_id"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -13217,6 +13226,8 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnincid_osmm_update_id);
                 this.columnincid = new global::System.Data.DataColumn("incid", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnincid);
+                this.columnosmm_xref_id = new global::System.Data.DataColumn("osmm_xref_id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnosmm_xref_id);
                 this.columnspatial_flag = new global::System.Data.DataColumn("spatial_flag", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnspatial_flag);
                 this.columnprocess_flag = new global::System.Data.DataColumn("process_flag", typeof(int), null, global::System.Data.MappingType.Element);
@@ -13233,8 +13244,6 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columnlast_modified_date);
                 this.columnlast_modified_user_id = new global::System.Data.DataColumn("last_modified_user_id", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnlast_modified_user_id);
-                this.columnosmm_habitat_xref_id = new global::System.Data.DataColumn("osmm_habitat_xref_id", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnosmm_habitat_xref_id);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnincid_osmm_update_id}, true));
                 this.columnincid_osmm_update_id.AllowDBNull = false;
@@ -16908,6 +16917,10 @@ namespace HLU.Data.Model {
             
             private global::System.Data.DataColumn columncode_primary;
             
+            private global::System.Data.DataColumn columnhabitat_secondaries;
+            
+            private global::System.Data.DataColumn columncomments;
+            
             private global::System.Data.DataColumn columnis_local;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -16961,6 +16974,22 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn habitat_secondariesColumn {
+                get {
+                    return this.columnhabitat_secondaries;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn commentsColumn {
+                get {
+                    return this.columncomments;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public global::System.Data.DataColumn is_localColumn {
                 get {
                     return this.columnis_local;
@@ -17004,11 +17033,13 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_habitat_type_primaryRow Addlut_habitat_type_primaryRow(lut_habitat_typeRow parentlut_habitat_typeRowByfk_lut_habitat_type_primary_lut_habitat_type, lut_primaryRow parentlut_primaryRowByfk_lut_habitat_type_primary_lut_primary, bool is_local) {
+            public lut_habitat_type_primaryRow Addlut_habitat_type_primaryRow(lut_habitat_typeRow parentlut_habitat_typeRowByfk_lut_habitat_type_primary_lut_habitat_type, lut_primaryRow parentlut_primaryRowByfk_lut_habitat_type_primary_lut_primary, string habitat_secondaries, string comments, bool is_local) {
                 lut_habitat_type_primaryRow rowlut_habitat_type_primaryRow = ((lut_habitat_type_primaryRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         null,
+                        habitat_secondaries,
+                        comments,
                         is_local};
                 if ((parentlut_habitat_typeRowByfk_lut_habitat_type_primary_lut_habitat_type != null)) {
                     columnValuesArray[0] = parentlut_habitat_typeRowByfk_lut_habitat_type_primary_lut_habitat_type[1];
@@ -17048,6 +17079,8 @@ namespace HLU.Data.Model {
             internal void InitVars() {
                 this.columncode_habitat_type = base.Columns["code_habitat_type"];
                 this.columncode_primary = base.Columns["code_primary"];
+                this.columnhabitat_secondaries = base.Columns["habitat_secondaries"];
+                this.columncomments = base.Columns["comments"];
                 this.columnis_local = base.Columns["is_local"];
             }
             
@@ -17058,6 +17091,10 @@ namespace HLU.Data.Model {
                 base.Columns.Add(this.columncode_habitat_type);
                 this.columncode_primary = new global::System.Data.DataColumn("code_primary", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columncode_primary);
+                this.columnhabitat_secondaries = new global::System.Data.DataColumn("habitat_secondaries", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnhabitat_secondaries);
+                this.columncomments = new global::System.Data.DataColumn("comments", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncomments);
                 this.columnis_local = new global::System.Data.DataColumn("is_local", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnis_local);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
@@ -17067,6 +17104,8 @@ namespace HLU.Data.Model {
                 this.columncode_habitat_type.MaxLength = 11;
                 this.columncode_primary.AllowDBNull = false;
                 this.columncode_primary.MaxLength = 8;
+                this.columnhabitat_secondaries.MaxLength = 80;
+                this.columncomments.MaxLength = 254;
                 this.columnis_local.AllowDBNull = false;
             }
             
@@ -18675,7 +18714,7 @@ namespace HLU.Data.Model {
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class lut_osmm_habitat_xrefDataTable : global::System.Data.TypedTableBase<lut_osmm_habitat_xrefRow> {
             
-            private global::System.Data.DataColumn columnosmm_habitat_xref_id;
+            private global::System.Data.DataColumn columnosmm_xref_id;
             
             private global::System.Data.DataColumn columnhabitat_primary;
             
@@ -18718,9 +18757,9 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn osmm_habitat_xref_idColumn {
+            public global::System.Data.DataColumn osmm_xref_idColumn {
                 get {
-                    return this.columnosmm_habitat_xref_id;
+                    return this.columnosmm_xref_id;
                 }
             }
             
@@ -18785,16 +18824,13 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_osmm_habitat_xrefRow Addlut_osmm_habitat_xrefRow(int osmm_habitat_xref_id, lut_primaryRow parentlut_primaryRowByfk_lut_osmm_habitat_xref_habitat_primary, string habitat_secondaries, bool is_local) {
+            public lut_osmm_habitat_xrefRow Addlut_osmm_habitat_xrefRow(int osmm_xref_id, string habitat_primary, string habitat_secondaries, bool is_local) {
                 lut_osmm_habitat_xrefRow rowlut_osmm_habitat_xrefRow = ((lut_osmm_habitat_xrefRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        osmm_habitat_xref_id,
-                        null,
+                        osmm_xref_id,
+                        habitat_primary,
                         habitat_secondaries,
                         is_local};
-                if ((parentlut_primaryRowByfk_lut_osmm_habitat_xref_habitat_primary != null)) {
-                    columnValuesArray[1] = parentlut_primaryRowByfk_lut_osmm_habitat_xref_habitat_primary[0];
-                }
                 rowlut_osmm_habitat_xrefRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowlut_osmm_habitat_xrefRow);
                 return rowlut_osmm_habitat_xrefRow;
@@ -18802,9 +18838,9 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_osmm_habitat_xrefRow FindByosmm_habitat_xref_id(int osmm_habitat_xref_id) {
+            public lut_osmm_habitat_xrefRow FindByosmm_xref_id(int osmm_xref_id) {
                 return ((lut_osmm_habitat_xrefRow)(this.Rows.Find(new object[] {
-                            osmm_habitat_xref_id})));
+                            osmm_xref_id})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -18824,7 +18860,7 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             internal void InitVars() {
-                this.columnosmm_habitat_xref_id = base.Columns["osmm_habitat_xref_id"];
+                this.columnosmm_xref_id = base.Columns["osmm_xref_id"];
                 this.columnhabitat_primary = base.Columns["habitat_primary"];
                 this.columnhabitat_secondaries = base.Columns["habitat_secondaries"];
                 this.columnis_local = base.Columns["is_local"];
@@ -18833,8 +18869,8 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             private void InitClass() {
-                this.columnosmm_habitat_xref_id = new global::System.Data.DataColumn("osmm_habitat_xref_id", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnosmm_habitat_xref_id);
+                this.columnosmm_xref_id = new global::System.Data.DataColumn("osmm_xref_id", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnosmm_xref_id);
                 this.columnhabitat_primary = new global::System.Data.DataColumn("habitat_primary", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnhabitat_primary);
                 this.columnhabitat_secondaries = new global::System.Data.DataColumn("habitat_secondaries", typeof(string), null, global::System.Data.MappingType.Element);
@@ -18842,10 +18878,9 @@ namespace HLU.Data.Model {
                 this.columnis_local = new global::System.Data.DataColumn("is_local", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnis_local);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columnosmm_habitat_xref_id}, true));
-                this.columnosmm_habitat_xref_id.AllowDBNull = false;
-                this.columnosmm_habitat_xref_id.Unique = true;
-                this.columnhabitat_primary.AllowDBNull = false;
+                                this.columnosmm_xref_id}, true));
+                this.columnosmm_xref_id.AllowDBNull = false;
+                this.columnosmm_xref_id.Unique = true;
                 this.columnhabitat_primary.MaxLength = 8;
                 this.columnhabitat_secondaries.MaxLength = 80;
                 this.columnis_local.AllowDBNull = false;
@@ -19067,6 +19102,17 @@ namespace HLU.Data.Model {
                 }
                 set {
                     this[this.tablelut_version.habitat_versionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string data_version {
+                get {
+                    return ((string)(this[this.tablelut_version.data_versionColumn]));
+                }
+                set {
+                    this[this.tablelut_version.data_versionColumn] = value;
                 }
             }
         }
@@ -23001,6 +23047,22 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int osmm_xref_id {
+                get {
+                    try {
+                        return ((int)(this[this.tableincid_osmm_updates.osmm_xref_idColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'osmm_xref_id\' in table \'incid_osmm_updates\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableincid_osmm_updates.osmm_xref_idColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string spatial_flag {
                 get {
                     try {
@@ -23109,23 +23171,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public int osmm_habitat_xref_id {
-                get {
-                    try {
-                        return ((int)(this[this.tableincid_osmm_updates.osmm_habitat_xref_idColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'osmm_habitat_xref_id\' in table \'incid_osmm_updates\' is DBNu" +
-                                "ll.", e);
-                    }
-                }
-                set {
-                    this[this.tableincid_osmm_updates.osmm_habitat_xref_idColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow incidRow {
                 get {
                     return ((incidRow)(this.GetParentRow(this.Table.ParentRelations["fk_incid_osmm_updates_incid"])));
@@ -23192,6 +23237,18 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isosmm_xref_idNull() {
+                return this.IsNull(this.tableincid_osmm_updates.osmm_xref_idColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setosmm_xref_idNull() {
+                this[this.tableincid_osmm_updates.osmm_xref_idColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool Isspatial_flagNull() {
                 return this.IsNull(this.tableincid_osmm_updates.spatial_flagColumn);
             }
@@ -23236,18 +23293,6 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SetstatusNull() {
                 this[this.tableincid_osmm_updates.statusColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool Isosmm_habitat_xref_idNull() {
-                return this.IsNull(this.tableincid_osmm_updates.osmm_habitat_xref_idColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void Setosmm_habitat_xref_idNull() {
-                this[this.tableincid_osmm_updates.osmm_habitat_xref_idColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -23921,17 +23966,6 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_osmm_habitat_xrefRow[] Getlut_osmm_habitat_xrefRows() {
-                if ((this.Table.ChildRelations["fk_lut_osmm_habitat_xref_habitat_primary"] == null)) {
-                    return new lut_osmm_habitat_xrefRow[0];
-                }
-                else {
-                    return ((lut_osmm_habitat_xrefRow[])(base.GetChildRows(this.Table.ChildRelations["fk_lut_osmm_habitat_xref_habitat_primary"])));
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public incidRow[] GetincidRows() {
                 if ((this.Table.ChildRelations["fk_incid_lut_primary"] == null)) {
                     return new incidRow[0];
@@ -24510,6 +24544,38 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string habitat_secondaries {
+                get {
+                    if (this.Ishabitat_secondariesNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tablelut_habitat_type_primary.habitat_secondariesColumn]));
+                    }
+                }
+                set {
+                    this[this.tablelut_habitat_type_primary.habitat_secondariesColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string comments {
+                get {
+                    if (this.IscommentsNull()) {
+                        return null;
+                    }
+                    else {
+                        return ((string)(this[this.tablelut_habitat_type_primary.commentsColumn]));
+                    }
+                }
+                set {
+                    this[this.tablelut_habitat_type_primary.commentsColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool is_local {
                 get {
                     return ((bool)(this[this.tablelut_habitat_type_primary.is_localColumn]));
@@ -24539,6 +24605,30 @@ namespace HLU.Data.Model {
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["fk_lut_habitat_type_primary_lut_primary"]);
                 }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Ishabitat_secondariesNull() {
+                return this.IsNull(this.tablelut_habitat_type_primary.habitat_secondariesColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Sethabitat_secondariesNull() {
+                this[this.tablelut_habitat_type_primary.habitat_secondariesColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IscommentsNull() {
+                return this.IsNull(this.tablelut_habitat_type_primary.commentsColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SetcommentsNull() {
+                this[this.tablelut_habitat_type_primary.commentsColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -24959,12 +25049,12 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public int osmm_habitat_xref_id {
+            public int osmm_xref_id {
                 get {
-                    return ((int)(this[this.tablelut_osmm_habitat_xref.osmm_habitat_xref_idColumn]));
+                    return ((int)(this[this.tablelut_osmm_habitat_xref.osmm_xref_idColumn]));
                 }
                 set {
-                    this[this.tablelut_osmm_habitat_xref.osmm_habitat_xref_idColumn] = value;
+                    this[this.tablelut_osmm_habitat_xref.osmm_xref_idColumn] = value;
                 }
             }
             
@@ -24972,7 +25062,13 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string habitat_primary {
                 get {
-                    return ((string)(this[this.tablelut_osmm_habitat_xref.habitat_primaryColumn]));
+                    try {
+                        return ((string)(this[this.tablelut_osmm_habitat_xref.habitat_primaryColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'habitat_primary\' in table \'lut_osmm_habitat_xref\' is DBNull" +
+                                ".", e);
+                    }
                 }
                 set {
                     this[this.tablelut_osmm_habitat_xref.habitat_primaryColumn] = value;
@@ -25009,13 +25105,14 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_primaryRow lut_primaryRow {
-                get {
-                    return ((lut_primaryRow)(this.GetParentRow(this.Table.ParentRelations["fk_lut_osmm_habitat_xref_habitat_primary"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["fk_lut_osmm_habitat_xref_habitat_primary"]);
-                }
+            public bool Ishabitat_primaryNull() {
+                return this.IsNull(this.tablelut_osmm_habitat_xref.habitat_primaryColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Sethabitat_primaryNull() {
+                this[this.tablelut_osmm_habitat_xref.habitat_primaryColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -27170,43 +27267,47 @@ namespace HLU.Data.Model.HluDataSetTableAdapters {
             tableMapping.ColumnMappings.Add("app_version", "app_version");
             tableMapping.ColumnMappings.Add("db_version", "db_version");
             tableMapping.ColumnMappings.Add("habitat_version", "habitat_version");
+            tableMapping.ColumnMappings.Add("data_version", "data_version");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
             this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_version] WHERE (([app_version] = @Original_app_version) AND ([db" +
                 "_version] = @Original_db_version) AND ([habitat_version] = @Original_habitat_ver" +
-                "sion))";
+                "sion) AND ([data_version] = @Original_data_version))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_app_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "app_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_db_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "db_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_data_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "data_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [lut_version] ([app_version], [db_version], [habitat_version]) VALUES" +
-                " (@app_version, @db_version, @habitat_version);\r\nSELECT app_version, db_version," +
-                " habitat_version FROM lut_version WHERE (app_version = @app_version)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [lut_version] ([app_version], [db_version], [habitat_version], [data_version]) VALUES (@app_version, @db_version, @habitat_version, @data_version);
+SELECT app_version, db_version, habitat_version, data_version FROM lut_version WHERE (app_version = @app_version)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@app_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "app_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@db_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "db_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@habitat_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@data_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "data_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_version] SET [app_version] = @app_version, [db_version] = @db_version, [habitat_version] = @habitat_version WHERE (([app_version] = @Original_app_version) AND ([db_version] = @Original_db_version) AND ([habitat_version] = @Original_habitat_version));
-SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_version = @app_version)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_version] SET [app_version] = @app_version, [db_version] = @db_version, [habitat_version] = @habitat_version, [data_version] = @data_version WHERE (([app_version] = @Original_app_version) AND ([db_version] = @Original_db_version) AND ([habitat_version] = @Original_habitat_version) AND ([data_version] = @Original_data_version));
+SELECT app_version, db_version, habitat_version, data_version FROM lut_version WHERE (app_version = @app_version)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@app_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "app_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@db_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "db_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@habitat_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@data_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "data_version", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_app_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "app_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_db_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "db_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_data_version", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "data_version", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v400ConnectionString;
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v401ConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -27215,8 +27316,8 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        app_version, db_version, habitat_version\r\nFROM            lut_versi" +
-                "on";
+            this._commandCollection[0].CommandText = "SELECT        app_version, db_version, habitat_version, data_version\r\nFROM       " +
+                "     lut_version";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -27277,7 +27378,7 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_app_version, string Original_db_version, string Original_habitat_version) {
+        public virtual int Delete(string Original_app_version, string Original_db_version, string Original_habitat_version, string Original_data_version) {
             if ((Original_app_version == null)) {
                 throw new global::System.ArgumentNullException("Original_app_version");
             }
@@ -27295,6 +27396,12 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
             }
             else {
                 this.Adapter.DeleteCommand.Parameters[2].Value = ((string)(Original_habitat_version));
+            }
+            if ((Original_data_version == null)) {
+                throw new global::System.ArgumentNullException("Original_data_version");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_data_version));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -27316,7 +27423,7 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string app_version, string db_version, string habitat_version) {
+        public virtual int Insert(string app_version, string db_version, string habitat_version, string data_version) {
             if ((app_version == null)) {
                 throw new global::System.ArgumentNullException("app_version");
             }
@@ -27334,6 +27441,12 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
             }
             else {
                 this.Adapter.InsertCommand.Parameters[2].Value = ((string)(habitat_version));
+            }
+            if ((data_version == null)) {
+                throw new global::System.ArgumentNullException("data_version");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[3].Value = ((string)(data_version));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -27355,7 +27468,7 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string app_version, string db_version, string habitat_version, string Original_app_version, string Original_db_version, string Original_habitat_version) {
+        public virtual int Update(string app_version, string db_version, string habitat_version, string data_version, string Original_app_version, string Original_db_version, string Original_habitat_version, string Original_data_version) {
             if ((app_version == null)) {
                 throw new global::System.ArgumentNullException("app_version");
             }
@@ -27374,23 +27487,35 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
             else {
                 this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(habitat_version));
             }
+            if ((data_version == null)) {
+                throw new global::System.ArgumentNullException("data_version");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(data_version));
+            }
             if ((Original_app_version == null)) {
                 throw new global::System.ArgumentNullException("Original_app_version");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_app_version));
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_app_version));
             }
             if ((Original_db_version == null)) {
                 throw new global::System.ArgumentNullException("Original_db_version");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_db_version));
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_db_version));
             }
             if ((Original_habitat_version == null)) {
                 throw new global::System.ArgumentNullException("Original_habitat_version");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_habitat_version));
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(Original_habitat_version));
+            }
+            if ((Original_data_version == null)) {
+                throw new global::System.ArgumentNullException("Original_data_version");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(Original_data_version));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -27412,8 +27537,8 @@ SELECT app_version, db_version, habitat_version FROM lut_version WHERE (app_vers
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string db_version, string habitat_version, string Original_app_version, string Original_db_version, string Original_habitat_version) {
-            return this.Update(Original_app_version, db_version, habitat_version, Original_app_version, Original_db_version, Original_habitat_version);
+        public virtual int Update(string db_version, string habitat_version, string data_version, string Original_app_version, string Original_db_version, string Original_habitat_version, string Original_data_version) {
+            return this.Update(Original_app_version, db_version, habitat_version, data_version, Original_app_version, Original_db_version, Original_habitat_version, Original_data_version);
         }
     }
     
@@ -38735,12 +38860,11 @@ SELECT code, description, sort_order FROM lut_osmm_updates_change WHERE (code = 
             tableMapping.ColumnMappings.Add("created_user_id", "created_user_id");
             tableMapping.ColumnMappings.Add("last_modified_date", "last_modified_date");
             tableMapping.ColumnMappings.Add("last_modified_user_id", "last_modified_user_id");
-            tableMapping.ColumnMappings.Add("osmm_habitat_xref_id", "osmm_habitat_xref_id");
             tableMapping.ColumnMappings.Add("process_flag", "process_flag");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [incid_osmm_updates] WHERE (([incid_osmm_update_id] = @Original_incid_osmm_update_id) AND ([incid] = @Original_incid) AND ((@IsNull_spatial_flag = 1 AND [spatial_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_process_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_process_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_flag] = @Original_change_flag)) AND ((@IsNull_status = 1 AND [status] IS NULL) OR ([status] = @Original_status)) AND ([created_date] = @Original_created_date) AND ([created_user_id] = @Original_created_user_id) AND ([last_modified_date] = @Original_last_modified_date) AND ([last_modified_user_id] = @Original_last_modified_user_id) AND ((@IsNull_osmm_habitat_xref_id = 1 AND [osmm_habitat_xref_id] IS NULL) OR ([osmm_habitat_xref_id] = @Original_osmm_habitat_xref_id)))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [incid_osmm_updates] WHERE (([incid_osmm_update_id] = @Original_incid_osmm_update_id) AND ([incid] = @Original_incid) AND ((@IsNull_spatial_flag = 1 AND [spatial_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_process_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_process_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_flag] = @Original_change_flag)) AND ((@IsNull_status = 1 AND [status] IS NULL) OR ([status] = @Original_status)) AND ([created_date] = @Original_created_date) AND ([created_user_id] = @Original_created_user_id) AND ([last_modified_date] = @Original_last_modified_date) AND ([last_modified_user_id] = @Original_last_modified_user_id))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
@@ -38756,12 +38880,10 @@ SELECT code, description, sort_order FROM lut_osmm_updates_change WHERE (code = 
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_created_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_user_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_last_modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_last_modified_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_user_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [incid_osmm_updates] ([incid_osmm_update_id], [incid], [spatial_flag], [process_flag], [change_flag], [status], [created_date], [created_user_id], [last_modified_date], [last_modified_user_id], [osmm_habitat_xref_id]) VALUES (@incid_osmm_update_id, @incid, @spatial_flag, @process_flag, @change_flag, @status, @created_date, @created_user_id, @last_modified_date, @last_modified_user_id, @osmm_habitat_xref_id);
-SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, created_date, created_user_id, last_modified_date, last_modified_user_id, osmm_habitat_xref_id FROM incid_osmm_updates WHERE (incid_osmm_update_id = @incid_osmm_update_id)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [incid_osmm_updates] ([incid_osmm_update_id], [incid], [spatial_flag], [process_flag], [change_flag], [status], [created_date], [created_user_id], [last_modified_date], [last_modified_user_id]) VALUES (@incid_osmm_update_id, @incid, @spatial_flag, @process_flag, @change_flag, @status, @created_date, @created_user_id, @last_modified_date, @last_modified_user_id);
+SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, created_date, created_user_id, last_modified_date, last_modified_user_id FROM incid_osmm_updates WHERE (incid_osmm_update_id = @incid_osmm_update_id)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -38773,29 +38895,10 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@created_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_user_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@last_modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@last_modified_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_user_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = "UPDATE [incid_osmm_updates] SET [incid_osmm_update_id] = @incid_osmm_update_id, [" +
-                "incid] = @incid, [spatial_flag] = @spatial_flag, [process_flag] = @process_flag," +
-                " [change_flag] = @change_flag, [status] = @status, [created_date] = @created_dat" +
-                "e, [created_user_id] = @created_user_id, [last_modified_date] = @last_modified_d" +
-                "ate, [last_modified_user_id] = @last_modified_user_id, [osmm_habitat_xref_id] = " +
-                "@osmm_habitat_xref_id WHERE (([incid_osmm_update_id] = @Original_incid_osmm_upda" +
-                "te_id) AND ([incid] = @Original_incid) AND ((@IsNull_spatial_flag = 1 AND [spati" +
-                "al_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_pr" +
-                "ocess_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_proces" +
-                "s_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_fl" +
-                "ag] = @Original_change_flag)) AND ((@IsNull_status = 1 AND [status] IS NULL) OR " +
-                "([status] = @Original_status)) AND ([created_date] = @Original_created_date) AND" +
-                " ([created_user_id] = @Original_created_user_id) AND ([last_modified_date] = @Or" +
-                "iginal_last_modified_date) AND ([last_modified_user_id] = @Original_last_modifie" +
-                "d_user_id) AND ((@IsNull_osmm_habitat_xref_id = 1 AND [osmm_habitat_xref_id] IS " +
-                "NULL) OR ([osmm_habitat_xref_id] = @Original_osmm_habitat_xref_id)));\r\nSELECT in" +
-                "cid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, crea" +
-                "ted_date, created_user_id, last_modified_date, last_modified_user_id, osmm_habit" +
-                "at_xref_id FROM incid_osmm_updates WHERE (incid_osmm_update_id = @incid_osmm_upd" +
-                "ate_id)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [incid_osmm_updates] SET [incid_osmm_update_id] = @incid_osmm_update_id, [incid] = @incid, [spatial_flag] = @spatial_flag, [process_flag] = @process_flag, [change_flag] = @change_flag, [status] = @status, [created_date] = @created_date, [created_user_id] = @created_user_id, [last_modified_date] = @last_modified_date, [last_modified_user_id] = @last_modified_user_id WHERE (([incid_osmm_update_id] = @Original_incid_osmm_update_id) AND ([incid] = @Original_incid) AND ((@IsNull_spatial_flag = 1 AND [spatial_flag] IS NULL) OR ([spatial_flag] = @Original_spatial_flag)) AND ((@IsNull_process_flag = 1 AND [process_flag] IS NULL) OR ([process_flag] = @Original_process_flag)) AND ((@IsNull_change_flag = 1 AND [change_flag] IS NULL) OR ([change_flag] = @Original_change_flag)) AND ((@IsNull_status = 1 AND [status] IS NULL) OR ([status] = @Original_status)) AND ([created_date] = @Original_created_date) AND ([created_user_id] = @Original_created_user_id) AND ([last_modified_date] = @Original_last_modified_date) AND ([last_modified_user_id] = @Original_last_modified_user_id));
+SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, created_date, created_user_id, last_modified_date, last_modified_user_id FROM incid_osmm_updates WHERE (incid_osmm_update_id = @incid_osmm_update_id)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -38807,7 +38910,6 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@created_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_user_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@last_modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@last_modified_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_user_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid_osmm_update_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid_osmm_update_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_incid", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "incid", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_spatial_flag", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "spatial_flag", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
@@ -38822,15 +38924,13 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_created_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "created_user_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_last_modified_date", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_last_modified_user_id", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "last_modified_user_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v400ConnectionString;
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v401ConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -38839,9 +38939,9 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        incid_osmm_update_id, incid, spatial_flag, process_flag, change_fla" +
-                "g, status, created_date, created_user_id, last_modified_date, last_modified_user" +
-                "_id, osmm_habitat_xref_id\r\nFROM            incid_osmm_updates";
+            this._commandCollection[0].CommandText = "SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, stat" +
+                "us, created_date, created_user_id, last_modified_date, last_modified_user_id FRO" +
+                "M incid_osmm_updates";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -38902,7 +39002,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_incid_osmm_update_id, string Original_incid, string Original_spatial_flag, global::System.Nullable<int> Original_process_flag, string Original_change_flag, global::System.Nullable<int> Original_status, System.DateTime Original_created_date, string Original_created_user_id, System.DateTime Original_last_modified_date, string Original_last_modified_user_id, global::System.Nullable<int> Original_osmm_habitat_xref_id) {
+        public virtual int Delete(int Original_incid_osmm_update_id, string Original_incid, string Original_spatial_flag, global::System.Nullable<int> Original_process_flag, string Original_change_flag, global::System.Nullable<int> Original_status, System.DateTime Original_created_date, string Original_created_user_id, System.DateTime Original_last_modified_date, string Original_last_modified_user_id) {
             this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_incid_osmm_update_id));
             if ((Original_incid == null)) {
                 throw new global::System.ArgumentNullException("Original_incid");
@@ -38956,14 +39056,6 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             else {
                 this.Adapter.DeleteCommand.Parameters[13].Value = ((string)(Original_last_modified_user_id));
             }
-            if ((Original_osmm_habitat_xref_id.HasValue == true)) {
-                this.Adapter.DeleteCommand.Parameters[14].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[15].Value = ((int)(Original_osmm_habitat_xref_id.Value));
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[14].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[15].Value = global::System.DBNull.Value;
-            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -38984,7 +39076,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int incid_osmm_update_id, string incid, string spatial_flag, global::System.Nullable<int> process_flag, string change_flag, global::System.Nullable<int> status, System.DateTime created_date, string created_user_id, System.DateTime last_modified_date, string last_modified_user_id, global::System.Nullable<int> osmm_habitat_xref_id) {
+        public virtual int Insert(int incid_osmm_update_id, string incid, string spatial_flag, global::System.Nullable<int> process_flag, string change_flag, global::System.Nullable<int> status, System.DateTime created_date, string created_user_id, System.DateTime last_modified_date, string last_modified_user_id) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(incid_osmm_update_id));
             if ((incid == null)) {
                 throw new global::System.ArgumentNullException("incid");
@@ -39030,12 +39122,6 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             else {
                 this.Adapter.InsertCommand.Parameters[9].Value = ((string)(last_modified_user_id));
             }
-            if ((osmm_habitat_xref_id.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[10].Value = ((int)(osmm_habitat_xref_id.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -39067,7 +39153,6 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     string created_user_id, 
                     System.DateTime last_modified_date, 
                     string last_modified_user_id, 
-                    global::System.Nullable<int> osmm_habitat_xref_id, 
                     int Original_incid_osmm_update_id, 
                     string Original_incid, 
                     string Original_spatial_flag, 
@@ -39077,8 +39162,7 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     System.DateTime Original_created_date, 
                     string Original_created_user_id, 
                     System.DateTime Original_last_modified_date, 
-                    string Original_last_modified_user_id, 
-                    global::System.Nullable<int> Original_osmm_habitat_xref_id) {
+                    string Original_last_modified_user_id) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(incid_osmm_update_id));
             if ((incid == null)) {
                 throw new global::System.ArgumentNullException("incid");
@@ -39124,72 +39208,58 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
             else {
                 this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(last_modified_user_id));
             }
-            if ((osmm_habitat_xref_id.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((int)(osmm_habitat_xref_id.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
-            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_incid_osmm_update_id));
+            this.Adapter.UpdateCommand.Parameters[10].Value = ((int)(Original_incid_osmm_update_id));
             if ((Original_incid == null)) {
                 throw new global::System.ArgumentNullException("Original_incid");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((string)(Original_incid));
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((string)(Original_incid));
             }
             if ((Original_spatial_flag == null)) {
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((string)(Original_spatial_flag));
+                this.Adapter.UpdateCommand.Parameters[12].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((string)(Original_spatial_flag));
             }
             if ((Original_process_flag.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((int)(Original_process_flag.Value));
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(Original_process_flag.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[15].Value = global::System.DBNull.Value;
             }
             if ((Original_change_flag == null)) {
-                this.Adapter.UpdateCommand.Parameters[17].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[18].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[17].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[18].Value = ((string)(Original_change_flag));
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((string)(Original_change_flag));
             }
             if ((Original_status.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[20].Value = ((int)(Original_status.Value));
+                this.Adapter.UpdateCommand.Parameters[18].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((int)(Original_status.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[19].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[18].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[19].Value = global::System.DBNull.Value;
             }
-            this.Adapter.UpdateCommand.Parameters[21].Value = ((System.DateTime)(Original_created_date));
+            this.Adapter.UpdateCommand.Parameters[20].Value = ((System.DateTime)(Original_created_date));
             if ((Original_created_user_id == null)) {
                 throw new global::System.ArgumentNullException("Original_created_user_id");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[22].Value = ((string)(Original_created_user_id));
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((string)(Original_created_user_id));
             }
-            this.Adapter.UpdateCommand.Parameters[23].Value = ((System.DateTime)(Original_last_modified_date));
+            this.Adapter.UpdateCommand.Parameters[22].Value = ((System.DateTime)(Original_last_modified_date));
             if ((Original_last_modified_user_id == null)) {
                 throw new global::System.ArgumentNullException("Original_last_modified_user_id");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[24].Value = ((string)(Original_last_modified_user_id));
-            }
-            if ((Original_osmm_habitat_xref_id.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[25].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[26].Value = ((int)(Original_osmm_habitat_xref_id.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[25].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[26].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[23].Value = ((string)(Original_last_modified_user_id));
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -39221,7 +39291,6 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     string created_user_id, 
                     System.DateTime last_modified_date, 
                     string last_modified_user_id, 
-                    global::System.Nullable<int> osmm_habitat_xref_id, 
                     int Original_incid_osmm_update_id, 
                     string Original_incid, 
                     string Original_spatial_flag, 
@@ -39231,9 +39300,8 @@ SELECT incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, sta
                     System.DateTime Original_created_date, 
                     string Original_created_user_id, 
                     System.DateTime Original_last_modified_date, 
-                    string Original_last_modified_user_id, 
-                    global::System.Nullable<int> Original_osmm_habitat_xref_id) {
-            return this.Update(Original_incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, created_date, created_user_id, last_modified_date, last_modified_user_id, osmm_habitat_xref_id, Original_incid_osmm_update_id, Original_incid, Original_spatial_flag, Original_process_flag, Original_change_flag, Original_status, Original_created_date, Original_created_user_id, Original_last_modified_date, Original_last_modified_user_id, Original_osmm_habitat_xref_id);
+                    string Original_last_modified_user_id) {
+            return this.Update(Original_incid_osmm_update_id, incid, spatial_flag, process_flag, change_flag, status, created_date, created_user_id, last_modified_date, last_modified_user_id, Original_incid_osmm_update_id, Original_incid, Original_spatial_flag, Original_process_flag, Original_change_flag, Original_status, Original_created_date, Original_created_user_id, Original_last_modified_date, Original_last_modified_user_id);
         }
     }
     
@@ -42638,27 +42706,37 @@ SELECT code, description, sort_order FROM lut_secondary_group WHERE (code = @cod
             tableMapping.DataSetTable = "lut_habitat_type_primary";
             tableMapping.ColumnMappings.Add("code_habitat_type", "code_habitat_type");
             tableMapping.ColumnMappings.Add("code_primary", "code_primary");
+            tableMapping.ColumnMappings.Add("habitat_secondaries", "habitat_secondaries");
+            tableMapping.ColumnMappings.Add("comments", "comments");
             tableMapping.ColumnMappings.Add("is_local", "is_local");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_habitat_type_primary] WHERE (([code_habitat_type] = @Original_co" +
-                "de_habitat_type) AND ([code_primary] = @Original_code_primary) AND ([is_local] =" +
-                " @Original_is_local))";
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [lut_habitat_type_primary] WHERE (([code_habitat_type] = @Original_code_habitat_type) AND ([code_primary] = @Original_code_primary) AND ((@IsNull_habitat_secondaries = 1 AND [habitat_secondaries] IS NULL) OR ([habitat_secondaries] = @Original_habitat_secondaries)) AND ((@IsNull_comments = 1 AND [comments] IS NULL) OR ([comments] = @Original_comments)) AND ([is_local] = @Original_is_local))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_comments", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_habitat_type_primary] SET [code_habitat_type] = @code_habitat_type, [code_primary] = @code_primary, [is_local] = @is_local WHERE (([code_habitat_type] = @Original_code_habitat_type) AND ([code_primary] = @Original_code_primary) AND ([is_local] = @Original_is_local));
-SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary WHERE (code_habitat_type = @code_habitat_type) AND (code_primary = @code_primary)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_habitat_type_primary] SET [code_habitat_type] = @code_habitat_type, [code_primary] = @code_primary, [habitat_secondaries] = @habitat_secondaries, [comments] = @comments, [is_local] = @is_local WHERE (([code_habitat_type] = @Original_code_habitat_type) AND ([code_primary] = @Original_code_primary) AND ((@IsNull_habitat_secondaries = 1 AND [habitat_secondaries] IS NULL) OR ([habitat_secondaries] = @Original_habitat_secondaries)) AND ((@IsNull_comments = 1 AND [comments] IS NULL) OR ([comments] = @Original_comments)) AND ([is_local] = @Original_is_local));
+SELECT code_habitat_type, code_primary, habitat_secondaries, comments, is_local FROM lut_habitat_type_primary WHERE (code_habitat_type = @code_habitat_type) AND (code_primary = @code_primary)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_habitat_type", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_habitat_type", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_comments", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_comments", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "comments", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
@@ -42666,7 +42744,7 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v400ConnectionString;
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v401ConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -42675,8 +42753,8 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        code_habitat_type, code_primary, is_local\r\nFROM            lut_habi" +
-                "tat_type_primary";
+            this._commandCollection[0].CommandText = "SELECT code_habitat_type, code_primary, habitat_secondaries, comments, is_local F" +
+                "ROM lut_habitat_type_primary";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -42737,7 +42815,7 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_code_habitat_type, string Original_code_primary, bool Original_is_local) {
+        public virtual int Delete(string Original_code_habitat_type, string Original_code_primary, string Original_habitat_secondaries, string Original_comments, bool Original_is_local) {
             if ((Original_code_habitat_type == null)) {
                 throw new global::System.ArgumentNullException("Original_code_habitat_type");
             }
@@ -42750,7 +42828,23 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
             else {
                 this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_code_primary));
             }
-            this.Adapter.DeleteCommand.Parameters[2].Value = ((bool)(Original_is_local));
+            if ((Original_habitat_secondaries == null)) {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_habitat_secondaries));
+            }
+            if ((Original_comments == null)) {
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(1));
+                this.Adapter.DeleteCommand.Parameters[5].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[4].Value = ((object)(0));
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_comments));
+            }
+            this.Adapter.DeleteCommand.Parameters[6].Value = ((bool)(Original_is_local));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -42771,7 +42865,7 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string code_habitat_type, string code_primary, bool is_local, string Original_code_habitat_type, string Original_code_primary, bool Original_is_local) {
+        public virtual int Update(string code_habitat_type, string code_primary, string habitat_secondaries, string comments, bool is_local, string Original_code_habitat_type, string Original_code_primary, string Original_habitat_secondaries, string Original_comments, bool Original_is_local) {
             if ((code_habitat_type == null)) {
                 throw new global::System.ArgumentNullException("code_habitat_type");
             }
@@ -42784,20 +42878,48 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
             else {
                 this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(code_primary));
             }
-            this.Adapter.UpdateCommand.Parameters[2].Value = ((bool)(is_local));
+            if ((habitat_secondaries == null)) {
+                this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(habitat_secondaries));
+            }
+            if ((comments == null)) {
+                this.Adapter.UpdateCommand.Parameters[3].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(comments));
+            }
+            this.Adapter.UpdateCommand.Parameters[4].Value = ((bool)(is_local));
             if ((Original_code_habitat_type == null)) {
                 throw new global::System.ArgumentNullException("Original_code_habitat_type");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code_habitat_type));
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_code_habitat_type));
             }
             if ((Original_code_primary == null)) {
                 throw new global::System.ArgumentNullException("Original_code_primary");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_code_primary));
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(Original_code_primary));
             }
-            this.Adapter.UpdateCommand.Parameters[5].Value = ((bool)(Original_is_local));
+            if ((Original_habitat_secondaries == null)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(Original_habitat_secondaries));
+            }
+            if ((Original_comments == null)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((object)(1));
+                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((object)(0));
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((string)(Original_comments));
+            }
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((bool)(Original_is_local));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -42818,8 +42940,8 @@ SELECT code_habitat_type, code_primary, is_local FROM lut_habitat_type_primary W
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(bool is_local, string Original_code_habitat_type, string Original_code_primary, bool Original_is_local) {
-            return this.Update(Original_code_habitat_type, Original_code_primary, is_local, Original_code_habitat_type, Original_code_primary, Original_is_local);
+        public virtual int Update(string habitat_secondaries, string comments, bool is_local, string Original_code_habitat_type, string Original_code_primary, string Original_habitat_secondaries, string Original_comments, bool Original_is_local) {
+            return this.Update(Original_code_habitat_type, Original_code_primary, habitat_secondaries, comments, is_local, Original_code_habitat_type, Original_code_primary, Original_habitat_secondaries, Original_comments, Original_is_local);
         }
     }
     
@@ -44359,41 +44481,29 @@ SELECT field_type, field_description FROM exports_field_types WHERE (field_type 
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "lut_osmm_habitat_xref";
-            tableMapping.ColumnMappings.Add("osmm_habitat_xref_id", "osmm_habitat_xref_id");
-            tableMapping.ColumnMappings.Add("habitat_primary", "habitat_primary");
-            tableMapping.ColumnMappings.Add("habitat_secondaries", "habitat_secondaries");
-            tableMapping.ColumnMappings.Add("is_local", "is_local");
+            tableMapping.ColumnMappings.Add("osmm_xref_id", "osmm_xref_id");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [lut_osmm_habitat_xref] WHERE (([osmm_habitat_xref_id] = @Original_osmm_habitat_xref_id) AND ([habitat_primary] = @Original_habitat_primary) AND ((@IsNull_habitat_secondaries = 1 AND [habitat_secondaries] IS NULL) OR ([habitat_secondaries] = @Original_habitat_secondaries)) AND ([is_local] = @Original_is_local))";
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_osmm_habitat_xref] WHERE (([osmm_xref_id] = @Original_osmm_xref_" +
+                "id))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_osmm_habitat_xref] SET [osmm_habitat_xref_id] = @osmm_habitat_xref_id, [habitat_primary] = @habitat_primary, [habitat_secondaries] = @habitat_secondaries, [is_local] = @is_local WHERE (([osmm_habitat_xref_id] = @Original_osmm_habitat_xref_id) AND ([habitat_primary] = @Original_habitat_primary) AND ((@IsNull_habitat_secondaries = 1 AND [habitat_secondaries] IS NULL) OR ([habitat_secondaries] = @Original_habitat_secondaries)) AND ([is_local] = @Original_is_local));
-SELECT osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local FROM lut_osmm_habitat_xref WHERE (osmm_habitat_xref_id = @osmm_habitat_xref_id)";
+            this._adapter.UpdateCommand.CommandText = "UPDATE [lut_osmm_habitat_xref] SET [osmm_xref_id] = @osmm_xref_id WHERE (([osmm_x" +
+                "ref_id] = @Original_osmm_xref_id));\r\nSELECT osmm_xref_id FROM lut_osmm_habitat_x" +
+                "ref WHERE (osmm_xref_id = @osmm_xref_id)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_primary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_habitat_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_habitat_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IsNull_habitat_secondaries", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, true, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_habitat_secondaries", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "habitat_secondaries", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@osmm_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_xref_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_osmm_xref_id", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "osmm_xref_id", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v400ConnectionString;
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v401ConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -44402,8 +44512,7 @@ SELECT osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local FROM
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_loca" +
-                "l\r\nFROM            lut_osmm_habitat_xref";
+            this._commandCollection[0].CommandText = "SELECT osmm_xref_id FROM lut_osmm_habitat_xref";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -44458,102 +44567,6 @@ SELECT osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local FROM
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         public virtual int Update(global::System.Data.DataRow[] dataRows) {
             return this.Adapter.Update(dataRows);
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(int Original_osmm_habitat_xref_id, string Original_habitat_primary, string Original_habitat_secondaries, bool Original_is_local) {
-            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_osmm_habitat_xref_id));
-            if ((Original_habitat_primary == null)) {
-                throw new global::System.ArgumentNullException("Original_habitat_primary");
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_habitat_primary));
-            }
-            if ((Original_habitat_secondaries == null)) {
-                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(1));
-                this.Adapter.DeleteCommand.Parameters[3].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.DeleteCommand.Parameters[2].Value = ((object)(0));
-                this.Adapter.DeleteCommand.Parameters[3].Value = ((string)(Original_habitat_secondaries));
-            }
-            this.Adapter.DeleteCommand.Parameters[4].Value = ((bool)(Original_is_local));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
-            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.DeleteCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.DeleteCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(int osmm_habitat_xref_id, string habitat_primary, string habitat_secondaries, bool is_local, int Original_osmm_habitat_xref_id, string Original_habitat_primary, string Original_habitat_secondaries, bool Original_is_local) {
-            this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(osmm_habitat_xref_id));
-            if ((habitat_primary == null)) {
-                throw new global::System.ArgumentNullException("habitat_primary");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(habitat_primary));
-            }
-            if ((habitat_secondaries == null)) {
-                this.Adapter.UpdateCommand.Parameters[2].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[2].Value = ((string)(habitat_secondaries));
-            }
-            this.Adapter.UpdateCommand.Parameters[3].Value = ((bool)(is_local));
-            this.Adapter.UpdateCommand.Parameters[4].Value = ((int)(Original_osmm_habitat_xref_id));
-            if ((Original_habitat_primary == null)) {
-                throw new global::System.ArgumentNullException("Original_habitat_primary");
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(Original_habitat_primary));
-            }
-            if ((Original_habitat_secondaries == null)) {
-                this.Adapter.UpdateCommand.Parameters[6].Value = ((object)(1));
-                this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[6].Value = ((object)(0));
-                this.Adapter.UpdateCommand.Parameters[7].Value = ((string)(Original_habitat_secondaries));
-            }
-            this.Adapter.UpdateCommand.Parameters[8].Value = ((bool)(Original_is_local));
-            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
-            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
-                        != global::System.Data.ConnectionState.Open)) {
-                this.Adapter.UpdateCommand.Connection.Open();
-            }
-            try {
-                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
-                return returnValue;
-            }
-            finally {
-                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
-                    this.Adapter.UpdateCommand.Connection.Close();
-                }
-            }
-        }
-        
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string habitat_primary, string habitat_secondaries, bool is_local, int Original_osmm_habitat_xref_id, string Original_habitat_primary, string Original_habitat_secondaries, bool Original_is_local) {
-            return this.Update(Original_osmm_habitat_xref_id, habitat_primary, habitat_secondaries, is_local, Original_osmm_habitat_xref_id, Original_habitat_primary, Original_habitat_secondaries, Original_is_local);
         }
     }
 }

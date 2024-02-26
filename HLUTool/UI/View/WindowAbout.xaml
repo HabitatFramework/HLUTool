@@ -39,50 +39,66 @@
                 <RowDefinition Height="23" />
             </Grid.RowDefinitions>
 
-            <GroupBox Name="GroupVersions" Grid.Row="0" Header="Version">
+            <GroupBox Name="GroupVersions" Grid.Row="0" Header="Versions" Margin="0">
 
-            <Grid Name="GridVersions" Margin="2,8,2,2">
+            <Grid Name="GridVersions" Margin="2,4,2,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="90"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="65"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label Name="LabelAppVersion"
 				       Grid.Row="0"
-					   Grid.Column="0" 
+					   Grid.Column="0"
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Application:</Label>
+					   Margin="0,2,0,2">Application:</Label>
                 <TextBox Name="TextAppVersion"
 					   Grid.Row="0"
 					   Grid.Column="1"
                        Text="{Binding Path=AppVersion}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
                 <Label Name="LabelDbVersion"
-				       Grid.Row="1"
-					   Grid.Column="0" 
+				       Grid.Row="0"
+					   Grid.Column="2"
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Database:</Label>
+					   Margin="0,2,0,2">Database:</Label>
                 <TextBox Name="TextDbVersion"
-					   Grid.Row="1"
-					   Grid.Column="1"
+					   Grid.Row="0"
+					   Grid.Column="3"
                        Text="{Binding Path=DbVersion}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
+                <Label Name="LabelDataVersion"
+				       Grid.Row="0"
+					   Grid.Column="4"
+                       HorizontalAlignment="Right"
+					   VerticalAlignment="Top"
+					   Margin="0,2,0,2">Data:</Label>
+                <TextBox Name="TextDataVersion"
+					   Grid.Row="0"
+					   Grid.Column="5"
+                       Text="{Binding Path=DataVersion}"
+                       IsReadOnly="True"
+					   IsTabStop="False"
+					   Margin="8,2,2,2"></TextBox>
             </Grid>
 
             </GroupBox>
 
             <GroupBox Name="GroupConnection" Grid.Row="1" Header="Database Connection">
 
-            <Grid Name="GridConnection" Margin="2,8,2,2">
+            <Grid Name="GridConnection" Margin="2,4,2,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -96,34 +112,34 @@
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Db Type:</Label>
+					   Margin="0,2,0,2">Db Type:</Label>
                 <TextBox Name="TextConnectionType"
 					   Grid.Row="0"
 					   Grid.Column="1"
                        Text="{Binding Path=ConnectionType}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
                 <Label Name="LabelConnectionSettings"
 				       Grid.Row="1"
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Db Settings:</Label>
+					   Margin="0,2,0,2">Db Settings:</Label>
                 <TextBox Name="TextConnectionSettings"
 					   Grid.Row="1"
 					   Grid.Column="1"
                        Text="{Binding Path=ConnectionSettings}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
             </Grid>
 
             </GroupBox>
 
             <GroupBox Name="GroupUser" Grid.Row="2" Header="User Details">
 
-            <Grid Name="GridUser" Margin="2,8,2,2">
+            <Grid Name="GridUser" Margin="2,4,2,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -137,34 +153,34 @@
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">User ID:</Label>
+					   Margin="0,2,0,2">User ID:</Label>
                 <TextBox Name="TextUserId"
 					   Grid.Row="0"
 					   Grid.Column="1"
                        Text="{Binding Path=UserId}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
                 <Label Name="LabelUserName"
 				       Grid.Row="1"
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">User Name:</Label>
+					   Margin="0,2,0,2">User Name:</Label>
                 <TextBox Name="TextUserName"
 					   Grid.Row="1"
 					   Grid.Column="1"
                        Text="{Binding Path=UserName}"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
             </Grid>
 
             </GroupBox>
 
             <GroupBox Name="GroupCopyright" Grid.Row="3" Header="Copyright">
 
-            <Grid Name="GridCopyright" Margin="2,8,2,2">
+            <Grid Name="GridCopyright" Margin="2,4,2,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -177,14 +193,15 @@
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Copyright:</Label>
+					   Margin="0,2,0,2">Copyright:</Label>
                 <TextBox Name="TextCopyright"
 					   Grid.Row="0"
 					   Grid.Column="1"
                        Text="{Binding Path=Copyright}"
+					   TextWrapping="Wrap"
                        IsReadOnly="True"
 					   IsTabStop="False"
-					   Margin="8,0,8,8"></TextBox>
+					   Margin="8,2,2,2"></TextBox>
             </Grid>
 
             </GroupBox>
@@ -220,11 +237,11 @@
 					   Grid.Column="0" 
                        HorizontalAlignment="Right"
 					   VerticalAlignment="Top"
-					   Margin="0,0,0,8">Technical Guide:</Label>
+					   Margin="0,0,0,4">Technical Guide:</Label>
 				<TextBlock Name="TextTechnicalGuide"
 				       Grid.Row="1"
 					   Grid.Column="1"
-					   Margin="8,0,8,8">       
+					   Margin="8,0,8,4">       
 					   <Hyperlink NavigateUri="{Binding Path=TechnicalGuideURL}"
 								  RequestNavigate="Hyperlink_RequestNavigate">
 						  <TextBlock Text="{Binding Path=TechnicalGuideText}" />
