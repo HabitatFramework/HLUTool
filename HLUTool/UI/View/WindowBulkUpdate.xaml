@@ -213,7 +213,7 @@
                                   DisplayMemberPath="description"
                                   IsEditable="False"
                                   IsReadOnly="False"
-                                  ItemsSource="{Binding DeterminationQualityCodes,
+                                  ItemsSource="{Binding BapDeterminationQualityCodes,
                                                     UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValue="{Binding DeterminationQuality,
                                                         ValidatesOnDataErrors=True}"

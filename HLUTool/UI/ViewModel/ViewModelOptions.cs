@@ -73,8 +73,11 @@ namespace HLU.UI.ViewModel
         // Interface options
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
-        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _showIHSTab = Settings.Default.ShowIHSTab;
+        private bool _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
+        private bool _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showHabitatSummary = Settings.Default.ShowHabitatSummary;
         private string[] _showOSMMUpdatesOptions;
         private string _showOSMMUpdatesOption = Settings.Default.ShowOSMMUpdatesOption;
 
@@ -237,8 +240,11 @@ namespace HLU.UI.ViewModel
             // Interface options
             Settings.Default.PreferredHabitatClass = _preferredHabitatClass;
             Settings.Default.ShowGroupHeaders = _showGroupHeaders;
-            Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.ShowIHSTab = _showIHSTab;
+            Settings.Default.ShowSourceHabitatGroup = _showSourceHabitatGroup;
+            Settings.Default.ShowHabitatSuggestions = _showHabitatSuggestions;
+            Settings.Default.ShowNVCCodes = _showNVCCodes;
+            Settings.Default.ShowHabitatSummary = _showHabitatSummary;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
 
             Settings.Default.PreferredSecondaryGroup = _preferredSecondaryGroup;
@@ -590,18 +596,6 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Gets or sets the preferred option to show or hide NVC Codes.
-        /// </summary>
-        /// <value>
-        /// The preferred option for showing or hidding NVC Codes.
-        /// </value>
-        public bool ShowNVCCodes
-        {
-            get { return _showNVCCodes; }
-            set { _showNVCCodes = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the preferred option to show or hide group headers.
         /// </summary>
         /// <value>
@@ -617,6 +611,54 @@ namespace HLU.UI.ViewModel
         {
             get { return _showIHSTab; }
             set { _showIHSTab = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide habitat categories.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding habitat categories.
+        /// </value>
+        public bool ShowSourceHabitatGroup
+        {
+            get { return _showSourceHabitatGroup; }
+            set { _showSourceHabitatGroup = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide habitat suggestions.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding habitat suggestions.
+        /// </value>
+        public bool ShowHabitatSuggestions
+        {
+            get { return _showHabitatSuggestions; }
+            set { _showHabitatSuggestions = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide NVC Codes.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding NVC Codes.
+        /// </value>
+        public bool ShowNVCCodes
+        {
+            get { return _showNVCCodes; }
+            set { _showNVCCodes = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the preferred option to show or hide habitat summary.
+        /// </summary>
+        /// <value>
+        /// The preferred option for showing or hidding habitat summary.
+        /// </value>
+        public bool ShowHabitatSummary
+        {
+            get { return _showHabitatSummary; }
+            set { _showHabitatSummary = value; }
         }
 
         //---------------------------------------------------------------------

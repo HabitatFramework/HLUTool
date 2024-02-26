@@ -291,8 +291,8 @@ namespace HLU.Data
         {
             StringBuilder sbError = new StringBuilder();
 
-            // Only validate if errors are to be shown
-            if (SecondaryCodeValidation > 0)
+            // Only validate if not in bulk update mode and errors are to be shown
+            if ((!_bulkUpdateMode) && (SecondaryCodeValidation > 0))
             {
                 if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
                     sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
@@ -317,7 +317,6 @@ namespace HLU.Data
         {
             _error = ValidateRow(_bulkUpdateMode, secondary_id, incid, secondary_habitat, secondary_group);
             return _error == null;
-            //return true;
         }
 
         #endregion
@@ -350,8 +349,8 @@ namespace HLU.Data
                         _incid_bak = _incid;
                         break;
                     case "secondary_habitat":
-                        // Only validate if errors are to be shown
-                        if (SecondaryCodeValidation == 1)
+                        // Only validate if not in bulk update mode and errors are to be shown
+                        if ((!_bulkUpdateMode) && (SecondaryCodeValidation == 1))
                         {
                             if (String.IsNullOrEmpty(secondary_habitat))
                             {

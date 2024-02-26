@@ -227,8 +227,11 @@ namespace HLU.UI.ViewModel
         // Interface options
         private string _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
-        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _showIHSTab = Settings.Default.ShowIHSTab;
+        private bool _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
+        private bool _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+        private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
+        private bool _showHabitatSummary = Settings.Default.ShowHabitatSummary;
         private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
         private string _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
         private string _secondaryCodeOrder = Settings.Default.SecondaryCodeOrder;
@@ -275,21 +278,46 @@ namespace HLU.UI.ViewModel
 
         private HluDataSet.lut_reasonRow[] _reasonCodes;
         private HluDataSet.lut_processRow[] _processCodes;
-        private IEnumerable<HluDataSet.lut_primaryRow> _primaryCodes;
-        private IEnumerable<HluDataSet.lut_ihs_habitatRow> _lutIhsHabitatCodes;
-        private IEnumerable<HluDataSet.lut_ihs_matrixRow> _lutIhsMatrixCodes;
-        private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormationCodes;
-        private IEnumerable<HluDataSet.lut_ihs_managementRow> _lutIhsManagementCodes;
-        private IEnumerable<HluDataSet.lut_ihs_complexRow> _lutIhsComplexCodes;
         private HluDataSet.lut_quality_determinationRow[] _qualityDeterminationCodes;
         private HluDataSet.lut_quality_interpretationRow[] _qualityInterpretationCodes;
+
+        private IEnumerable<HluDataSet.lut_boundary_mapRow> _lutBoundaryMap;
+        private IEnumerable<HluDataSet.lut_conditionRow> _lutCondition;
+        private IEnumerable<HluDataSet.lut_condition_qualifierRow> _lutConditionQualifier;
+        private IEnumerable<HluDataSet.lut_habitat_classRow> _lutHabitatClass;
+        private IEnumerable<HluDataSet.lut_habitat_typeRow> _lutHabitatType;
+        private IEnumerable<HluDataSet.lut_habitat_type_primaryRow> _lutHabitatTypePrimary;
+        private IEnumerable<HluDataSet.lut_ihs_complexRow> _lutIhsComplex;
+        private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormation;
+        private IEnumerable<HluDataSet.lut_ihs_habitatRow> _lutIhsHabitat;
+        private IEnumerable<HluDataSet.lut_ihs_managementRow> _lutIhsManagement;
+        private IEnumerable<HluDataSet.lut_ihs_matrixRow> _lutIhsMatrix;
+        private IEnumerable<HluDataSet.lut_importanceRow> _lutImportance;
+        private IEnumerable<HluDataSet.lut_legacy_habitatRow> _lutLegacyHabitat;
+        private IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> _lutOsmmHabitatXref;
+        private IEnumerable<HluDataSet.lut_primaryRow> _lutPrimary;
+        private IEnumerable<HluDataSet.lut_primary_bap_habitatRow> _lutPrimaryBapHabitat;
+        private IEnumerable<HluDataSet.lut_primary_categoryRow> _lutPrimaryCategory;
+        private IEnumerable<HluDataSet.lut_primary_secondaryRow> _lutPrimarySecondary;
+        private IEnumerable<HluDataSet.lut_processRow> _lutProcess;
+        private IEnumerable<HluDataSet.lut_quality_determinationRow> _lutQualityDetermination;
+        private IEnumerable<HluDataSet.lut_quality_interpretationRow> _lutQualityInterpretation;
+        private IEnumerable<HluDataSet.lut_reasonRow> _lutReason;
+        private IEnumerable<HluDataSet.lut_secondaryRow> _lutSecondary;
+        private IEnumerable<HluDataSet.lut_secondary_bap_habitatRow> _lutSecondaryBapHabitat;
+        private IEnumerable<HluDataSet.lut_secondary_groupRow> _lutSecondaryGroup;
+        private IEnumerable<HluDataSet.lut_sourcesRow> _lutSources;
+
+        private HluDataSet.lut_primaryRow[] _primaryCodes;
         private HluDataSet.lut_sourcesRow[] _sourceNames;
         private HluDataSet.lut_habitat_classRow[] _sourceHabitatClassCodes;
         private HluDataSet.lut_importanceRow[] _sourceImportanceCodes;
         private HluDataSet.lut_habitat_typeRow[] _bapHabitatCodes;
+        private HluDataSet.lut_boundary_mapRow[] _boundaryMapCodes;
 
         private HluDataSet.lut_conditionRow[] _conditionCodes;
         private HluDataSet.lut_condition_qualifierRow[] _conditionQualifierCodes;
+
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroupsValid;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroups;
         public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll;  // Used in the options window
@@ -307,7 +335,6 @@ namespace HLU.UI.ViewModel
         private HluDataSet.lut_habitat_classRow[] _habitatClassCodes;
         public static HluDataSet.lut_habitat_classRow[] HabitatClasses; // Used in the options window
         private HluDataSet.lut_habitat_typeRow[] _habitatTypeCodes;
-        private IEnumerable<HluDataSet.lut_osmm_habitat_xrefRow> _osmmHabitatXrefIds;
 
         private double _incidArea;
         private double _incidLength;
@@ -315,6 +342,8 @@ namespace HLU.UI.ViewModel
         private string _reason;
         private string _habitatClass;
         private string _habitatType;
+        private string _habitatSuggestions;
+        private string _habitatTips;
         private string _secondaryGroup;
         private string _secondaryHabitat;
         private bool _reasonProcessEnabled = true;
@@ -389,6 +418,7 @@ namespace HLU.UI.ViewModel
         private string _userName;
         private string _appVersion;
         private string _dbVersion;
+        private string _dataVersion;
         private Nullable<bool> _isAuthorisedUser;
         private Nullable<bool> _canBulkUpdate;
         private Nullable<bool> _bulkUpdateMode = false;
@@ -564,6 +594,9 @@ namespace HLU.UI.ViewModel
                 // count rows of incid table
                 IncidRowCount(true);
 
+                // load all of the lookup tables
+                LoadLookupTables();
+
                 // move to first row
                 IncidCurrentRowIndex = 1;
 
@@ -692,13 +725,15 @@ namespace HLU.UI.ViewModel
             // Get the assembly version.
             String assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            // Get the application and database versions from the database.
+            // Get the application, database and data versions from the database.
             String lutAppVersion = "0.0.0";
             String lutDbVersion = "0";
+            String lutDataVersion = "";
             if (_hluDS.lut_version.Count > 0)
             {
                 lutAppVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).app_version;
                 lutDbVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).db_version;
+                lutDataVersion = _hluDS.lut_version.ElementAt(_hluDS.lut_version.Count - 1).data_version;
             }
             else
             {
@@ -736,11 +771,505 @@ namespace HLU.UI.ViewModel
                 throw new Exception(String.Format("The minimum database version must be {0}.", minDbVersion));
             }
 
-            // Store the application and database versions for displaying in the 'About' box.
+            // Store the application, database and data versions for displaying in the 'About' box.
             _appVersion = assemblyVersion;
             _dbVersion = lutDbVersion;
+            _dataVersion = lutDataVersion;
 
             return true;
+        }
+
+
+        /// <summary>
+        /// Loads all of the lookup tables (with the exception of a few
+        /// loaded elsewhere).
+        /// </summary>
+        public void LoadLookupTables()
+        {
+            // Get the list of boundary map values from the lookup table.
+            if (_lutBoundaryMap == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_boundary_map.IsInitialized && HluDataset.lut_boundary_map.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_boundary_mapTableAdapter == null)
+                        _hluTableAdapterMgr.lut_boundary_mapTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_boundary_mapDataTable, HluDataSet.lut_boundary_mapRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_boundary_mapDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutBoundaryMap = HluDataset.lut_boundary_map;
+            }
+
+            // Get the list of condition code values from the lookup table.
+            if (_lutCondition == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_condition.IsInitialized && (HluDataset.lut_condition.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_conditionTableAdapter == null)
+                        _hluTableAdapterMgr.lut_conditionTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_conditionDataTable, HluDataSet.lut_conditionRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_conditionDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutCondition = from c in HluDataset.lut_condition
+                                where c.is_local
+                                select c;
+            }
+
+            // Get the list of condition qualifier values from the lookup table.
+            if (_lutConditionQualifier == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_condition_qualifier.IsInitialized && (HluDataset.lut_condition_qualifier.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_condition_qualifierTableAdapter == null)
+                        _hluTableAdapterMgr.lut_condition_qualifierTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_condition_qualifierDataTable, HluDataSet.lut_condition_qualifierRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_condition_qualifierDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutConditionQualifier = from cq in HluDataset.lut_condition_qualifier
+                                         where cq.is_local
+                                         select cq;
+            }
+
+            // Get the list of habitat class values from the lookup table.
+            if (_lutHabitatClass == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_habitat_class.IsInitialized && HluDataset.lut_habitat_class.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
+                        _hluTableAdapterMgr.lut_habitat_classTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutHabitatClass = from hc in HluDataset.lut_habitat_class
+                                   where hc.is_local
+                                   select hc;
+            }
+
+            // Get the list of habitat type values from the lookup table.
+            if (_lutHabitatType == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
+                        _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutHabitatType = from hc in HluDataset.lut_habitat_type
+                                  where hc.is_local
+                                  select hc;
+            }
+
+            // Get the list of habitat type primary values from the lookup table.
+            if (_lutHabitatTypePrimary == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_habitat_type_primary.IsInitialized && HluDataset.lut_habitat_type_primary.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_habitat_type_primaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_habitat_type_primaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_habitat_type_primaryDataTable, HluDataSet.lut_habitat_type_primaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_type_primaryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutHabitatTypePrimary = from htp in HluDataset.lut_habitat_type_primary
+                                         where htp.is_local
+                                         select htp;
+            }
+
+            // Get the list of ihs complex code values from the lookup table.
+            if (_lutIhsComplex == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_ihs_complex.IsInitialized && (HluDataset.lut_ihs_complex.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    _hluTableAdapterMgr.lut_ihs_complexTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_ihs_complexDataTable, HluDataSet.lut_ihs_complexRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutIhsComplex = from ihc in HluDataset.lut_ihs_complex
+                                 select ihc;
+            }
+
+            // Get the value from the lookup table.
+            if (_lutIhsFormation == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_ihs_formation.IsInitialized && (HluDataset.lut_ihs_formation.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_ihs_formationTableAdapter == null)
+                        _hluTableAdapterMgr.lut_ihs_formationTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_ihs_formationDataTable, HluDataSet.lut_ihs_formationRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutIhsFormation = from ihf in HluDataset.lut_ihs_formation
+                                   select ihf;
+            }
+
+            // Get the list of ihs habitat code values from the lookup table.
+            if (_lutIhsHabitat == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_ihs_habitat.IsInitialized && HluDataset.lut_ihs_habitat.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_ihs_habitatTableAdapter == null)
+                        _hluTableAdapterMgr.lut_ihs_habitatTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_ihs_habitatDataTable, HluDataSet.lut_ihs_habitatRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_habitatDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutIhsHabitat = from ih in HluDataset.lut_ihs_habitat
+                                 where ih.is_local
+                                 select ih;
+            }
+
+            // Get the value from the lookup table.
+            if (_lutIhsManagement == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_ihs_management.IsInitialized && (HluDataset.lut_ihs_management.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_ihs_managementTableAdapter == null)
+                        _hluTableAdapterMgr.lut_ihs_managementTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_ihs_managementDataTable, HluDataSet.lut_ihs_managementRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutIhsManagement = from ihm in HluDataset.lut_ihs_management
+                                    select ihm;
+            }
+
+            // Get the list of ihs matrix code values from the lookup table.
+            if (_lutIhsMatrix == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
+                        _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutIhsMatrix = from ihx in HluDataset.lut_ihs_matrix
+                                select ihx;
+            }
+
+            // Get the list of importance code values from the lookup table.
+            if (_lutImportance == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_importance.IsInitialized &&
+                    HluDataset.lut_importance.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_importanceTableAdapter == null)
+                        _hluTableAdapterMgr.lut_importanceTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_importanceDataTable,
+                                HluDataSet.lut_importanceRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutImportance = HluDataset.lut_importance;
+            }
+
+            // Get the list of legacy habitat code values from the lookup table.
+            if (_lutLegacyHabitat == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_legacy_habitat.IsInitialized && HluDataset.lut_legacy_habitat.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_legacy_habitatTableAdapter == null)
+                        _hluTableAdapterMgr.lut_legacy_habitatTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_legacy_habitatDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutLegacyHabitat = HluDataset.lut_legacy_habitat;
+            }
+
+            // Get the list of OSMM habitat cross-reference values from the lookup table.
+            if (_lutOsmmHabitatXref == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_osmm_habitat_xref.IsInitialized && HluDataset.lut_osmm_habitat_xref.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_osmm_habitat_xrefTableAdapter == null)
+                        _hluTableAdapterMgr.lut_osmm_habitat_xrefTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_osmm_habitat_xrefDataTable, HluDataSet.lut_osmm_habitat_xrefRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_osmm_habitat_xrefDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutOsmmHabitatXref = from ohx in HluDataset.lut_osmm_habitat_xref
+                                      where ohx.is_local
+                                      select ohx;
+            }
+
+            // Get the list of primary code values from the lookup table.
+            if (_lutPrimary == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_primary.IsInitialized && HluDataset.lut_primary.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_primaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_primaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_primaryDataTable, HluDataSet.lut_primaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primaryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutPrimary = from p in HluDataset.lut_primary
+                              where p.is_local
+                              select p;
+            }
+
+            // Get the list of primary bap habitat code values from the lookup table.
+            if (_lutPrimaryBapHabitat == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_primary_bap_habitat.IsInitialized && HluDataset.lut_primary_bap_habitat.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_primary_bap_habitatTableAdapter == null)
+                        _hluTableAdapterMgr.lut_primary_bap_habitatTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_primary_bap_habitatDataTable, HluDataSet.lut_primary_bap_habitatRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primary_bap_habitatDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutPrimaryBapHabitat = from p in HluDataset.lut_primary_bap_habitat
+                                        select p;
+            }
+
+            // Get the list of primary category values from the lookup table.
+            if (_lutPrimaryCategory == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_primary_category.IsInitialized && HluDataset.lut_primary_category.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_primary_categoryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_primary_categoryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_primary_categoryDataTable, HluDataSet.lut_primary_categoryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primary_categoryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutPrimaryCategory = from pc in HluDataset.lut_primary_category
+                                      where pc.is_local
+                                      select pc;
+            }
+
+            // Get the list of primary secondary code values from the lookup table.
+            if (_lutPrimarySecondary == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_primary_secondary.IsInitialized && HluDataset.lut_primary_secondary.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_primary_secondaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_primary_secondaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_primary_secondaryDataTable, HluDataSet.lut_primary_secondaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primary_secondaryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutPrimarySecondary = from ps in HluDataset.lut_primary_secondary
+                                       where ps.is_local
+                                       select ps;
+            }
+
+            // Get the list of process code values from the lookup table
+            if (_lutProcess == null)
+            {
+                // If the data table if not already loaded.
+                if (HluDataset.lut_process.IsInitialized && (HluDataset.lut_process.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_processTableAdapter == null)
+                        _hluTableAdapterMgr.lut_processTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_processDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutProcess = HluDataset.lut_process;
+            }
+
+            // Get the list of quality determination values from the lookup table.
+            if (_lutQualityDetermination == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_quality_determination.IsInitialized &&
+                    HluDataset.lut_quality_determination.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_quality_determinationTableAdapter == null)
+                        _hluTableAdapterMgr.lut_quality_determinationTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_quality_determinationDataTable,
+                                HluDataSet.lut_quality_determinationRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_quality_determinationDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutQualityDetermination = HluDataset.lut_quality_determination;
+            }
+
+            // Get the list of quality interpretation values from the lookup table.
+            if (_lutQualityInterpretation == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_quality_interpretation.IsInitialized &&
+                    HluDataset.lut_quality_interpretation.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_quality_interpretationTableAdapter == null)
+                        _hluTableAdapterMgr.lut_quality_interpretationTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_quality_interpretationDataTable,
+                                HluDataSet.lut_quality_interpretationRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutQualityInterpretation = HluDataset.lut_quality_interpretation;
+            }
+
+            // Get the list of reason code values from the lookup table.
+            if (_lutReason == null)
+            {
+                // If the data table if not already loaded.
+                if (HluDataset.lut_reason.IsInitialized && (HluDataset.lut_reason.Rows.Count == 0))
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_reasonTableAdapter == null)
+                        _hluTableAdapterMgr.lut_reasonTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_reasonDataTable, HluDataSet.lut_reasonRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_reasonDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutReason = HluDataset.lut_reason;
+            }
+
+            // Get the list of secondary code values from the lookup table.
+            if (_lutSecondary == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_secondary.IsInitialized && HluDataset.lut_secondary.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_secondaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_secondaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_secondaryDataTable, HluDataSet.lut_secondaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_secondaryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutSecondary = from s in HluDataset.lut_secondary
+                                where s.is_local
+                                select s;
+            }
+
+            // Get the list of secondary bap habitat code values from the lookup table.
+            if (_lutSecondaryBapHabitat == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_secondary_bap_habitat.IsInitialized && HluDataset.lut_secondary_bap_habitat.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_secondary_bap_habitatTableAdapter == null)
+                        _hluTableAdapterMgr.lut_secondary_bap_habitatTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_secondary_bap_habitatDataTable, HluDataSet.lut_secondary_bap_habitatRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_secondary_bap_habitatDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutSecondaryBapHabitat = from p in HluDataset.lut_secondary_bap_habitat
+                                          select p;
+            }
+
+            // Get the list of secondary group code values from the lookup table.
+            if (_lutSecondaryGroup == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_secondary_group.IsInitialized && HluDataset.lut_secondary_group.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_secondary_groupTableAdapter == null)
+                        _hluTableAdapterMgr.lut_secondary_groupTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_secondary_groupDataTable, HluDataSet.lut_secondary_groupRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_secondary_groupDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutSecondaryGroup = from sg in HluDataset.lut_secondary_group
+                                     where sg.is_local
+                                     select sg;
+            }
+
+            // Get the list of source code values from the lookup table.
+            if (_lutSources == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_sources.IsInitialized &&
+                    HluDataset.lut_sources.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_sourcesTableAdapter == null)
+                        _hluTableAdapterMgr.lut_sourcesTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_sourcesDataTable,
+                                HluDataSet.lut_sourcesRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset,
+                        new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutSources = HluDataset.lut_sources;
+            }
         }
 
         #endregion
@@ -817,23 +1346,19 @@ namespace HLU.UI.ViewModel
         /// </summary>
         public void AdjustWindowHeight(bool resetWindow)
         {
-            int _newWindowHeight = 956;
+            int _newWindowHeight = 933;
 
             // Adjust the minimum height if the group headers are not showing.
             if (!_showGroupHeaders)
-                _newWindowHeight -= 80;
-
-            // Adjust the minimum height if the NVC codes text is not showing.
-            if (!_showNVCCodes)
-                _newWindowHeight -= 18;
+                _newWindowHeight -= 78;
 
             // Adjust the minimum height if the Reason and Process group is not showing.
             if (!_showingReasonProcessGroup)
-                _newWindowHeight -= 47;
+                _newWindowHeight -= 49;
 
             // Adjust the minimum height if the OSMM Updates group is not showing.
             if (!_showingOSMMPendingGroup)
-                _newWindowHeight -= 83;
+                _newWindowHeight -= 85;
 
             // Adjust the standard height for older versions of Windows.
             if (System.Environment.OSVersion.Version.Major < 10)
@@ -3546,6 +4071,9 @@ namespace HLU.UI.ViewModel
             _viewModelOptions.RequestClose -= _viewModelOptions_RequestClose;
             _windowOptions.Close();
 
+            // Store old show source habitat group value
+            bool _oldShowSourceHabitatGroup = _showSourceHabitatGroup;
+
             // re-set static variables (IncidPageSize might be dangerous to change on the fly)
             if (saveSettings)
             {
@@ -3562,8 +4090,11 @@ namespace HLU.UI.ViewModel
                 // Interface options
                 _preferredHabitatClass = Settings.Default.PreferredHabitatClass;
                 _showGroupHeaders = Settings.Default.ShowGroupHeaders;
-                _showNVCCodes = Settings.Default.ShowNVCCodes;
                 _showIHSTab = Settings.Default.ShowIHSTab;
+                _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
+                _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+                _showNVCCodes = Settings.Default.ShowNVCCodes;
+                _showHabitatSummary = Settings.Default.ShowHabitatSummary;
                 _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
                 _preferredSecondaryGroup = Settings.Default.PreferredSecondaryGroup;
                 _secondaryCodeOrder = Settings.Default.SecondaryCodeOrder;
@@ -3588,9 +4119,23 @@ namespace HLU.UI.ViewModel
                 // Bulk Update options
                 //None
 
+                // If the show source habitat group value has changed and
+                // is now true, set the habitat class to null to force
+                // the user default value to be set.
+                if (_oldShowSourceHabitatGroup != _showSourceHabitatGroup
+                    && _showSourceHabitatGroup == true)
+                {
+                    _habitatClass = null;
+                    OnPropertyChanged("HabitatClass");
+                }
+
                 // Refresh the user interface
                 RefreshGroupHeaders();
+
+                OnPropertyChanged("ShowSourceHabitatGroup");
+                OnPropertyChanged("ShowHabitatSuggestions");
                 OnPropertyChanged("ShowNVCCodes");
+                OnPropertyChanged("ShowHabitatSummary");
                 OnPropertyChanged("ShowIHSTab");
                 OnPropertyChanged("ShowIncidOSMMPendingGroup");
 
@@ -3614,6 +4159,9 @@ namespace HLU.UI.ViewModel
                 // Adjust the window height.
                 AdjustWindowHeight(false);
                 OnPropertyChanged("WindowHeight");
+
+                // Adjust the secondary table height.
+                OnPropertyChanged("SecondaryTableHeight");
             }
         }
 
@@ -3689,6 +4237,7 @@ namespace HLU.UI.ViewModel
             _viewModelAbout = new ViewModelWindowAbout();
             _viewModelAbout.AppVersion = _appVersion;
             _viewModelAbout.DbVersion = _dbVersion;
+            _viewModelAbout.DataVersion = _dataVersion;
             _viewModelAbout.ConnectionType = dbBackend;
             _viewModelAbout.ConnectionSettings = dbSettings;
             _viewModelAbout.UserId = UserID;
@@ -4382,7 +4931,7 @@ namespace HLU.UI.ViewModel
 
                 // Clear all the form fields (except the habitat class
                 // and habitat type).
-                ClearForm();
+                //ClearForm();      // Already cleared
 
                 // Clear the map selection.
                 _gisApp.ClearMapSelection();
@@ -5038,8 +5587,14 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("SecondaryGroupEnabled");
 
             // Get a new condition row.
-            IncidConditionRows = new HluDataSet.incid_conditionRow[0]
+            IncidConditionRows = new HluDataSet.incid_conditionRow[1]
                 .Select(r => HluDataset.incid_condition.Newincid_conditionRow()).ToArray();
+            for (int i = 0; i < IncidConditionRows.Length; i++)
+            {
+                IncidConditionRows[i].incid_condition_id = i;
+                IncidConditionRows[i].condition = null;
+                IncidConditionRows[i].incid = RecIDs.CurrentIncid;
+            }
 
             // Get a new BAP row and reset the auto and user collections.
             IncidBapRows = new HluDataSet.incid_bapRow[0]
@@ -5558,7 +6113,7 @@ namespace HLU.UI.ViewModel
             {
                 IncidBapHabitatsUser = incidBapHabitatsUser;
 
-                // Check if there are any errors in the secondary BAP records to see
+                // Check if there are any errors in the optional BAP records to see
                 // if the Priority tab label should be flagged as also in error.
                 if (_incidBapRowsUser != null && _incidBapRowsUser.Count > 0)
                 {
@@ -5628,8 +6183,7 @@ namespace HLU.UI.ViewModel
                         // Lookup the secondary group from the secondary code
                         IEnumerable<string> q = null;
                         q = (from s in SecondaryHabitatCodesAll
-                             where s.is_local
-                             && s.code == _secondaryHabitat
+                             where s.code == _secondaryHabitat
                              select s.code_group);
                         if ((q != null) && (q.Count() > 0)) secondaryGroup = q.First();
                     }
@@ -5737,51 +6291,46 @@ namespace HLU.UI.ViewModel
                     bool addedCodes = false;
                     List<string> errorCodes = new List<string>();
 
-                    // Double check secondary habitat list has been entered.
-                    if (querySecondaries != null)
+                    // Split the list by spaces, commas or points
+                    string pattern = @"\s|\.|\,";
+                    Regex rgx = new Regex(pattern);
+
+                    // Process each secondary habitat code
+                    string[] secondaryHabitats = rgx.Split(querySecondaries);
+                    for (int i = 0; i < secondaryHabitats.Length; i++)
                     {
-                        // Split the list by spaces, commas or points
-                        string pattern = @"\s|\.|\,";
-                        Regex rgx = new Regex(pattern);
-
-                        // Process each secondary habitat code
-                        string[] secondaryHabitats = rgx.Split(querySecondaries);
-                        for (int i = 0; i < secondaryHabitats.Length; i++)
+                        string secondaryHabitat = secondaryHabitats[i];
+                        if (secondaryHabitat != null)
                         {
-                            string secondaryHabitat = secondaryHabitats[i];
-                            if (secondaryHabitat != null)
+                            // Lookup the secondary group for the secondary code
+                            IEnumerable<string> q = null;
+                            q = (from s in SecondaryHabitatCodesAll
+                                    where s.code == secondaryHabitat
+                                    select s.code_group);
+
+                            // If the secondary group has been found
+                            string secondaryGroup = null;
+                            if ((q != null) && (q.Count() > 0))
                             {
-                                // Lookup the secondary group for the secondary code
-                                IEnumerable<string> q = null;
-                                q = (from s in SecondaryHabitatCodesAll
-                                     where s.is_local
-                                     && s.code == secondaryHabitat
-                                     select s.code_group);
+                                secondaryGroup = q.First();
 
-                                // If the secondary group has been found
-                                string secondaryGroup = null;
-                                if ((q != null) && (q.Count() > 0))
+                                // Add secondary habitat if it isn't already in the table
+                                if (SecondaryHabitat.SecondaryHabitatList == null ||
+                                    SecondaryHabitat.SecondaryHabitatList.Count(sh => sh.secondary_habitat == secondaryHabitat) == 0)
                                 {
-                                    secondaryGroup = q.First();
-
-                                    // Add secondary habitat if it isn't already in the table
-                                    if (SecondaryHabitat.SecondaryHabitatList == null ||
-                                        SecondaryHabitat.SecondaryHabitatList.Count(sh => sh.secondary_habitat == secondaryHabitat) == 0)
-                                    {
-                                        // Add secondary habitat to table if it isn't already in the table
-                                        bool err;
-                                        err = AddSecondaryHabitat(false, -1, Incid, secondaryHabitat, secondaryGroup);
-                                        if (err == true)
-                                            errorCodes.Add(secondaryHabitat);
-
-                                        addedCodes = true;
-                                    }
-                                    else
+                                    // Add secondary habitat to table if it isn't already in the table
+                                    bool err;
+                                    err = AddSecondaryHabitat(false, -1, Incid, secondaryHabitat, secondaryGroup);
+                                    if (err == true)
                                         errorCodes.Add(secondaryHabitat);
+
+                                    addedCodes = true;
                                 }
                                 else
                                     errorCodes.Add(secondaryHabitat);
                             }
+                            else
+                                errorCodes.Add(secondaryHabitat);
                         }
 
                         // If any valid codes were entered and were added to the table
@@ -6681,15 +7230,15 @@ namespace HLU.UI.ViewModel
                     // fragment counts.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format(" of {0}* [{1}:{2}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0}* [{1}:{2}]", _incidSelection.Rows.Count.ToString("N0"),
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else if (_osmmBulkUpdateMode == true)
-                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidSelection.Rows.Count,
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidSelection.Rows.Count.ToString("N0"),
                             _toidsSelectedMapCount.ToString(),
                             _fragsSelectedMapCount.ToString());
                     else
-                        return String.Format(" of {0}* [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count,
+                        return String.Format(" of {0}* [{1}:{2} of {3}:{4}]", _incidSelection.Rows.Count.ToString("N0"),
                             _toidsIncidGisCount.ToString(),
                             _fragsIncidGisCount.ToString(),
                             _toidsIncidDbCount.ToString(),
@@ -6700,13 +7249,13 @@ namespace HLU.UI.ViewModel
                 {
                     if ((_incidSelection != null) && (_incidSelection.Rows.Count > 0))
                     {
-                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount.ToString("N0"),
                             _toidsSelectedMapCount.ToString(),
                             _fragsSelectedMapCount.ToString());
                     }
                     else
                     {
-                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount,
+                        return String.Format("[I:{0}] [T:{1}] [F:{2}]", _incidsSelectedMapCount.ToString("N0"),
                             _toidsSelectedMapCount.ToString(),
                             _fragsSelectedMapCount.ToString());
                     }
@@ -6718,11 +7267,11 @@ namespace HLU.UI.ViewModel
                     // counts, when auto selecting features on change of incid.
                     //
                     if (_osmmUpdateMode == true)
-                        return String.Format(" of {0}* [{1}:{2}]", _incidRowCount,
+                        return String.Format(" of {0}* [{1}:{2}]", _incidRowCount.ToString("N0"),
                             _toidsIncidDbCount.ToString(),
                             _fragsIncidDbCount.ToString());
                     else
-                        return String.Format(" of {0} [{1}:{2} of {3}:{4}]", _incidRowCount,
+                        return String.Format(" of {0} [{1}:{2} of {3}:{4}]", _incidRowCount.ToString("N0"),
                             _toidsIncidGisCount.ToString(),
                             _fragsIncidGisCount.ToString(),
                             _toidsIncidDbCount.ToString(),
@@ -7020,7 +7569,7 @@ namespace HLU.UI.ViewModel
                 // If there are any OSMM Updates for this incid then store the values.
                 if (_incidOSMMUpdatesRows.Length > 0)
                 {
-                    _incidOSMMUpdatesOSMMXref = _incidOSMMUpdatesRows[0].osmm_habitat_xref_id;
+                    _incidOSMMUpdatesOSMMXref = _incidOSMMUpdatesRows[0].osmm_xref_id;
                     _incidOSMMUpdatesProcessFlag = _incidOSMMUpdatesRows[0].process_flag;
                     _incidOSMMUpdatesSpatialFlag = _incidOSMMUpdatesRows[0].Isspatial_flagNull() ? null : _incidOSMMUpdatesRows[0].spatial_flag;
                     _incidOSMMUpdatesChangeFlag = _incidOSMMUpdatesRows[0].Ischange_flagNull() ? null : _incidOSMMUpdatesRows[0].change_flag;
@@ -7633,15 +8182,6 @@ namespace HLU.UI.ViewModel
                     childConds[i] = cond;
                 }
 
-                //string orderByClause;
-                //if (_childRowOrderByDict.TryGetValue(typeof(C), out orderByClause))
-                //    adapter.Fill(childTable, String.Format("{0} ORDER BY {1}",
-                //        _db.WhereClause(false, true, true, childConds), orderByClause));
-                //else
-                //    adapter.Fill(childTable, childConds);
-
-                //return (R[])childTable.Select();
-
                 // Sort after the Fill as the Select seems to be re-sorting
                 // the rows after the Fill.
                 string orderByClause;
@@ -8075,25 +8615,22 @@ namespace HLU.UI.ViewModel
             OnPropertyChanged("DetailsConditionHeader");
             OnPropertyChanged("DetailsQualityHeader");
 
-            OnPropertyChanged("ShowSource1Number");
             OnPropertyChanged("Source1Header");
-            OnPropertyChanged("ShowSource2Number");
             OnPropertyChanged("Source2Header");
-            OnPropertyChanged("ShowSource3Number");
             OnPropertyChanged("Source3Header");
+            OnPropertyChanged("ShowSourceNumbers");
         }
 
         private void RefreshOSMMUpdate()
         {
             OnPropertyChanged("ShowIncidOSMMPendingGroup");
-            //TODO: OSMM Update - Replace with primary?
-            //OnPropertyChanged("IncidOSMMIhsSummary");
-            //OnPropertyChanged("IncidOSMMXRefID");
-            
             OnPropertyChanged("IncidOSMMProcessFlag");
             OnPropertyChanged("IncidOSMMSpatialFlag");
             OnPropertyChanged("IncidOSMMChangeFlag");
             OnPropertyChanged("IncidOSMMUpdateStatus");
+            OnPropertyChanged("IncidOSMMHabitatPrimary");
+            OnPropertyChanged("IncidOSMMHabitatSecondaries");
+            OnPropertyChanged("IncidOSMMXRefID");
         }
 
         private void RefreshHabitatTab()
@@ -8104,6 +8641,8 @@ namespace HLU.UI.ViewModel
             //OnPropertyChanged("HabitatClassCodes");
             OnPropertyChanged("HabitatTypeCodes");
             OnPropertyChanged("HabitatType");
+            OnPropertyChanged("HabitatSuggestions");
+            OnPropertyChanged("HabitatTips");
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidPrimary");
             OnPropertyChanged("NvcCodes");
@@ -8664,18 +9203,18 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_osmmHabitatXrefIds == null)
-                {
-                    _osmmHabitatXrefIds = from x in HluDataset.lut_osmm_habitat_xref
-                                          where x.is_local
-                                          select x;
-                }
-
+                // If there are no OSMM proposed updates or the proposed update
+                // for this incid has already been processed then return null.
                 if (_osmmUpdatesEmpty == true || _incidOSMMUpdatesOSMMXref <= 0) return null;
 
-                var q = _osmmHabitatXrefIds.Where(h => h.osmm_habitat_xref_id == _incidOSMMUpdatesOSMMXref);
+                // Return the first proposed update primary code for this incid
+                // (there should only be one).
+                var q = from ohx in _lutOsmmHabitatXref
+                        where ohx.osmm_xref_id == _incidOSMMUpdatesOSMMXref
+                        select ohx.habitat_primary;
+
                 if (q.Count() > 0)
-                    return q.ElementAt(0).habitat_primary;
+                    return q.ElementAt(0);
                 else
                     return null;
             }
@@ -8692,18 +9231,18 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                if (_osmmHabitatXrefIds == null)
-                {
-                    _osmmHabitatXrefIds = from x in HluDataset.lut_osmm_habitat_xref
-                                          where x.is_local
-                                          select x;
-                }
-
+                // If there are no OSMM proposed updates or the proposed update
+                // for this incid has already been processed then return null.
                 if (_osmmUpdatesEmpty == true || _incidOSMMUpdatesOSMMXref <= 0) return null;
 
-                var q = _osmmHabitatXrefIds.Where(h => h.osmm_habitat_xref_id == _incidOSMMUpdatesOSMMXref);
+                // Return the first proposed update secondary codes for this incid
+                // (there should only be one).
+                var q = from ohx in _lutOsmmHabitatXref
+                        where ohx.osmm_xref_id == _incidOSMMUpdatesOSMMXref
+                        select ohx.habitat_secondaries;
+
                 if (q.Count() > 0)
-                    return q.ElementAt(0).habitat_secondaries;
+                    return q.ElementAt(0);
                 else
                     return null;
             }
@@ -8827,19 +9366,10 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
                 if (_reasonCodes == null)
                 {
-                    // Load the data table if not already loaded.
-                    if (HluDataset.lut_reason.IsInitialized && (HluDataset.lut_reason.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_reasonTableAdapter == null)
-                            _hluTableAdapterMgr.lut_reasonTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_reasonDataTable, HluDataSet.lut_reasonRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_reasonDataTable) }, false);
-                    }
-
-                    _reasonCodes = HluDataset.lut_reason.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Get the list of values from the lookup table.
+                    _reasonCodes = _lutReason.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _reasonCodes;
@@ -8857,19 +9387,10 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table
                 if (_processCodes == null)
                 {
-                    // Load the data table if not already loaded.
-                    if (HluDataset.lut_process.IsInitialized && (HluDataset.lut_process.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_processTableAdapter == null)
-                            _hluTableAdapterMgr.lut_processTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_processDataTable, HluDataSet.lut_processRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_processDataTable) }, false);
-                    }
-
-                    _processCodes = HluDataset.lut_process.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Get the list of values from the lookup table.
+                    _processCodes = _lutProcess.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _processCodes;
@@ -8923,30 +9444,19 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (_habitatClassCodes == null)
                 {
-                    // Load the lookup table is not already loaded.
-                    if (HluDataset.lut_habitat_class.IsInitialized && (HluDataset.lut_habitat_class.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_classTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
-                    }
-
                     // Set the static variable (used in the options window) for all
                     // local habitat classes with local habitat types.
-                    HabitatClasses = (from c in HluDataset.lut_habitat_class
-                                          join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
-                                          where c.is_local && t.is_local
-                                          select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+                    HabitatClasses = (from c in _lutHabitatClass
+                                      join t in _lutHabitatType on c.code equals t.habitat_class_code
+                                      select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
                     // Set the habitat classes for all local habitat classes with
                     // local habitat types that relate to at least one primary
                     // habitat type that is local.
-                    _habitatClassCodes = (from c in HluDataset.lut_habitat_class
-                                                 join t in HluDataset.lut_habitat_type on c.code equals t.habitat_class_code
-                                                 join p in HluDataset.lut_habitat_type_primary on t.code equals p.code_habitat_type
-                                                 where c.is_local && t.is_local && p.is_local
-                                                 select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+                    _habitatClassCodes = (from c in _lutHabitatClass
+                                          join t in _lutHabitatType on c.code equals t.habitat_class_code
+                                          join tp in _lutHabitatTypePrimary on t.code equals tp.code_habitat_type
+                                          select c).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
                 }
 
                 return _habitatClassCodes;
@@ -9012,23 +9522,14 @@ namespace HLU.UI.ViewModel
             get
             {
                 // Get the list of values from the lookup table.
-                if (!String.IsNullOrEmpty(HabitatClass))
+                if (!String.IsNullOrEmpty(_habitatClass))
                 {
-                    // Load the lookup table is not already loaded.
-                    if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
-                    }
-
-                    // Only load habitat classes that are flagged as local.
-                    _habitatTypeCodes = (from t in HluDataset.lut_habitat_type
-                                         // Only load codes with a local primary habitat type.
-                                         join i in HluDataset.lut_habitat_type_primary on t.code equals i.code_habitat_type
-                                         where t.is_local && t.habitat_class_code == HabitatClass
-                                         select t).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
+                    // Only load codes with a primary habitat type for
+                    // the selected class.
+                    _habitatTypeCodes = (from ht in _lutHabitatType
+                                         join htp in _lutHabitatTypePrimary on ht.code equals htp.code_habitat_type
+                                         where ht.habitat_class_code == _habitatClass
+                                         select ht).Distinct().OrderBy(c => c.sort_order).ThenBy(c => c.description).ToArray();
 
                     return _habitatTypeCodes;
                 }
@@ -9056,29 +9557,99 @@ namespace HLU.UI.ViewModel
                     // Load all primary habitat codes where the primary habitat code
                     // and primary habitat category are both flagged as local and
                     // are related as local to the current habitat type.
-                    _primaryCodes = from p in HluDataset.lut_primary
-                                    join c in HluDataset.lut_primary_category on p.category equals c.code
-                                    from t in HluDataset.lut_habitat_type_primary
-                                    where t.code_habitat_type == _habitatType
-                                    && p.is_local && c.is_local && t.is_local
-                                    && (p.code == t.code_primary
-                                    || (t.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + t.code_primary.TrimEnd('*') + @"") == true))
-                                    select p;
+                    _primaryCodes = (from p in _lutPrimary
+                                    join c in _lutPrimaryCategory on p.category equals c.code
+                                    from htp in _lutHabitatTypePrimary
+                                    where htp.code_habitat_type == _habitatType
+                                    && (p.code == htp.code_primary
+                                    || (htp.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + htp.code_primary.TrimEnd('*') + @"") == true))
+                                    select p).ToArray();
                 }
                 else
                 {
                     // Load all primary habitat codes where the primary habitat code
                     // and primary habitat category are both flagged as local.
-                    _primaryCodes = from p in HluDataset.lut_primary
-                                    join c in HluDataset.lut_primary_category on p.category equals c.code
-                                    where p.is_local && c.is_local
-                                    select p;
+                    _primaryCodes = (from p in _lutPrimary
+                                    join c in _lutPrimaryCategory on p.category equals c.code
+                                    select p).ToArray();
                 }
 
                 OnPropertyChanged("PrimaryCodes");
                 OnPropertyChanged("PrimaryEnabled");
-                OnPropertyChanged("NvcCodes");
+                //OnPropertyChanged("NvcCodes");
             }
+        }
+
+        /// <summary>
+        /// Only show the habitat suggestions if the option is set, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowHabitatSuggestions
+        {
+            get
+            {
+                // If should be showing the habitat suggestions
+                if (_showHabitatSuggestions)
+                {
+                    return Visibility.Visible;
+                }
+                else  // If shouldn't be showing habitat suggestions
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets the string of habitat suggestions that are related to the
+        /// selected habitat type. It is used as an aid to the user to help
+        /// select the correct primary and secondary habitats.
+        /// </summary>
+        /// <value>
+        /// The string of habitat suggestions related to the current habitat type.
+        /// </value>
+        public string HabitatSuggestions
+        {
+            get
+            {
+                return _habitatSuggestions;
+            }
+        }
+
+        /// <summary>
+        /// Gets the string of habitat tips that are related to the
+        /// selected habitat type. It is used as an aid to the user to help
+        /// select the correct primary and secondary habitats.
+        /// </summary>
+        /// <value>
+        /// The string of habitat tips related to the current habitat type.
+        /// </value>
+        public string HabitatTips
+        {
+            get
+            {
+                return _habitatTips;
+            }
+        }
+
+        /// <summary>
+        /// Only show the source habitat group if the option is set, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowSourceHabitatGroup
+        {
+            get
+            {
+                // If should be showing the habitat categories
+                if (_showSourceHabitatGroup)
+                {
+                    return Visibility.Visible;
+                }
+                else  // If shouldn't be showing habitat categories
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
         }
 
         #endregion
@@ -9114,32 +9685,23 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (HluDataset.lut_primary.IsInitialized && HluDataset.lut_primary.Count == 0)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (_hluTableAdapterMgr.lut_primaryTableAdapter == null)
-                        _hluTableAdapterMgr.lut_primaryTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_primaryDataTable, HluDataSet.lut_primaryRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_primaryDataTable) }, false);
-                }
-
                 // Return the primary codes if already set, otherwise get the
-                // primary codes from the lookup table.
+                // current primary code.
                 if (_primaryCodes != null)
                 {
                     return _primaryCodes.ToArray();
                 }
                 else if (!String.IsNullOrEmpty(IncidPrimary))
                 {
-                    // Load all primary habitat codes where the primary habitat code
-                    // and primary habitat category are both flagged as local.
-                    _primaryCodes = HluDataset.lut_primary.Where(r => r.code == IncidPrimary);
-                    _primaryCodes = from p in HluDataset.lut_primary
-                                    join c in HluDataset.lut_primary_category on p.category equals c.code
-                                    where p.is_local && c.is_local && p.code == IncidPrimary
-                                    select p;
-                    return _primaryCodes.ToArray();
+                    // Load the primary habitat code (where the primary habitat code
+                    // and primary habitat category are both flagged as local). There
+                    // should be only one.
+                    _primaryCodes = (from p in _lutPrimary
+                                    join pc in _lutPrimaryCategory on p.category equals pc.code
+                                    where p.code == IncidPrimary
+                                    select p).ToArray();
+
+                    return _primaryCodes;
                 }
                 else
                 {
@@ -9162,8 +9724,38 @@ namespace HLU.UI.ViewModel
 
                     _incidPrimary = value;
 
+                    _primaryCodes = (from p in _lutPrimary
+                                     join c in _lutPrimaryCategory on p.category equals c.code
+                                     from htp in _lutHabitatTypePrimary
+                                     where htp.code_habitat_type == _habitatType
+                                     && (p.code == htp.code_primary
+                                     || (htp.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + htp.code_primary.TrimEnd('*') + @"") == true))
+                                     select p).ToArray();
+
+                    // Set the habitat suggestions and tips based on the current
+                    // primary code and habitat type.
+                    _habitatSuggestions = null;
+                    _habitatTips = null;
+                    if (_incidPrimary != null && _habitatType != null)
+                    {
+                        var q = (from htp in _lutHabitatTypePrimary
+                                 where ((htp.code_habitat_type == _habitatType)
+                                 && (htp.code_primary == _incidPrimary
+                                 || (htp.code_primary.EndsWith("*") && Regex.IsMatch(_incidPrimary, @"\A" + htp.code_primary.TrimEnd('*') + @"") == true)))
+                                 select htp);
+                        if (q.Count() > 0)
+                        {
+                            _habitatSuggestions = q.ElementAt(0).habitat_secondaries;
+                            _habitatTips = q.ElementAt(0).comments;
+                        }
+                    }
+
                     // Set the list of secondary codes for the primary habitat.
                     NewPrimaryHabitat(_incidPrimary);
+
+                    // Refresh the habitat suggestions and tips
+                    OnPropertyChanged("HabitatSuggestions");
+                    OnPropertyChanged("HabitatTips");
 
                     // Refresh the BAP habitat environments (in case secondary codes
                     // are, or should be, reflected).
@@ -9185,7 +9777,7 @@ namespace HLU.UI.ViewModel
             if (incidPrimary != null)
             {
                 // Set the primary habitat category.
-                _incidPrimaryCategory = HluDataset.lut_primary.Where(p => p.code == incidPrimary).ElementAt(0).category;
+                _incidPrimaryCategory = _lutPrimary.Where(p => p.code == incidPrimary).ElementAt(0).category;
 
                 // Set NVC codes based on current primary habitat
                 _incidNVCCodes = null;
@@ -9199,9 +9791,8 @@ namespace HLU.UI.ViewModel
                 // Store all secondary habitat codes that are flagged as local for
                 // all secondary groups that relate to the primary habitat category.
                 _secondaryCodesValid = (from s in SecondaryHabitatCodesAll
-                                        join p in HluDataset.lut_primary_secondary on s.code equals p.code_secondary
-                                        where p.category == _incidPrimaryCategory
-                                        && p.is_local
+                                        join ps in _lutPrimarySecondary on s.code equals ps.code_secondary
+                                        where ps.category == _incidPrimaryCategory
                                         select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
                 // Store the list of valid secondary codes.
@@ -9320,35 +9911,25 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Load the lookup table if not already loaded.
-                if (HluDataset.lut_secondary_group.IsInitialized && HluDataset.lut_secondary_group.Count == 0)
-                {
-                    if (_hluTableAdapterMgr.lut_secondary_groupTableAdapter == null)
-                        _hluTableAdapterMgr.lut_secondary_groupTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_secondary_groupDataTable,
-                                HluDataSet.lut_secondary_groupRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_secondary_groupDataTable) }, false);
-                }
+                // Define the <ALL> group row
+                HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
+                allRow.code = "<All>";
+                allRow.description = "<All>";
+                allRow.sort_order = -1;
 
                 // Set the public and static variables
                 if (SecondaryGroupsAll == null || SecondaryGroupsAll.Count() == 0)
                 {
                     // Set the full list of local secondary groups.
-                    _secondaryGroups = (from sg in HluDataset.lut_secondary_group
-                                            where sg.is_local
-                                            select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
+                    _secondaryGroups = (from sg in _lutSecondaryGroup
+                                        select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
                     // Set the full list of secondary groups including an <All> group.
                     HluDataSet.lut_secondary_groupRow[] secondaryGroupsAll;
                     secondaryGroupsAll = _secondaryGroups;
                     if (secondaryGroupsAll != null)
                     {
-                        HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
-                        allRow.code = "<All>";
-                        allRow.description = "<All>";
-                        allRow.sort_order = -1;
-
+                        // Add the <ALL> group containing all secondary codes
                         secondaryGroupsAll = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(secondaryGroupsAll).ToArray();
                     }
 
@@ -9356,31 +9937,22 @@ namespace HLU.UI.ViewModel
                     SecondaryGroupsAll = secondaryGroupsAll;
 
                     // Set the dictionary of local secondary group codes.
-                    SecondaryHabitat.SecondaryGroupCodes = (from sg in HluDataset.lut_secondary
-                                                            where sg.is_local
+                    SecondaryHabitat.SecondaryGroupCodes = (from sg in _lutSecondary
                                                             select sg).OrderBy(r => r.code).ThenBy(r => r.code_group).ToDictionary(r => r.code, r => r.code_group);
                 }
 
                 if (!String.IsNullOrEmpty(IncidPrimary))
                 {
                     // Set the valid list of secondary codes for the primary category.
-                    _secondaryGroupsValid = (from sg in HluDataset.lut_secondary_group
-                                            join s in HluDataset.lut_secondary on sg.code equals s.code_group
-                                            join ps in HluDataset.lut_primary_secondary on s.code equals ps.code_secondary
+                    _secondaryGroupsValid = (from sg in _lutSecondaryGroup
+                                             join s in _lutSecondary on sg.code equals s.code_group
+                                             join ps in _lutPrimarySecondary on s.code equals ps.code_secondary
                                              where ps.category == IncidPrimaryCategory
-                                             && sg.is_local
-                                             && s.is_local
-                                             && ps.is_local
                                              select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
                     if (_secondaryGroupsValid != null)
                     {
                         // Add the <ALL> group containing all secondary codes
-                        HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
-                        allRow.code = "<All>";
-                        allRow.description = "<All>";
-                        allRow.sort_order = -1;
-
                         _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
                     }
                 }
@@ -9390,11 +9962,6 @@ namespace HLU.UI.ViewModel
                     _secondaryGroupsValid = _secondaryGroups;
 
                     // Add the <ALL> group containing all secondary codes
-                    HluDataSet.lut_secondary_groupRow allRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
-                    allRow.code = "<All>";
-                    allRow.description = "<All>";
-                    allRow.sort_order = -1;
-
                     _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
 
                     // Set the combo box list to null (it will also be disabled).
@@ -9483,22 +10050,10 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Load the lookup table if not already loaded.
-                if (HluDataset.lut_secondary.IsInitialized && (HluDataset.lut_secondary.Rows.Count == 0))
-                {
-                    if (_hluTableAdapterMgr.lut_secondaryTableAdapter == null)
-                        _hluTableAdapterMgr.lut_secondaryTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_secondaryDataTable,
-                                HluDataSet.lut_secondaryRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_secondaryDataTable) }, false);
-                }
-
                 if (_secondaryCodesAll == null)
                 {
-                    _secondaryCodesAll = (from s in HluDataset.lut_secondary
-                                            where s.is_local
-                                            select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _secondaryCodesAll = (from s in _lutSecondary
+                                          select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _secondaryCodesAll;
@@ -9563,6 +10118,38 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        public int SecondaryTableHeight
+        {
+            get
+            {
+                int newTableHeight = 353;
+
+                // Adjust the minimum height if the source habitat group is showing.
+                if (_showSourceHabitatGroup)
+                    newTableHeight -= 61;
+
+                // Adjust the height if the habitat suggestions text is showing.
+                if (_showHabitatSuggestions)
+                    newTableHeight -= 24;
+
+                // Adjust the height if the NVC codes text is showing.
+                if (_showNVCCodes)
+                    newTableHeight -= 24;
+
+                // Adjust the height if the habitat summary text is showing.
+                if (_showHabitatSummary)
+                    newTableHeight -= 35;
+
+                return newTableHeight;
+            }
+        }
+
+        /// <summary>
+        /// Gets the concatenated secondary habitats summary.
+        /// </summary>
+        /// <value>
+        /// The incid secondary summary.
+        /// </value>
         public string IncidSecondarySummary
         {
             get
@@ -9570,10 +10157,30 @@ namespace HLU.UI.ViewModel
                 _incidSecondarySummary = String.Join(_secondaryCodeDelimiter, _incidSecondaryHabitats
                     .OrderBy(s => s.secondary_habitat_int)
                     .ThenBy(s => s.secondary_habitat)
-                    .Select(s => s.secondary_habitat_int)
+                    .Select(s => s.secondary_habitat)
                     .Distinct().ToList());
                 return _incidSecondarySummary == String.Empty ? null : _incidSecondarySummary;
             }
+        }
+
+        /// <summary>
+        /// Only show the contatenated habitat summary if the option is set, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowHabitatSummary
+        {
+            get
+            {
+                // If should be showing the concatenated habitat summary
+                if (_showHabitatSummary)
+                {
+                    return Visibility.Visible;
+                }
+                else  // If shouldn't be showing concatenated habitat summary
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+            set { }
         }
 
         /// <summary>
@@ -9661,13 +10268,13 @@ namespace HLU.UI.ViewModel
             // If there are any existing rows add the new row the collection
             // and then sort them.
             if (_incidSecondaryHabitats != null)
-                _incidSecondaryHabitats.Add(new SecondaryHabitat(false, -1, Incid, secondary_habitat, secondary_group));
+                _incidSecondaryHabitats.Add(new SecondaryHabitat(bulkUpdateMode, -1, Incid, secondary_habitat, secondary_group));
             else
             {
                 // Otherwise there can't be any secondary habitat rows so
                 // just create a new collection and add the new row.
                 _incidSecondaryHabitats = new ObservableCollection<SecondaryHabitat>();
-                _incidSecondaryHabitats.Add(new SecondaryHabitat(false, -1, Incid, secondary_habitat, secondary_group));
+                _incidSecondaryHabitats.Add(new SecondaryHabitat(bulkUpdateMode, -1, Incid, secondary_habitat, secondary_group));
             }
 
             // Track any changes to the user rows collection.
@@ -9809,28 +10416,19 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (_legacyHabitatCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_legacy_habitat.IsInitialized && HluDataset.lut_legacy_habitat.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_legacy_habitatTableAdapter == null)
-                            _hluTableAdapterMgr.lut_legacy_habitatTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_legacy_habitatDataTable, HluDataSet.lut_legacy_habitatRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_legacy_habitatDataTable) }, false);
-                    }
-
-                    _legacyHabitatCodes =
-                        HluDataset.lut_legacy_habitat.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _legacyHabitatCodes = _lutLegacyHabitat.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 // Return the list of legacy codes, with the clear row if applicable.
                 if (!String.IsNullOrEmpty(IncidLegacyHabitat))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_legacy_habitatRow clearRow = HluDataset.lut_legacy_habitat.Newlut_legacy_habitatRow();
                     clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_legacy_habitatRow[] { clearRow }.Concat(_legacyHabitatCodes).ToArray();
                 }
                 else
@@ -9961,29 +10559,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (_lutIhsHabitatCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_habitat.IsInitialized && (HluDataset.lut_ihs_habitat.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_habitatTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_habitatTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_habitatDataTable, HluDataSet.lut_ihs_habitatRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_habitatDataTable) }, false);
-                    }
-
-                    _lutIhsHabitatCodes = from x in HluDataset.lut_ihs_habitat
-                                          //where x.is_local
-                                          select x;
-                }
-
                 // Return the concatenated habitat code and description.
                 if (_incidIhsHabitat == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsHabitatCodes.Where(h => h.code == _incidIhsHabitat);
+                    var q = _lutIhsHabitat.Where(h => h.code == _incidIhsHabitat);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10043,29 +10624,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsMatrixCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
-                    }
-
-                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
-                                            //where x.is_local
-                                            select x;
-                }
-
                 // Return the combined code and text value
                 if (IncidIhsMatrix1 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[0].matrix);
+                    var q = _lutIhsMatrix.Where(m => m.code == _incidIhsMatrixRows[0].matrix);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10103,29 +10667,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsMatrixCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
-                    }
-
-                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
-                                            //where x.is_local
-                                            select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsMatrix2 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[1].matrix);
+                    var q = _lutIhsMatrix.Where(m => m.code == _incidIhsMatrixRows[1].matrix);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10163,29 +10710,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsMatrixCodes == null)
-                {
-                // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_matrix.IsInitialized && (HluDataset.lut_ihs_matrix.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_matrixTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_matrixTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_matrixDataTable, HluDataSet.lut_ihs_matrixRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_matrixDataTable) }, false);
-                    }
-
-                    _lutIhsMatrixCodes = from x in HluDataset.lut_ihs_matrix
-                                         //where x.is_local
-                                         select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsMatrix3 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsMatrixCodes.Where(m => m.code == _incidIhsMatrixRows[2].matrix);
+                    var q = _lutIhsMatrix.Where(m => m.code == _incidIhsMatrixRows[2].matrix);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10281,29 +10811,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsFormationCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_formation.IsInitialized && (HluDataset.lut_ihs_formation.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_formationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_formationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_formationDataTable, HluDataSet.lut_ihs_formationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
-                    }
-
-                    _lutIhsFormationCodes = from x in HluDataset.lut_ihs_formation
-                                         //where x.is_local
-                                         select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsFormation1 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsFormationCodes.Where(m => m.code == _incidIhsFormationRows[0].formation);
+                    var q = _lutIhsFormation.Where(m => m.code == _incidIhsFormationRows[0].formation);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10341,29 +10854,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsFormationCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_formation.IsInitialized && (HluDataset.lut_ihs_formation.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_formationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_formationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_formationDataTable, HluDataSet.lut_ihs_formationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_formationDataTable) }, false);
-                    }
-
-                    _lutIhsFormationCodes = from x in HluDataset.lut_ihs_formation
-                                            //where x.is_local
-                                            select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsFormation2 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsFormationCodes.Where(m => m.code == _incidIhsFormationRows[1].formation);
+                    var q = _lutIhsFormation.Where(m => m.code == _incidIhsFormationRows[1].formation);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10457,29 +10953,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsManagementCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_management.IsInitialized && (HluDataset.lut_ihs_management.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_managementTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_managementTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_managementDataTable, HluDataSet.lut_ihs_managementRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
-                    }
-
-                    _lutIhsManagementCodes = from x in HluDataset.lut_ihs_management
-                                         //where x.is_local
-                                         select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsManagement1 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsManagementCodes.Where(m => m.code == _incidIhsManagementRows[0].management);
+                    var q = _lutIhsManagement.Where(m => m.code == _incidIhsManagementRows[0].management);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10517,29 +10996,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsManagementCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_management.IsInitialized && (HluDataset.lut_ihs_management.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_managementTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_managementTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_managementDataTable, HluDataSet.lut_ihs_managementRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_managementDataTable) }, false);
-                    }
-
-                    _lutIhsManagementCodes = from x in HluDataset.lut_ihs_management
-                                             //where x.is_local
-                                             select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsManagement2 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsManagementCodes.Where(m => m.code == _incidIhsManagementRows[1].management);
+                    var q = _lutIhsManagement.Where(m => m.code == _incidIhsManagementRows[1].management);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10634,29 +11096,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsComplexCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_complex.IsInitialized && (HluDataset.lut_ihs_complex.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_complexTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_complexTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_complexDataTable, HluDataSet.lut_ihs_complexRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
-                    }
-
-                    _lutIhsComplexCodes = from x in HluDataset.lut_ihs_complex
-                                         //where x.is_local
-                                         select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsComplex1 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsComplexCodes.Where(m => m.code == _incidIhsComplexRows[0].complex);
+                    var q = _lutIhsComplex.Where(m => m.code == _incidIhsComplexRows[0].complex);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10694,29 +11139,12 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the value from the lookup table.
-                if (_lutIhsComplexCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_ihs_complex.IsInitialized && (HluDataset.lut_ihs_complex.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_ihs_complexTableAdapter == null)
-                            _hluTableAdapterMgr.lut_ihs_complexTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_ihs_complexDataTable, HluDataSet.lut_ihs_complexRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_ihs_complexDataTable) }, false);
-                    }
-
-                    _lutIhsComplexCodes = from x in HluDataset.lut_ihs_complex
-                                          //where x.is_local
-                                          select x;
-                }
-
                 // Return the combined code and text value.
                 if (IncidIhsComplex2 == null)
                     return null;
                 else
                 {
-                    var q = _lutIhsComplexCodes.Where(m => m.code == _incidIhsComplexRows[1].complex);
+                    var q = _lutIhsComplex.Where(m => m.code == _incidIhsComplexRows[1].complex);
                     if (q.Count() > 0)
                         return String.Concat(q.ElementAt(0).code, " : ", q.ElementAt(0).description);
                     else
@@ -10839,26 +11267,14 @@ namespace HLU.UI.ViewModel
                 // Get the value from the lookup table.
                 if (_bapHabitatCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_habitat_type.IsInitialized && (HluDataset.lut_habitat_type.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
-                    }
-
                     //---------------------------------------------------------------------
                     // CHANGED: CR52 Enable support for multiple priority habitat classifications
                     // Enable multiple priority habitat types (from the same or different
                     // classifications) to be assigned
                     //
-                    //_bapHabitatCodes = (from r in HluDataset.lut_habitat_type
-                    //                    where r.habitat_class_code == "PHAP"
-                    //                    select r).ToArray();
-                    _bapHabitatCodes = (from r in HluDataset.lut_habitat_type
-                                        where r.bap_priority == true && r.is_local
-                                        select r).ToArray();
+                    _bapHabitatCodes = (from ht in _lutHabitatType
+                                        where ht.bap_priority == true
+                                        select ht).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                     //---------------------------------------------------------------------
                 }
 
@@ -10876,26 +11292,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (_qualityDeterminationCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_quality_determination.IsInitialized &&
-                        HluDataset.lut_quality_determination.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_quality_determinationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_quality_determinationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_quality_determinationDataTable,
-                                    HluDataSet.lut_quality_determinationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_quality_determinationDataTable) }, false);
-                    }
-
-                    _qualityDeterminationCodes =
-                        HluDataset.lut_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                }
-
-                return _qualityDeterminationCodes;
+                return _lutQualityDetermination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
             }
         }
         
@@ -10947,26 +11344,7 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (_qualityInterpretationCodes == null)
-                {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_quality_interpretation.IsInitialized &&
-                        HluDataset.lut_quality_interpretation.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_quality_interpretationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_quality_interpretationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_quality_interpretationDataTable,
-                                    HluDataSet.lut_quality_interpretationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
-                    }
-
-                    _qualityInterpretationCodes =
-                        HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
-                }
-
-                return _qualityInterpretationCodes;
+                return _lutQualityInterpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
             }
         }
         
@@ -11393,17 +11771,9 @@ namespace HLU.UI.ViewModel
                     // Enable multiple priority habitat types (from the same or different
                     // classifications) to be assigned
                     //
-                    //primaryBap = from r in HluDataset.lut_ihs_habitat
-                    //             where r.code == ihsHabitat && !r.Iscode_bap_priority_habitatNull()
-                    //             select r.code_bap_priority_habitat;
-
-                    //q = (from r in HluDataset.lut_primary
-                    //     join b in HluDataset.lut_primary_bap_habitat on r.code equals b.code_primary
-                    //     where r.code == primaryHabitat
-                    //     select b.bap_habitat).ToArray();
-                    q = (from b in HluDataset.lut_primary_bap_habitat
-                         where b.code_primary == primaryHabitat
-                         select b.bap_habitat).ToArray();
+                    q = (from pb in _lutPrimaryBapHabitat
+                         where pb.code_primary == primaryHabitat
+                         select pb.bap_habitat).ToArray();
 
                     // If any primary bap habitats have been found
                     primaryBap = null;
@@ -11414,14 +11784,14 @@ namespace HLU.UI.ViewModel
                 catch { }
             }
 
-            // Get the BAP habitats associated with the secondary habitats
+            // Get the BAP habitats associated with all of the secondary habitats
             if (secondaryHabitats != null)
             {
                 try
                 {
-                    q = (from b in HluDataset.lut_secondary_bap_habitat
-                         join s in secondaryHabitats on b.code_secondary equals s.secondary_habitat
-                         select b.bap_habitat).ToArray();
+                    q = (from sb in _lutSecondaryBapHabitat
+                         join s in secondaryHabitats on sb.code_secondary equals s.secondary_habitat
+                         select sb.bap_habitat).ToArray();
 
                     // If any secondary bap habitats have been found
                     secondaryBap = null;
@@ -11599,25 +11969,17 @@ namespace HLU.UI.ViewModel
         /// <value>
         /// The list of boundary map codes.
         /// </value>
-        public DataView BoundaryMapCodes
+        public HluDataSet.lut_boundary_mapRow[] BoundaryMapCodes
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (HluDataset.lut_boundary_map.IsInitialized && HluDataset.lut_boundary_map.Count == 0)
+                if (_boundaryMapCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (_hluTableAdapterMgr.lut_boundary_mapTableAdapter == null)
-                        _hluTableAdapterMgr.lut_boundary_mapTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_boundary_mapDataTable, HluDataSet.lut_boundary_mapRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_boundary_mapDataTable) }, false);
-
-                    string sortCols = String.Concat(HluDataset.lut_boundary_map.sort_orderColumn.ColumnName, ", ", HluDataset.lut_boundary_map.descriptionColumn.ColumnName);
-                    HluDataset.lut_boundary_map.DefaultView.Sort = sortCols;
+                    // Get the list of values from the lookup table.
+                    _boundaryMapCodes = _lutBoundaryMap.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
-                return HluDataset.lut_boundary_map.DefaultView;
+                return _boundaryMapCodes;
             }
         }
         
@@ -11785,20 +12147,11 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
                 if (_conditionCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_condition.IsInitialized && (HluDataset.lut_condition.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_conditionTableAdapter == null)
-                            _hluTableAdapterMgr.lut_conditionTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_conditionDataTable, HluDataSet.lut_conditionRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_conditionDataTable) }, false);
-                    }
+                    // Get the list of values from the lookup table.
+                    _conditionCodes = _lutCondition.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
-                    // Load all local condition codes.
-                    _conditionCodes = HluDataset.lut_condition.Where(r => r.is_local).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 // Return the list of condition codes, with the clear row if applicable.
@@ -11807,11 +12160,13 @@ namespace HLU.UI.ViewModel
                     !_incidConditionRows[0].IsNull(HluDataset.incid_condition.conditionColumn))
 
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_conditionRow clearRow = HluDataset.lut_condition.Newlut_conditionRow();
                     clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_conditionRow[] { clearRow }.Concat(_conditionCodes).ToArray();
                 }
                 else
@@ -11889,20 +12244,11 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
                 if (_conditionQualifierCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_condition_qualifier.IsInitialized && (HluDataset.lut_condition_qualifier.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_condition_qualifierTableAdapter == null)
-                            _hluTableAdapterMgr.lut_condition_qualifierTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_condition_qualifierDataTable, HluDataSet.lut_condition_qualifierRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_condition_qualifierDataTable) }, false);
-                    }
+                    // Get the list of values from the lookup table.
+                    _conditionQualifierCodes = _lutConditionQualifier.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
-                    // Load all local condition qualifier codes.
-                    _conditionQualifierCodes = HluDataset.lut_condition_qualifier.Where(r => r.is_local).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _conditionQualifierCodes;
@@ -12096,33 +12442,22 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
                 if (_qualityDeterminationCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_quality_determination.IsInitialized &&
-                        HluDataset.lut_quality_determination.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_quality_determinationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_quality_determinationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_quality_determinationDataTable,
-                                    HluDataSet.lut_quality_determinationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_quality_determinationDataTable) }, false);
-                    }
-
-                    _qualityDeterminationCodes =
-                        HluDataset.lut_quality_determination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Get the list of values from the lookup table.
+                    _qualityDeterminationCodes = _lutQualityDetermination.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray(); ;
                 }
 
                 // Return the list of determination codes, with the clear row if applicable.
                 if (!String.IsNullOrEmpty(IncidQualityDetermination))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_quality_determinationRow clearRow = HluDataset.lut_quality_determination.Newlut_quality_determinationRow();
                     clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_quality_determinationRow[] { clearRow }.Concat(_qualityDeterminationCodes).ToArray();
                 }
                 else
@@ -12181,33 +12516,22 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                // Get the list of values from the lookup table.
                 if (_qualityInterpretationCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_quality_interpretation.IsInitialized &&
-                        HluDataset.lut_quality_interpretation.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_quality_interpretationTableAdapter == null)
-                            _hluTableAdapterMgr.lut_quality_interpretationTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_quality_interpretationDataTable,
-                                    HluDataSet.lut_quality_interpretationRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_quality_interpretationDataTable) }, false);
-                    }
-
-                    _qualityInterpretationCodes =
-                        HluDataset.lut_quality_interpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    // Get the list of values from the lookup table.
+                    _qualityInterpretationCodes = _lutQualityInterpretation.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray(); ;
                 }
 
                 // Return the list of interpretation codes, with the clear row if applicable.
                 if (!String.IsNullOrEmpty(IncidQualityInterpretation))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_quality_interpretationRow clearRow = HluDataset.lut_quality_interpretation.Newlut_quality_interpretationRow();
                     clearRow.code = _codeDeleteRow;
                     clearRow.description = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_quality_interpretationRow[] { clearRow }.Concat(_qualityInterpretationCodes).ToArray();
                 }
                 else
@@ -12469,17 +12793,7 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (_sourceNames == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_sources.IsInitialized &&
-                        HluDataset.lut_sources.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_sourcesTableAdapter == null)
-                            _hluTableAdapterMgr.lut_sourcesTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_sourcesDataTable, HluDataSet.lut_sourcesRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset,
-                            new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
-                    }
-                    _sourceNames = HluDataset.lut_sources.OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
+                    _sourceNames = _lutSources.OrderBy(r => r.sort_order).ThenBy(r => r.source_name).ToArray();
                 }
 
                 return _sourceNames;
@@ -12499,18 +12813,7 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (_sourceHabitatClassCodes == null)
                 {
-                    // Load the kookup table is not already loaded.
-                    if (HluDataset.lut_habitat_class.IsInitialized &&
-                        HluDataset.lut_habitat_class.Rows.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_classTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_classTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_classDataTable, HluDataSet.lut_habitat_classRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_classDataTable) }, false);
-                    }
-
-                    // Only load habitat classes that are flagged as local.
-                    _sourceHabitatClassCodes = HluDataset.lut_habitat_class.Where(r => r.is_local)
+                    _sourceHabitatClassCodes = _lutHabitatClass
                         .OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
@@ -12531,16 +12834,7 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (_sourceImportanceCodes == null)
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_importance.IsInitialized && (HluDataset.lut_importance.Rows.Count == 0))
-                    {
-                        if (_hluTableAdapterMgr.lut_importanceTableAdapter == null)
-                            _hluTableAdapterMgr.lut_importanceTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_importanceDataTable, HluDataSet.lut_importanceRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_importanceDataTable) }, false);
-                    }
-
-                    _sourceImportanceCodes = HluDataset.lut_importance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+                    _sourceImportanceCodes = _lutImportance.OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
                 }
 
                 return _sourceImportanceCodes;
@@ -12562,7 +12856,7 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public Visibility ShowSource1Number
+        public Visibility ShowSourceNumbers
         {
             get
             {
@@ -12592,11 +12886,13 @@ namespace HLU.UI.ViewModel
                 // exclude the clear row in bulk update mode
                 if ((IncidSource1Id != null) && (IncidSource1Id != Int32.MinValue))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
@@ -12728,20 +13024,12 @@ namespace HLU.UI.ViewModel
                 // Get the list of values from the lookup table.
                 if (!String.IsNullOrEmpty(IncidSource1HabitatClass))
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
-                    }
-
-                    // Only load habitat types that are flagged as local.
-                    HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource1HabitatClass && r.is_local)
+                    // Load the habitat types for the selected habitat class.
+                    HluDataSet.lut_habitat_typeRow[] retArray = _lutHabitatType
+                        .Where(r => r.habitat_class_code == IncidSource1HabitatClass)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
 
+                    // Set the habitat type if there is only one
                     if ((retArray.Length == 1) && (IncidSource1Id != null))
                     {
                         IncidSource1HabitatType = retArray[0].code;
@@ -12835,41 +13123,21 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public Visibility ShowSource2Number
-        {
-            get
-            {
-                if ((bool)_showGroupHeaders)
-                    return Visibility.Hidden;
-                else
-                    return Visibility.Visible;
-            }
-        }
-
         public HluDataSet.lut_sourcesRow[] Source2Names
         {
             get
             {
-                // Load the lookup table if not already loaded.
-                if (HluDataset.lut_sources.IsInitialized &&
-                    HluDataset.lut_sources.Count == 0)
-                {
-                    if (_hluTableAdapterMgr.lut_sourcesTableAdapter == null)
-                        _hluTableAdapterMgr.lut_sourcesTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_sourcesDataTable, HluDataSet.lut_sourcesRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
-                }
-
                 // Return the list of source names, with the clear row if applicable, but
                 // exclude the clear row in bulk update mode
                 if ((IncidSource2Id != null) && (IncidSource2Id != Int32.MinValue))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the <Clear> row
                     return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
@@ -12993,27 +13261,19 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public DataRow[] Source2HabitatTypeCodes
+        public HluDataSet.lut_habitat_typeRow[] Source2HabitatTypeCodes
         {
             get
             {
                 // Get the list of values from the lookup table
                 if (!String.IsNullOrEmpty(IncidSource2HabitatClass))
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
-                    }
-
-                    // Only load habitat types that are flagged as local.
-                    HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource2HabitatClass && r.is_local)
+                    // Load the habitat types for the selected habitat class.
+                    HluDataSet.lut_habitat_typeRow[] retArray = _lutHabitatType
+                        .Where(r => r.habitat_class_code == IncidSource2HabitatClass)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
 
+                    // Set the habitat type if there is only one
                     if ((retArray.Length == 1) && (IncidSource2Id != null))
                     {
                         IncidSource2HabitatType = retArray[0].code;
@@ -13107,41 +13367,21 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public Visibility ShowSource3Number
-        {
-            get
-            {
-                if ((bool)_showGroupHeaders)
-                    return Visibility.Hidden;
-                else
-                    return Visibility.Visible;
-            }
-        }
-
         public HluDataSet.lut_sourcesRow[] Source3Names
         {
             get
             {
-                // Get the list of values from the lookup table.
-                if (HluDataset.lut_sources.IsInitialized &&
-                    HluDataset.lut_sources.Count == 0)
-                {
-                    if (_hluTableAdapterMgr.lut_sourcesTableAdapter == null)
-                        _hluTableAdapterMgr.lut_sourcesTableAdapter =
-                            new HluTableAdapter<HluDataSet.lut_sourcesDataTable, HluDataSet.lut_sourcesRow>(_db);
-                    _hluTableAdapterMgr.Fill(HluDataset,
-                        new Type[] { typeof(HluDataSet.lut_sourcesDataTable) }, false);
-                }
-
                 // Return the list of source names, with the clear row if applicable, but
                 // exclude the clear row in bulk update mode
                 if ((IncidSource3Id != null) && (IncidSource3Id != Int32.MinValue))
                 {
+                    // Define the <Clear> row
                     HluDataSet.lut_sourcesRow clearRow = HluDataset.lut_sources.Newlut_sourcesRow();
                     clearRow.source_id = -1;
                     clearRow.source_name = _codeDeleteRow;
                     clearRow.sort_order = -1;
 
+                    // Add the clear row
                     return new HluDataSet.lut_sourcesRow[] { clearRow }.Concat(SourceNames).ToArray();
                 }
                 else
@@ -13285,27 +13525,19 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public DataRow[] Source3HabitatTypeCodes
+        public HluDataSet.lut_habitat_typeRow[] Source3HabitatTypeCodes
         {
             get
             {
                 // Get the list of values from the lookup table
                 if (!String.IsNullOrEmpty(IncidSource3HabitatClass))
                 {
-                    // Load the lookup table if not already loaded.
-                    if (HluDataset.lut_habitat_type.IsInitialized && HluDataset.lut_habitat_type.Count == 0)
-                    {
-                        if (_hluTableAdapterMgr.lut_habitat_typeTableAdapter == null)
-                            _hluTableAdapterMgr.lut_habitat_typeTableAdapter =
-                                new HluTableAdapter<HluDataSet.lut_habitat_typeDataTable, HluDataSet.lut_habitat_typeRow>(_db);
-                        _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_typeDataTable) }, false);
-                    }
-
-                    // Only load habitat types that are flagged as local.
-                    HluDataSet.lut_habitat_typeRow[] retArray = HluDataset.lut_habitat_type
-                        .Where(r => r.habitat_class_code == IncidSource3HabitatClass && r.is_local)
+                    // Load the habitat types for the selected habitat class.
+                    HluDataSet.lut_habitat_typeRow[] retArray = _lutHabitatType
+                        .Where(r => r.habitat_class_code == IncidSource3HabitatClass)
                         .OrderBy(r => r.sort_order).ThenBy(r => r.name).ToArray();
 
+                    // Set the habitat type if there is only one
                     if ((retArray.Length == 1) && (IncidSource3Id != null))
                     {
                         IncidSource3HabitatType = retArray[0].code;

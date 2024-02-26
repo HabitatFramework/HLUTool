@@ -432,13 +432,13 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Enable control when the IHS habitat has changed.
+        /// Enable control when the primary habitat has changed.
         /// </summary>
         public bool EnableDeleteOrphanBapHabitats
         {
             get
             {
-                // Enable the control if the IHS habitat has changed
+                // Enable the control if the primary habitat has changed
                 if (_primaryHabitatChanged == true)
                 {
                     return true;
@@ -452,13 +452,13 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Enable control when the IHS habitat has changed.
+        /// Enable control when the primary habitat has changed.
         /// </summary>
         public bool EnableDeletePotentialBapHabitats
         {
             get
             {
-                // Enable the control if the IHS habitat has changed
+                // Enable the control if the primary habitat has changed
                 if (_primaryHabitatChanged == true)
                 {
                     return true;
@@ -493,14 +493,14 @@ namespace HLU.UI.ViewModel
 
         /// <summary>
         /// Enable control when not in OSMM Bulk Update mode and
-        /// the IHS habitat has changed.
+        /// the primary habitat has changed.
         /// </summary>
         public bool EnableDeleteSecondaryCodes
         {
             get
             {
                 // Enable the control if not in OSMM Bulk Update mode and
-                // the IHS habitat has changed
+                // the primary habitat has changed
                 if ((_osmmBulkUpdateMode == false) && (_primaryHabitatChanged == true))
                 {
                     return true;

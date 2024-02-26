@@ -1265,5 +1265,55 @@ namespace HLU.Properties {
                 this["BulkUpdateDeleteIHSCodes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowHabitatSuggestions {
+            get {
+                return ((bool)(this["ShowHabitatSuggestions"]));
+            }
+            set {
+                this["ShowHabitatSuggestions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2019;Initial Catalog=HLUData_v401;Integrated Securit" +
+            "y=True")]
+        public string HLUData_v401ConnectionString {
+            get {
+                return ((string)(this["HLUData_v401ConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowHabitatSummary {
+            get {
+                return ((bool)(this["ShowHabitatSummary"]));
+            }
+            set {
+                this["ShowHabitatSummary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public bool ShowSourceHabitatGroup {
+            get {
+                return ((bool)(this["ShowSourceHabitatGroup"]));
+            }
+            set {
+                this["ShowSourceHabitatGroup"] = value;
+            }
+        }
     }
 }
