@@ -20925,11 +20925,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string habprimary {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.habprimaryColumn]));
+                    if (this.IshabprimaryNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habprimary\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid_mm_polygons.habprimaryColumn]));
                     }
                 }
                 set {
@@ -20941,11 +20941,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string habsecond {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.habsecondColumn]));
+                    if (this.IshabsecondNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'habsecond\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid_mm_polygons.habsecondColumn]));
                     }
                 }
                 set {
@@ -20957,11 +20957,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string determqty {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.determqtyColumn]));
+                    if (this.IsdetermqtyNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'determqty\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid_mm_polygons.determqtyColumn]));
                     }
                 }
                 set {
@@ -20973,11 +20973,11 @@ namespace HLU.Data.Model {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public string interpqty {
                 get {
-                    try {
-                        return ((string)(this[this.tableincid_mm_polygons.interpqtyColumn]));
+                    if (this.IsinterpqtyNull()) {
+                        return null;
                     }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'interpqty\' in table \'incid_mm_polygons\' is DBNull.", e);
+                    else {
+                        return ((string)(this[this.tableincid_mm_polygons.interpqtyColumn]));
                     }
                 }
                 set {

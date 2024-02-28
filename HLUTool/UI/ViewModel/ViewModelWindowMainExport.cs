@@ -92,7 +92,7 @@ namespace HLU.UI.ViewModel
             // export fields then exit.
             if (_viewModelMain.HluDataset.exports.Count == 0)
             {
-                MessageBox.Show("Cannot export: there are no export formats defined.",
+                MessageBox.Show("Cannot export: There are no export formats defined.",
                     "HLU: Export", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }

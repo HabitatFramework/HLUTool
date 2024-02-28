@@ -406,7 +406,7 @@ namespace HLU
                     // cannot enable if it's already in unavailable state
                     if (_enableState == esriExtensionState.esriESUnavailable)
                     {
-                        throw new COMException("Cannot enable extension.");
+                        throw new COMException("Cannot enable extension");
                     }
 
                     // determine if state can be changed
