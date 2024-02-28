@@ -59,25 +59,31 @@ namespace HLU.UI.ViewModel
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
-                MessageBox.Show("Cannot logically merge: nothing is selected on the map.", "HLU: Logical Merge",
+                MessageBox.Show("Cannot logically merge: Nothing is selected on the map.", "HLU: Logical Merge",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
             else if (_viewModelMain.GisSelection.Rows.Count <= 1)
             {
-                MessageBox.Show("Cannot merge: map selection must contain more than one feature for a merge.",
+                MessageBox.Show("Cannot logically merge: Map selection must contain more than one feature for a merge.",
                     "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
-            else if (_viewModelMain.IncidsSelectedMapCount > 1)
+            else if (!_viewModelMain.CheckToidFragCounts())
             {
-                // selected features do not share same incid
-                return PerformLogicalMerge(false);
+                MessageBox.Show("Cannot logically merge: One or more selected map features missing from database.",
+                    "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
             }
             else if ((_viewModelMain.ToidsSelectedMapCount == 1) && (_viewModelMain.IncidsSelectedMapCount > 1))
             {
                 // selected features share same toid but not incid
                 return PerformLogicalMerge(true);
+            }
+            else if (_viewModelMain.IncidsSelectedMapCount > 1)
+            {
+                // selected features do not share same incid
+                return PerformLogicalMerge(false);
             }
             else
                 return false;
@@ -97,14 +103,20 @@ namespace HLU.UI.ViewModel
         {
             if ((_viewModelMain.GisSelection == null) || (_viewModelMain.GisSelection.Rows.Count == 0))
             {
-                MessageBox.Show("Cannot physically merge: nothing is selected on the map.", "HLU: Physical Merge",
+                MessageBox.Show("Cannot physically merge: Nothing is selected on the map.", "HLU: Physical Merge",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
             else if (_viewModelMain.GisSelection.Rows.Count <= 1)
             {
-                MessageBox.Show("Cannot physically merge: map selection must contain more than one feature for a merge.",
+                MessageBox.Show("Cannot physically merge: Map selection must contain more than one feature for a merge.",
                     "HLU: Physical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return false;
+            }
+            else if (!_viewModelMain.CheckToidFragCounts())
+            {
+                MessageBox.Show("Cannot physically merge: One or more selected map features missing from database.",
+                    "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
             else if ((_viewModelMain.IncidsSelectedMapCount == 1) && (_viewModelMain.ToidsSelectedMapCount == 1))
@@ -128,6 +140,7 @@ namespace HLU.UI.ViewModel
             bool success = true;
             try
             {
+                // Double check - this shouldn't be true
                 if (_viewModelMain.IncidsSelectedMapCount <= 0)
                     return false;
 
