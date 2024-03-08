@@ -6019,6 +6019,22 @@ namespace HLU.UI.ViewModel
         {
             try
             {
+                // Check there are no outstanding edits.
+                MessageBoxResult userResponse = CheckDirty();
+
+                // Process based on the response ...
+                // Yes = update the current record first then move to the new incid
+                // No = move to the new incid
+                // Cancel = don't move to the new incid
+                switch (userResponse)
+                {
+                    case MessageBoxResult.Yes:
+                    case MessageBoxResult.No:
+                        return;
+                    case MessageBoxResult.Cancel:
+                        return;
+                }
+
                 ChangeCursor(Cursors.Wait, "Filtering ...");
 
                 DispatcherHelper.DoEvents();
@@ -7666,16 +7682,24 @@ namespace HLU.UI.ViewModel
             {
                 if (CanUpdate)
                 {
-                    userResponse = _saving ? MessageBoxResult.Yes :
-                        MessageBox.Show("The current record has been changed.\n" +
-                        "Would you like to save your changes?", "HLU: Save",
-                        MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    //userResponse = _saving ? MessageBoxResult.Yes :
+                    //    MessageBox.Show("The current record has been changed.\n" +
+                    //    "Would you like to save your changes?", "HLU: Save",
+                    //    MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    userResponse = MessageBox.Show("The current record has been changed." +
+                        "\n\nWould you like to leave this record discarding your changes?",
+                        "HLU: Selection", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
+                        MessageBoxResult.No);
+                    if (userResponse == MessageBoxResult.Yes)
+                        userResponse = MessageBoxResult.No;
+                    else
+                        userResponse = MessageBoxResult.Cancel;
                 }
                 else if (!HaveGisApp)
                 {
                     MessageBox.Show("There is no GIS application known to be running.\n" +
                         "Without a GIS application the GIS layer cannot be synchronized.\n" +
-                        "Therefore updates are disabled.", "HLU: Save",
+                        "Therefore updates are disabled.", "HLU: Selection",
                         MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     userResponse = MessageBoxResult.Yes;
                 }
@@ -7684,7 +7708,7 @@ namespace HLU.UI.ViewModel
                     userResponse = MessageBox.Show("The current record has been changed, " +
                         "but it cannot be saved at this time because it is in error." +
                         "\n\nWould you like to leave this record discarding your changes?",
-                        "HLU: Save", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
+                        "HLU: Selection", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
                         MessageBoxResult.No);
                     if (userResponse == MessageBoxResult.Yes)
                         userResponse = MessageBoxResult.No;
