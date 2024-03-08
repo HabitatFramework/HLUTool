@@ -94,6 +94,7 @@ namespace HLU.UI.ViewModel
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
         private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
         private int _qualityValidation = Settings.Default.QualityValidation;
+        private int _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
 
         // Filter options
         private int? _getValueRows = Settings.Default.GetValueRows;
@@ -258,6 +259,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
             Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
             Settings.Default.QualityValidation = _qualityValidation;
+            Settings.Default.PotentialPriorityDetermQtyValidation = _potentialPriorityDetermQtyValidation;
 
             // Filter options
             Settings.Default.GetValueRows = (int)_getValueRows;
@@ -949,6 +951,36 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the quality validation options.
+        /// </summary>
+        /// <value>
+        /// The quality validation options.
+        /// </value>
+        public PotentialPriorityDetermQtyValidationOptions[] PotentialPriorityDetermQtyValidationOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(PotentialPriorityDetermQtyValidationOptions)).Cast<PotentialPriorityDetermQtyValidationOptions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the quality validation choice.
+        /// </summary>
+        /// <value>
+        /// The quality validation choice.
+        /// </value>
+        public PotentialPriorityDetermQtyValidationOptions? PotentialPriorityDetermQtyValidation
+        {
+            get { return (PotentialPriorityDetermQtyValidationOptions)_potentialPriorityDetermQtyValidation; }
+            set
+            {
+                _potentialPriorityDetermQtyValidation = (int)value;
+            }
+        }
         #endregion
 
         #region Filter

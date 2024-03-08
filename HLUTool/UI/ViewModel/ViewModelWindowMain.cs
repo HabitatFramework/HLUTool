@@ -100,6 +100,16 @@ namespace HLU.UI.ViewModel
         Mandatory
     };
 
+    /// <summary>
+    /// An enumeration of the different options for whether
+    /// to validate potential priority habitat quality determination.
+    /// </summary>
+    public enum PotentialPriorityDetermQtyValidationOptions
+    {
+        Ignore,
+        Error
+    };
+
     public class ViewModelWindowMain : ViewModelBase, IDataErrorInfo
     {
         #region Enums
@@ -244,6 +254,7 @@ namespace HLU.UI.ViewModel
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
         private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
         private int _qualityValidation = Settings.Default.QualityValidation;
+        private int _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
 
         // Filter options
         private int _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;
@@ -320,7 +331,7 @@ namespace HLU.UI.ViewModel
 
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroupsValid;
         private HluDataSet.lut_secondary_groupRow[] _secondaryGroups;
-        public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll;  // Used in the options window
+        public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll; // Used in the options window
         private HluDataSet.lut_secondaryRow[] _secondaryCodesAll;
         private HluDataSet.lut_secondaryRow[] _secondaryCodesValid;
 
@@ -634,6 +645,9 @@ namespace HLU.UI.ViewModel
 
                 // Get the BAP determination quality defaults
                 GetBapDefaults();
+
+                // Set the validation option for potential priority habitats
+                BapEnvironment.PotentialPriorityDetermQtyValidation = _potentialPriorityDetermQtyValidation;
 
                 // Read the selected features from the map
                 if (haveSplashWin)
@@ -4227,6 +4241,8 @@ namespace HLU.UI.ViewModel
                 _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
                 SecondaryHabitat.SecondaryCodeValidation = _secondaryCodeValidation; // Set in the secondary habitat environment
                 _qualityValidation = Settings.Default.QualityValidation;
+                _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
+                BapEnvironment.PotentialPriorityDetermQtyValidation = _potentialPriorityDetermQtyValidation; // Used in the priority habitat environment
 
                 // Filter options
                 _warnBeforeGISSelect = Settings.Default.WarnBeforeGISSelect;

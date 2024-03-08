@@ -45,6 +45,7 @@ namespace HLU.Data
         private string _quality_interpretation_bak;
         string _error;
         private static IEnumerable<BapEnvironment> _bapEnvironmentList;
+        private static int _potentialPriorityDetermQtyValidation;
 
         public readonly static string BAPDetQltyUserAdded = Settings.Default.BAPDeterminationQualityUserAdded;
         public readonly static string BAPDetQltyUserAddedDesc = Settings.Default.BAPDeterminationQualityUserAddedDesc;
@@ -82,9 +83,6 @@ namespace HLU.Data
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
             // Update the _interpretation_comments string directly, rather than via the property,
             // so that the Changed flag is not set.
-            //
-            //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
-            //    null : dataRow.interpretation_comments;
             if (dataRow.IsNull(table.interpretation_commentsColumn))
                 _interpretation_comments = null;
             else
@@ -103,9 +101,6 @@ namespace HLU.Data
             _quality_interpretation = dataRow.IsNull(table.quality_interpretationColumn) ? null : dataRow.quality_interpretation;
             // Update the _interpretation_comments string directly, rather than via the property,
             // so that the Changed flag is not set.
-            //
-            //this.interpretation_comments = dataRow.IsNull(table.interpretation_commentsColumn) ?
-            //    null : dataRow.interpretation_comments;
             if (dataRow.IsNull(table.interpretation_commentsColumn))
                 _interpretation_comments = null;
             else
@@ -125,8 +120,6 @@ namespace HLU.Data
             _quality_interpretation = itemArray[4].ToString();
             // Update the _interpretation_comments string directly, rather than via the property,
             // so that the Changed flag is not set.
-            //
-            //this.interpretation_comments = itemArray[5].ToString();
             if (itemArray[5].ToString() == null)
                 _interpretation_comments = null;
             else
@@ -145,8 +138,6 @@ namespace HLU.Data
             _quality_interpretation = quality_interpretation;
             // Update the _interpretation_comments string directly, rather than via the property,
             // so that the Changed flag is not set.
-            //
-            //this.interpretation_comments = interpretation_comments;
             if (interpretation_comments == null)
                 _interpretation_comments = null;
             else
@@ -190,6 +181,11 @@ namespace HLU.Data
         public static IEnumerable<BapEnvironment> BapEnvironmentList
         {
             set { _bapEnvironmentList = value; }
+        }
+
+        public static int PotentialPriorityDetermQtyValidation
+        {
+            set { _potentialPriorityDetermQtyValidation = value; }
         }
 
         public bool BulkUpdateMode
@@ -525,55 +521,59 @@ namespace HLU.Data
                         }
                         else
                         {
+                            // If this is a secondary priority habitat (i.e. in the secondary list).
                             if (_secondaryPriorityHabitat)
                             {
-                                //
-                                // Validate that if this is a secondary priority habitat (i.e. in
-                                // the secondary list) and the habitat is to be ignored (i.e. it equals
-                                // 'None') then the determination quality can be anything except
-                                // 'Not present but close to definition').
+                                // If the habitat is to be ignored (i.e. it equals 'None').
                                 if (bap_habitat == BAPHabitatIgnore)
                                 {
                                     //---------------------------------------------------------------------
                                     // CHANGED: CR49 Process bulk OSMM Updates
-                                    if (quality_determination == BAPDetQltyUserAdded)
+                                    // Validate that the determination quality can be anything EXCEPT
+                                    // 'Not present but close to definition' or 
+                                    // 'Previously present, but may no longer exist'.
+                                    if (quality_determination == BAPDetQltyUserAdded)       // i.e. 'Not present but close to definition'
                                     {
                                         return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
                                             BAPDetQltyUserAddedDesc);
                                     }
-                                    else if (quality_determination == BAPDetQltyPrevious)
+                                    else if (quality_determination == BAPDetQltyPrevious)   // i.e. 'Previously present, but may no longer exist'
                                     {
                                         return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
                                             BAPDetQltyPreviousDesc);
                                     }
                                     //---------------------------------------------------------------------
                                 }
-
-                                //
-                                // Validate that if this is a secondary priority habitat (i.e. in
-                                // the secondary list) and the habitat is not to be ignored (i.e. it
-                                // does not equal 'None') then the determination quality can only be
-                                // 'Not present but close to definition').
+                                // habitat is not to be ignored (i.e. it is NOT 'None').
                                 else
                                 {
-                                    //---------------------------------------------------------------------
-                                    // CHANGED: CR49 Process bulk OSMM Updates
-                                    if ((quality_determination != BAPDetQltyUserAdded)
-                                    && (quality_determination != BAPDetQltyPrevious))
+                                    // If potential priority habitat determination quality is
+                                    // to be validated.
+                                    if (_potentialPriorityDetermQtyValidation == 1)
                                     {
-                                        return String.Format("Error: Determination quality for potential priority habitats can only be '{0}' or '{1}'",
-                                            BAPDetQltyUserAddedDesc, BAPDetQltyPreviousDesc);
+                                        //---------------------------------------------------------------------
+                                        // CHANGED: CR49 Process bulk OSMM Updates
+                                        // Validate that the determination quality can ONLY be
+                                        // 'Not present but close to definition' or
+                                        // 'Previously present, but may no longer exist'.
+                                        if ((quality_determination != BAPDetQltyUserAdded)
+                                        && (quality_determination != BAPDetQltyPrevious))
+                                        {
+                                            return String.Format("Error: Determination quality for potential priority habitats can only be '{0}' or '{1}'",
+                                                BAPDetQltyUserAddedDesc, BAPDetQltyPreviousDesc);
+                                        }
+                                        //---------------------------------------------------------------------
                                     }
-                                    //---------------------------------------------------------------------
                                 }
                             }
-                            // Validate that if this is not a secondary priority habitat (i.e. in
-                            // the primary list) then the determination quality can be anything except
-                            // 'Not present but close to definition').
+                            // If this is a real priority habitat (i.e. not 'None')
                             else
                             {
                                 //---------------------------------------------------------------------
                                 // CHANGED: CR49 Process bulk OSMM Updates
+                                // Validate that the determination quality can be anything EXCEPT
+                                // 'Not present but close to definition' or 
+                                // 'Previously present, but may no longer exist'.
                                 if ((quality_determination == BAPDetQltyUserAdded))
                                 {
                                     return String.Format("Error: Determination quality cannot be '{0}' for priority habitats",
