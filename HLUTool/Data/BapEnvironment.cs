@@ -51,7 +51,6 @@ namespace HLU.Data
         public readonly static string BAPDetQltyUserAddedDesc = Settings.Default.BAPDeterminationQualityUserAddedDesc;
         public readonly static string BAPDetQltyPrevious = Settings.Default.BAPDeterminationQualityPrevious;
         public readonly static string BAPDetQltyPreviousDesc = Settings.Default.BAPDeterminationQualityPreviousDesc;
-        public readonly static string BAPHabitatIgnore = Settings.Default.BAPHabitatIgnore;
 
         #endregion
 
@@ -392,38 +391,18 @@ namespace HLU.Data
             }
             else
             {
-                // Validate that if this is a secondary priority habitat (i.e. in
-                // the secondary list) and the habitat is to be ignored (i.e. it equals
-                // 'None') then the determination quality can be anything except
-                // 'Not present but close to definition' or 'Previously present, but may no longer exist').
+                // If this is a user-added priority habitat (i.e. in the secondary list).
                 if (isSecondary)
                 {
-                    if (bap_habitat == BAPHabitatIgnore)
+                    // If potential priority habitat determination quality is
+                    // to be validated.
+                    if (_potentialPriorityDetermQtyValidation == 1)
                     {
                         //---------------------------------------------------------------------
                         // CHANGED: CR49 Process bulk OSMM Updates
-                        if (quality_determination == BAPDetQltyUserAdded)
-                        {
-                            sbError.Append(Environment.NewLine)
-                                .Append(String.Format("Determination quality for 'None' priority habitats cannot be '{0}'",
-                                BAPDetQltyUserAddedDesc));
-                        }
-                        else if (quality_determination == BAPDetQltyPrevious)
-                        {
-                            sbError.Append(Environment.NewLine)
-                                .Append(String.Format("Determination quality for 'None' priority habitats cannot be '{0}'",
-                                BAPDetQltyPreviousDesc));
-                        }
-                        //---------------------------------------------------------------------
-                    }
-                    // Validate that if this is a secondary priority habitat (i.e. in
-                    // the secondary list) and the habitat is NOT to be ignored (i.e. it
-                    // does not equal 'None') then the determination quality can only be
-                    // 'Not present but close to definition' or 'Previously present, but may no longer exist').
-                    else
-                    {
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR49 Process bulk OSMM Updates
+                        // Validate that the determination quality can ONLY be
+                        // 'Not present but close to definition' or
+                        // 'Previously present, but may no longer exist'.
                         if ((quality_determination != BAPDetQltyUserAdded)
                         && (quality_determination != BAPDetQltyPrevious))
                         {
@@ -434,27 +413,26 @@ namespace HLU.Data
                         //---------------------------------------------------------------------
                     }
                 }
-                // Validate that if this is not a secondary priority habitat (i.e. in
-                // the primary list) then the determination quality can be anything except
-                // 'Not present but close to definition').
+                // If this is not a secondary priority habitat (i.e. in the primary
+                // list).
                 else
                 {
-                    if (!isSecondary)
+                    //---------------------------------------------------------------------
+                    // CHANGED: CR49 Process bulk OSMM Updates
+                    // Validate that the determination quality can be anything EXCEPT
+                    // 'Not present but close to definition' or 
+                    // 'Previously present, but may no longer exist'.
+                    if (quality_determination == BAPDetQltyUserAdded)
                     {
-                        //---------------------------------------------------------------------
-                        // CHANGED: CR49 Process bulk OSMM Updates
-                        if (quality_determination == BAPDetQltyUserAdded)
-                        {
-                            sbError.Append(Environment.NewLine)
-                                .Append(String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats", BAPDetQltyUserAddedDesc));
-                        }
-                        else if (quality_determination == BAPDetQltyPrevious)
-                        {
-                            sbError.Append(Environment.NewLine)
-                                .Append(String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats", BAPDetQltyPreviousDesc));
-                        }
-                        //---------------------------------------------------------------------
+                        sbError.Append(Environment.NewLine)
+                            .Append(String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats", BAPDetQltyUserAddedDesc));
                     }
+                    else if (quality_determination == BAPDetQltyPrevious)
+                    {
+                        sbError.Append(Environment.NewLine)
+                            .Append(String.Format("Determination quality cannot be '{0}' for 'primary' priority habitats", BAPDetQltyPreviousDesc));
+                    }
+                    //---------------------------------------------------------------------
                 }
             }
 
@@ -521,52 +499,28 @@ namespace HLU.Data
                         }
                         else
                         {
-                            // If this is a secondary priority habitat (i.e. in the secondary list).
+                            // If this is a user-added priority habitat (i.e. in the secondary list).
                             if (_secondaryPriorityHabitat)
                             {
-                                // If the habitat is to be ignored (i.e. it equals 'None').
-                                if (bap_habitat == BAPHabitatIgnore)
+                                // If potential priority habitat determination quality is
+                                // to be validated.
+                                if (_potentialPriorityDetermQtyValidation == 1)
                                 {
                                     //---------------------------------------------------------------------
                                     // CHANGED: CR49 Process bulk OSMM Updates
-                                    // Validate that the determination quality can be anything EXCEPT
-                                    // 'Not present but close to definition' or 
+                                    // Validate that the determination quality can ONLY be
+                                    // 'Not present but close to definition' or
                                     // 'Previously present, but may no longer exist'.
-                                    if (quality_determination == BAPDetQltyUserAdded)       // i.e. 'Not present but close to definition'
+                                    if ((quality_determination != BAPDetQltyUserAdded)
+                                    && (quality_determination != BAPDetQltyPrevious))
                                     {
-                                        return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
-                                            BAPDetQltyUserAddedDesc);
-                                    }
-                                    else if (quality_determination == BAPDetQltyPrevious)   // i.e. 'Previously present, but may no longer exist'
-                                    {
-                                        return String.Format("Error: Determination quality for 'None' priority habitats cannot be '{0}'",
-                                            BAPDetQltyPreviousDesc);
+                                        return String.Format("Error: Determination quality for potential priority habitats can only be '{0}' or '{1}'",
+                                            BAPDetQltyUserAddedDesc, BAPDetQltyPreviousDesc);
                                     }
                                     //---------------------------------------------------------------------
                                 }
-                                // habitat is not to be ignored (i.e. it is NOT 'None').
-                                else
-                                {
-                                    // If potential priority habitat determination quality is
-                                    // to be validated.
-                                    if (_potentialPriorityDetermQtyValidation == 1)
-                                    {
-                                        //---------------------------------------------------------------------
-                                        // CHANGED: CR49 Process bulk OSMM Updates
-                                        // Validate that the determination quality can ONLY be
-                                        // 'Not present but close to definition' or
-                                        // 'Previously present, but may no longer exist'.
-                                        if ((quality_determination != BAPDetQltyUserAdded)
-                                        && (quality_determination != BAPDetQltyPrevious))
-                                        {
-                                            return String.Format("Error: Determination quality for potential priority habitats can only be '{0}' or '{1}'",
-                                                BAPDetQltyUserAddedDesc, BAPDetQltyPreviousDesc);
-                                        }
-                                        //---------------------------------------------------------------------
-                                    }
-                                }
                             }
-                            // If this is a real priority habitat (i.e. not 'None')
+                            // If this is an automatic priority habitat.
                             else
                             {
                                 //---------------------------------------------------------------------

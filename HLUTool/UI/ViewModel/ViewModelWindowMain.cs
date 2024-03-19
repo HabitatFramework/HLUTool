@@ -375,6 +375,7 @@ namespace HLU.UI.ViewModel
         private bool _editMode;
         private bool _pasting = false;
         private bool _changed = false;
+        private bool _readingMap = false;
         private bool _saving = false;
         private bool _closing = false;
         private bool _autoSplit = true;
@@ -1926,17 +1927,18 @@ namespace HLU.UI.ViewModel
                 if ((check == false) || (MessageBox.Show("Close HLU Tool. Are you sure?", "HLU: Exit", MessageBoxButton.YesNo,
                         MessageBoxImage.Question) == MessageBoxResult.Yes))
                 {
-                    // Indicate the application is already closing.
+                    // Indicate the application is closing.
                     _closing = true;
                     //---------------------------------------------------------------------
 
                     // Check there are no outstanding edits.
+                    _readingMap = false;
                     MessageBoxResult userResponse = CheckDirty();
 
                     switch (userResponse)
                     {
                         case MessageBoxResult.Yes:
-                            if (!_viewModelUpd.Update()) return;
+                            //if (!_viewModelUpd.Update()) return;
                             break;
                         case MessageBoxResult.No:
                             break;
@@ -2943,6 +2945,7 @@ namespace HLU.UI.ViewModel
             else
             {
                 // Check there are no outstanding edits.
+                _readingMap = false;
                 MessageBoxResult userResponse = CheckDirty();
 
                 // Ask the user if they want to apply the
@@ -2950,8 +2953,7 @@ namespace HLU.UI.ViewModel
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
-                        // Apply the outstanding edits.
-                        if (!_viewModelUpd.Update()) return;
+                        //if (!_viewModelUpd.Update()) return;
                         break;
                     case MessageBoxResult.No:
                         break;
@@ -3173,12 +3175,13 @@ namespace HLU.UI.ViewModel
             if (_osmmUpdateMode == false)
             {
                 // Check there are no outstanding edits.
+                _readingMap = false;
                 MessageBoxResult userResponse = CheckDirty();
 
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
-                        if (!_viewModelUpd.Update()) return;
+                        //if (!_viewModelUpd.Update()) return;
                         break;
                     case MessageBoxResult.No:
                         break;
@@ -3191,6 +3194,18 @@ namespace HLU.UI.ViewModel
 
                 OnPropertyChanged("CanOSMMAccept");
                 OnPropertyChanged("CanOSMMSkip");
+
+                // If there is nothing selected force the form to be cleared
+                // and open the OSMM Updates query window.
+                if (_incidSelection == null || _incidSelection.Rows.Count == 0)
+                {
+                    // Clear all the form fields (except the habitat class
+                    // and habitat type).
+                    ClearForm();
+
+                    // Open the OSMM Updates query window.
+                    OpenWindowQueryOSMM(true);
+                }
 
                 // Start the OSMM update mode
                 _viewModelOSMMUpdate.StartOSMMUpdate();
@@ -3343,7 +3358,8 @@ namespace HLU.UI.ViewModel
                 // for the current filter.
                 return (IsFiltered &&
                         _osmmUpdating == false &&
-                        _osmmUpdatesEmpty == false);
+                        _osmmUpdatesEmpty == false &&
+                        _incidOSMMUpdatesStatus != null);
             }
         }
 
@@ -3431,8 +3447,11 @@ namespace HLU.UI.ViewModel
                 // Prevent OSMM updates being actioned too quickly.
                 // Check if there are no proposed OSMM Updates
                 // for the current filter.
-                return (_osmmUpdating == false && _osmmUpdatesEmpty == false &&
-                    (_incidOSMMUpdatesStatus == null || (_incidOSMMUpdatesStatus > 0 || _incidOSMMUpdatesStatus < -1)));
+                return (_osmmUpdating == false &&
+                    _osmmUpdatesEmpty == false &&
+                    _incidOSMMUpdatesStatus != null &&
+                    (_incidOSMMUpdatesStatus > 0 || _incidOSMMUpdatesStatus < -1));
+                    //(_incidOSMMUpdatesStatus == null || (_incidOSMMUpdatesStatus > 0 || _incidOSMMUpdatesStatus < -1)));
                 //---------------------------------------------------------------------
             }
         }
@@ -3779,12 +3798,13 @@ namespace HLU.UI.ViewModel
             if (_osmmBulkUpdateMode == false)
             {
                 // Check there are no outstanding edits.
+                _readingMap = false;
                 MessageBoxResult userResponse = CheckDirty();
 
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
-                        if (!_viewModelUpd.Update()) return;
+                        //if (!_viewModelUpd.Update()) return;
                         break;
                     case MessageBoxResult.No:
                         break;
@@ -5004,22 +5024,21 @@ namespace HLU.UI.ViewModel
                         }
                         else
                         {
-                            // TODO: Check working - don't reset filter when feature not found in GIS
-                            ////---------------------------------------------------------------------
-                            //// FIX: 110 Clear selection when not found in GIS.
-                            ////
-                            //// Restore the previous selection (filter).
-                            ////_incidSelection = incidSelectionBackup;
+                            //---------------------------------------------------------------------
+                            // FIX: 110 Clear selection when not found in GIS.
+                            //
+                            // Restore the previous selection (filter).
+                            //_incidSelection = incidSelectionBackup;
 
-                            //// Clear the selection (filter).
-                            //_incidSelection = null;
+                            // Clear the selection (filter).
+                            _incidSelection = null;
 
-                            //// Indicate the selection didn't come from the map.
-                            //_filterByMap = false;
+                            // Indicate the selection didn't come from the map.
+                            _filterByMap = false;
 
-                            //// Set the filter back to the first incid.
-                            //SetFilter();
-                            ////---------------------------------------------------------------------
+                            // Set the filter back to the first incid.
+                            SetFilter();
+                            //---------------------------------------------------------------------
 
                             // Reset the cursor back to normal.
                             ChangeCursor(Cursors.Arrow, null);
@@ -5032,7 +5051,7 @@ namespace HLU.UI.ViewModel
                     else
                     {
                         //---------------------------------------------------------------------
-                        // FIX: 110 Clear selection when not found in GIS.
+                        // FIX: 110 Clear selection when not found in the database.
                         //
                         // Restore the previous selection (filter).
                         //_incidSelection = incidSelectionBackup;
@@ -6039,14 +6058,16 @@ namespace HLU.UI.ViewModel
                 MessageBoxResult userResponse = CheckDirty();
 
                 // Process based on the response ...
-                // Yes = update the current record first then move to the new incid
+                // Yes = move to the new incid
                 // No = move to the new incid
                 // Cancel = don't move to the new incid
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
+                        //if (!_viewModelUpd.Update()) return;
+                        break;
                     case MessageBoxResult.No:
-                        return;
+                        break;
                     case MessageBoxResult.Cancel:
                         return;
                 }
@@ -6089,8 +6110,15 @@ namespace HLU.UI.ViewModel
                     }
                     //---------------------------------------------------------------------
 
+                    // Set flag so that the user isn't prompted to save
+                    // any pending edits (again).
+                    _readingMap = true;
+
                     // Set the filter to the first incid.
                     SetFilter();
+
+                    // Reset the flag again.
+                    _readingMap = false;
 
                     // Perform physical split if the conditions are met.
                     if (_autoSplit && (_gisSelection != null) && (_gisSelection.Rows.Count > 1) && (_incidsSelectedMapCount == 1) &&
@@ -7137,12 +7165,12 @@ namespace HLU.UI.ViewModel
             }
             finally
             {
-                //TODO: Check not needed as counted after moving incid
+                // Not needed as counted after moving incid
                 // Count the number of toids and fragments for the current incid
                 // selected in the GIS and in the database.
                 //CountToidFrags();
 
-                //TODO: Check not needed as refreshed after moving incid
+                // Not needed as refreshed after moving incid
                 // Refresh all the status type fields.
                 //RefreshStatus();
             }
@@ -7577,19 +7605,19 @@ namespace HLU.UI.ViewModel
             get { return _incidCurrentRowIndex; }
             set
             {
-                // Check there are no outstanding edits.
-                MessageBoxResult userResponse = CheckDirty();
+                MessageBoxResult userResponse = MessageBoxResult.No;
+                // Check there are no outstanding edits (unless this has
+                // already been checked before reading the map selection).
+                if (!_readingMap)
+                    userResponse = CheckDirty();
 
                 // Process based on the response ...
-                // Yes = update the current record first then move to the new incid
+                // Yes = move to the new incid
                 // No = move to the new incid
                 // Cancel = don't move to the new incid
                 switch (userResponse)
                 {
                     case MessageBoxResult.Yes:
-                        // Update the current incid
-                        if (_viewModelUpd.Update())
-                            goto case MessageBoxResult.No;
                         break;
                     case MessageBoxResult.No:
                         //---------------------------------------------------------------------
@@ -7698,14 +7726,10 @@ namespace HLU.UI.ViewModel
             {
                 if (CanUpdate)
                 {
-                    //userResponse = _saving ? MessageBoxResult.Yes :
-                    //    MessageBox.Show("The current record has been changed.\n" +
-                    //    "Would you like to save your changes?", "HLU: Save",
-                    //    MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                     userResponse = MessageBox.Show("The current record has been changed." +
                         "\n\nWould you like to leave this record discarding your changes?",
                         "HLU: Selection", MessageBoxButton.YesNo, MessageBoxImage.Exclamation,
-                        MessageBoxResult.No);
+                        MessageBoxResult.Yes);
                     if (userResponse == MessageBoxResult.Yes)
                         userResponse = MessageBoxResult.No;
                     else
@@ -7717,7 +7741,7 @@ namespace HLU.UI.ViewModel
                         "Without a GIS application the GIS layer cannot be synchronized.\n" +
                         "Therefore updates are disabled.", "HLU: Selection",
                         MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    userResponse = MessageBoxResult.Yes;
+                    userResponse = MessageBoxResult.Cancel;
                 }
                 else
                 {
@@ -7732,7 +7756,7 @@ namespace HLU.UI.ViewModel
                         userResponse = MessageBoxResult.Cancel;
                 }
 
-                // Restore the current row if the user doesn't want save
+                // Restore the current row if the user doesn't want to save.
                 if (userResponse == MessageBoxResult.No) RestoreIncidCurrentRow();
             }
 
@@ -7797,12 +7821,6 @@ namespace HLU.UI.ViewModel
                 // Flag that the current record has not been changed yet so that the
                 // apply button does not appear.
                 Changed = false;
-
-                //TODO: Move incid - Check needed?
-                // without this IncidIhsHabitat becomes null, called from IhsHabitatCodes, when coming 
-                // from a previous row with valid IHS habitat code 
-                // (seemingly alternating rows when browsing, i.e. 1 ok, 2 wrong, 3 ok, ...)
-                //_incidIhsHabitat = null;
 
                 // Get the incid table values
                 IncidCurrentRowDerivedValuesRetrieve();
@@ -7923,7 +7941,9 @@ namespace HLU.UI.ViewModel
         /// Count the number of toids and fragments for all incid
         /// selected in the GIS and in the database.
         /// </summary>
-        public bool CheckToidFragCounts()
+        /// <param name="physicalSplit">if set to <c>true</c> [physical split].</param>
+        /// <returns></returns>
+        public bool CountSelectedToidFrags(bool physicalSplit)
         {
             foreach (DataRow row in _incidSelection.Rows)
             {
@@ -7968,9 +7988,25 @@ namespace HLU.UI.ViewModel
                 toidsIncidSelectionDbCount = (int)_db.ExecuteScalar(_sqlToidsDbCount,
                     _db.Connection.ConnectionTimeout, CommandType.Text);
 
-                if ((toidsIncidSelectionGisCount > toidsIncidSelectionDbCount) ||
-                    (fragsIncidSelectionGisCount > fragsIncidSelectionDbCount))
-                    return false;
+                if (physicalSplit)
+                {
+                    // Check there aren't more incids in GIS than in the
+                    // database, and there is at least one fragment in the
+                    // database.
+                    // There will be more fragments in GIS than the database
+                    // prior to a physical split so don't check this.
+                    if ((toidsIncidSelectionGisCount > toidsIncidSelectionDbCount) ||
+                        (fragsIncidSelectionDbCount == 0))
+                        return false;
+                }
+                else
+                {
+                    // Check there aren't more incids or fragments in GIS than
+                    // in the database.
+                    if ((toidsIncidSelectionGisCount > toidsIncidSelectionDbCount) ||
+                        (fragsIncidSelectionGisCount > fragsIncidSelectionDbCount))
+                        return false;
+                }
             }
 
             return true;
@@ -13902,7 +13938,12 @@ namespace HLU.UI.ViewModel
 
         # region History Tab
 
-        //TODO: History - display new history fields and labels
+        /// <summary>
+        /// Gets the incid history and formats it ready for display in the form.
+        /// </summary>
+        /// <value>
+        /// The incid history.
+        /// </value>
         public IEnumerable<string> IncidHistory
         {
             get
@@ -13943,25 +13984,16 @@ namespace HLU.UI.ViewModel
                                 // Only show the previous incid if it was different
                                 modified_incid = !r.Ismodified_incidNull() ? String.Format("{0}", r.modified_incid == r.incid ? null : "\n\tPrevious INCID: " + r.modified_incid) : String.Empty,
 
-                                //// Only show the previous values if they are not null and different
                                 //modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
-                                //    //!r.Ismodified_habprimaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty : String.Empty,
-                                //    !r.Ismodified_habprimaryNull() ? String.Format("{0}", r.modified_habprimary == IncidCurrentRow.habitat_primary ? null : "\n\tPrevious Primary: " + r.modified_habprimary) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habprimaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty : String.Empty,
                                 //modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
-                                //    //!r.Ismodified_habsecondNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty : String.Empty,
-                                //    !r.Ismodified_habsecondNull() ? String.Format("{0}", r.modified_habsecond == IncidCurrentRow.habitat_secondaries ? null : "\n\tPrevious Secondaries: " + r.modified_habsecond) : String.Empty : String.Empty,
-                                //modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
-                                //    //r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
-                                //    r.lut_quality_determinationRow != null ? String.Format("{0}", r.modified_modified_determqty == IncidCurrentRow.quality_determination ? null : "\n\tPrevious Determination: " + r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
-                                //modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?
-                                //    //r.lut_quality_interpretationRow != null ? String.Format("\n\tPrevious Interpretation: {0}", r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
-                                //    r.lut_quality_interpretationRow != null ? String.Format("{0}", r.modified_modified_interpqty == IncidCurrentRow.quality_interpretation ? null : "\n\tPrevious Interpretation: " + r.lut_quality_interpretationRow.description) : String.Empty : String.Empty,
+                                //    !r.Ismodified_habsecondNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty : String.Empty,
+                                modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
+                                    String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty,
+                                modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
+                                    String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty,
 
                                 // Only show the previous values if they are not null
-                                modified_primary = displayHistoryColumns.Count(hc => hc.ColumnName == "habprimary") == 1 ?
-                                    !r.Ismodified_habprimaryNull() ? String.Format("\n\tPrevious Primary: {0}", r.modified_habprimary) : String.Empty : String.Empty,
-                                modified_secondaries = displayHistoryColumns.Count(hc => hc.ColumnName == "habsecond") == 1 ?
-                                    !r.Ismodified_habsecondNull() ? String.Format("\n\tPrevious Secondaries: {0}", r.modified_habsecond) : String.Empty : String.Empty,
                                 modified_determination = displayHistoryColumns.Count(hc => hc.ColumnName == "determqty") == 1 ?
                                     r.lut_quality_determinationRow != null ? String.Format("\n\tPrevious Determination: {0}", r.lut_quality_determinationRow.description) : String.Empty : String.Empty,
                                 modified_intepretation = displayHistoryColumns.Count(hc => hc.ColumnName == "interpqty") == 1 ?
@@ -13973,7 +14005,6 @@ namespace HLU.UI.ViewModel
 
                                 String.Format("\n\tProcess: {0}", g.Key.modified_process) +
                                 String.Format("\n\tReason: {0}", g.Key.modified_reason) +
-                                //String.Format("\n\tOperation: {0}", g.Key.modified_operation) +
 
                                 g.Key.modified_incid +
                                 g.Key.modified_primary +
@@ -14794,15 +14825,21 @@ namespace HLU.UI.ViewModel
                     // Warnings with in Bulk Update mode.
                     //    
                     case "NumIncidSelectedMap":
-                        if (_incidsSelectedMapCount < _incidsSelectedDBCount)
+                        if (_incidsSelectedMapCount == 0)
+                            error = "Warning: No database incids are selected in map";
+                        else if (_incidsSelectedMapCount < _incidsSelectedDBCount)
                             error = "Warning: Not all database incids are selected in map";
                         break;
                     case "NumToidSelectedMap":
-                        if (_toidsSelectedMapCount < _toidsSelectedDBCount)
+                        if (_toidsSelectedMapCount == 0)
+                            error = "Warning: No database toids are selected in map";
+                        else if (_toidsSelectedMapCount < _toidsSelectedDBCount)
                             error = "Warning: Not all database toids are selected in map";
                         break;
                     case "NumFragmentsSelectedMap":
-                        if (_fragsSelectedMapCount < _fragsSelectedDBCount)
+                        if (_fragsSelectedMapCount == 0)
+                            error = "Warning: No database fragments are selected in map";
+                        else if (_fragsSelectedMapCount < _fragsSelectedDBCount)
                             error = "Warning: Not all database fragments are selected in map";
                         break;
                     case "IncidOSMMUpdateStatus":

@@ -69,7 +69,7 @@ namespace HLU.UI.ViewModel
                     "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
-            else if (!_viewModelMain.CheckToidFragCounts())
+            else if (!_viewModelMain.CountSelectedToidFrags(false))
             {
                 MessageBox.Show("Cannot logically merge: One or more selected map features missing from database.",
                     "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -113,7 +113,7 @@ namespace HLU.UI.ViewModel
                     "HLU: Physical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
-            else if (!_viewModelMain.CheckToidFragCounts())
+            else if (!_viewModelMain.CountSelectedToidFrags(false))
             {
                 MessageBox.Show("Cannot physically merge: One or more selected map features missing from database.",
                     "HLU: Logical Merge", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -434,7 +434,7 @@ namespace HLU.UI.ViewModel
                         if (historyTable == null)
                             throw new Exception("GIS merge operation failed.");
 
-                        // Update the history table to reflect there is no only one feature
+                        // Update the history table to reflect there is now only one feature
                         DataTable resultTable = historyTable.Clone();
                         DataRow resultRow = historyTable.AsEnumerable().FirstOrDefault(r =>
                             r.Field<string>(_viewModelMain.HluDataset.history.toidfragidColumn.ColumnName) == newToidFragmentID);
