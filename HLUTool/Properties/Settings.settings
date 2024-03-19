@@ -169,9 +169,6 @@
     <Setting Name="SourceImportanceApply3" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">C</Value>
     </Setting>
-    <Setting Name="BAPHabitatIgnore" Roaming="true" Type="System.String" Scope="User">
-      <Value Profile="(Default)">PHAP-NONE</Value>
-    </Setting>
     <Setting Name="SubsetUpdateAction" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>

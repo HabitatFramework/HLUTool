@@ -722,7 +722,7 @@
 										<Label x:Name="LabelSubsetUpdateAction"
 											   Grid.Row="0"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Action To Take When Updating Incid Subset"/>
 										<ComboBox x:Name="ComboBoxSubsetUpdateAction"
@@ -745,13 +745,13 @@
 										<Label x:Name="LabelClearIHSUpdateAction"
 											   Grid.Row="0"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="When To Clear IHS Codes After Update"/>
 										<ComboBox x:Name="ComboBoxClearIHSUpdateAction"
 												  Grid.Row="0"
 												  Grid.Column="1"
-												  Margin="4,4,4,8"
+												  Margin="4,4,4,4"
 												  BorderThickness="1"
 												  ItemsSource="{Binding ClearIHSUpdateActions}"
 												  SelectedValue="{Binding ClearIHSUpdateAction, ValidatesOnDataErrors=True}"
@@ -768,13 +768,13 @@
 										<Label x:Name="LabelNotifyOnSplitMerge"
 											   Grid.Row="0"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Notify After Completing Split/Merge"/>
 										<CheckBox x:Name="CheckBoxNotifyOnSplitMerge"
 												  Grid.Row="0"
 												  Grid.Column="1"
-												  Margin="4,4,4,8"
+												  Margin="4,4,4,4"
 												  HorizontalAlignment="Center"
 												  VerticalAlignment="Center"
 												  IsChecked="{Binding NotifyOnSplitMerge}" />
@@ -789,7 +789,7 @@
 										<Label x:Name="LabelResetOSMMUpdatesStatus"
 											   Grid.Row="0"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Reset Pending OSMM Update Status On Manual Update"/>
 										<CheckBox x:Name="CheckBoxResetOSMMUpdatesStatus"
@@ -826,7 +826,7 @@
 
 										<Label x:Name="LabelSecondaryCodeValidation"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Secondary Code Validation"/>
 										<ComboBox x:Name="ComboBoxSecondaryCodeValidation"
@@ -847,7 +847,7 @@
 
 										<Label x:Name="LabelQualityValidation"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Determination And Quality Interpretation Validation"/>
 										<ComboBox x:Name="ComboBoxQualityValidation"
@@ -860,23 +860,23 @@
 
 									</Grid>
 
-									<Grid x:Name="GridPotentialPriorityDetermQlty" Grid.Row="2">
+									<Grid x:Name="GridPotentialPriorityDetermQltyValidation" Grid.Row="2">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="*" />
 											<ColumnDefinition Width="Auto" MinWidth="100" />
 										</Grid.ColumnDefinitions>
 
-										<Label x:Name="LabelPotentialPriorityDetermQty"
+										<Label x:Name="LabelPotentialPriorityDetermQtyValidation"
 											   Grid.Column="0"
-											   Margin="4,0,4,0"
+											   Margin="4,0,4,4"
 											   HorizontalAlignment="Right"
 											   VerticalAlignment="Center" Content="Potential Priority Habitat Determination Quality Validation"/>
-										<ComboBox x:Name="ComboBoxPotentialPriorityDetermQlty"
+										<ComboBox x:Name="ComboBoxPotentialPriorityDetermQtyValidation"
 												  Grid.Column="1"
-												  Margin="4,4,4,8"
+												  Margin="4,4,4,4"
 												  BorderThickness="1"
-												  ItemsSource="{Binding PotentialPriorityDetermQtyOptions}"
-												  SelectedValue="{Binding PotentialPriorityDetermQty, ValidatesOnDataErrors=True}"
+												  ItemsSource="{Binding PotentialPriorityDetermQtyValidationOptions}"
+												  SelectedValue="{Binding PotentialPriorityDetermQtyValidation, ValidatesOnDataErrors=True}"
 												  Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}" />
 
 									</Grid>

@@ -605,6 +605,7 @@
                              Grid.Row="0"
                              Grid.Column="1"
                              Margin="8,0,4,4"
+							 MinWidth="80"
                              VerticalAlignment="Center"
                              IsReadOnly="True"
                              Text="{Binding Path=Incid,
@@ -1015,8 +1016,8 @@
                                     <RowDefinition Height="Auto" MinHeight="8" />
                                     <RowDefinition Height="Auto" MinHeight="8" />
                                     <RowDefinition Height="{Binding SecondaryTableHeight}" />
-                                    <RowDefinition Height="Auto" MinHeight="6" />
                                     <RowDefinition Height="Auto" MinHeight="8" />
+                                    <RowDefinition Height="*" MinHeight="8" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="19*" />
@@ -3722,7 +3723,7 @@
             <!--  GridStatusOSMM  -->
             <Grid x:Name="GridStatusOSMM"
                   Grid.Row="4"
-                  Margin="0,4,0,0"
+                  Margin="0,4,0,4"
 				  Visibility="{Binding Path=ShowInOSMMUpdateMode}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />

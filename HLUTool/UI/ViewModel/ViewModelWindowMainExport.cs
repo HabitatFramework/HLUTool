@@ -61,6 +61,8 @@ namespace HLU.UI.ViewModel
         private int _managementIdOrdinal;
         private int _complexIdOrdinal;
         private int _bapIdOrdinal;
+        private int _bapTypeOrdinal;
+        private int _bapQualityOrdinal;
         private int _sourceIdOrdinal;
         private List<int> _sourceDateStartOrdinals;
         private List<int> _sourceDateEndOrdinals;
@@ -622,15 +624,6 @@ namespace HLU.UI.ViewModel
                         // foreign key values.
                         string joinType = "LEFT";
                         leftJoined.Add(parentTableAlias);
-                        //if (leftJoined.Contains(currTable))
-                        //{
-                        //    joinType = "LEFT";
-                        //    leftJoined.Add(parentTableAlias);
-                        //}
-                        //else
-                        //{
-                        //    joinType = "INNER";
-                        //}
 
                         if (firstJoin)
                             firstJoin = false;
@@ -665,6 +658,8 @@ namespace HLU.UI.ViewModel
             _managementIdOrdinal = -1;
             _complexIdOrdinal = -1;
             _bapIdOrdinal = -1;
+            _bapTypeOrdinal = -1;
+            _bapQualityOrdinal = -1;
             _sourceIdOrdinal = -1;
             _sourceDateStartOrdinals = new List<int>();
             _sourceDateEndOrdinals = new List<int>();
@@ -1033,6 +1028,56 @@ namespace HLU.UI.ViewModel
             // If any incid_bap fields are in the export file.
             if ((exportFields.Count(f => f.TableName == _viewModelMain.HluDataset.incid_bap.TableName) != 0))
             {
+                // If the bap_habitat_quality column is not included then
+                // add it so that the baps can be sorted by quality.
+                if (_bapQualityOrdinal == -1)
+                {
+                    // Add a field to the input table to get the determination
+                    // quality of the bap habitat so that 'not present' habitats
+                    // are listed after 'present' habitats.
+                    if ((DbFactory.ConnectionType.ToString().ToLower() == "access") ||
+                        (DbFactory.Backend.ToString().ToLower() == "access"))
+                        targetList.Append(String.Format(", IIF({0}.{1} = {2}, 2, IIF({0}.{1} = {3}, 1, 0)) AS {4}",
+                            _viewModelMain.HluDataset.incid_bap.TableName,
+                            _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
+                            _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
+                            _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
+                            "bap_habitat_quality"));
+                    else
+                        targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 2 WHEN {3} THEN 1 ELSE 0 END AS {4}",
+                            _viewModelMain.HluDataset.incid_bap.TableName,
+                            _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
+                            _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
+                            _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
+                            "bap_habitat_quality"));
+                    //// Add the field to the input table.
+                    //targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_bap.TableName,
+                    //    _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName, _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _bapQualityOrdinal = lastFieldOrdinal += 1;
+
+                    // Add the input field position to the list of fields
+                    // that will be used to sort the input records.
+                    sortFields.Add(_bapQualityOrdinal + 1);
+                }
+
+                // If the bap_habitat_type column is not included then
+                // add it so that the baps can be sorted by type.
+                if (_bapTypeOrdinal == -1)
+                {
+                    // Add the field to the input table.
+                    targetList.Append(String.Format(",{0}.{1} AS {2}", _viewModelMain.HluDataset.incid_bap.TableName,
+                        _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName, _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName));
+
+                    // Store the input field ordinal for use later.
+                    _bapTypeOrdinal = lastFieldOrdinal += 1;
+
+                    // Add the input field position to the list of fields
+                    // that will be used to sort the input records.
+                    sortFields.Add(_bapTypeOrdinal + 1);
+                }
+
                 // If the bap_id column is not included then add
                 // it so that different baps can be identified.
                 if (_bapIdOrdinal == -1)
@@ -1044,70 +1089,11 @@ namespace HLU.UI.ViewModel
                     // Store the input field ordinal for use
                     // later as the unique incid_bap field ordinal.
                     _bapIdOrdinal = lastFieldOrdinal += 1;
+
+                    // Add the input field position to the list of fields
+                    // that will be used to sort the input records.
+                    sortFields.Add(_bapIdOrdinal + 1);
                 }
-
-                //---------------------------------------------------------------------
-                // CHANGED: CR43 (Sort multiple fields in exports)
-                //
-                // Add a field to the input table to get the type of
-                // bap habitat so that 'None' habitats are listed after
-                // 'real' habitats.
-                if ((DbFactory.ConnectionType.ToString().ToLower() == "access") ||
-                    (DbFactory.Backend.ToString().ToLower() == "access"))
-                    targetList.Append(String.Format(", IIF({0}.{1} = {2}, 1, 0) AS {3}",
-                        _viewModelMain.HluDataset.incid_bap.TableName,
-                        _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPHabitatIgnore), "bap_habitat_type"));
-                else
-                    targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 1 ELSE 0 END AS {3}",
-                        _viewModelMain.HluDataset.incid_bap.TableName,
-                        _viewModelMain.HluDataset.incid_bap.bap_habitatColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPHabitatIgnore), "bap_habitat_type"));
-
-                // Store the input field ordinal for use later.
-                int bapTypeOrdinal = lastFieldOrdinal += 1;
-
-                // Add the input field position to the list of fields
-                // that will be used to sort the input records.
-                sortFields.Add(bapTypeOrdinal + 1);
-
-                //---------------------------------------------------------------------
-                // CHANGED: CR43 (Sort multiple fields in exports)
-                //
-                // Add a field to the input table to get the determination
-                // quality of the bap habitat so that 'not present' habitats
-                // are listed after 'present' habitats.
-                if ((DbFactory.ConnectionType.ToString().ToLower() == "access") ||
-                    (DbFactory.Backend.ToString().ToLower() == "access"))
-                    targetList.Append(String.Format(", IIF({0}.{1} = {2}, 2, IIF({0}.{1} = {3}, 1, 0)) AS {4}",
-                        _viewModelMain.HluDataset.incid_bap.TableName,
-                        _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
-                        "bap_habitat_quality"));
-                else
-                    targetList.Append(String.Format(", CASE {0}.{1} WHEN {2} THEN 2 WHEN {3} THEN 1 ELSE 0 END AS {4}",
-                        _viewModelMain.HluDataset.incid_bap.TableName,
-                        _viewModelMain.HluDataset.incid_bap.quality_determinationColumn.ColumnName,
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityUserAdded),
-                        _viewModelMain.DataBase.QuoteValue(Settings.Default.BAPDeterminationQualityPrevious),
-                        "bap_habitat_quality"));
-
-                // Store the input field ordinal for use later.
-                int bapQualityOrdinal = lastFieldOrdinal += 1;
-
-                // Add the input field position to the list of fields
-                // that will be used to sort the input records.
-                sortFields.Add(bapQualityOrdinal + 1);
-                //---------------------------------------------------------------------
-
-                //---------------------------------------------------------------------
-                // CHANGED: CR43 (Sort multiple fields in exports)
-                //
-                // Add the input field position to the list of fields
-                // that will be used to sort the input records.
-                sortFields.Add(_bapIdOrdinal + 1);
-                //---------------------------------------------------------------------
             }
 
             // If any incid_source fields are in the export file.

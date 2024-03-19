@@ -53,7 +53,7 @@ namespace HLU.UI.ViewModel
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
-            else if (!_viewModelMain.CheckToidFragCounts())
+            else if (!_viewModelMain.CountSelectedToidFrags(false))
             {
                 MessageBox.Show("Cannot logically split: One or more selected map features missing from database.",
                     "HLU: Logical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -86,7 +86,7 @@ namespace HLU.UI.ViewModel
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
-            else if (!_viewModelMain.CheckToidFragCounts())
+            else if (!_viewModelMain.CountSelectedToidFrags(true))
             {
                 MessageBox.Show("Cannot physically split: One or more selected map features missing from database.",
                     "HLU: Physical Split", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -274,7 +274,7 @@ namespace HLU.UI.ViewModel
 
                 int featCount = (int)_viewModelMain.DataBase.ExecuteScalar(cntSQL,
                     _viewModelMain.DataBase.Connection.ConnectionTimeout, CommandType.Text);
-                if (featCount < 1)
+                if (featCount < 2)
                 {
                     MessageBox.Show(String.Format("Cannot logically split: Feature selected in map is the only" +
                         " feature corresponding to INCID {0}", _viewModelMain.Incid), "HLU: Logical Split",
