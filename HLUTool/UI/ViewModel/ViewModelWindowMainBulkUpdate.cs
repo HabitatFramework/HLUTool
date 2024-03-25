@@ -623,7 +623,7 @@ namespace HLU.UI.ViewModel
                         SecondaryHabitat.SecondaryHabitatList = new ObservableCollection<SecondaryHabitat>();
 
                         // Switch off validation in the secondary habitat environment.
-                        SecondaryHabitat.SecondaryCodeValidation = 0;
+                        SecondaryHabitat.PrimarySecondaryCodeValidation = 0;
 
                         // Get the new secondary habitats list from the lut_osmm_habitat_xref table
                         string newIncidHabitatSecondaries = osmmHabitatXref.ElementAt(0).habitat_secondaries;

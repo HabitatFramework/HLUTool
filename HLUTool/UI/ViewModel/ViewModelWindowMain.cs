@@ -82,9 +82,21 @@ namespace HLU.UI.ViewModel
 
     /// <summary>
     /// An enumeration of the different options for whether
+    /// to validate secondary codes against the habitat type
+    /// mandatory codes.
+    /// </summary>
+    public enum HabitatSecondaryCodeValidationOptions
+    {
+        Ignore,
+        Warning,
+        Error
+    };
+
+    /// <summary>
+    /// An enumeration of the different options for whether
     /// to validate secondary codes against the primary code.
     /// </summary>
-    public enum SecondaryCodeValidationOptions
+    public enum PrimarySecondaryCodeValidationOptions
     {
         Ignore,
         Error
@@ -239,7 +251,7 @@ namespace HLU.UI.ViewModel
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private bool _showIHSTab = Settings.Default.ShowIHSTab;
         private bool _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
-        private bool _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+        private bool _showHabitatSecondariesSuggested = Settings.Default.ShowHabitatSecondariesSuggested;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _showHabitatSummary = Settings.Default.ShowHabitatSummary;
         private string _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
@@ -252,7 +264,8 @@ namespace HLU.UI.ViewModel
         private string _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
-        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private int _habitatSecondaryCodeValidation = Settings.Default.HabitatSecondaryCodeValidation;
+        private int _primarySecondaryCodeValidation = Settings.Default.PrimarySecondaryCodeValidation;
         private int _qualityValidation = Settings.Default.QualityValidation;
         private int _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
 
@@ -298,6 +311,7 @@ namespace HLU.UI.ViewModel
         private IEnumerable<HluDataSet.lut_habitat_classRow> _lutHabitatClass;
         private IEnumerable<HluDataSet.lut_habitat_typeRow> _lutHabitatType;
         private IEnumerable<HluDataSet.lut_habitat_type_primaryRow> _lutHabitatTypePrimary;
+        private IEnumerable<HluDataSet.lut_habitat_type_secondaryRow> _lutHabitatTypeSecondary;
         private IEnumerable<HluDataSet.lut_ihs_complexRow> _lutIhsComplex;
         private IEnumerable<HluDataSet.lut_ihs_formationRow> _lutIhsFormation;
         private IEnumerable<HluDataSet.lut_ihs_habitatRow> _lutIhsHabitat;
@@ -334,6 +348,7 @@ namespace HLU.UI.ViewModel
         public static HluDataSet.lut_secondary_groupRow[] SecondaryGroupsAll; // Used in the options window
         private HluDataSet.lut_secondaryRow[] _secondaryCodesAll;
         private HluDataSet.lut_secondaryRow[] _secondaryCodesValid;
+        private IEnumerable<string> _secondaryCodesMandatory;
 
         private ObservableCollection<SecondaryHabitat> _incidSecondaryHabitats;
 
@@ -353,7 +368,8 @@ namespace HLU.UI.ViewModel
         private string _reason;
         private string _habitatClass;
         private string _habitatType;
-        private string _habitatSuggestions;
+        private string _habitatSecondariesMandatory;
+        private string _habitatSecondariesSuggested;
         private string _habitatTips;
         private string _secondaryGroup;
         private string _secondaryHabitat;
@@ -431,6 +447,7 @@ namespace HLU.UI.ViewModel
         private List<string> _exportMdbs = new List<string>();
         private string _userName;
         private string _appVersion;
+        private bool _betaVersion;
         private string _dbVersion;
         private string _dataVersion;
         private Nullable<bool> _isAuthorisedUser;
@@ -740,7 +757,8 @@ namespace HLU.UI.ViewModel
         private bool CheckVersion()
         {
             // Get the assembly version.
-            String assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            _betaVersion = assemblyVersion.Revision == 0 ? false : true;
 
             // Get the application, database and data versions from the database.
             String lutAppVersion = "0.0.0";
@@ -757,7 +775,7 @@ namespace HLU.UI.ViewModel
                 return false;
             }
 
-            Version assVersion = new Version(assemblyVersion);
+            Version assVersion = new Version(assemblyVersion.ToString(3));
             Version appVersion = new Version(lutAppVersion);
 
             // Compare the assembly and application versions.
@@ -778,7 +796,7 @@ namespace HLU.UI.ViewModel
             }
 
             // Store the application, database and data versions for displaying in the 'About' box.
-            _appVersion = assemblyVersion;
+            _appVersion = assVersion.ToString();
             _dbVersion = lutDbVersion;
             _dataVersion = lutDataVersion;
 
@@ -901,6 +919,25 @@ namespace HLU.UI.ViewModel
 
                 // Get the list of values from the lookup table.
                 _lutHabitatTypePrimary = from htp in HluDataset.lut_habitat_type_primary
+                                         where htp.is_local
+                                         select htp;
+            }
+
+            // Get the list of habitat type secondary values from the lookup table.
+            if (_lutHabitatTypeSecondary == null)
+            {
+                // If the lookup table if not already loaded.
+                if (HluDataset.lut_habitat_type_secondary.IsInitialized && HluDataset.lut_habitat_type_secondary.Count == 0)
+                {
+                    // Load the lookup table.
+                    if (_hluTableAdapterMgr.lut_habitat_type_secondaryTableAdapter == null)
+                        _hluTableAdapterMgr.lut_habitat_type_secondaryTableAdapter =
+                            new HluTableAdapter<HluDataSet.lut_habitat_type_secondaryDataTable, HluDataSet.lut_habitat_type_secondaryRow>(_db);
+                    _hluTableAdapterMgr.Fill(HluDataset, new Type[] { typeof(HluDataSet.lut_habitat_type_secondaryDataTable) }, false);
+                }
+
+                // Get the list of values from the lookup table.
+                _lutHabitatTypeSecondary = from htp in HluDataset.lut_habitat_type_secondary
                                          where htp.is_local
                                          select htp;
             }
@@ -1344,6 +1381,9 @@ namespace HLU.UI.ViewModel
             set
             {
                 _windowHeight = value;
+
+                // Adjsut the secondary table height to fill the space.
+                OnPropertyChanged("SecondaryTableHeight");
             }
         }
 
@@ -4245,7 +4285,7 @@ namespace HLU.UI.ViewModel
                 _showGroupHeaders = Settings.Default.ShowGroupHeaders;
                 _showIHSTab = Settings.Default.ShowIHSTab;
                 _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
-                _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+                _showHabitatSecondariesSuggested = Settings.Default.ShowHabitatSecondariesSuggested;
                 _showNVCCodes = Settings.Default.ShowNVCCodes;
                 _showHabitatSummary = Settings.Default.ShowHabitatSummary;
                 _showOSMMUpdates = Settings.Default.ShowOSMMUpdatesOption;
@@ -4258,8 +4298,9 @@ namespace HLU.UI.ViewModel
                 _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
                 _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
                 _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
-                _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
-                SecondaryHabitat.SecondaryCodeValidation = _secondaryCodeValidation; // Set in the secondary habitat environment
+                _habitatSecondaryCodeValidation = Settings.Default.HabitatSecondaryCodeValidation;
+                _primarySecondaryCodeValidation = Settings.Default.PrimarySecondaryCodeValidation;
+                SecondaryHabitat.PrimarySecondaryCodeValidation = _primarySecondaryCodeValidation; // Set in the secondary habitat environment
                 _qualityValidation = Settings.Default.QualityValidation;
                 _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
                 BapEnvironment.PotentialPriorityDetermQtyValidation = _potentialPriorityDetermQtyValidation; // Used in the priority habitat environment
@@ -4288,7 +4329,7 @@ namespace HLU.UI.ViewModel
                 RefreshGroupHeaders();
 
                 OnPropertyChanged("ShowSourceHabitatGroup");
-                OnPropertyChanged("ShowHabitatSuggestions");
+                OnPropertyChanged("ShowHabitatSecondariesSuggested");
                 OnPropertyChanged("ShowNVCCodes");
                 OnPropertyChanged("ShowHabitatSummary");
                 OnPropertyChanged("ShowIHSTab");
@@ -4390,7 +4431,7 @@ namespace HLU.UI.ViewModel
 
             // Create ViewModel to which main window binds
             _viewModelAbout = new ViewModelWindowAbout();
-            _viewModelAbout.AppVersion = _appVersion;
+            _viewModelAbout.AppVersion = String.Format("{0} {1}", _appVersion, _betaVersion ? "[Beta]" : null);
             _viewModelAbout.DbVersion = _dbVersion;
             _viewModelAbout.DataVersion = _dataVersion;
             _viewModelAbout.ConnectionType = dbBackend;
@@ -8977,12 +9018,14 @@ namespace HLU.UI.ViewModel
             //OnPropertyChanged("HabitatClassCodes");
             OnPropertyChanged("HabitatTypeCodes");
             OnPropertyChanged("HabitatType");
-            OnPropertyChanged("HabitatSuggestions");
+            OnPropertyChanged("HabitatSecondariesMandatory");
+            OnPropertyChanged("HabitatSecondariesSuggested");
             OnPropertyChanged("HabitatTips");
             OnPropertyChanged("HabitatClass");
             OnPropertyChanged("IncidPrimary");
             OnPropertyChanged("NvcCodes");
             OnPropertyChanged("IncidSecondaryHabitats");
+            OnPropertyChanged("HabitatSecondariesMandatory");
             OnPropertyChanged("IncidSecondarySummary");
             OnPropertyChanged("LegacyHabitatCodes");
             OnPropertyChanged("IncidLegacyHabitat");
@@ -9900,6 +9943,18 @@ namespace HLU.UI.ViewModel
                                     && (p.code == htp.code_primary
                                     || (htp.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + htp.code_primary.TrimEnd('*') + @"") == true))
                                     select p).ToArray();
+
+                    // Load all secondary habitat codes where the habitat type
+                    // has one of more mandatory codes.
+                    IEnumerable<HluDataSet.lut_secondaryRow> secondaryCodesMandatory = (from hts in _lutHabitatTypeSecondary
+                                                join s in _lutSecondary on hts.code_secondary equals s.code
+                                                where hts.code_habitat_type == _habitatType
+                                                && hts.mandatory == 1
+                                                select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
+
+                    // Store the list of mandatory secondary codes.
+                    _secondaryCodesMandatory = secondaryCodesMandatory.Select(hts => hts.code);
+                    _habitatSecondariesMandatory = string.Join(",", _secondaryCodesMandatory);
                 }
                 else
                 {
@@ -9908,7 +9963,14 @@ namespace HLU.UI.ViewModel
                     _primaryCodes = (from p in _lutPrimary
                                     join c in _lutPrimaryCategory on p.category equals c.code
                                     select p).ToArray();
+
+                    // Clear the list of mandatory secondary codes.
+                    _secondaryCodesMandatory = new List<string>();
+                    _habitatSecondariesMandatory = null;
                 }
+
+                // Refresh the mandatory habitat secondaries and tips
+                OnPropertyChanged("HabitatSecondariesMandatory");
 
                 OnPropertyChanged("PrimaryCodes");
                 OnPropertyChanged("PrimaryEnabled");
@@ -9917,18 +9979,50 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Only show the habitat suggestions if the option is set, otherwise collapse it.
+        /// Only show the mandatory habitat secondaries if required.
         /// </summary>
-        public Visibility ShowHabitatSuggestions
+        public Visibility ShowHabitatSecondariesMandatory
         {
             get
             {
-                // If should be showing the habitat suggestions
-                if (_showHabitatSuggestions)
+                if (_habitatSecondaryCodeValidation > 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Hidden;
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets the string of mandatory secondaries that are related to the
+        /// selected habitat type. It is used as an aid to the user to help
+        /// select the correct secondary habitats.
+        /// </summary>
+        /// <value>
+        /// The string of suggested habitat secondaries related to the current
+        /// habitat type.
+        /// </value>
+        public string HabitatSecondariesMandatory
+        {
+            get
+            {
+                return _habitatSecondariesMandatory;
+            }
+        }
+
+        /// <summary>
+        /// Only show the suggested habitat secondaries if the option is set, otherwise collapse it.
+        /// </summary>
+        public Visibility ShowHabitatSecondariesSuggested
+        {
+            get
+            {
+                // If should be showing the suggested habitat secondaries
+                if (_showHabitatSecondariesSuggested)
                 {
                     return Visibility.Visible;
                 }
-                else  // If shouldn't be showing habitat suggestions
+                else  // If shouldn't be showing suggested habitat secondaries
                 {
                     return Visibility.Collapsed;
                 }
@@ -9937,18 +10031,19 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Gets the string of habitat suggestions that are related to the
-        /// selected habitat type. It is used as an aid to the user to help
-        /// select the correct primary and secondary habitats.
+        /// Gets the string of suggested secondaries that are related to the
+        /// selected habitat type and primary habitat. It is used as an aid
+        /// to the user to help select the correct primary and secondary habitats.
         /// </summary>
         /// <value>
-        /// The string of habitat suggestions related to the current habitat type.
+        /// The string of suggested habitat secondaries related to the current
+        /// habitat type and primary habitat.
         /// </value>
-        public string HabitatSuggestions
+        public string HabitatSecondariesSuggested
         {
             get
             {
-                return _habitatSuggestions;
+                return _habitatSecondariesSuggested;
             }
         }
 
@@ -10068,9 +10163,9 @@ namespace HLU.UI.ViewModel
                                      || (htp.code_primary.EndsWith("*") && Regex.IsMatch(p.code, @"\A" + htp.code_primary.TrimEnd('*') + @"") == true))
                                      select p).ToArray();
 
-                    // Set the habitat suggestions and tips based on the current
+                    // Set the secondary habitat suggested and tips based on the current
                     // primary code and habitat type.
-                    _habitatSuggestions = null;
+                    _habitatSecondariesSuggested = null;
                     _habitatTips = null;
                     if (_incidPrimary != null && _habitatType != null)
                     {
@@ -10081,7 +10176,7 @@ namespace HLU.UI.ViewModel
                                  select htp);
                         if (q.Count() > 0)
                         {
-                            _habitatSuggestions = q.ElementAt(0).habitat_secondaries;
+                            _habitatSecondariesSuggested = q.ElementAt(0).habitat_secondaries;
                             _habitatTips = q.ElementAt(0).comments;
                         }
                     }
@@ -10089,8 +10184,8 @@ namespace HLU.UI.ViewModel
                     // Set the list of secondary codes for the primary habitat.
                     NewPrimaryHabitat(_incidPrimary);
 
-                    // Refresh the habitat suggestions and tips
-                    OnPropertyChanged("HabitatSuggestions");
+                    // Refresh the suggested habitat secondaries and tips
+                    OnPropertyChanged("HabitatSecondariesSuggested");
                     OnPropertyChanged("HabitatTips");
 
                     // Refresh the BAP habitat environments (in case secondary codes
@@ -10341,8 +10436,8 @@ namespace HLU.UI.ViewModel
             {
                 if (!String.IsNullOrEmpty(_incidPrimary) && !String.IsNullOrEmpty(_secondaryGroup))
                 {
-                    // If the secondary codes must be valid
-                    if (_secondaryCodeValidation > 0)
+                    // If the primary/secondary codes must be valid
+                    if (_primarySecondaryCodeValidation > 0)
                     {
                         if (_secondaryGroup == "<All>")
                         {
@@ -10458,14 +10553,15 @@ namespace HLU.UI.ViewModel
         {
             get
             {
-                int newTableHeight = 353;
+                // Set the default table height
+                int newTableHeight = WindowHeight - 454;
 
-                // Adjust the minimum height if the source habitat group is showing.
+                // Adjust the height if the source habitat group is showing.
                 if (_showSourceHabitatGroup)
                     newTableHeight -= 61;
 
-                // Adjust the height if the habitat suggestions text is showing.
-                if (_showHabitatSuggestions)
+                // Adjust the height if the habitat secondaries suggested text is showing.
+                if (_showHabitatSecondariesSuggested)
                     newTableHeight -= 24;
 
                 // Adjust the height if the NVC codes text is showing.
@@ -10569,8 +10665,8 @@ namespace HLU.UI.ViewModel
             // Set the new list of secondary habitat rows for the class.
             SecondaryHabitat.SecondaryHabitatList = _incidSecondaryHabitats;
 
-            // Set the validation type in the secondary habitat environment.
-            SecondaryHabitat.SecondaryCodeValidation = _secondaryCodeValidation;
+            // Set the validation option in the secondary habitat environment.
+            SecondaryHabitat.PrimarySecondaryCodeValidation = _primarySecondaryCodeValidation;
 
             // Check if there are any errors in the secondary habitat records to see
             // if the Habitats tab label should be flagged as also in error.
@@ -10586,6 +10682,7 @@ namespace HLU.UI.ViewModel
                 DelErrorList(ref _habitatErrors, "SecondaryHabitat");
 
             OnPropertyChanged("IncidSecondaryHabitats");
+            OnPropertyChanged("HabitatSecondariesMandatory");
             OnPropertyChanged("HabitatTabLabel");
         }
 
@@ -10675,6 +10772,7 @@ namespace HLU.UI.ViewModel
                     DelErrorList(ref _habitatErrors, "SecondaryHabitat");
 
                 OnPropertyChanged("IncidSecondaryHabitats");
+                OnPropertyChanged("HabitatSecondariesMandatory");
                 OnPropertyChanged("HabitatTabLabel");
             }
         }
@@ -10708,6 +10806,7 @@ namespace HLU.UI.ViewModel
             // Refresh secondary table and summary.
             RefreshSecondaryHabitats();
             OnPropertyChanged("IncidSecondarySummary");
+            OnPropertyChanged("HabitatSecondariesMandatory");
 
             // Refresh the BAP habitat environments (in case secondary codes
             // are, or should be, reflected).
@@ -14648,6 +14747,20 @@ namespace HLU.UI.ViewModel
                 if (String.IsNullOrEmpty(IncidPrimary) && _bulkUpdateMode == false)
                     error.Append(Environment.NewLine).Append("Primary Habitat is mandatory for every INCID");
 
+                if (_habitatSecondaryCodeValidation > 1)
+                {
+                    if (_secondaryCodesMandatory != null && _secondaryCodesMandatory.Count() > 0)
+                    {
+                        IEnumerable<string> secondaryCodes = _incidSecondaryHabitats.Select(c => c.secondary_habitat);
+
+                        if ((secondaryCodes == null) ||
+                            (_secondaryCodesMandatory.Except(secondaryCodes).Any()))
+                        {
+                            error.Append("One or more mandatory secondary habitats for habitat type not found");
+                        }
+                    }
+                }
+
                 // If there are any IHS field errors then show an error on the tab label.
                 if (HabitatErrors != null && HabitatErrors.Count > 0)
                     error.Append(Environment.NewLine).Append("One or more habitat fields are in error");
@@ -14737,6 +14850,46 @@ namespace HLU.UI.ViewModel
                         else
                         {
                             DelErrorList(ref _habitatErrors, columnName);
+                        }
+                        OnPropertyChanged("HabitatTabLabel");
+                        break;
+                    case "HabitatSecondariesMandatory":
+                        if (_habitatSecondaryCodeValidation > 0)
+                        {
+                            if (_secondaryCodesMandatory != null && _secondaryCodesMandatory.Count() > 0)
+                            {
+                                IEnumerable<string> secondaryCodes = _incidSecondaryHabitats.Select(c => c.secondary_habitat);
+
+                                if ((secondaryCodes == null) ||
+                                    (_secondaryCodesMandatory.Except(secondaryCodes).Any()))
+                                {
+                                    if (_habitatSecondaryCodeValidation > 1)
+                                    {
+                                        AddErrorList(ref _habitatErrors, columnName);
+                                        error = "Error: One or more mandatory secondary habitats for habitat type not found";
+                                    }
+                                    else
+                                    {
+                                        AddErrorList(ref _habitatWarnings, columnName);
+                                        error = "Warning: One or more mandatory secondary habitats for habitat type not found";
+                                    }
+                                }
+                                else
+                                {
+                                    DelErrorList(ref _habitatErrors, columnName);
+                                    DelErrorList(ref _habitatWarnings, columnName);
+                                }
+                            }
+                            else
+                            {
+                                DelErrorList(ref _habitatErrors, columnName);
+                                DelErrorList(ref _habitatWarnings, columnName);
+                            }
+                        }
+                        else
+                        {
+                            DelErrorList(ref _habitatErrors, columnName);
+                            DelErrorList(ref _habitatWarnings, columnName);
                         }
                         OnPropertyChanged("HabitatTabLabel");
                         break;

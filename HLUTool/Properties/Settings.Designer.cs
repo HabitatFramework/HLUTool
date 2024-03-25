@@ -1132,12 +1132,12 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public int SecondaryCodeValidation {
+        public int PrimarySecondaryCodeValidation {
             get {
-                return ((int)(this["SecondaryCodeValidation"]));
+                return ((int)(this["PrimarySecondaryCodeValidation"]));
             }
             set {
-                this["SecondaryCodeValidation"] = value;
+                this["PrimarySecondaryCodeValidation"] = value;
             }
         }
         
@@ -1257,12 +1257,12 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
-        public bool ShowHabitatSuggestions {
+        public bool ShowHabitatSecondariesSuggested {
             get {
-                return ((bool)(this["ShowHabitatSuggestions"]));
+                return ((bool)(this["ShowHabitatSecondariesSuggested"]));
             }
             set {
-                this["ShowHabitatSuggestions"] = value;
+                this["ShowHabitatSecondariesSuggested"] = value;
             }
         }
         
@@ -1313,6 +1313,19 @@ namespace HLU.Properties {
             }
             set {
                 this["PotentialPriorityDetermQtyValidation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.SettingsManageabilityAttribute(global::System.Configuration.SettingsManageability.Roaming)]
+        public int HabitatSecondaryCodeValidation {
+            get {
+                return ((int)(this["HabitatSecondaryCodeValidation"]));
+            }
+            set {
+                this["HabitatSecondaryCodeValidation"] = value;
             }
         }
     }

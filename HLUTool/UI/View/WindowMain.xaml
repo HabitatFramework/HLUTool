@@ -788,7 +788,6 @@
                                                       ValidatesOnDataErrors=True}"
                               SelectedValuePath="code"
                               Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-							  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                               ToolTipService.ShowOnDisabled="True" />
 
                     <Label x:Name="LabelProcess"
@@ -814,7 +813,6 @@
                                                       ValidatesOnDataErrors=True}"
                               SelectedValuePath="code"
                               Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-							  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                               ToolTipService.ShowOnDisabled="True" />
                 </Grid>
             </GroupBox>
@@ -1015,9 +1013,9 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" MinHeight="8" />
                                     <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="{Binding SecondaryTableHeight}" />
+                                    <RowDefinition Height="*" />
                                     <RowDefinition Height="Auto" MinHeight="8" />
-                                    <RowDefinition Height="*" MinHeight="8" />
+                                    <RowDefinition Height="Auto" MinHeight="8" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="19*" />
@@ -1110,7 +1108,6 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
                                             <RowDefinition />
-                                            <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" MinWidth="80" />
@@ -1145,7 +1142,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyPrimary"
                                                   Grid.Row="0"
@@ -1176,26 +1172,6 @@
                                                  Visibility="{Binding Path=ShowNVCCodes}"
 						                         ToolTip="{Binding NvcCodes}"
                                                  ToolTipService.ShowOnDisabled="True" />
-
-                                        <Label x:Name="LabelHabitatSuggestions"
-                                               Grid.Row="2"
-                                               Grid.Column="0"
-                                               Margin="0,2,0,2"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Center"
-                                               Content="Suggestions"
-                                               Visibility="{Binding Path=ShowHabitatSuggestions}" />
-                                        <TextBox x:Name="TextBoxHabitatSuggestions"
-                                                 Grid.Row="2"
-                                                 Grid.Column="1"
-                                                 Margin="8,2,8,2"
-                                                 VerticalAlignment="Center"
-                                                 IsEnabled="False"
-                                                 Text="{Binding HabitatSuggestions,
-                                                                Mode=OneWay}"
-                                                 Visibility="{Binding Path=ShowHabitatSuggestions}"
-						                         ToolTip="{Binding HabitatTips}"
-                                                 ToolTipService.ShowOnDisabled="True" />
                                     </Grid>
                                 </GroupBox>
 
@@ -1208,7 +1184,9 @@
                                           Header="{Binding SecondaryHabitatsHeader}">
                                     <Grid x:Name="GridSecondaryHabitats" Margin="0,2,0,0">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto "/>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -1217,8 +1195,50 @@
                                             <ColumnDefinition Width="20" />
                                         </Grid.ColumnDefinitions>
 
+										<Label x:Name="LabelHabitatSecondariesMandatory"
+												Grid.Row="0"
+												Grid.Column="0"
+												Margin="0,2,0,2"
+												HorizontalAlignment="Right"
+												VerticalAlignment="Center"
+												Content="Mandatory"
+												Visibility="Visible" />
+										<TextBox x:Name="TextBoxHabitatSecondariesMandatory"
+													Grid.Row="0"
+													Grid.Column="1"
+													Margin="8,2,8,2"
+													VerticalAlignment="Center"
+													IsEnabled="False"
+            										IsReadOnly="True"
+													Text="{Binding HabitatSecondariesMandatory,
+												    Mode=OneWay,
+												    ValidatesOnDataErrors=True}"
+													Visibility="Visible"
+													Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
+													ToolTipService.ShowOnDisabled="True" />
+
+                                        <Label x:Name="LabelHabitatSecondariesSuggested"
+                                               Grid.Row="1"
+                                               Grid.Column="0"
+                                               Margin="0,2,0,2"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Content="Suggested"
+                                               Visibility="{Binding Path=ShowHabitatSecondariesSuggested}" />
+                                        <TextBox x:Name="TextBoxHabitatSecondariesSuggested"
+                                                 Grid.Row="1"
+                                                 Grid.Column="1"
+                                                 Margin="8,2,8,8"
+                                                 VerticalAlignment="Center"
+                                                 IsEnabled="False"
+                                                 Text="{Binding HabitatSecondariesSuggested,
+                                                                Mode=OneWay}"
+                                                 Visibility="{Binding Path=ShowHabitatSecondariesSuggested}"
+						                         ToolTip="{Binding HabitatTips}"
+                                                 ToolTipService.ShowOnDisabled="True" />
+
                                         <Grid x:Name="GridAddSecondaryHabitat"
-                                              Grid.Row="0"
+                                              Grid.Row="2"
                                               Grid.Column="0"
 											  Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
@@ -1284,7 +1304,7 @@
 
 										<!--  ButtonAddSecondaryHabitat  -->
 										<Button x:Name="ButtonAddSecondaryHabitat"
-												Grid.Row="0"
+												Grid.Row="2"
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
@@ -1304,7 +1324,7 @@
 
 										<!-- <ScrollViewer VerticalScrollBarVisibility="Auto"> -->
                                         <tkit:DataGrid x:Name="DataGridSecondaryHabitats"
-                                                       Grid.Row="1"
+                                                       Grid.Row="3"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        Margin="2,2,6,0"
@@ -1321,6 +1341,8 @@
                                                        ItemsSource="{Binding IncidSecondaryHabitats}"
                                                        MinRowHeight="24"
                                                        Padding="2,0"
+													   Height="{Binding SecondaryTableHeight}"
+													   MinHeight="120"
 													   VerticalScrollBarVisibility="Auto"
                                                        RowDetailsVisibilityMode="Visible"
                                                        RowHeaderWidth="20"
@@ -1379,7 +1401,7 @@
 
 										<!--  ButtonAddSecondaryHabitatList  -->
 										<Button x:Name="ButtonAddSecondaryHabitatList"
-												Grid.Row="1"
+												Grid.Row="3"
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
@@ -1398,7 +1420,7 @@
 										</Button>
 
                                         <CheckBox x:Name="CheckBoxCopySecondaryHabitats"
-                                                  Grid.Row="1"
+                                                  Grid.Row="3"
                                                   Grid.Column="2"
                                                   Margin="0,0,0,4"
                                                   HorizontalAlignment="Right"
@@ -1862,8 +1884,8 @@
                 		<ScrollViewer VerticalScrollBarVisibility="Auto">
                 			<Grid x:Name="GridTabItemPriority">
                 				<Grid.RowDefinitions>
-                					<RowDefinition Height="4*" MinHeight="150" />
-                					<RowDefinition Height="4*" MinHeight="150" />
+                					<RowDefinition Height="*" MinHeight="150" />
+                					<RowDefinition Height="*" MinHeight="150" />
                 				</Grid.RowDefinitions>
                 				<Grid.ColumnDefinitions>
                 					<ColumnDefinition Width="*" />
@@ -2487,7 +2509,6 @@
                                                                               ValidatesOnDataErrors=True}"
                                                       SelectedValuePath="code"
                                                       Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-													  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                       ToolTipService.ShowOnDisabled="True" />
                                         </Grid>
 										<CheckBox x:Name="CheckBoxCopyConditionQualifier"
@@ -2778,7 +2799,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.source_name, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource1Name"
                                                   Grid.Row="0"
@@ -2849,7 +2869,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource1HabitatClass"
                                                   Grid.Row="2"
@@ -2891,7 +2910,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource1HabitatType"
                                                   Grid.Row="3"
@@ -2916,6 +2934,7 @@
                                               Grid.Column="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
+                                                <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition />
@@ -2950,14 +2969,14 @@
                                                                           UpdateSourceTrigger=PropertyChanged}" />
                                             <Label x:Name="LabelIncidSource1HabitatImportance"
                                                    Grid.Row="0"
-                                                   Grid.Column="2"
+                                                   Grid.Column="3"
                                                    Margin="0,0,0,0"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
                                                    Content="Habitat Imp." />
                                             <ComboBox x:Name="ComboBoxIncidSource1HabitatImportance"
                                                       Grid.Row="3"
-                                                      Grid.Column="3"
+                                                      Grid.Column="4"
                                                       Margin="8,0,8,0"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
@@ -3040,7 +3059,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.source_name, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource2Name"
                                                   Grid.Row="0"
@@ -3111,7 +3129,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource2HabitatClass"
                                                   Grid.Row="2"
@@ -3153,7 +3170,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource2HabitatType"
                                                   Grid.Row="3"
@@ -3178,6 +3194,7 @@
                                               Grid.Column="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
+                                                <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition />
@@ -3212,14 +3229,14 @@
                                                                           UpdateSourceTrigger=PropertyChanged}" />
                                             <Label x:Name="LabelIncidSource2HabitatImportance"
                                                    Grid.Row="0"
-                                                   Grid.Column="2"
+                                                   Grid.Column="3"
                                                    Margin="0,0,0,0"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
                                                    Content="Habitat Imp." />
                                             <ComboBox x:Name="ComboBoxIncidSource2HabitatImportance"
                                                       Grid.Row="3"
-                                                      Grid.Column="3"
+                                                      Grid.Column="4"
                                                       Margin="8,0,8,0"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
@@ -3302,7 +3319,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="source_id"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.source_name, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource3Name"
                                                   Grid.Row="0"
@@ -3373,7 +3389,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopySource3HabitatClass"
                                                   Grid.Row="2"
@@ -3415,7 +3430,6 @@
                                                                           ValidatesOnDataErrors=True}"
                                                   SelectedValuePath="code"
                                                   Tag="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors).CurrentItem.ErrorContent, Mode=OneWay, Converter={StaticResource errorMessageConverter}}"
-												  ToolTip="{Binding Path=SelectedItem.description, RelativeSource={RelativeSource Self}}"
                                                   ToolTipService.ShowOnDisabled="True" />
                                         <CheckBox x:Name="CheckBoxCopyIncidSource3HabitatType"
                                                   Grid.Row="3"
@@ -3440,6 +3454,7 @@
                                               Grid.Column="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
+                                                <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition />
@@ -3475,14 +3490,14 @@
 
                                             <Label x:Name="LabelIncidSource3HabitatImportance"
                                                    Grid.Row="0"
-                                                   Grid.Column="2"
+                                                   Grid.Column="3"
                                                    Margin="0,0,0,0"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
                                                    Content="Habitat Imp." />
                                             <ComboBox x:Name="ComboBoxIncidSource3HabitatImportance"
                                                       Grid.Row="3"
-                                                      Grid.Column="3"
+                                                      Grid.Column="4"
                                                       Margin="8,0,8,0"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"

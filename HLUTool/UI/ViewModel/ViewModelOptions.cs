@@ -75,7 +75,7 @@ namespace HLU.UI.ViewModel
         private bool _showGroupHeaders = Settings.Default.ShowGroupHeaders;
         private bool _showIHSTab = Settings.Default.ShowIHSTab;
         private bool _showSourceHabitatGroup = Settings.Default.ShowSourceHabitatGroup;
-        private bool _showHabitatSuggestions = Settings.Default.ShowHabitatSuggestions;
+        private bool _showHabitatSuggestions = Settings.Default.ShowHabitatSecondariesSuggested;
         private bool _showNVCCodes = Settings.Default.ShowNVCCodes;
         private bool _showHabitatSummary = Settings.Default.ShowHabitatSummary;
         private string[] _showOSMMUpdatesOptions;
@@ -92,7 +92,8 @@ namespace HLU.UI.ViewModel
         private string _clearIHSUpdateAction = Settings.Default.ClearIHSUpdateAction;
         private bool _notifyOnSplitMerge = Settings.Default.NotifyOnSplitMerge;
         private bool _resetOSMMUpdatesStatus = Settings.Default.ResetOSMMUpdatesStatus;
-        private int _secondaryCodeValidation = Settings.Default.SecondaryCodeValidation;
+        private int _habitatSecondaryCodeValidation = Settings.Default.HabitatSecondaryCodeValidation;
+        private int _primarySecondaryCodeValidation = Settings.Default.PrimarySecondaryCodeValidation;
         private int _qualityValidation = Settings.Default.QualityValidation;
         private int _potentialPriorityDetermQtyValidation = Settings.Default.PotentialPriorityDetermQtyValidation;
 
@@ -243,7 +244,7 @@ namespace HLU.UI.ViewModel
             Settings.Default.ShowGroupHeaders = _showGroupHeaders;
             Settings.Default.ShowIHSTab = _showIHSTab;
             Settings.Default.ShowSourceHabitatGroup = _showSourceHabitatGroup;
-            Settings.Default.ShowHabitatSuggestions = _showHabitatSuggestions;
+            Settings.Default.ShowHabitatSecondariesSuggested = _showHabitatSuggestions;
             Settings.Default.ShowNVCCodes = _showNVCCodes;
             Settings.Default.ShowHabitatSummary = _showHabitatSummary;
             Settings.Default.ShowOSMMUpdatesOption = _showOSMMUpdatesOption;
@@ -257,7 +258,8 @@ namespace HLU.UI.ViewModel
             Settings.Default.ClearIHSUpdateAction = _clearIHSUpdateAction;
             Settings.Default.NotifyOnSplitMerge = _notifyOnSplitMerge;
             Settings.Default.ResetOSMMUpdatesStatus = _resetOSMMUpdatesStatus;
-            Settings.Default.SecondaryCodeValidation = _secondaryCodeValidation;
+            Settings.Default.HabitatSecondaryCodeValidation = _habitatSecondaryCodeValidation;
+            Settings.Default.PrimarySecondaryCodeValidation = _primarySecondaryCodeValidation;
             Settings.Default.QualityValidation = _qualityValidation;
             Settings.Default.PotentialPriorityDetermQtyValidation = _potentialPriorityDetermQtyValidation;
 
@@ -890,33 +892,64 @@ namespace HLU.UI.ViewModel
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Gets or sets the secondary code validation options.
+        /// Gets the habitat/secondary code validation options.
         /// </summary>
         /// <value>
-        /// The secondary code validation options.
+        /// The primary/secondary code validation options.
         /// </value>
-        public SecondaryCodeValidationOptions[] SecondaryCodeValidationOptions
+        public HabitatSecondaryCodeValidationOptions[] HabitatSecondaryCodeValidationOptions
         {
             get
             {
-                return Enum.GetValues(typeof(SecondaryCodeValidationOptions)).Cast<SecondaryCodeValidationOptions>()
+                return Enum.GetValues(typeof(HabitatSecondaryCodeValidationOptions)).Cast<HabitatSecondaryCodeValidationOptions>()
                     .ToArray();
             }
             set { }
         }
 
         /// <summary>
-        /// Gets or sets the secondary code validation choice.
+        /// Gets or sets the habitat/secondary code validation choice.
         /// </summary>
         /// <value>
-        /// The secondary code validation choice.
+        /// The primary/secondary code validation choice.
         /// </value>
-        public SecondaryCodeValidationOptions? SecondaryCodeValidation
+        public HabitatSecondaryCodeValidationOptions? HabitatSecondaryCodeValidation
         {
-            get { return (SecondaryCodeValidationOptions)_secondaryCodeValidation; }
+            get { return (HabitatSecondaryCodeValidationOptions)_habitatSecondaryCodeValidation; }
             set
             {
-                _secondaryCodeValidation = (int)value;
+                _habitatSecondaryCodeValidation = (int)value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the primary/secondary code validation options.
+        /// </summary>
+        /// <value>
+        /// The primary/secondary code validation options.
+        /// </value>
+        public PrimarySecondaryCodeValidationOptions[] PrimarySecondaryCodeValidationOptions
+        {
+            get
+            {
+                return Enum.GetValues(typeof(PrimarySecondaryCodeValidationOptions)).Cast<PrimarySecondaryCodeValidationOptions>()
+                    .ToArray();
+            }
+            set { }
+        }
+
+        /// <summary>
+        /// Gets or sets the primary/secondary code validation choice.
+        /// </summary>
+        /// <value>
+        /// The primary/secondary code validation choice.
+        /// </value>
+        public PrimarySecondaryCodeValidationOptions? PrimarySecondaryCodeValidation
+        {
+            get { return (PrimarySecondaryCodeValidationOptions)_primarySecondaryCodeValidation; }
+            set
+            {
+                _primarySecondaryCodeValidation = (int)value;
             }
         }
 
@@ -1387,8 +1420,10 @@ namespace HLU.UI.ViewModel
                     error.Append("Select the option of when to display any OSMM Updates.");
                 if (PreferredSecondaryGroup == null)
                     error.Append("Select your preferred secondary group.");
-                if (SecondaryCodeValidation == null)
-                    error.Append("Select option of when to validate secondary codes.");
+                if (HabitatSecondaryCodeValidation == null)
+                    error.Append("Select option of when to validate habitat/secondary codes.");
+                if (PrimarySecondaryCodeValidation == null)
+                    error.Append("Select option of when to validate primary/secondary codes.");
                 if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
                     error.Append("\n" + "You must enter a secondary code delimiter character.");
                 else if (SecondaryCodeDelimiter.Length > 2)
@@ -1509,10 +1544,6 @@ namespace HLU.UI.ViewModel
                         if (PreferredSecondaryGroup == null)
                             error = "Error: Select your preferred secondary group.";
                         break;
-                    case "SecondaryCodeValidation":
-                        if (SecondaryCodeValidation == null)
-                            error = "Error: Select option of when to validate secondary codes.";
-                        break;
                     case "SecondaryCodeDelimiter":
                         if (String.IsNullOrEmpty(SecondaryCodeDelimiter))
                             error = "Error: You must enter a secondary code delimiter character.";
@@ -1534,6 +1565,22 @@ namespace HLU.UI.ViewModel
                     case "ClearIHSUpdateAction":
                         if (ClearIHSUpdateAction == null)
                             error = "Error: Select when to clear IHS codes after an update.";
+                        break;
+                    case "HabitatSecondaryCodeValidation":
+                        if (HabitatSecondaryCodeValidation == null)
+                            error = "Error: Select option of when to validate habitat/secondary codes.";
+                        break;
+                    case "PrimarySecondaryCodeValidation":
+                        if (PrimarySecondaryCodeValidation == null)
+                            error = "Error: Select option of when to validate primary/secondary codes.";
+                        break;
+                    case "QualityValidation":
+                        if (QualityValidation == null)
+                            error = "Error: Select option of when to validate determination and interpretation quality.";
+                        break;
+                    case "PotentialPriorityDetermQtyValidation":
+                        if (PotentialPriorityDetermQtyValidation == null)
+                            error = "Error: Select option of when to validate potential priority habitat determination quality.";
                         break;
 
                     // Filter options
