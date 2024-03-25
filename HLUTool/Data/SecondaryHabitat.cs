@@ -45,7 +45,7 @@ namespace HLU.Data
         private static IEnumerable<string> _validSecondaryCodes;
         private static Dictionary<string, String> _secondaryGroupCodes;
 
-        public static int _secondaryCodeValidation;
+        public static int _primarySecondaryCodeValidation;
 
         #endregion
 
@@ -171,10 +171,10 @@ namespace HLU.Data
             set { _validSecondaryCodes = value; }
         }
 
-        public static int SecondaryCodeValidation
+        public static int PrimarySecondaryCodeValidation
         {
-            get { return _secondaryCodeValidation; }
-            set { _secondaryCodeValidation = value; }
+            get { return _primarySecondaryCodeValidation; }
+            set { _primarySecondaryCodeValidation = value; }
         }
 
         public bool BulkUpdateMode
@@ -292,7 +292,7 @@ namespace HLU.Data
             StringBuilder sbError = new StringBuilder();
 
             // Only validate if not in bulk update mode and errors are to be shown
-            if ((!_bulkUpdateMode) && (SecondaryCodeValidation > 0))
+            if (!_bulkUpdateMode)
             {
                 if ((secondary_id != -1) && String.IsNullOrEmpty(incid))
                     sbError.Append(Environment.NewLine).Append("INCID is a mandatory field");
@@ -303,11 +303,14 @@ namespace HLU.Data
                 if (_validSecondaryCodes == null)
                     sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid without primary habitat");
 
-                if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
-                    sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
-
                 if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
                     sbError.Append(Environment.NewLine).Append("Duplicate secondary habitat");
+
+                if (_primarySecondaryCodeValidation > 0)
+                {
+                    if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
+                        sbError.Append(Environment.NewLine).Append("Secondary habitat is not valid for primary habitat");
+                }
             }
 
             return sbError.Length > 0 ? sbError.Remove(0, 1).ToString() : null;
@@ -350,7 +353,7 @@ namespace HLU.Data
                         break;
                     case "secondary_habitat":
                         // Only validate if not in bulk update mode and errors are to be shown
-                        if ((!_bulkUpdateMode) && (SecondaryCodeValidation == 1))
+                        if (!_bulkUpdateMode)
                         {
                             if (String.IsNullOrEmpty(secondary_habitat))
                             {
@@ -360,13 +363,17 @@ namespace HLU.Data
                             {
                                 return "Warning: Secondary habitat is not valid without primary habitat";
                             }
-                            else if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
-                            {
-                                return "Warning: Secondary habitat is not valid for primary habitat";
-                            }
                             else if ((_secondaryHabitatList != null) && (_secondaryHabitatList.Count(b => b.secondary_habitat == secondary_habitat) > 1))
                             {
                                 return "Error: Duplicate secondary habitat";
+                            }
+
+                            if (_primarySecondaryCodeValidation > 0)
+                            {
+                                if ((_validSecondaryCodes != null) && (!_validSecondaryCodes.Contains(secondary_habitat)))
+                                {
+                                    return "Warning: Secondary habitat is not valid for primary habitat";
+                                }
                             }
 
                             _secondary_habitat_bak = _secondary_habitat;

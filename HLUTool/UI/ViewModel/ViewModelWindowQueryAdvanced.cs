@@ -360,8 +360,13 @@ namespace HLU.UI.ViewModel
         /// <remarks></remarks>
         private void ClearCommandClick(object param)
         {
+            Table = null;
+            ComparisonOperator = null;
             SqlFromTables = null;
             SqlWhereClause = null;
+
+            OnPropertyChanged("Table");
+            OnPropertyChanged("ComparisonOperator");
             OnPropertyChanged("SqlFromTables");
             OnPropertyChanged("SqlWhereClause");
         }

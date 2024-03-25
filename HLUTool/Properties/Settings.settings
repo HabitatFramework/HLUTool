@@ -329,7 +329,7 @@
     <Setting Name="PreferredSecondaryGroup" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;All&gt;</Value>
     </Setting>
-    <Setting Name="SecondaryCodeValidation" Roaming="true" Type="System.Int32" Scope="User">
+    <Setting Name="PrimarySecondaryCodeValidation" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="SecondaryCodeOrderOptions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
@@ -370,7 +370,7 @@
     <Setting Name="BulkUpdateDeleteIHSCodes" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="ShowHabitatSuggestions" Roaming="true" Type="System.Boolean" Scope="User">
+    <Setting Name="ShowHabitatSecondariesSuggested" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="HLUData_v401ConnectionString" Type="(Connection string)" Scope="Application">
@@ -389,6 +389,9 @@
     </Setting>
     <Setting Name="PotentialPriorityDetermQtyValidation" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="HabitatSecondaryCodeValidation" Roaming="true" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>
