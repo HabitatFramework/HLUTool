@@ -1,7 +1,7 @@
 HLU Tool
 ========
 
-HLU Tool 4.0.0
+HLU Tool 4.0.1
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre
@@ -21,7 +21,9 @@ with databases held in Access or SQL Server, and in principle it could link to o
 
 Features
 --------
+
 The HLU Tool provides the following features:
+
 - Ensures that all attributes selected by users are valid and compatible
 - Improved data retrieval/update response times over single GIS layers
 - Maintains a brief history of all changes made to every habitat polygon
@@ -32,34 +34,44 @@ The HLU Tool provides the following features:
 
 Requirements
 ------------
+
 The HLU Tool requires the following:
 
- - Microsoft Windows XP/2003/2008/Vista/Windows 7, Windows 8 or Windows 10
- - 3 GHz or higher processor
- - 4 GB RAM
- - 3 GB of free hard disk space
-    (For increased performance a multiple core processor with as much RAM as possible is recommended)
+- Microsoft Windows XP/2003/2008/Vista/Windows 7, Windows 8 or Windows 10
 
- - Microsoft .NET Framework 4.8.1 or later installed
+- 3 GHz or higher processor
 
- - Microsoft Access 2000 or later, OR
- - Microsoft SQL Server 2016 Express Edition or later, OR
- - Microsoft SQL Server 2016 or later
+- 4 GB RAM
 
- - ArcGIS 10.7, OR
- - MapInfo 8.0 or later (32bit versions only)
+- 3 GB of free hard disk space
+   (For increased performance a multiple core processor with as much RAM as possible is recommended)
+
+- Microsoft .NET Framework 4.8.1 or later installed
+
+- Microsoft Access 2000 or later, OR
+
+- Microsoft SQL Server 2016 Express Edition or later, OR
+
+- Microsoft SQL Server 2016 or later
+
+- ArcGIS 10.7, OR
+
+- MapInfo 8.0 or later (32bit versions only)
 
 Installation
 ------------
+
 The HLU Tool setup.exe contains all the required files to install the tool but does not provide any of the GIS layers or relation databases required to run the tool. By default all files are installed in the "Program Files\HLU\HLU GIS Tool" folder (or "Program Files (x86)\HLU\HLU GIS Tool" on 64bit versions of Windows).
 
 Source Code
 -----------
+
 The source code for the HLU Tool is open source and can be downloaded from:
 <https://github.com/HabitatFramework/HLUTool>
 
 Documentation
 -------------
+
 The user guide for the latest release (and for earlier releases) can be viewed online or downloaded as a PDF from:
 <https://readthedocs.org/projects/hlutool-userguide/>
 
@@ -71,6 +83,7 @@ The developers guide can be viewed online or downloaded as a PDF from:
 
 Issue Reporting
 ---------------
+
 To search for existing issues please use:
 <https://trello.com/b/fcGICLuu/hlu-tool-development>
 
@@ -79,6 +92,7 @@ To report new issues please use:
 
 License Information
 -------------------
+
 The HLU Tool is free software. You can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option) any
