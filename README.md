@@ -54,8 +54,6 @@ The HLU Tool requires the following:
 
 - Microsoft SQL Server 2016 or later
 
-- ArcGIS 10.7, OR
-
 - MapInfo 8.0 or later (32bit versions only)
 
 Installation
