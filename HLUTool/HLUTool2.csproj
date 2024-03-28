@@ -129,25 +129,30 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     -->
+    <Reference Include="Interop.MapInfo">
+      <HintPath>lib\Interop.MapInfo.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Interop.MSDASC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c6193daf1be79c08, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>lib\Interop.MSDASC.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+    <Reference Include="MapinfoDotNetWrapper, Version=1.0.2.0, Culture=neutral, PublicKeyToken=4d14eb36cacd27c6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\MapinfoDotNetWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Mono.Security">
       <HintPath>lib\Mono.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=2.0.8.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Npgsql">
       <HintPath>lib\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="Oracle.DataAccess, Version=2.111.7.20, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Oracle.DataAccess">
       <HintPath>lib\Oracle.DataAccess.dll</HintPath>
     </Reference>
-    <Reference Include="policy.2.0.Npgsql, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="policy.2.0.Npgsql">
       <HintPath>lib\policy.2.0.Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -186,8 +191,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WPFToolkit">
-      <HintPath>lib\WPFToolkit.dll</HintPath>
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\HLUGISTool\lib\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -704,6 +710,8 @@
     <Resource Include="Icons\PhysicalMerge.png" />
     <Resource Include="Icons\PhysicalSplit.png" />
     <Resource Include="Icons\FilterByAttributes.png" />
+    <Resource Include="Icons\AddRow.png" />
+    <Resource Include="Icons\AddScript.png" />
     <Content Include="Icons\HLU32.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -717,15 +725,6 @@
     <COMReference Include="DAO">
       <Guid>{00025E01-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>5</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="MapInfo">
-      <Guid>{1D42EC60-7B28-11CE-B83D-00AA002C4F58}</Guid>
-      <VersionMajor>2</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>

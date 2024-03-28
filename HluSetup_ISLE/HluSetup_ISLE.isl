@@ -225,7 +225,6 @@
 	<table name="AppSearch">
 		<col key="yes" def="s72">Property</col>
 		<col key="yes" def="s72">Signature_</col>
-		<row><td>REALVERSION</td><td>NewSignature1</td></row>
 	</table>
 
 	<table name="BBControl">
@@ -341,18 +340,17 @@
 		<col def="S0">ISDotNetInstallerArgsCommit</col>
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
-		<row><td>AppModule.InterProcessComm.Primary_output</td><td>{818CE24F-9F8E-47BE-8CBD-D274851027EA}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.interprocesscomm.p</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>AppModule.NamedPipes.Primary_output</td><td>{32231B20-E36C-4BF3-B739-2843F5BE88AE}</td><td>INSTALLDIR</td><td>2</td><td/><td>appmodule.namedpipes.primary</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td>{22BC8B1F-18F7-4FD4-A9E6-51429EDE15E2}</td><td>DesktopFolder</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>HLUTool.Primary_output</td><td>{6DAB93FE-257B-477C-A3B8-2CD6542126BD}</td><td>INSTALLDIR</td><td>2</td><td/><td>hlutool.primary_output</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>HluArcMapExtension.Primary_output</td><td>{5B287E73-A66E-4135-AF62-6C9BD3E07DD1}</td><td>INSTALLDIR</td><td>2</td><td/><td>hluarcmapextension.primary_o</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td>{5A4A78E2-8483-45A9-AC17-79D2A1A4F2A4}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Interop.MSDASC.dll</td><td>{1D335A7E-1A15-4414-9663-F0FE99031544}</td><td>INSTALLDIR</td><td>2</td><td/><td>interop.msdasc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Mono.Security.dll</td><td>{D8CE37BE-F0F6-4A1B-86E0-B3B853D6C2CF}</td><td>INSTALLDIR</td><td>2</td><td/><td>mono.security.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Npgsql.dll</td><td>{64265E6F-5702-4C1C-8461-F584B9A478FB}</td><td>INSTALLDIR</td><td>2</td><td/><td>npgsql.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Oracle.DataAccess.dll</td><td>{73345735-7359-47EC-89BB-3FAB1B98F30D}</td><td>INSTALLDIR</td><td>2</td><td/><td>oracle.dataaccess.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>WPFToolkit.dll</td><td>{CF968E92-3BC8-4CA2-B40C-8A3F28152365}</td><td>INSTALLDIR</td><td>2</td><td/><td>wpftoolkit.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>policy.2.0.Npgsql.dll</td><td>{EAD6D96C-A2B7-4A46-8E26-66F717358E05}</td><td>INSTALLDIR</td><td>2</td><td/><td>policy.2.0.npgsql.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Interop.MSDASC.dll</td><td>{5146CB57-8ED6-4132-B1E6-257BA764E265}</td><td>INSTALLDIR</td><td>2</td><td/><td>interop.msdasc.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Interop.MapInfo.dll</td><td>{A5985779-723D-4D73-8125-1942B72415CA}</td><td>INSTALLDIR</td><td>2</td><td/><td>interop.mapinfo.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>MapinfoDotNetWrapper.dll</td><td>{00DDF9D3-99D4-4891-95EA-490C92B1066B}</td><td>INSTALLDIR</td><td>2</td><td/><td>mapinfodotnetwrapper.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Mono.Security.dll</td><td>{41072738-4878-48E5-B249-2F85C860A003}</td><td>INSTALLDIR</td><td>2</td><td/><td>mono.security.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Npgsql.dll</td><td>{C27A1AA1-98B3-4BE4-89C4-5B2C629B5DC9}</td><td>INSTALLDIR</td><td>2</td><td/><td>npgsql.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Oracle.DataAccess.dll</td><td>{F1722BF2-6012-4755-A9D7-0A536EB66636}</td><td>INSTALLDIR</td><td>2</td><td/><td>oracle.dataaccess.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>WPFToolkit.dll</td><td>{5FEB2F25-82B5-4104-92A1-326C6055C22F}</td><td>INSTALLDIR</td><td>2</td><td/><td>wpftoolkit.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>policy.2.0.Npgsql.dll</td><td>{4B30734E-904D-4C31-AC9F-91664CA0BC1D}</td><td>INSTALLDIR</td><td>2</td><td/><td>policy.2.0.npgsql.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -1081,12 +1079,10 @@
 		<row><td>ISSetAllUsers</td><td>257</td><td>SetAllUsers.dll</td><td>SetAllUsers</td><td/><td/></row>
 		<row><td>ISUnSelfRegisterFiles</td><td>3073</td><td>ISSELFREG.DLL</td><td>ISUnSelfRegisterFiles</td><td/><td/></row>
 		<row><td>LaunchReadmeFileFromSetupCompleteSuccess</td><td>1</td><td>NewBinary19</td><td>LaunchReadMe</td><td/><td/></row>
-		<row><td>RegArcMapExtension</td><td>1058</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUToolArcExtReg.bat</td><td/><td/></row>
 		<row><td>SetARPINSTALLLOCATION</td><td>51</td><td>ARPINSTALLLOCATION</td><td>[INSTALLDIR]</td><td/><td/></row>
 		<row><td>SetARPReadme</td><td>51</td><td>ARPREADME</td><td>[INSTALLDIR]\ReadMe.txt</td><td/><td/></row>
 		<row><td>SetAllUsersProfileNT</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%SystemRoot]\Profiles\All Users</td><td/><td/></row>
 		<row><td>ShowMsiLog</td><td>226</td><td>SystemFolder</td><td>[SystemFolder]notepad.exe "[MsiLogFileLocation]"</td><td/><td>Shows Property-driven MSI Log</td></row>
-		<row><td>UnRegArcMapExtension</td><td>1122</td><td>INSTALLDIR</td><td>[INSTALLDIR]HLUToolArcExtUnreg.bat</td><td/><td/></row>
 		<row><td>setAllUsersProfile2K</td><td>51</td><td>ALLUSERSPROFILE</td><td>[%ALLUSERSPROFILE]</td><td/><td/></row>
 		<row><td>setUserProfileNT</td><td>51</td><td>USERPROFILE</td><td>[%USERPROFILE]</td><td/><td/></row>
 	</table>
@@ -1890,13 +1886,12 @@
 	<table name="FeatureComponents">
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
-		<row><td>AlwaysInstall</td><td>AppModule.InterProcessComm.Primary_output</td></row>
-		<row><td>AlwaysInstall</td><td>AppModule.NamedPipes.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td></row>
 		<row><td>AlwaysInstall</td><td>HLUTool.Primary_output</td></row>
-		<row><td>AlwaysInstall</td><td>HluArcMapExtension.Primary_output</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
 		<row><td>AlwaysInstall</td><td>Interop.MSDASC.dll</td></row>
+		<row><td>AlwaysInstall</td><td>Interop.MapInfo.dll</td></row>
+		<row><td>AlwaysInstall</td><td>MapinfoDotNetWrapper.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Mono.Security.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Npgsql.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Oracle.DataAccess.dll</td></row>
@@ -1916,23 +1911,20 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>appmodule.interprocesscomm.p</td><td>AppModule.InterProcessComm.Primary_output</td><td>AppModule.InterProcessComm.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.InterProcessComm&gt;|Built</td><td>3</td><td/></row>
-		<row><td>appmodule.namedpipes.primary</td><td>AppModule.NamedPipes.Primary_output</td><td>AppModule.NamedPipes.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;AppModule.NamedPipes&gt;|Built</td><td>3</td><td/></row>
 		<row><td>empty.wor</td><td>ISX_DEFAULTCOMPONENT</td><td>Empty.wor</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\Empty.wor</td><td>1</td><td/></row>
 		<row><td>hlu32.ico</td><td>ISX_DEFAULTCOMPONENT</td><td>HLU32.ico</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\Icons\HLU32.ico</td><td>1</td><td/></row>
-		<row><td>hluarcmapextension.primary_o</td><td>HluArcMapExtension.Primary_output</td><td>HluArcMapExtension.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HluArcMapExtension&gt;|Built</td><td>3</td><td/></row>
 		<row><td>hlutool.primary_output</td><td>HLUTool.Primary_output</td><td>HLUTool.Primary output</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;HLUTool&gt;|Built</td><td>3</td><td/></row>
-		<row><td>hlutoolarcextreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUTOO~1.BAT|HLUToolArcExtReg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUToolArcExtReg.bat</td><td>1</td><td/></row>
-		<row><td>hlutoolarcextunreg.bat</td><td>ISX_DEFAULTCOMPONENT</td><td>HLUTOO~1.BAT|HLUToolArcExtUnreg.bat</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUToolArcExtUnreg.bat</td><td>1</td><td/></row>
-		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
+		<row><td>interop.mapinfo.dll</td><td>Interop.MapInfo.dll</td><td>INTERO~1.DLL|Interop.MapInfo.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\Interop.MapInfo.dll</td><td>1</td><td/></row>
+		<row><td>interop.msdasc.dll</td><td>Interop.MSDASC.dll</td><td>INTERO~1.DLL|Interop.MSDASC.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\Interop.MSDASC.dll</td><td>1</td><td/></row>
 		<row><td>license.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>License.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\License.txt</td><td>1</td><td/></row>
-		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
-		<row><td>npgsql.dll</td><td>Npgsql.dll</td><td>Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Npgsql.dll</td><td>1</td><td/></row>
-		<row><td>oracle.dataaccess.dll</td><td>Oracle.DataAccess.dll</td><td>ORACLE~1.DLL|Oracle.DataAccess.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\Oracle.DataAccess.dll</td><td>1</td><td/></row>
-		<row><td>policy.2.0.npgsql.config</td><td>ISX_DEFAULTCOMPONENT</td><td>POLICY~1.CON|policy.2.0.Npgsql.config</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\policy.2.0.Npgsql.config</td><td>1</td><td/></row>
-		<row><td>policy.2.0.npgsql.dll</td><td>policy.2.0.Npgsql.dll</td><td>POLICY~1.DLL|policy.2.0.Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\policy.2.0.Npgsql.dll</td><td>1</td><td/></row>
+		<row><td>mapinfodotnetwrapper.dll</td><td>MapinfoDotNetWrapper.dll</td><td>MAPINF~1.DLL|MapinfoDotNetWrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\MapinfoDotNetWrapper.dll</td><td>1</td><td/></row>
+		<row><td>mono.security.dll</td><td>Mono.Security.dll</td><td>MONOSE~1.DLL|Mono.Security.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\Mono.Security.dll</td><td>1</td><td/></row>
+		<row><td>npgsql.dll</td><td>Npgsql.dll</td><td>Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\Npgsql.dll</td><td>1</td><td/></row>
+		<row><td>oracle.dataaccess.dll</td><td>Oracle.DataAccess.dll</td><td>ORACLE~1.DLL|Oracle.DataAccess.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\Oracle.DataAccess.dll</td><td>1</td><td/></row>
+		<row><td>policy.2.0.npgsql.config</td><td>ISX_DEFAULTCOMPONENT</td><td>POLICY~1.CON|policy.2.0.Npgsql.config</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\policy.2.0.Npgsql.config</td><td>1</td><td/></row>
+		<row><td>policy.2.0.npgsql.dll</td><td>policy.2.0.Npgsql.dll</td><td>POLICY~1.DLL|policy.2.0.Npgsql.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\policy.2.0.Npgsql.dll</td><td>1</td><td/></row>
 		<row><td>readme.txt</td><td>ISX_DEFAULTCOMPONENT</td><td>ReadMe.txt</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\ReadMe.txt</td><td>1</td><td/></row>
-		<row><td>wpftoolkit.dll</td><td>WPFToolkit.dll</td><td>WPFTOO~1.DLL|WPFToolkit.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\lib\WPFToolkit.dll</td><td>1</td><td/></row>
+		<row><td>wpftoolkit.dll</td><td>WPFToolkit.dll</td><td>WPFTOO~1.DLL|WPFToolkit.dll</td><td>0</td><td/><td/><td/><td>1</td><td>D:\GitHub\HLUTool\HLUTool\lib\WPFToolkit.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2189,18 +2181,17 @@
 		<col def="S0">FTPLocation</col>
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
-		<row><td>AppModule.InterProcessComm.Primary_output</td><td/><td/><td>_6C24C2B5_7E23_4E0A_A4C3_5BB2D980579B_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>AppModule.NamedPipes.Primary_output</td><td/><td/><td>_267EA415_D695_4B05_92C9_6E71D53F1F0D_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>C__CD1F430C979E46F7AF302BFCBBC37B4D</td><td/><td/><td>_951FB2C4_E849_4A06_8570_0D0C508564CF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>HLUTool.Primary_output</td><td/><td/><td>_F384D277_03B9_4C2D_94DC_AD005C7D8EDC_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>HluArcMapExtension.Primary_output</td><td/><td/><td>_5FD44DB7_5106_45F8_B23C_86F0B65C3EEE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_372EEF8A_829A_42F4_99DC_A299A59C5291_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Interop.MSDASC.dll</td><td/><td/><td>_BE67E254_38B6_451F_A7A5_C938302DCAFC_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Mono.Security.dll</td><td/><td/><td>_3B4B0A25_ACC5_45EB_BCEA_D20FE1D137F1_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Npgsql.dll</td><td/><td/><td>_4BBCD042_2FBE_4B27_836D_88C2186C0BEC_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Oracle.DataAccess.dll</td><td/><td/><td>_F20AE7C0_0D03_481E_949D_941C5B466F51_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>WPFToolkit.dll</td><td/><td/><td>_DCAE4D6F_949C_47D3_9F96_9DFDFF34F6F6_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>policy.2.0.Npgsql.dll</td><td/><td/><td>_AA9645A7_1E39_4387_8810_CFCF3DA99086_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Interop.MSDASC.dll</td><td/><td/><td>_C047BEDB_ABA8_4DA5_99EA_14987A8DFDBD_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Interop.MapInfo.dll</td><td/><td/><td>_229C982D_40D1_498F_B746_4ED98BE714F7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>MapinfoDotNetWrapper.dll</td><td/><td/><td>_8BB9D720_CBD6_4301_8027_B1DDD53BC002_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Mono.Security.dll</td><td/><td/><td>_F88899DC_93A5_4D70_9549_552A9A148F7D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Npgsql.dll</td><td/><td/><td>_743ED995_0948_4F8D_BB32_0859471C5728_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Oracle.DataAccess.dll</td><td/><td/><td>_BD6A05D1_B41E_49EA_8587_EA2E7720715E_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>WPFToolkit.dll</td><td/><td/><td>_9A73AF29_DFAF_4593_8EC0_4589BA0E21BB_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>policy.2.0.Npgsql.dll</td><td/><td/><td>_8178012A_807B_4AE3_92B8_8797AC0B847B_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2874,12 +2865,11 @@
 		<col def="I4">TimeStamp</col>
 		<row><td>COMPANY_NAME</td><td>1033</td><td>Andy Foy Consulting</td><td>0</td><td/><td>2032961772</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool</td><td>0</td><td/><td>2032969964</td></row>
+		<row><td>HLU GIS Tool</td><td>1033</td><td>HLU Tool v4</td><td>0</td><td/><td>-508767286</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
-		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_REALVERSION</td><td>1033</td><td>ArcGIS 10.0 or later needs to be installed for this installation to continue.</td><td>0</td><td/><td>203606353</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_SCREEN</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_SETUPTYPE_COMPACT</td><td>1033</td><td>Compact</td><td>0</td><td/><td>2082552501</td></row>
 		<row><td>IDPROP_SETUPTYPE_COMPACT_DESC</td><td>1033</td><td>Compact Description</td><td>0</td><td/><td>2082552501</td></row>
@@ -4178,7 +4168,6 @@
 		<row><td>PublishFeatures</td><td/><td>6300</td><td>PublishFeatures</td><td/></row>
 		<row><td>PublishProduct</td><td/><td>6400</td><td>PublishProduct</td><td/></row>
 		<row><td>RMCCPSearch</td><td>Not CCP_SUCCESS And CCP_TEST</td><td>600</td><td>RMCCPSearch</td><td/></row>
-		<row><td>RegArcMapExtension</td><td>Not Installed</td><td>6405</td><td/><td/></row>
 		<row><td>RegisterClassInfo</td><td/><td>4600</td><td>RegisterClassInfo</td><td/></row>
 		<row><td>RegisterComPlus</td><td/><td>5700</td><td>RegisterComPlus</td><td/></row>
 		<row><td>RegisterExtensionInfo</td><td/><td>4700</td><td>RegisterExtensionInfo</td><td/></row>
@@ -4207,7 +4196,6 @@
 		<row><td>SetODBCFolders</td><td/><td>1200</td><td>SetODBCFolders</td><td/></row>
 		<row><td>StartServices</td><td>VersionNT</td><td>5900</td><td>StartServices</td><td/></row>
 		<row><td>StopServices</td><td>VersionNT</td><td>1900</td><td>StopServices</td><td/></row>
-		<row><td>UnRegArcMapExtension</td><td>REMOVE="ALL"</td><td>6402</td><td/><td/></row>
 		<row><td>UnpublishComponents</td><td/><td>1700</td><td>UnpublishComponents</td><td/></row>
 		<row><td>UnpublishFeatures</td><td/><td>1800</td><td>UnpublishFeatures</td><td/></row>
 		<row><td>UnregisterClassInfo</td><td/><td>2700</td><td>UnregisterClassInfo</td><td/></row>
@@ -4308,7 +4296,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 	<table name="LaunchCondition">
 		<col key="yes" def="s255">Condition</col>
 		<col def="l255">Description</col>
-		<row><td>REALVERSION</td><td>##IDPROP_EXPRESS_LAUNCH_CONDITION_REALVERSION##</td></row>
 	</table>
 
 	<table name="ListBox">
@@ -4647,7 +4634,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SERIALNUMBER</td><td/><td/></row>
 		<row><td>SERIALNUMVALSUCCESSRETVAL</td><td>1</td><td/></row>
 		<row><td>SHOWLAUNCHREADME</td><td>-1</td><td/></row>
-		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;ISACTIONPROP3;REALVERSION</td><td/></row>
+		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;ISACTIONPROP3</td><td/></row>
 		<row><td>SelectedSetupType</td><td>##IDS__DisplayName_Typical##</td><td/></row>
 		<row><td>SetupType</td><td>Typical</td><td/></row>
 		<row><td>UpgradeCode</td><td>{55866CB0-8B2F-4526-97E1-DB2419E7C9AE}</td><td/></row>
@@ -4692,7 +4679,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s255">Key</col>
 		<col def="S255">Name</col>
 		<col def="I2">Type</col>
-		<row><td>NewSignature1</td><td>2</td><td>SOFTWARE\ESRI\ArcGIS</td><td>RealVersion</td><td>2</td></row>
 	</table>
 
 	<table name="Registry">
