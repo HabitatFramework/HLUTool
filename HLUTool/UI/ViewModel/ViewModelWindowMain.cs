@@ -1382,7 +1382,7 @@ namespace HLU.UI.ViewModel
             {
                 _windowHeight = value;
 
-                // Adjsut the secondary table height to fill the space.
+                // Adjust the secondary table height to fill the space.
                 OnPropertyChanged("SecondaryTableHeight");
             }
         }
@@ -4201,6 +4201,10 @@ namespace HLU.UI.ViewModel
             // Adjust the window height.
             AdjustWindowHeight(true);
             OnPropertyChanged("WindowHeight");
+
+            // Adjust the secondary table height to fill the space.
+            OnPropertyChanged("SecondaryTableHeight");
+
             WindowWidth = 0;
             OnPropertyChanged("WindowWidth");
         }
@@ -10554,7 +10558,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 // Set the default table height
-                int newTableHeight = WindowHeight - 454;
+                int newTableHeight = _windowHeight - _defaultWindowHeight + 272;
 
                 // Adjust the height if the source habitat group is showing.
                 if (_showSourceHabitatGroup)
