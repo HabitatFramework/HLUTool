@@ -231,7 +231,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WPFToolkit">
-      <HintPath>lib\WPFToolkit.dll</HintPath>
+      <HintPath>..\lib\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
