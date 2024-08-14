@@ -58,10 +58,10 @@ using ESRI.ArcGIS.Display;
 
 namespace HLU
 {
-    [Guid("c61db89f-7118-4a10-a5c1-d4a375867a02")]
+    [Guid("BFEE12C7-B9B4-4C10-BF23-0F466280ADE8")]
     [ClassInterface(ClassInterfaceType.None)]
-    [ProgId("HLU.HluArcMapExtension")]
-    public class HluArcMapExtension : IExtension, IExtensionConfig, IPersistVariant
+    [ProgId("HLU.HluArcMapExtensionV4")]
+    public class HluArcMapExtensionV4 : IExtension, IExtensionConfig, IPersistVariant
     {
         #region Delegates
 
@@ -274,7 +274,7 @@ namespace HLU
         /// </summary>
         public string Name
         {
-            get { return "HluArcMapExtension"; }
+            get { return "HluArcMapExtensionV4"; }
         }
 
         public void Shutdown()
@@ -374,9 +374,9 @@ namespace HLU
         {
             get
             {
-                return String.Format("HLU ArcMap Extension {0}\r\n{1}\r\n\r\nProvides an interface to the HLU Tool.",
+                return String.Format("HLU ArcMap Extension v{0}\r\n{1}\r\n\r\nProvides an interface to the HLU Tool v4.",
                     System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    "Copyright © 2011 HBIC.\r\nCopyright © 2013-14,2016 TVERC.\r\nCopyright © 2014,2018 SxBRC.\r\nCopyright © 2019 LaSER.");
+                    "Copyright © 2011 HBIC, TVERC, SxBRC, LaSER, GiGL, Andy Foy Consulting; 2013-24.");
             }
         }
 
@@ -385,7 +385,7 @@ namespace HLU
         /// </summary>
         public string ProductName
         {
-            get { return "HLU ArcMap Extension"; }
+            get { return "HLU ArcMap Extension v4"; }
         }
 
         public esriExtensionState State
@@ -406,7 +406,7 @@ namespace HLU
                     // cannot enable if it's already in unavailable state
                     if (_enableState == esriExtensionState.esriESUnavailable)
                     {
-                        throw new COMException("Cannot enable extension.");
+                        throw new COMException("Cannot enable extension");
                     }
 
                     // determine if state can be changed
@@ -635,7 +635,7 @@ namespace HLU
                 _joinedTable = false;
             }
 
-            //MessageBox.Show("Feature layer selection changed", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show("Feature layer selection changed", "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
             PipeSelection(_hluFeatureSelection);
 
@@ -759,8 +759,7 @@ namespace HLU
                         }
                         break;
                     //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 053 Check if all selected rows have unique keys to avoid
+                    // Check if all selected rows have unique keys to avoid
                     // any potential data integrity problems.
                     case "su": // selected rows unique: cmd
                         try
@@ -769,7 +768,6 @@ namespace HLU
                         }
                         catch { _pipeData.Clear(); }
                         break;
-                    //---------------------------------------------------------------------
                     case "us": // update selection: cmd, columns, values, historyColumns [last 3 lists]
                         try
                         {
@@ -882,8 +880,7 @@ namespace HLU
                         }
                         break;
                     //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 097 Enable auto zoom when selecting features on map.
+                    // Enable auto zoom when selecting features on map.
                     case "zs": // zoom selected: cmd [, queryFilter], minZoom, distUnits, alwaysZoom [, queryFilter]
                         try
                         {
@@ -921,10 +918,7 @@ namespace HLU
                         }
                         catch { _pipeData.Clear(); }
                         break;
-                    //---------------------------------------------------------------------
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 065 Prompt for the GIS layer name before starting export.
-                    //
+                    // Prompt for the GIS layer name before starting export.
                     case "ep": // export prompt: cmd, mdbPathName, attributeDatasetName
                         if (_pipeData.Count == 3)
                         {
@@ -940,7 +934,6 @@ namespace HLU
                             catch { _pipeData.Clear(); }
                         }
                         break;
-                    //---------------------------------------------------------------------
                     case "ex": // export: cmd, mdbPathName, attributeDatasetName, selectedOnly
                         if (_pipeData.Count == 4)
                         {
@@ -1118,8 +1111,7 @@ namespace HLU
                     // invalidate only the selection cache. Flag the original selection
                     _hluView.PartialRefresh(esriViewDrawPhase.esriViewGeoSelection, null, null);
 
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 067 Select features directly rather than via selection set.
+                    // Select features directly rather than via selection set.
                     //
                     // perform selection
                     //ISelectionSet selSet = hluDisplayTable.SelectDisplayTable(queryFilter,
@@ -1130,7 +1122,6 @@ namespace HLU
 
                     _hluFeatureSelection = (IFeatureSelection)_hluLayer;
                     _hluFeatureSelection.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultNew, false);
-                    //---------------------------------------------------------------------
                 }
                 else // multi-column join: use cumulative selection sets
                 {
@@ -1244,7 +1235,7 @@ namespace HLU
 
         private void PipeSelection(IFeatureSelection featureSelection)
         {
-            //MessageBox.Show("Getting selection ...", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show("Getting selection ...", "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
             try
             {
@@ -1254,7 +1245,7 @@ namespace HLU
                     _hluFeatureSelection = (IFeatureSelection)_hluLayer;
                 if (_hluFeatureSelection.SelectionSet.Count == 0)
                 {
-                    //MessageBox.Show("Selected feature count is zero", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show("Selected feature count is zero", "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     _pipeData.Clear();
                     return;
@@ -1269,13 +1260,13 @@ namespace HLU
                     IRow selectRow;
                     featureSelection.SelectionSet.Search(null, true, out resultCursor);
 
-                    //MessageBox.Show(string.Format("Selected feature field count is {0}", resultCursor.Fields.FieldCount), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show(string.Format("Selected feature field count is {0}", resultCursor.Fields.FieldCount), "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     if (_sendColumnHeaders && (_selectColumns != null))
                     {
                         _pipeData.Add(String.Join(",", _selectColumns));
 
-                        //MessageBox.Show("Sending column headers", "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //MessageBox.Show("Sending column headers", "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
                     while ((selectRow = resultCursor.NextRow()) != null)
@@ -1286,7 +1277,7 @@ namespace HLU
                                 selectRow.get_Value(_selectFieldOrdinals[i])));
                         _pipeData.Add(sb.Remove(0, 1).ToString());
 
-                        //MessageBox.Show(string.Format("Sending feature details for OID {0}", selectRow.OID), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //MessageBox.Show(string.Format("Sending feature details for OID {0}", selectRow.OID), "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
 
                     Marshal.FinalReleaseComObject(resultCursor);
@@ -1352,8 +1343,6 @@ namespace HLU
             ZoomExtent(geom, minZoom, distUnits, true);
         }
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 097 Enable auto zoom when selecting features on map.
         private void ZoomSelected(int minZoom, string distUnits, bool alwaysZoom)
         {
             if ((_hluFeatureClass == null) || (_hluView == null)) return;
@@ -1431,7 +1420,6 @@ namespace HLU
                     _focusMap.MapScale = minZoom;
             }
         }
-        //---------------------------------------------------------------------
 
         private void ClearSelection()
         {
@@ -1488,10 +1476,9 @@ namespace HLU
                 IActiveView activeView = mxDoc.FocusMap as IActiveView;
                 IScreenDisplay screenDisplay = activeView.ScreenDisplay;
                 //---------------------------------------------------------------------
-                //---------------------------------------------------------------------
-                // FIXOLD: 018 Bring ArcGIS and MapInfo into line by flashing all features twice
+
+                // Bring ArcGIS and MapInfo into line by flashing all features twice
                 FlashGeometry(geom, screenDisplay, 300, 2);
-                //---------------------------------------------------------------------
             }
             catch { }
         }
@@ -1698,7 +1685,7 @@ namespace HLU
                         string numFormat = String.Format("D{0}", lastToidFragmentID.Length);
                         int newToidFragmentIDnum = Int32.Parse(lastToidFragmentID);
 
-                        int toidFragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int toidFragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         // temporary history list, sorted before adding to _pipeData
                         List<string> historyList = new List<string>();
@@ -1719,7 +1706,7 @@ namespace HLU
                         {
                             if (updateFeature.OID != minOID)
                             {
-                                // Set the toid_fragment_id to the next available number
+                                // Set the toidfragid to the next available number
                                 updateFeature.set_Value(toidFragOrdinal, (++newToidFragmentIDnum).ToString(numFormat));
                             }
                             else
@@ -1816,9 +1803,9 @@ namespace HLU
 
                     try
                     {
-                        string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                        string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
                         int incidOrdinal = _hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
-                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         var q = historyColumns.Where(n => _hluLayerStructure.Columns.Cast<DataColumn>()
                             .Count(c => c.ColumnName == n) == 0);
@@ -1859,13 +1846,9 @@ namespace HLU
         }
         //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 053 Check if all selected rows have unique keys to avoid
-        // any potential data integrity problems.
-        //
         /// <summary>
         /// Checks if all the selected rows are unique in the active HLU
-        /// layer based on their toid and toid_fragment_id values.
+        /// layer based on their toid and toidfragid values.
         /// </summary>
         private void SelectedRowsUnique()
         {
@@ -1890,29 +1873,29 @@ namespace HLU
                     _hluFeatureSelection.SelectionSet.Search(null, false, out cursor);
                     IRow selectRow = cursor.NextRow();
 
-                    // Get the column ordinals for the toid and toid_fragment_id columns.
+                    // Get the column ordinals for the toid and toidfragid columns.
                     int toidOrdinal = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                    int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                    int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
-                    // Create 2 fields for the toid and toid_fragment_id fields.
+                    // Create 2 fields for the toid and toidfragid fields.
                     IField toidField = _hluFeatureClass.Fields.get_Field(
                         _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal]);
                     IField fragField = _hluFeatureClass.Fields.get_Field(
-                        _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal]);
+                        _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal]);
 
                     // Check if each row is unique based on the toid and
                     // toid fragment id.
                     while (selectRow != null)
                     {
-                        // Get the current toid and toid_fragment_id values.
+                        // Get the current toid and toidfragid values.
                         string toid = selectRow.get_Value(toidOrdinal).ToString();
                         string frag = selectRow.get_Value(fragOrdinal).ToString();
 
-                        // Build a query filter for the current toid and toid_fragment_id.
+                        // Build a query filter for the current toid and toidfragid.
                         IQueryFilter countQueryFilter = new QueryFilterClass();
                         countQueryFilter.WhereClause = String.Format("{0} = {1} AND {2} = {3}",
                             _hluLayerStructure.toidColumn.ColumnName, QuoteValue(toidField, toid),
-                            _hluLayerStructure.toid_fragment_idColumn.ColumnName, QuoteValue(toidField, frag));
+                            _hluLayerStructure.toidfragidColumn.ColumnName, QuoteValue(toidField, frag));
 
                         // Get the count value for the query filter.
                         int fragCount = _hluLayer.FeatureClass.FeatureCount(countQueryFilter);
@@ -1940,7 +1923,6 @@ namespace HLU
                 _pipeData.Add(ex.Message);
             }
         }
-        //---------------------------------------------------------------------
 
         #endregion
 
@@ -2021,9 +2003,9 @@ namespace HLU
                             // Update the shape to the new merged geometry
                             resultFeature.Shape = resultGeom;
 
-                            // Set the toid_fragment_id to the same value (passed to this function) for all fragments
+                            // Set the toidfragid to the same value (passed to this function) for all fragments
                             resultFeature.set_Value(
-                                _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal], newToidFragmentID);
+                                _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal], newToidFragmentID);
 
                             //---------------------------------------------------------------------
                             // FIXED: KI106 (Shape area and length values)
@@ -2121,10 +2103,10 @@ namespace HLU
 
                     try
                     {
-                        string numFormat = String.Format("D{0}", _hluLayerStructure.toid_fragment_idColumn.MaxLength);
+                        string numFormat = String.Format("D{0}", _hluLayerStructure.toidfragidColumn.MaxLength);
                         int incidOrdinal = _hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
                         int toidOrdinal = _hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                        int fragOrdinal = _hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                         List<int> updateColumns = new List<int>();
                         for (int i = 0; i < mergeFeature.Fields.FieldCount; i++)
@@ -2593,9 +2575,6 @@ namespace HLU
 
         #region Export
 
-        //---------------------------------------------------------------------
-        // FIXOLD: 065 Prompt for the GIS layer name before starting export.
-        //
         /// <summary>
         /// Prompts the user for the export layer name.
         /// </summary>
@@ -2643,10 +2622,6 @@ namespace HLU
                 // Determine if the export layer is a shapefile.
                 bool isShp = IsShp(outWS as IWorkspace);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 050 Warn ArcGIS users if field names may be truncated or
-                // renamed exporting to shapefiles.
-                //
                 // If the export layer is a shapefile check if any of
                 // the attribute field names will be truncated.
                 if (isShp)
@@ -2675,7 +2650,6 @@ namespace HLU
                         }
                     }
                 }
-                //---------------------------------------------------------------------
 
                 // Save the export dataset name
                 _exportDatasetName = exportDatasetName;
@@ -2692,7 +2666,6 @@ namespace HLU
                 SetCursor(false);
             }
         }
-        //---------------------------------------------------------------------
 
         /// <summary>
         /// Exports the HLU features and attribute data to a new GIS layer file.
@@ -2884,16 +2857,12 @@ namespace HLU
                     .Select(f => joinDisplayTable.DisplayTable.Fields.FindField(attributeFieldsQualified ?
                         attributeDataset.Name + "." + f.Name : f.Name))).ToArray();
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 038 Display the export progress bar correctly when exporting
-                // from ArcGIS.
                 // Pass the number of features to be exported, not the number of incids,
                 // so that the export progress is displayed corectly
                 //
                 // Insert the features and attributes into the new feature class.
                 ExportInsertFeatures(joinDisplayTable, exportQueryFilter, exportFeatureCount,
                     exportFieldMap, isShp, outWS, outFeatureClass);
-                //---------------------------------------------------------------------
 
                 //---------------------------------------------------------------------
                 // CHANGED: CR16 (Adding exported features)
@@ -2985,19 +2954,15 @@ namespace HLU
             for (int i = 0; i < exportAttributes.Fields.FieldCount; i++)
             {
                 IField attributeField = exportAttributes.Fields.get_Field(i);
-                //---------------------------------------------------------------------
-                // FIXOLD: 033 Ignore case in field names during export to avoid duplicate
+                // Ignore case in field names during export to avoid duplicate
                 // fields.
                 if (attributeField.Name.ToLower() != originPKJoinField.ToLower())
-                //---------------------------------------------------------------------
                 {
                     attributeFields.Add(attributeField);
                     attributeFieldOrdinals.Add(i);
                 }
             }
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 037 Move the geometry length and area fields to the end.
             // Exclude the length and area fields here so they can be moved/added
             // later at the end.
             //
@@ -3020,7 +2985,6 @@ namespace HLU
                     featClassFieldOrdinals.Add(i);
                 }
             }
-            //---------------------------------------------------------------------
 
             // Append the attribute table fields to the feature layer fields
             // as a new list of fields to go into the export layer.
@@ -3161,11 +3125,9 @@ namespace HLU
             bool restoreEditSession = InEditingSession;
             if (restoreEditSession) CloseEditSession(true);
 
-            //---------------------------------------------------------------------
-            // FIXOLD: 064 Perform the export outside of an edit session.
-            //          This will commit changes during the process rather
-            //          than saving them all to the end of the edit session
-            //          which should (hopefully) reduce the demand on memory.
+            // This will commit changes during the process rather
+            // than saving them all to the end of the edit session
+            // which should (hopefully) reduce the demand on memory.
 
             // If using an edit session then start it now.
             if (_exportInEditSession)
@@ -3186,7 +3148,6 @@ namespace HLU
                     workspaceEdit.StartEditOperation();
                 }
             }
-            //---------------------------------------------------------------------
             
             IFeatureCursor exportFeatureCursor =
                 (IFeatureCursor)hluDisplayTable.SearchDisplayTable(exportQueryFilter, true);
@@ -3214,11 +3175,8 @@ namespace HLU
                         item = exportFeature.get_Value(exportFieldMap[i]);
                         if (item != DBNull.Value)
                             featureBuffer.set_Value(i, item);
-                        //---------------------------------------------------------------------
-                        // FIXOLD: 036 Clear all missing fields when exporting features from ArcGIS.
                         else
                             featureBuffer.set_Value(i, null);
-                        //---------------------------------------------------------------------
                     }
 
                     if (calcGeometry)
@@ -3243,8 +3201,7 @@ namespace HLU
                 // Flush and release the output cursor.
                 FlushCursor(false, ref insertCursor);
 
-                //---------------------------------------------------------------------
-                // FIXOLD: 064 Perform the export outside of an edit session.
+                // Perform the export outside of an edit session.
                 // If using an edit session then stop it now.
                 if (_exportInEditSession)
                 {
@@ -3259,7 +3216,6 @@ namespace HLU
                         workspaceEdit.StopEditing(true);
                     }
                 }
-                //---------------------------------------------------------------------
             }
             catch
             {
@@ -3788,15 +3744,9 @@ namespace HLU
                         }
                     }
 
-                    //---------------------------------------------------------------------
-                    // FIXOLD: 059 Do not display map window number with layer name
-                    // if there is only one map window.
-                    // 
                     // Return the number of valid layers and the total number of
                     // map windows.
-
                     _pipeData.AddRange(new string[] { _hluLayerList.Count.ToString(), maps.Count.ToString() });
-                    //---------------------------------------------------------------------
                     _pipeData.Add(_pipeTransmissionInterrupt);
                     _pipeData.AddRange(_hluLayerList);
                     return;
@@ -3843,7 +3793,7 @@ namespace HLU
                     int[] hluUidFieldOrdinals = new int[3];
                     hluUidFieldOrdinals[0] = hluFieldMap[_hluLayerStructure.incidColumn.Ordinal];
                     hluUidFieldOrdinals[1] = hluFieldMap[_hluLayerStructure.toidColumn.Ordinal];
-                    hluUidFieldOrdinals[2] = hluFieldMap[_hluLayerStructure.toid_fragment_idColumn.Ordinal];
+                    hluUidFieldOrdinals[2] = hluFieldMap[_hluLayerStructure.toidfragidColumn.Ordinal];
 
                     string[] hluFieldSysTypeNames = new string[hluFeatureClass.Fields.FieldCount];
                     Type sysType;
@@ -3862,7 +3812,7 @@ namespace HLU
 
                     if (_hluLayer == null)
                     {
-                        //MessageBox.Show(string.Format("{0} is valid layer", _hluLayer.Name), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //MessageBox.Show(string.Format("{0} is valid layer", _hluLayer.Name), "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                         _hluLayer = hluLayer;
                         _hluFeatureClass = hluFeatureClass;
@@ -3879,7 +3829,7 @@ namespace HLU
                     }
                     //---------------------------------------------------------------------
 
-                    //MessageBox.Show(string.Format("{0} valid layers found", _hluLayerList.Count.ToString()), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show(string.Format("{0} valid layers found", _hluLayerList.Count.ToString()), "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     return true;
                 }
@@ -3951,7 +3901,7 @@ namespace HLU
                             if (IsHluLayer(featureLayer))
                             {
 
-                                //MessageBox.Show(string.Format("{0} is valid layer", featureLayer.Name), "HLU GIS Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
+                                //MessageBox.Show(string.Format("{0} is valid layer", featureLayer.Name), "HLU Tool Extension", MessageBoxButton.OK, MessageBoxImage.Information);
 
                                 _hluView = map as IActiveView;
                                 _pipeData.Add("true");

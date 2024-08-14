@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HLU</RootNamespace>
-    <AssemblyName>HluArcMapExtension</AssemblyName>
+    <AssemblyName>HluArcMapExtensionv4</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -209,9 +209,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HLUGISTool\HLUGISTool.csproj">
+    <ProjectReference Include="..\HLUTool\HLUTool.csproj">
       <Project>{B0C62884-11C8-48FB-B486-C44E0831FC98}</Project>
-      <Name>HLUGISTool</Name>
+      <Name>HLUTool</Name>
     </ProjectReference>
     <ProjectReference Include="..\NamedPipeDotNet\AppModule.InterProcessComm\AppModule.InterProcessComm.csproj">
       <Project>{E98F1F7E-40B6-44C8-AC66-EC867B141FA1}</Project>
