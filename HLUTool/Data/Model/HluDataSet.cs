@@ -20,12 +20,10 @@ namespace HLU.Data.Model {
 
     public partial class HluDataSet
     {
-        partial class lut_secondary_bap_habitatDataTable
-        {
-        }
     }
 }
 
 namespace HLU.Data.Model.HluDataSetTableAdapters {
 
 }
+

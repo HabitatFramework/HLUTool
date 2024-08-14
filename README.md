@@ -1,7 +1,7 @@
 HLU Tool
 ========
 
-HLU Tool 4.0.1
+HLU Tool 4.0.3
 
 Copyright © 2011 Hampshire Biodiversity Information Centre
 Copyright © 2013-2014, 2016 Thames Valley Environmental Records Centre

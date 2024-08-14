@@ -286,6 +286,7 @@ namespace HLU.UI.ViewModel
         private int _incidCurrentRowIndex;
         private DataTable _incidSelection;
         private DataTable _gisSelection;
+        private DataTable _incidMMPolygonSelection;
 
         private HluDataSet.incidRow _incidCurrentRow;
         private HluDataSet.incidRow _incidCurrentRowClone;
@@ -716,6 +717,9 @@ namespace HLU.UI.ViewModel
             catch { return historyColumns; }
         }
 
+        /// <summary>
+        /// Processes the startup arguments.
+        /// </summary>
         private void ProcessStartupArguments()
         {
             foreach (string s in App.StartupArguments)
@@ -1319,12 +1323,20 @@ namespace HLU.UI.ViewModel
 
         #region ViewModelBase Members
 
+        /// <summary>
+        /// Returns the user-friendly name of this object.
+        /// Child classes can set this property to a new value,
+        /// or override it to determine the value on-demand.
+        /// </summary>
         public override string DisplayName
         {
             get { return _displayName; }
             set { _displayName = value; }
         }
 
+        /// <summary>
+        /// The title of the main window.
+        /// </summary>
         public override string WindowTitle
         {
             get
@@ -2575,6 +2587,9 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Update the user settings when the split merge request window is closed.
+        /// </summary>
         void _viewModelWinWarnSplitMerge_RequestClose()
         {
             _viewModelWinWarnSplitMerge.RequestClose -= _viewModelWinWarnSplitMerge_RequestClose;
@@ -2942,6 +2957,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Proceed or cancel the update when the subset update warning
+        /// window is closed.
+        /// </summary>
+        /// <param name="proceed">if set to <c>true</c> [proceed].</param>
+        /// <param name="split">if set to <c>true</c> [split].</param>
         void _viewModelWinWarnSubsetUpdate_RequestClose(bool proceed, bool split)
         {
             _viewModelWinWarnSubsetUpdate.RequestClose -= _viewModelWinWarnSubsetUpdate_RequestClose;
@@ -2969,6 +2990,10 @@ namespace HLU.UI.ViewModel
 
         #region Bulk Update
 
+        /// <summary>
+        /// Action the bulk update.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void BulkUpdateClicked(object param)
         {
             _saving = false;
@@ -3041,6 +3066,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets the cancel bulk update command.
+        /// </summary>
+        /// <value>
+        /// The cancel bulk update command.
+        /// </value>
          public ICommand CancelBulkUpdateCommand
         {
             get
@@ -3054,6 +3085,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+         /// <summary>
+         /// Cancel the bulk update.
+         /// </summary>
+         /// <param name="param">The parameter.</param>
         private void CancelBulkUpdateClicked(object param)
         {
             if (_viewModelBulkUpdate != null)
@@ -3075,6 +3110,12 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Cancel the bulk update be cancelled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance can cancel bulk update; otherwise, <c>false</c>.
+        /// </value>
         public bool CanCancelBulkUpdate { get { return _bulkUpdateMode == true; } }
 
         internal Nullable<bool> BulkUpdateMode
@@ -4235,6 +4276,12 @@ namespace HLU.UI.ViewModel
 
         #region Options
 
+        /// <summary>
+        /// Gets the options command.
+        /// </summary>
+        /// <value>
+        /// The options command.
+        /// </value>
         public ICommand OptionsCommand
         {
             get
@@ -4248,6 +4295,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Open the options window.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void OptionsClicked(object param)
         {
             _windowOptions = new WindowOptions();
@@ -4263,6 +4314,10 @@ namespace HLU.UI.ViewModel
             _windowOptions.ShowDialog();
         }
 
+        /// <summary>
+        /// Save the options settings when the options window is closed.
+        /// </summary>
+        /// <param name="saveSettings">if set to <c>true</c> [save settings].</param>
         void _viewModelOptions_RequestClose(bool saveSettings)
         {
             _viewModelOptions.RequestClose -= _viewModelOptions_RequestClose;
@@ -4278,7 +4333,7 @@ namespace HLU.UI.ViewModel
                 _dbConnectionTimeout = Settings.Default.DbConnectionTimeout;
 
                 // GIS/Export options
-                int _minZoom = Settings.Default.MinAutoZoom;
+                _minZoom = Settings.Default.MinAutoZoom;
 
                 // History options
                 _historyDisplayLastN = Settings.Default.HistoryDisplayLastN;
@@ -4369,6 +4424,12 @@ namespace HLU.UI.ViewModel
 
         #region About
 
+        /// <summary>
+        /// Gets the about command.
+        /// </summary>
+        /// <value>
+        /// The about command.
+        /// </value>
         public ICommand AboutCommand
         {
             get
@@ -4409,6 +4470,10 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Show the about window.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void AboutClicked(object param)
         {
             //---------------------------------------------------------------------
@@ -4459,7 +4524,7 @@ namespace HLU.UI.ViewModel
         }
 
         /// <summary>
-        /// Closes help window and removes close window handler
+        /// Closes about window and removes close window handler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -4679,15 +4744,14 @@ namespace HLU.UI.ViewModel
                     // Backup the current selection (filter).
                     DataTable incidSelectionBackup = _incidSelection;
 
+                    // Replace any connection type specific qualifiers and delimiters.
+                    string newWhereClause = null;
+                    if (sqlWhereClause != null)
+                        newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
+
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
-
-                        // Replace any connection type specific qualifiers and delimiters.
-                        string newWhereClause = null;
-                        if (sqlWhereClause != null)
-                            newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
-
                         // Create a selection DataTable of PK values of IncidTable.
                         _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
 
@@ -4718,7 +4782,8 @@ namespace HLU.UI.ViewModel
                         // Find the expected number of features to be selected in GIS.
                         _toidsSelectedDBCount = 0;
                         _fragsSelectedDBCount = 0;
-                        ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                        //ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                        ExpectedSelectionFeatures(whereTables, newWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
@@ -4756,12 +4821,20 @@ namespace HLU.UI.ViewModel
                                (_fragsIncidGisCount > _fragsIncidDbCount))
                             {
                                 if (_fragsIncidGisCount == 1)
-                                    MessageBox.Show(App.Current.MainWindow, "Map feature not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Selected feature not found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                                 else
-                                    MessageBox.Show(App.Current.MainWindow, "Map features not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Not all selected features found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                             }
+                            // Check if the counts returned are less than those expected.
+                            else if ((_toidsIncidGisCount < _toidsSelectedDBCount) ||
+                                    (_fragsIncidGisCount < _fragsSelectedDBCount))
+                            {
+                                MessageBox.Show(App.Current.MainWindow, "Not all selected features found in active layer.", "HLU: Selection",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+
                         }
                         else
                         {
@@ -5022,7 +5095,8 @@ namespace HLU.UI.ViewModel
                         // Find the expected number of features to be selected in GIS.
                         _toidsSelectedDBCount = 0;
                         _fragsSelectedDBCount = 0;
-                        ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                        //ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                        ExpectedSelectionFeatures(whereTables, newWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
@@ -5060,11 +5134,18 @@ namespace HLU.UI.ViewModel
                                (_fragsIncidGisCount > _fragsIncidDbCount))
                             {
                                 if (_fragsIncidGisCount == 1)
-                                    MessageBox.Show(App.Current.MainWindow, "Map feature not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Selected feature not found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                                 else
-                                    MessageBox.Show(App.Current.MainWindow, "Map features not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Not all selected features found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            // Check if the counts returned are less than those expected.
+                            else if ((_toidsIncidGisCount < _toidsSelectedDBCount) ||
+                                    (_fragsIncidGisCount < _fragsSelectedDBCount))
+                            {
+                                MessageBox.Show(App.Current.MainWindow, "Not all selected features found in active layer.", "HLU: Selection",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
                             }
                         }
                         else
@@ -5237,6 +5318,11 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Open the OSMM Updates advanced query window when in OSMM Update mode.
+        /// </summary>
+        /// <param name="initialise">if set to <c>true</c> [initialise].</param>
+        /// <exception cref="Exception">No parent window loaded</exception>
         public void OpenWindowQueryOSMMAdvanced(bool initialise)
         {
             if (initialise)
@@ -5392,7 +5478,8 @@ namespace HLU.UI.ViewModel
                             // Find the expected number of features to be selected in GIS.
                             _toidsSelectedDBCount = 0;
                             _fragsSelectedDBCount = 0;
-                            ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                            //ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                            ExpectedSelectionFeatures(whereTables, newWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                             //---------------------------------------------------------------------
                             // CHANGED: CR12 (Select by attribute performance)
@@ -5437,11 +5524,18 @@ namespace HLU.UI.ViewModel
                                        (_fragsIncidGisCount > _fragsIncidDbCount))
                                     {
                                         if (_fragsIncidGisCount == 1)
-                                            MessageBox.Show(App.Current.MainWindow, "Map feature not found in database.", "HLU: Selection",
+                                            MessageBox.Show(App.Current.MainWindow, "Selected feature not found in database.", "HLU: Selection",
                                             MessageBoxButton.OK, MessageBoxImage.Warning);
                                         else
-                                            MessageBox.Show(App.Current.MainWindow, "Map features not found in database.", "HLU: Selection",
+                                            MessageBox.Show(App.Current.MainWindow, "Not all selected features found in database.", "HLU: Selection",
                                             MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    }
+                                    // Check if the counts returned are less than those expected.
+                                    else if ((_toidsIncidGisCount < _toidsSelectedDBCount) ||
+                                            (_fragsIncidGisCount < _fragsSelectedDBCount))
+                                    {
+                                        MessageBox.Show(App.Current.MainWindow, "Not all selected features found in active layer.", "HLU: Selection",
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
                                     }
                                 }
 
@@ -5545,6 +5639,13 @@ namespace HLU.UI.ViewModel
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Applies the OSMM updates filter.
+        /// </summary>
+        /// <param name="processFlag">The process flag.</param>
+        /// <param name="spatialFlag">The spatial flag.</param>
+        /// <param name="changeFlag">The change flag.</param>
+        /// <param name="status">The status.</param>
         public void ApplyOSMMUpdatesFilter(string processFlag, string spatialFlag, string changeFlag, string status)
         {
             try
@@ -5634,7 +5735,8 @@ namespace HLU.UI.ViewModel
                     // Find the expected number of features to be selected in GIS.
                     _toidsSelectedDBCount = 0;
                     _fragsSelectedDBCount = 0;
-                    ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                    //ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                    ExpectedSelectionFeatures(whereTables, newWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                     //---------------------------------------------------------------------
                     // CHANGED: CR12 (Select by attribute performance)
@@ -5883,6 +5985,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Selects the current incid on the map.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
         private void SelectOnMapClicked(object param)
         {
             // Set the status to processing and the cursor to wait.
@@ -5905,11 +6011,18 @@ namespace HLU.UI.ViewModel
                (_fragsIncidGisCount > _fragsIncidDbCount))
             {
                 if (_fragsIncidGisCount == 1)
-                    MessageBox.Show(App.Current.MainWindow, "Map feature not found in database.", "HLU: Selection",
+                    MessageBox.Show(App.Current.MainWindow, "Incid feature not found in database.", "HLU: Selection",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 else
-                    MessageBox.Show(App.Current.MainWindow, "Map features not found in database.", "HLU: Selection",
+                    MessageBox.Show(App.Current.MainWindow, "Not all incid features found in database.", "HLU: Selection",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            // Check if the counts returned are less than those expected.
+            else if ((_toidsIncidGisCount < _toidsIncidDbCount) ||
+                    (_fragsIncidGisCount < _fragsIncidDbCount))
+            {
+                MessageBox.Show(App.Current.MainWindow, "Not all incid features found in active layer.", "HLU: Selection",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -6044,7 +6157,7 @@ namespace HLU.UI.ViewModel
 
                 // Warn the user that no features were found in GIS.
                 if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                    MessageBox.Show(App.Current.MainWindow, "No map features found in active layer.", "HLU: Selection",
+                    MessageBox.Show(App.Current.MainWindow, "No features for incid found in active layer.", "HLU: Selection",
                         MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -6466,7 +6579,7 @@ namespace HLU.UI.ViewModel
                 if (_secondaryGroup != null && _secondaryHabitat != null)
                 {
                     string secondaryGroup = _secondaryGroup;
-                    if (secondaryGroup == "<All>")
+                    if (secondaryGroup.StartsWith("<All"))
                     {
                         // Lookup the secondary group from the secondary code
                         IEnumerable<string> q = null;
@@ -6747,7 +6860,7 @@ namespace HLU.UI.ViewModel
 
                         // Warn the user that no records were found.
                         if ((_gisSelection == null) || (_gisSelection.Rows.Count == 0))
-                            MessageBox.Show(App.Current.MainWindow, "No map features found in active layer.", "HLU: Selection",
+                            MessageBox.Show(App.Current.MainWindow, "No incid features found in active layer.", "HLU: Selection",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         else
                         {
@@ -6756,11 +6869,18 @@ namespace HLU.UI.ViewModel
                                (_fragsIncidGisCount > _fragsIncidDbCount))
                             {
                                 if (_fragsIncidGisCount == 1)
-                                    MessageBox.Show(App.Current.MainWindow, "Map feature not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Incid feature not found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                                 else
-                                    MessageBox.Show(App.Current.MainWindow, "Map features not found in database.", "HLU: Selection",
+                                    MessageBox.Show(App.Current.MainWindow, "Not all incid features found in database.", "HLU: Selection",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            // Check if the counts returned are less than those expected.
+                            else if ((_toidsIncidGisCount < expectedNumToids) ||
+                                    (_fragsIncidGisCount < expectedNumFeatures))
+                            {
+                                MessageBox.Show(App.Current.MainWindow, "Not all incid features found in active layer.", "HLU: Selection",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
                             }
                         }
                     }
@@ -7120,6 +7240,19 @@ namespace HLU.UI.ViewModel
 
                     numToids = _db.SqlCount(whereTables, String.Format("Distinct {0}", _hluDS.incid_mm_polygons.toidColumn.ColumnName), joinCond.ToList(), sqlWhereClause);
                     numFragments = _db.SqlCount(whereTables, "*", joinCond.ToList(), sqlWhereClause);
+
+                    // Create a selection DataTable of PK values of IncidMMPolygons.
+                    _incidMMPolygonSelection = _db.SqlSelect(true, false, _hluDS.incid_mm_polygons.PrimaryKey, whereTables.ToList(), joinCond.ToList(), sqlWhereClause);
+                    //_incidMMPolygonSelection = _db.SqlSelect(true, false, IncidMMPolygonsTable.PrimaryKey, sqlFromTables, joinCond.ToList(), sqlWhereClause);
+                    numFragments = _incidMMPolygonSelection.Rows.Count;
+
+                    //// Change "*" to distinct concatenation of incid, toid and toid fragments
+                    //numFragments = _db.SqlCount(whereTables, String.Format("Distinct Convert(varchar, {0}.{1}) + Convert(varchar, {0}.{2}) + Convert(varchar, {0}.{3})",
+                    //    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.TableName),
+                    //    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
+                    //    _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidfragidColumn.ColumnName)),
+                    //    joinCond.ToList(), sqlWhereClause);
                 }
                 catch { }
             }
@@ -7342,6 +7475,20 @@ namespace HLU.UI.ViewModel
                 }
 
                 return _hluDS.incid;
+            }
+        }
+
+        public HluDataSet.incid_mm_polygonsDataTable IncidMMPolygonsTable
+        {
+            get
+            {
+                if (HluDataset.incid_mm_polygons.IsInitialized && (HluDataset.incid_mm_polygons.Rows.Count == 0))
+                {
+                    if (_hluTableAdapterMgr.incid_mm_polygonsTableAdapter == null)
+                        _hluTableAdapterMgr.incid_mm_polygonsTableAdapter =
+                            new HluTableAdapter<HluDataSet.incid_mm_polygonsDataTable, HluDataSet.incid_mm_polygonsRow>(_db);
+                }
+                return _hluDS.incid_mm_polygons;
             }
         }
 
@@ -10207,6 +10354,10 @@ namespace HLU.UI.ViewModel
             }
         }
 
+        /// <summary>
+        /// Actions when the primary code has been changed.
+        /// </summary>
+        /// <param name="incidPrimary">The incid primary.</param>
         private void NewPrimaryHabitat(string incidPrimary)
         {
             if (incidPrimary != null)
@@ -10227,7 +10378,7 @@ namespace HLU.UI.ViewModel
                 // all secondary groups that relate to the primary habitat category.
                 _secondaryCodesValid = (from s in SecondaryHabitatCodesAll
                                         join ps in _lutPrimarySecondary on s.code equals ps.code_secondary
-                                        where ps.category == _incidPrimaryCategory
+                                        where ((ps.code_primary == _incidPrimary) || (ps.code_primary.EndsWith("*") && Regex.IsMatch(_incidPrimary, @"\A" + ps.code_primary.TrimEnd('*') + @"") == true))
                                         select s).OrderBy(r => r.sort_order).ThenBy(r => r.description).ToArray();
 
                 // Store the list of valid secondary codes.
@@ -10352,6 +10503,12 @@ namespace HLU.UI.ViewModel
                 allRow.description = "<All>";
                 allRow.sort_order = -1;
 
+                // Define the <ALL Essentials> group row
+                HluDataSet.lut_secondary_groupRow allEssRow = HluDataset.lut_secondary_group.Newlut_secondary_groupRow();
+                allEssRow.code = "<All Essentials>";
+                allEssRow.description = "<All Essentials>";
+                allEssRow.sort_order = -1;
+
                 // Set the public and static variables
                 if (SecondaryGroupsAll == null || SecondaryGroupsAll.Count() == 0)
                 {
@@ -10359,13 +10516,13 @@ namespace HLU.UI.ViewModel
                     _secondaryGroups = (from sg in _lutSecondaryGroup
                                         select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
-                    // Set the full list of secondary groups including an <All> group.
+                    // Set the full list of secondary groups including any <All> groups.
                     HluDataSet.lut_secondary_groupRow[] secondaryGroupsAll;
                     secondaryGroupsAll = _secondaryGroups;
                     if (secondaryGroupsAll != null)
                     {
-                        // Add the <ALL> group containing all secondary codes
-                        secondaryGroupsAll = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(secondaryGroupsAll).ToArray();
+                        // Add the <ALL> groups containing all and all essential secondary codes.
+                        secondaryGroupsAll = new HluDataSet.lut_secondary_groupRow[] { allRow, allEssRow }.Concat(secondaryGroupsAll).ToArray();
                     }
 
                     // Set the static variable
@@ -10378,17 +10535,17 @@ namespace HLU.UI.ViewModel
 
                 if (!String.IsNullOrEmpty(IncidPrimary))
                 {
-                    // Set the valid list of secondary codes for the primary category.
+                    // Set the valid list of secondary groups for the primary code.
                     _secondaryGroupsValid = (from sg in _lutSecondaryGroup
                                              join s in _lutSecondary on sg.code equals s.code_group
                                              join ps in _lutPrimarySecondary on s.code equals ps.code_secondary
-                                             where ps.category == IncidPrimaryCategory
+                                             where ((ps.code_primary == IncidPrimary) || (ps.code_primary.EndsWith("*") && Regex.IsMatch(IncidPrimary, @"\A" + ps.code_primary.TrimEnd('*') + @"") == true))
                                              select sg).OrderBy(r => r.sort_order).ThenBy(r => r.description).Distinct().ToArray();
 
                     if (_secondaryGroupsValid != null)
                     {
-                        // Add the <ALL> group containing all secondary codes
-                        _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
+                        // Add the <ALL> groups containing all and all essential secondary codes.
+                        _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow, allEssRow }.Concat(_secondaryGroupsValid).ToArray();
                     }
                 }
                 else
@@ -10396,8 +10553,8 @@ namespace HLU.UI.ViewModel
                     // Set the valid list of secondary codes to all codes (rather than clearing the list)
                     _secondaryGroupsValid = _secondaryGroups;
 
-                    // Add the <ALL> group containing all secondary codes
-                    _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow }.Concat(_secondaryGroupsValid).ToArray();
+                    // Add the <ALL> groups containing all and all essential secondary codes.
+                    _secondaryGroupsValid = new HluDataSet.lut_secondary_groupRow[] { allRow, allEssRow }.Concat(_secondaryGroupsValid).ToArray();
 
                     // Set the combo box list to null (it will also be disabled).
                     return null;
@@ -10449,6 +10606,13 @@ namespace HLU.UI.ViewModel
                             // all secondary groups that relate to the primary habitat.
                             return _secondaryCodesValid;
                         }
+                        else if (_secondaryGroup == "<All Essentials>")
+                        {
+                            // Load all secondary habitat codes that are flagged as local for
+                            // all secondary groups that relate to the primary habitat and
+                            // are essential.
+                            return _secondaryCodesValid.Where(s => s.sort_order < 100).ToArray();
+                        }
                         else
                         {
                             // Load all secondary habitat codes that are flagged as local and
@@ -10464,10 +10628,16 @@ namespace HLU.UI.ViewModel
                             // regardless of the primary habitat.
                             return _secondaryCodesAll;
                         }
+                        else if (_secondaryGroup == "<All Essentials>")
+                        {
+                            // Load all secondary habitat codes that are flagged as local
+                            // regardless of the primary habitat and are essential.
+                            return _secondaryCodesAll.Where(s => s.sort_order < 100).ToArray();
+                        }
                         else
                         {
                             // Load all secondary habitat codes that are flagged as local
-                            // regardless of the primary habitat but relater to the
+                            // regardless of the primary habitat but related to the
                             // selected secondary group.
                             return _secondaryCodesAll.Where(s => s.code_group == _secondaryGroup).ToArray();
                         }
@@ -10558,7 +10728,7 @@ namespace HLU.UI.ViewModel
             get
             {
                 // Set the default table height
-                int newTableHeight = _windowHeight - _defaultWindowHeight + 272;
+                int newTableHeight = _windowHeight - _defaultWindowHeight + 280;
 
                 // Adjust the height if the source habitat group is showing.
                 if (_showSourceHabitatGroup)

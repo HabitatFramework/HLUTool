@@ -202,8 +202,6 @@ namespace HLU.Data.Model {
         
         private global::System.Data.DataRelation relationfk_lut_primary_lut_secondary_group;
         
-        private global::System.Data.DataRelation relationfk_lut_primary_secondary_lut_secondary_group;
-        
         private global::System.Data.DataRelation relationfk_lut_secondary_bap_habitat_lut_habitat_type;
         
         private global::System.Data.DataRelation relationfk_lut_secondary_lut_secondary_group;
@@ -255,6 +253,8 @@ namespace HLU.Data.Model {
         private global::System.Data.DataRelation relationfk_history_lut_quality_interpretation;
         
         private global::System.Data.DataRelation relationfk_incid_osmm_updates_lut_osmm_habitat_xref;
+        
+        private global::System.Data.DataRelation relationlut_primary_lut_primary_secondary;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
@@ -1562,7 +1562,6 @@ namespace HLU.Data.Model {
             this.relationfk_lut_osmm_updates_change_incid_osmm_updates = this.Relations["fk_lut_osmm_updates_change_incid_osmm_updates"];
             this.relationfk_lut_primary_bap_habitat_lut_habitat_type = this.Relations["fk_lut_primary_bap_habitat_lut_habitat_type"];
             this.relationfk_lut_primary_lut_secondary_group = this.Relations["fk_lut_primary_lut_secondary_group"];
-            this.relationfk_lut_primary_secondary_lut_secondary_group = this.Relations["fk_lut_primary_secondary_lut_secondary_group"];
             this.relationfk_lut_secondary_bap_habitat_lut_habitat_type = this.Relations["fk_lut_secondary_bap_habitat_lut_habitat_type"];
             this.relationfk_lut_secondary_lut_secondary_group = this.Relations["fk_lut_secondary_lut_secondary_group"];
             this.relationfk_lut_habitat_type_primary_lut_habitat_type = this.Relations["fk_lut_habitat_type_primary_lut_habitat_type"];
@@ -1589,6 +1588,7 @@ namespace HLU.Data.Model {
             this.relationfk_history_lut_quality_determination = this.Relations["fk_history_lut_quality_determination"];
             this.relationfk_history_lut_quality_interpretation = this.Relations["fk_history_lut_quality_interpretation"];
             this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref = this.Relations["fk_incid_osmm_updates_lut_osmm_habitat_xref"];
+            this.relationlut_primary_lut_primary_secondary = this.Relations["lut_primary_lut_primary_secondary"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1861,10 +1861,6 @@ namespace HLU.Data.Model {
                         this.tablelut_primary_category.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tablelut_primary.categoryColumn}, false);
             this.Relations.Add(this.relationfk_lut_primary_lut_secondary_group);
-            this.relationfk_lut_primary_secondary_lut_secondary_group = new global::System.Data.DataRelation("fk_lut_primary_secondary_lut_secondary_group", new global::System.Data.DataColumn[] {
-                        this.tablelut_primary_category.codeColumn}, new global::System.Data.DataColumn[] {
-                        this.tablelut_primary_secondary.categoryColumn}, false);
-            this.Relations.Add(this.relationfk_lut_primary_secondary_lut_secondary_group);
             this.relationfk_lut_secondary_bap_habitat_lut_habitat_type = new global::System.Data.DataRelation("fk_lut_secondary_bap_habitat_lut_habitat_type", new global::System.Data.DataColumn[] {
                         this.tablelut_habitat_type.codeColumn}, new global::System.Data.DataColumn[] {
                         this.tablelut_secondary_bap_habitat.bap_habitatColumn}, false);
@@ -1973,6 +1969,10 @@ namespace HLU.Data.Model {
                         this.tablelut_osmm_habitat_xref.osmm_xref_idColumn}, new global::System.Data.DataColumn[] {
                         this.tableincid_osmm_updates.osmm_xref_idColumn}, false);
             this.Relations.Add(this.relationfk_incid_osmm_updates_lut_osmm_habitat_xref);
+            this.relationlut_primary_lut_primary_secondary = new global::System.Data.DataRelation("lut_primary_lut_primary_secondary", new global::System.Data.DataColumn[] {
+                        this.tablelut_primary.codeColumn}, new global::System.Data.DataColumn[] {
+                        this.tablelut_primary_secondary.code_primaryColumn}, false);
+            this.Relations.Add(this.relationlut_primary_lut_primary_secondary);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -15658,7 +15658,7 @@ namespace HLU.Data.Model {
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
         public partial class lut_primary_secondaryDataTable : global::System.Data.TypedTableBase<lut_primary_secondaryRow> {
             
-            private global::System.Data.DataColumn columncategory;
+            private global::System.Data.DataColumn columncode_primary;
             
             private global::System.Data.DataColumn columncode_secondary;
             
@@ -15699,9 +15699,9 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn categoryColumn {
+            public global::System.Data.DataColumn code_primaryColumn {
                 get {
-                    return this.columncategory;
+                    return this.columncode_primary;
                 }
             }
             
@@ -15758,14 +15758,14 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_primary_secondaryRow Addlut_primary_secondaryRow(lut_primary_categoryRow parentlut_primary_categoryRowByfk_lut_primary_secondary_lut_secondary_group, lut_secondaryRow parentlut_secondaryRowBylut_secondary_lut_primary_secondary, bool is_local) {
+            public lut_primary_secondaryRow Addlut_primary_secondaryRow(lut_primaryRow parentlut_primaryRowBylut_primary_lut_primary_secondary, lut_secondaryRow parentlut_secondaryRowBylut_secondary_lut_primary_secondary, bool is_local) {
                 lut_primary_secondaryRow rowlut_primary_secondaryRow = ((lut_primary_secondaryRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         null,
                         is_local};
-                if ((parentlut_primary_categoryRowByfk_lut_primary_secondary_lut_secondary_group != null)) {
-                    columnValuesArray[0] = parentlut_primary_categoryRowByfk_lut_primary_secondary_lut_secondary_group[0];
+                if ((parentlut_primaryRowBylut_primary_lut_primary_secondary != null)) {
+                    columnValuesArray[0] = parentlut_primaryRowBylut_primary_lut_primary_secondary[0];
                 }
                 if ((parentlut_secondaryRowBylut_secondary_lut_primary_secondary != null)) {
                     columnValuesArray[1] = parentlut_secondaryRowBylut_secondary_lut_primary_secondary[0];
@@ -15777,9 +15777,9 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_primary_secondaryRow FindBycategorycode_secondary(string category, string code_secondary) {
+            public lut_primary_secondaryRow FindBycode_primarycode_secondary(string code_primary, string code_secondary) {
                 return ((lut_primary_secondaryRow)(this.Rows.Find(new object[] {
-                            category,
+                            code_primary,
                             code_secondary})));
             }
             
@@ -15800,7 +15800,7 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             internal void InitVars() {
-                this.columncategory = base.Columns["category"];
+                this.columncode_primary = base.Columns["code_primary"];
                 this.columncode_secondary = base.Columns["code_secondary"];
                 this.columnis_local = base.Columns["is_local"];
             }
@@ -15808,17 +15808,17 @@ namespace HLU.Data.Model {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             private void InitClass() {
-                this.columncategory = new global::System.Data.DataColumn("category", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columncategory);
+                this.columncode_primary = new global::System.Data.DataColumn("code_primary", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columncode_primary);
                 this.columncode_secondary = new global::System.Data.DataColumn("code_secondary", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columncode_secondary);
                 this.columnis_local = new global::System.Data.DataColumn("is_local", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnis_local);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
-                                this.columncategory,
+                                this.columncode_primary,
                                 this.columncode_secondary}, true));
-                this.columncategory.AllowDBNull = false;
-                this.columncategory.MaxLength = 1;
+                this.columncode_primary.AllowDBNull = false;
+                this.columncode_primary.MaxLength = 8;
                 this.columncode_secondary.AllowDBNull = false;
                 this.columncode_secondary.MaxLength = 8;
                 this.columnis_local.AllowDBNull = false;
@@ -23996,6 +23996,17 @@ namespace HLU.Data.Model {
                     return ((lut_primary_bap_habitatRow[])(base.GetChildRows(this.Table.ChildRelations["lut_primary_lut_primary_bap_habitat"])));
                 }
             }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_primary_secondaryRow[] Getlut_primary_secondaryRows() {
+                if ((this.Table.ChildRelations["lut_primary_lut_primary_secondary"] == null)) {
+                    return new lut_primary_secondaryRow[0];
+                }
+                else {
+                    return ((lut_primary_secondaryRow[])(base.GetChildRows(this.Table.ChildRelations["lut_primary_lut_primary_secondary"])));
+                }
+            }
         }
         
         /// <summary>
@@ -24125,17 +24136,6 @@ namespace HLU.Data.Model {
                     return ((lut_primaryRow[])(base.GetChildRows(this.Table.ChildRelations["fk_lut_primary_lut_secondary_group"])));
                 }
             }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_primary_secondaryRow[] Getlut_primary_secondaryRows() {
-                if ((this.Table.ChildRelations["fk_lut_primary_secondary_lut_secondary_group"] == null)) {
-                    return new lut_primary_secondaryRow[0];
-                }
-                else {
-                    return ((lut_primary_secondaryRow[])(base.GetChildRows(this.Table.ChildRelations["fk_lut_primary_secondary_lut_secondary_group"])));
-                }
-            }
         }
         
         /// <summary>
@@ -24154,12 +24154,12 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string category {
+            public string code_primary {
                 get {
-                    return ((string)(this[this.tablelut_primary_secondary.categoryColumn]));
+                    return ((string)(this[this.tablelut_primary_secondary.code_primaryColumn]));
                 }
                 set {
-                    this[this.tablelut_primary_secondary.categoryColumn] = value;
+                    this[this.tablelut_primary_secondary.code_primaryColumn] = value;
                 }
             }
             
@@ -24187,23 +24187,23 @@ namespace HLU.Data.Model {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public lut_primary_categoryRow lut_primary_categoryRow {
-                get {
-                    return ((lut_primary_categoryRow)(this.GetParentRow(this.Table.ParentRelations["fk_lut_primary_secondary_lut_secondary_group"])));
-                }
-                set {
-                    this.SetParentRow(value, this.Table.ParentRelations["fk_lut_primary_secondary_lut_secondary_group"]);
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public lut_secondaryRow lut_secondaryRow {
                 get {
                     return ((lut_secondaryRow)(this.GetParentRow(this.Table.ParentRelations["lut_secondary_lut_primary_secondary"])));
                 }
                 set {
                     this.SetParentRow(value, this.Table.ParentRelations["lut_secondary_lut_primary_secondary"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public lut_primaryRow lut_primaryRow {
+                get {
+                    return ((lut_primaryRow)(this.GetParentRow(this.Table.ParentRelations["lut_primary_lut_primary_secondary"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["lut_primary_lut_primary_secondary"]);
                 }
             }
         }
@@ -41633,29 +41633,29 @@ SELECT code, description, sort_order FROM lut_primary_category WHERE (code = @co
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "lut_primary_secondary";
-            tableMapping.ColumnMappings.Add("category", "category");
             tableMapping.ColumnMappings.Add("code_secondary", "code_secondary");
             tableMapping.ColumnMappings.Add("is_local", "is_local");
+            tableMapping.ColumnMappings.Add("code_primary", "code_primary");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
-            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_primary_secondary] WHERE (([category] = @Original_category) AND " +
-                "([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_loc" +
-                "al))";
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [lut_primary_secondary] WHERE (([code_primary] = @Original_code_prima" +
+                "ry) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Origina" +
+                "l_is_local))";
             this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_category", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "category", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_secondary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_secondary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_primary_secondary] SET [category] = @category, [code_secondary] = @code_secondary, [is_local] = @is_local WHERE (([category] = @Original_category) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local));
-SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (category = @category) AND (code_secondary = @code_secondary)";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [lut_primary_secondary] SET [code_primary] = @code_primary, [code_secondary] = @code_secondary, [is_local] = @is_local WHERE (([code_primary] = @Original_code_primary) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local));
+SELECT code_primary, code_secondary, is_local FROM lut_primary_secondary WHERE (code_primary = @code_primary) AND (code_secondary = @code_secondary)";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@category", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "category", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_secondary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@code_secondary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_category", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "category", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_secondary", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_primary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_primary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_code_secondary", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "code_secondary", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_is_local", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "is_local", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
@@ -41663,7 +41663,7 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v400ConnectionString;
+            this._connection.ConnectionString = global::HLU.Properties.Settings.Default.HLUData_v401ConnectionString_2017;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -41672,8 +41672,8 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT        category, code_secondary, is_local\r\nFROM            lut_primary_sec" +
-                "ondary";
+            this._commandCollection[0].CommandText = "SELECT        code_primary, code_secondary, is_local\r\nFROM            lut_primary" +
+                "_secondary";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -41734,14 +41734,19 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
-        public virtual int Delete(string Original_category, int Original_code_secondary, bool Original_is_local) {
-            if ((Original_category == null)) {
-                throw new global::System.ArgumentNullException("Original_category");
+        public virtual int Delete(string Original_code_primary, string Original_code_secondary, bool Original_is_local) {
+            if ((Original_code_primary == null)) {
+                throw new global::System.ArgumentNullException("Original_code_primary");
             }
             else {
-                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_category));
+                this.Adapter.DeleteCommand.Parameters[0].Value = ((string)(Original_code_primary));
             }
-            this.Adapter.DeleteCommand.Parameters[1].Value = ((int)(Original_code_secondary));
+            if ((Original_code_secondary == null)) {
+                throw new global::System.ArgumentNullException("Original_code_secondary");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_code_secondary));
+            }
             this.Adapter.DeleteCommand.Parameters[2].Value = ((bool)(Original_is_local));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
             if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -41763,22 +41768,32 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(string category, int code_secondary, bool is_local, string Original_category, int Original_code_secondary, bool Original_is_local) {
-            if ((category == null)) {
-                throw new global::System.ArgumentNullException("category");
+        public virtual int Update(string code_primary, string code_secondary, bool is_local, string Original_code_primary, string Original_code_secondary, bool Original_is_local) {
+            if ((code_primary == null)) {
+                throw new global::System.ArgumentNullException("code_primary");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(category));
+                this.Adapter.UpdateCommand.Parameters[0].Value = ((string)(code_primary));
             }
-            this.Adapter.UpdateCommand.Parameters[1].Value = ((int)(code_secondary));
+            if ((code_secondary == null)) {
+                throw new global::System.ArgumentNullException("code_secondary");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(code_secondary));
+            }
             this.Adapter.UpdateCommand.Parameters[2].Value = ((bool)(is_local));
-            if ((Original_category == null)) {
-                throw new global::System.ArgumentNullException("Original_category");
+            if ((Original_code_primary == null)) {
+                throw new global::System.ArgumentNullException("Original_code_primary");
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_category));
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_code_primary));
             }
-            this.Adapter.UpdateCommand.Parameters[4].Value = ((int)(Original_code_secondary));
+            if ((Original_code_secondary == null)) {
+                throw new global::System.ArgumentNullException("Original_code_secondary");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((string)(Original_code_secondary));
+            }
             this.Adapter.UpdateCommand.Parameters[5].Value = ((bool)(Original_is_local));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -41800,8 +41815,8 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
-        public virtual int Update(bool is_local, string Original_category, int Original_code_secondary, bool Original_is_local) {
-            return this.Update(Original_category, Original_code_secondary, is_local, Original_category, Original_code_secondary, Original_is_local);
+        public virtual int Update(bool is_local, string Original_code_primary, string Original_code_secondary, bool Original_is_local) {
+            return this.Update(Original_code_primary, Original_code_secondary, is_local, Original_code_primary, Original_code_secondary, Original_is_local);
         }
     }
     
