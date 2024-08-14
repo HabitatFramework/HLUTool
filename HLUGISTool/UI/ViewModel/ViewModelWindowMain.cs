@@ -207,7 +207,6 @@ namespace HLU.UI.ViewModel
         private int _incidCurrentRowIndex;
         private DataTable _incidSelection;
         private DataTable _gisSelection;
-        private DataTable _incidMMPolygonSelection;
 
         private HluDataSet.incidRow _incidCurrentRow;
         private HluDataSet.incidRow _incidCurrentRowClone;
@@ -4215,14 +4214,14 @@ namespace HLU.UI.ViewModel
                     // Backup the current selection (filter).
                     DataTable incidSelectionBackup = _incidSelection;
 
-                    // Replace any connection type specific qualifiers and delimiters.
-                    string newWhereClause = null;
-                    if (sqlWhereClause != null)
-                        newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
-
                     // create a selection DataTable of PK values of IncidTable
                     if (whereTables.Count() > 0)
                     {
+
+                        // Replace any connection type specific qualifiers and delimiters.
+                        string newWhereClause = null;
+                        if (sqlWhereClause != null)
+                            newWhereClause = ReplaceStringQualifiers(sqlWhereClause);
 
                         // Create a selection DataTable of PK values of IncidTable.
                         _incidSelection = _db.SqlSelect(true, IncidTable.PrimaryKey, whereTables, newWhereClause);
@@ -4254,8 +4253,7 @@ namespace HLU.UI.ViewModel
                         // Find the expected number of features to be selected in GIS.
                         _toidsSelectedDBCount = 0;
                         _fragsSelectedDBCount = 0;
-                        //ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
-                        ExpectedSelectionFeatures(whereTables, newWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
+                        ExpectedSelectionFeatures(whereTables, sqlWhereClause, ref _toidsSelectedDBCount, ref _fragsSelectedDBCount);
 
                         //---------------------------------------------------------------------
                         // CHANGED: CR12 (Select by attribute performance)
@@ -6385,7 +6383,6 @@ namespace HLU.UI.ViewModel
 
                         numToids += _db.SqlCount(selTables, String.Format("Distinct {0}", _hluDS.incid_mm_polygons.toidColumn.ColumnName), joinCond.Concat(whereClause[i]).ToList());
                         numFragments += _db.SqlCount(selTables, "*", joinCond.Concat(whereClause[i]).ToList());
-                        numFragments += _db.SqlCount(selTables, "1", joinCond.Concat(whereClause[i]).ToList());
                     }
                 }
                 catch { }
@@ -6427,18 +6424,7 @@ namespace HLU.UI.ViewModel
                         new SqlFilterCondition("AND", t, t.incidColumn, typeof(DataColumn), "(", ")", rel.ChildColumns[0]) : null).Where(c => c != null);
 
                     numToids = _db.SqlCount(whereTables, String.Format("Distinct {0}", _hluDS.incid_mm_polygons.toidColumn.ColumnName), joinCond.ToList(), sqlWhereClause);
-
-                    // Create a selection DataTable of PK values of IncidMMPolygons.
-                    _incidMMPolygonSelection = _db.SqlSelect(true, IncidMMPolygonsTable.PrimaryKey, sqlFromTables, sqlWhereClause);
-                    numFragments = _incidMMPolygonSelection.Rows.Count;
-
-                    // Change "*" to distinct concatenation of incid, toid and toid fragments
-                    numFragments = _db.SqlCount(whereTables, String.Format("Distinct Convert(varchar, {0}.{1}) + Convert(varchar, {0}.{2}) + Convert(varchar, {0}.{3})",
-                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.TableName),
-                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.incidColumn.ColumnName),
-                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toidColumn.ColumnName),
-                        _db.QuoteIdentifier(_hluDS.incid_mm_polygons.toid_fragment_idColumn.ColumnName)),
-                        joinCond.ToList(), sqlWhereClause);
+                    numFragments = _db.SqlCount(whereTables, "*", joinCond.ToList(), sqlWhereClause);
                 }
                 catch { }
             }
@@ -6689,19 +6675,6 @@ namespace HLU.UI.ViewModel
             }
         }
 
-        public HluDataSet.incid_ihs_matrixDataTable IncidMMPolygonsTable
-        {
-            get
-            {
-                if (HluDataset.incid_mm_polygons.IsInitialized && (HluDataset.incid_mm_polygons.Rows.Count == 0))
-                {
-                    if (_hluTableAdapterMgr.incid_mm_polygonsTableAdapter == null)
-                        _hluTableAdapterMgr.incid_mm_polygonsTableAdapter =
-                            new HluTableAdapter<HluDataSet.incid_mm_polygonsDataTable, HluDataSet.incid_mm_polygonsRow>(_db);
-                }
-                return _hluDS.incid_ihs_matrix;
-            }
-        }
         public HluDataSet.incid_ihs_matrixDataTable IncidIhsMatrixTable
         {
             get
