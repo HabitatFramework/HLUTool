@@ -303,7 +303,7 @@ namespace HLU
             List<DataTable> fromTables, ref List<SqlFilterCondition> whereClause, out bool additionalTables)
         {
             DataTable[] colTables = targetColumns.Select(c => c.Table).Distinct().ToArray();
-            var whereTables = fromTables.Distinct().Where(t => !colTables.Contains(t));
+            var whereTables = fromTables.Distinct().Where(t => !colTables.Select(s => s.TableName).Contains(t.TableName));
 
             int numTables = colTables.Length;
             colTables = colTables.Concat(whereTables).ToArray();

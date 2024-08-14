@@ -2,13 +2,14 @@
 <xs:schema id="HluDataSet" targetNamespace="http://tempuri.org/HluDataSet.xsd" xmlns:mstns="http://tempuri.org/HluDataSet.xsd" xmlns="http://tempuri.org/HluDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
   <xs:annotation>
     <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
-      <DataSource DefaultConnectionIndex="4" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="5" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
         <Connections>
           <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="HluConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="HluConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.HLU.Properties.Settings.GlobalReference.Default.HluConnectionString" Provider="System.Data.SqlClient" />
           <Connection ConnectionStringObject="Data Source=ZIPY\SQLEXPRESS2016;Initial Catalog=HLUData;Integrated Security=True" IsAppSettingsProperty="false" Modifier="Assembly" Name="zipy\sqlexpress2016.HLUData.dbo" ParameterPrefix="@" Provider="System.Data.SqlClient" />
           <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="HLUDataConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="HLUDataConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.HLU.Properties.Settings.GlobalReference.Default.HLUDataConnectionString" Provider="System.Data.SqlClient" />
           <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="HLUData_v400ConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="HLUData_v400ConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.HLU.Properties.Settings.GlobalReference.Default.HLUData_v400ConnectionString" Provider="System.Data.SqlClient" />
           <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="HLUData_v401ConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="HLUData_v401ConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.HLU.Properties.Settings.GlobalReference.Default.HLUData_v401ConnectionString" Provider="System.Data.SqlClient" />
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="HLUData_v401ConnectionString_2017" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="HLUData_v401ConnectionString_2017 (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.HLU.Properties.Settings.GlobalReference.Default.HLUData_v401ConnectionString_2017" Provider="System.Data.SqlClient" />
         </Connections>
         <Tables>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="exportsTableAdapter" GeneratorDataComponentClassName="exportsTableAdapter" Name="exports" UserDataComponentName="exportsTableAdapter">
@@ -2542,34 +2543,34 @@ SELECT code, description, sort_order FROM lut_primary_category WHERE (code = @co
           </TableAdapter>
           <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="lut_primary_secondaryTableAdapter" GeneratorDataComponentClassName="lut_primary_secondaryTableAdapter" Name="lut_primary_secondary" UserDataComponentName="lut_primary_secondaryTableAdapter">
             <MainSource>
-              <DbSource ConnectionRef="HLUData_v400ConnectionString (Settings)" DbObjectName="HLUData_v400.dbo.lut_primary_secondary" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="true" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+              <DbSource ConnectionRef="HLUData_v401ConnectionString_2017 (Settings)" DbObjectName="HLUData_v401.dbo.lut_primary_secondary" DbObjectType="Table" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="true" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
                 <DeleteCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="false">
-                    <CommandText>DELETE FROM [lut_primary_secondary] WHERE (([category] = @Original_category) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local))</CommandText>
+                    <CommandText>DELETE FROM [lut_primary_secondary] WHERE (([code_primary] = @Original_code_primary) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local))</CommandText>
                     <Parameters>
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_category" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="category" SourceColumnNullMapping="false" SourceVersion="Original" />
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@Original_code_secondary" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Original" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_code_primary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_primary" SourceColumnNullMapping="false" SourceVersion="Original" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_code_secondary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Original" />
                       <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Boolean" Direction="Input" ParameterName="@Original_is_local" Precision="0" ProviderType="Bit" Scale="0" Size="0" SourceColumn="is_local" SourceColumnNullMapping="false" SourceVersion="Original" />
                     </Parameters>
                   </DbCommand>
                 </DeleteCommand>
                 <SelectCommand>
-                  <DbCommand CommandType="Text" ModifiedByUser="true">
-                    <CommandText>SELECT        category, code_secondary, is_local
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT        code_primary, code_secondary, is_local
 FROM            lut_primary_secondary</CommandText>
                     <Parameters />
                   </DbCommand>
                 </SelectCommand>
                 <UpdateCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="false">
-                    <CommandText>UPDATE [lut_primary_secondary] SET [category] = @category, [code_secondary] = @code_secondary, [is_local] = @is_local WHERE (([category] = @Original_category) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local));
-SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (category = @category) AND (code_secondary = @code_secondary)</CommandText>
+                    <CommandText>UPDATE [lut_primary_secondary] SET [code_primary] = @code_primary, [code_secondary] = @code_secondary, [is_local] = @is_local WHERE (([code_primary] = @Original_code_primary) AND ([code_secondary] = @Original_code_secondary) AND ([is_local] = @Original_is_local));
+SELECT code_primary, code_secondary, is_local FROM lut_primary_secondary WHERE (code_primary = @code_primary) AND (code_secondary = @code_secondary)</CommandText>
                     <Parameters>
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@category" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="category" SourceColumnNullMapping="false" SourceVersion="Current" />
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@code_secondary" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Current" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@code_primary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_primary" SourceColumnNullMapping="false" SourceVersion="Current" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@code_secondary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Current" />
                       <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Boolean" Direction="Input" ParameterName="@is_local" Precision="0" ProviderType="Bit" Scale="0" Size="0" SourceColumn="is_local" SourceColumnNullMapping="false" SourceVersion="Current" />
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_category" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="category" SourceColumnNullMapping="false" SourceVersion="Original" />
-                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Int32" Direction="Input" ParameterName="@Original_code_secondary" Precision="0" ProviderType="Int" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Original" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_code_primary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_primary" SourceColumnNullMapping="false" SourceVersion="Original" />
+                      <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="String" Direction="Input" ParameterName="@Original_code_secondary" Precision="0" ProviderType="NVarChar" Scale="0" Size="0" SourceColumn="code_secondary" SourceColumnNullMapping="false" SourceVersion="Original" />
                       <Parameter AllowDbNull="false" AutogeneratedName="" DataSourceName="" DbType="Boolean" Direction="Input" ParameterName="@Original_is_local" Precision="0" ProviderType="Bit" Scale="0" Size="0" SourceColumn="is_local" SourceColumnNullMapping="false" SourceVersion="Original" />
                     </Parameters>
                   </DbCommand>
@@ -2577,9 +2578,9 @@ SELECT category, code_secondary, is_local FROM lut_primary_secondary WHERE (cate
               </DbSource>
             </MainSource>
             <Mappings>
-              <Mapping SourceColumn="category" DataSetColumn="category" />
               <Mapping SourceColumn="code_secondary" DataSetColumn="code_secondary" />
               <Mapping SourceColumn="is_local" DataSetColumn="is_local" />
+              <Mapping SourceColumn="code_primary" DataSetColumn="code_primary" />
             </Mappings>
             <Sources />
           </TableAdapter>
@@ -4284,10 +4285,10 @@ SELECT osmm_xref_id FROM lut_osmm_habitat_xref WHERE (osmm_xref_id = @osmm_xref_
         <xs:element name="lut_primary_secondary" msprop:Generator_TableClassName="lut_primary_secondaryDataTable" msprop:Generator_TableVarName="tablelut_primary_secondary" msprop:Generator_RowChangedName="lut_primary_secondaryRowChanged" msprop:Generator_TablePropName="lut_primary_secondary" msprop:Generator_RowDeletingName="lut_primary_secondaryRowDeleting" msprop:Generator_RowChangingName="lut_primary_secondaryRowChanging" msprop:Generator_RowEvHandlerName="lut_primary_secondaryRowChangeEventHandler" msprop:Generator_RowDeletedName="lut_primary_secondaryRowDeleted" msprop:Generator_RowClassName="lut_primary_secondaryRow" msprop:Generator_UserTableName="lut_primary_secondary" msprop:Generator_RowEvArgName="lut_primary_secondaryRowChangeEvent">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="category" msprop:Generator_ColumnVarNameInTable="columncategory" msprop:Generator_ColumnPropNameInRow="category" msprop:Generator_ColumnPropNameInTable="categoryColumn" msprop:Generator_UserColumnName="category">
+              <xs:element name="code_primary" msprop:Generator_ColumnVarNameInTable="columncode_primary" msprop:Generator_ColumnPropNameInRow="code_primary" msprop:Generator_ColumnPropNameInTable="code_primaryColumn" msprop:Generator_UserColumnName="code_primary">
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
-                    <xs:maxLength value="1" />
+                    <xs:maxLength value="8" />
                   </xs:restriction>
                 </xs:simpleType>
               </xs:element>
@@ -4736,7 +4737,7 @@ SELECT osmm_xref_id FROM lut_osmm_habitat_xref WHERE (osmm_xref_id = @osmm_xref_
     </xs:unique>
     <xs:unique name="lut_primary_secondary_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
       <xs:selector xpath=".//mstns:lut_primary_secondary" />
-      <xs:field xpath="mstns:category" />
+      <xs:field xpath="mstns:code_primary" />
       <xs:field xpath="mstns:code_secondary" />
     </xs:unique>
     <xs:unique name="lut_secondary_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
@@ -4829,7 +4830,6 @@ SELECT osmm_xref_id FROM lut_osmm_habitat_xref WHERE (osmm_xref_id = @osmm_xref_
       <msdata:Relationship name="fk_lut_osmm_updates_change_incid_osmm_updates" msdata:parent="lut_osmm_updates_change" msdata:child="incid_osmm_updates" msdata:parentkey="code" msdata:childkey="change_flag" msprop:Generator_UserChildTable="incid_osmm_updates" msprop:Generator_ChildPropName="Getincid_osmm_updatesRows" msprop:Generator_UserRelationName="fk_lut_osmm_updates_change_incid_osmm_updates" msprop:Generator_RelationVarName="relationfk_lut_osmm_updates_change_incid_osmm_updates" msprop:Generator_UserParentTable="lut_osmm_updates_change" msprop:Generator_ParentPropName="lut_osmm_updates_changeRow" />
       <msdata:Relationship name="fk_lut_primary_bap_habitat_lut_habitat_type" msdata:parent="lut_habitat_type" msdata:child="lut_primary_bap_habitat" msdata:parentkey="code" msdata:childkey="bap_habitat" msprop:Generator_UserChildTable="lut_primary_bap_habitat" msprop:Generator_ChildPropName="Getlut_primary_bap_habitatRows" msprop:Generator_UserRelationName="fk_lut_primary_bap_habitat_lut_habitat_type" msprop:Generator_RelationVarName="relationfk_lut_primary_bap_habitat_lut_habitat_type" msprop:Generator_UserParentTable="lut_habitat_type" msprop:Generator_ParentPropName="lut_habitat_typeRow" />
       <msdata:Relationship name="fk_lut_primary_lut_secondary_group" msdata:parent="lut_primary_category" msdata:child="lut_primary" msdata:parentkey="code" msdata:childkey="category" msprop:Generator_UserChildTable="lut_primary" msprop:Generator_ChildPropName="Getlut_primaryRows" msprop:Generator_UserRelationName="fk_lut_primary_lut_secondary_group" msprop:Generator_ParentPropName="lut_primary_categoryRow" msprop:Generator_RelationVarName="relationfk_lut_primary_lut_secondary_group" msprop:Generator_UserParentTable="lut_primary_category" />
-      <msdata:Relationship name="fk_lut_primary_secondary_lut_secondary_group" msdata:parent="lut_primary_category" msdata:child="lut_primary_secondary" msdata:parentkey="code" msdata:childkey="category" msprop:Generator_UserChildTable="lut_primary_secondary" msprop:Generator_ChildPropName="Getlut_primary_secondaryRows" msprop:Generator_UserRelationName="fk_lut_primary_secondary_lut_secondary_group" msprop:Generator_RelationVarName="relationfk_lut_primary_secondary_lut_secondary_group" msprop:Generator_UserParentTable="lut_primary_category" msprop:Generator_ParentPropName="lut_primary_categoryRow" />
       <msdata:Relationship name="fk_lut_secondary_bap_habitat_lut_habitat_type" msdata:parent="lut_habitat_type" msdata:child="lut_secondary_bap_habitat" msdata:parentkey="code" msdata:childkey="bap_habitat" msprop:Generator_UserChildTable="lut_secondary_bap_habitat" msprop:Generator_ChildPropName="Getlut_secondary_bap_habitatRows" msprop:Generator_UserRelationName="fk_lut_secondary_bap_habitat_lut_habitat_type" msprop:Generator_RelationVarName="relationfk_lut_secondary_bap_habitat_lut_habitat_type" msprop:Generator_UserParentTable="lut_habitat_type" msprop:Generator_ParentPropName="lut_habitat_typeRow" />
       <msdata:Relationship name="fk_lut_secondary_lut_secondary_group" msdata:parent="lut_secondary_group" msdata:child="lut_secondary" msdata:parentkey="code" msdata:childkey="code_group" msprop:Generator_UserChildTable="lut_secondary" msprop:Generator_ChildPropName="Getlut_secondaryRows" msprop:Generator_UserRelationName="fk_lut_secondary_lut_secondary_group" msprop:Generator_ParentPropName="lut_secondary_groupRow" msprop:Generator_RelationVarName="relationfk_lut_secondary_lut_secondary_group" msprop:Generator_UserParentTable="lut_secondary_group" />
       <msdata:Relationship name="fk_lut_habitat_type_primary_lut_habitat_type" msdata:parent="lut_habitat_type" msdata:child="lut_habitat_type_primary" msdata:parentkey="code" msdata:childkey="code_habitat_type" msprop:Generator_UserChildTable="lut_habitat_type_primary" msprop:Generator_ChildPropName="Getlut_habitat_type_primaryRows" msprop:Generator_UserRelationName="fk_lut_habitat_type_primary_lut_habitat_type" msprop:Generator_RelationVarName="relationfk_lut_habitat_type_primary_lut_habitat_type" msprop:Generator_UserParentTable="lut_habitat_type" msprop:Generator_ParentPropName="lut_habitat_typeRow" />
@@ -4856,6 +4856,7 @@ SELECT osmm_xref_id FROM lut_osmm_habitat_xref WHERE (osmm_xref_id = @osmm_xref_
       <msdata:Relationship name="fk_history_lut_quality_determination" msdata:parent="lut_quality_determination" msdata:child="history" msdata:parentkey="code" msdata:childkey="modified_determqty" msprop:Generator_UserChildTable="history" msprop:Generator_ChildPropName="GethistoryRows" msprop:Generator_UserRelationName="fk_history_lut_quality_determination" msprop:Generator_ParentPropName="lut_quality_determinationRow" msprop:Generator_RelationVarName="relationfk_history_lut_quality_determination" msprop:Generator_UserParentTable="lut_quality_determination" />
       <msdata:Relationship name="fk_history_lut_quality_interpretation" msdata:parent="lut_quality_interpretation" msdata:child="history" msdata:parentkey="code" msdata:childkey="modified_interpqty" msprop:Generator_UserChildTable="history" msprop:Generator_ChildPropName="GethistoryRows" msprop:Generator_UserRelationName="fk_history_lut_quality_interpretation" msprop:Generator_ParentPropName="lut_quality_interpretationRow" msprop:Generator_RelationVarName="relationfk_history_lut_quality_interpretation" msprop:Generator_UserParentTable="lut_quality_interpretation" />
       <msdata:Relationship name="fk_incid_osmm_updates_lut_osmm_habitat_xref" msdata:parent="lut_osmm_habitat_xref" msdata:child="incid_osmm_updates" msdata:parentkey="osmm_xref_id" msdata:childkey="osmm_xref_id" msprop:Generator_UserChildTable="incid_osmm_updates" msprop:Generator_ChildPropName="Getincid_osmm_updatesRows" msprop:Generator_UserRelationName="fk_incid_osmm_updates_lut_osmm_habitat_xref" msprop:Generator_RelationVarName="relationfk_incid_osmm_updates_lut_osmm_habitat_xref" msprop:Generator_UserParentTable="lut_osmm_habitat_xref" msprop:Generator_ParentPropName="lut_osmm_habitat_xrefRow" />
+      <msdata:Relationship name="lut_primary_lut_primary_secondary" msdata:parent="lut_primary" msdata:child="lut_primary_secondary" msdata:parentkey="code" msdata:childkey="code_primary" msprop:Generator_UserChildTable="lut_primary_secondary" msprop:Generator_ChildPropName="Getlut_primary_secondaryRows" msprop:Generator_UserRelationName="lut_primary_lut_primary_secondary" msprop:Generator_ParentPropName="lut_primaryRow" msprop:Generator_RelationVarName="relationlut_primary_lut_primary_secondary" msprop:Generator_UserParentTable="lut_primary" />
     </xs:appinfo>
   </xs:annotation>
 </xs:schema>

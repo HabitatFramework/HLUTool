@@ -1104,6 +1104,93 @@ namespace HLU.Data.Connection
         }
         //---------------------------------------------------------------------
 
+        /// <summary>
+        /// Select database records using a SQL statement based on an array
+        /// of target columns to select, a list of tables to select from, and
+        /// a string of where clauses.
+        /// </summary>
+        /// <param name="selectDistinct">if set to <c>true</c> select only DISTINCT values.</param>
+        /// <param name="targetColumns">The target columns to select.</param>
+        /// <param name="sqlFromTables">The tables to select from.</param>
+        /// <param name="sqlWhereClause">The where clauses to apply.</param>
+        /// <returns></returns>
+        public DataTable SqlSelect(bool selectDistinct, bool orderBy, DataColumn[] targetColumns, List<DataTable> sqlFromTables, List<SqlFilterCondition> whereConds, string sqlWhereClause)
+        {
+            if ((targetColumns == null) || (targetColumns.Length == 0)) return new DataTable();
+
+            try
+            {
+                // Declare a new empty result data table.
+                DataTable resultTable = null;
+
+                // Determine if the column names need qualifiying.
+                bool qualifyColumns = QualifyColumnNames(targetColumns);
+
+                // Create a string of the tables to query based on the the
+                // target columns to select and the list of from tables.
+                bool additionalTables;
+                List<SqlFilterCondition> fromConds = new List<SqlFilterCondition>();
+                string fromList = FromList(true, true, targetColumns, sqlFromTables, ref fromConds, out additionalTables);
+
+                whereConds = fromConds.Concat(whereConds).ToList();
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process bulk OSMM Updates
+                //
+                // Force the column names to be qualified only if there are any
+                // additional tables and there are multiple columns.
+                if (targetColumns.Length > 1)
+                    qualifyColumns |= additionalTables;
+                //---------------------------------------------------------------------
+
+                // Build a sql command.
+                StringBuilder sbCommandText = new StringBuilder(selectDistinct ? "SELECT DISTINCT " : "SELECT ");
+
+                // Append the columns to be selected.
+                sbCommandText.Append(TargetList(targetColumns, true, false, ref qualifyColumns, out resultTable));
+
+                // Append the tables to select from.
+                sbCommandText.Append(fromList);
+
+                //---------------------------------------------------------------------
+                // CHANGED: CR49 Process bulk OSMM Updates
+                //
+                // Force the column names to be qualified if there are any
+                // additional tables.
+                qualifyColumns |= additionalTables;
+                //---------------------------------------------------------------------
+
+                // Append the where clauses relating to the from table joins.
+                string fromClause = WhereClause(true, true, qualifyColumns, whereConds);
+                sbCommandText.Append(fromClause);
+
+                // Append any additional where clauses passed.
+                if (string.IsNullOrEmpty(fromClause))
+                    sbCommandText.Append(" WHERE (").Append(sqlWhereClause).Append(")");
+                else
+                    sbCommandText.Append(" AND (").Append(sqlWhereClause).Append(")");
+
+                // Append an order by clause based on the primary key columns.
+                if (orderBy)
+                {
+                    if (targetColumns.Length > 1)
+                        sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => ColumnAlias(x))));
+                    else
+                        sbCommandText.Append(" ORDER BY ").Append(String.Join(",", Array.ConvertAll(targetColumns, x => x.ColumnName)));
+                }
+
+                // Fill the result table using the sql command.
+                FillTable<DataTable>(sbCommandText.ToString(), ref resultTable);
+
+                return resultTable;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = ex.Message;
+                return new DataTable();
+            }
+        }
+
         //---------------------------------------------------------------------
         // CHANGED: CR5 (Select by attributes interface)
         // Execute the SQL statement to check if it is valid and

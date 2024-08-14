@@ -1159,7 +1159,7 @@ namespace HLU.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>Don't clear</string>
+  <string>Do not clear</string>
   <string>Clear on change in primary code only</string>
   <string>Clear on change in primary or secondary codes only</string>
   <string>Clear on any change</string>
@@ -1269,7 +1269,7 @@ namespace HLU.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2019;Initial Catalog=HLUData_v401;Integrated Securit" +
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLDEVELOPER2017;Initial Catalog=HLUData_v401;Integrated Securit" +
             "y=True")]
         public string HLUData_v401ConnectionString {
             get {
@@ -1326,6 +1326,17 @@ namespace HLU.Properties {
             }
             set {
                 this["HabitatSecondaryCodeValidation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=ZIPY\\SQLEXPRESS2017;Initial Catalog=HLUData_v401;Integrated Security=" +
+            "True")]
+        public string HLUData_v401ConnectionString_2017 {
+            get {
+                return ((string)(this["HLUData_v401ConnectionString_2017"]));
             }
         }
     }

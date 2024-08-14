@@ -1242,23 +1242,23 @@
                                               Grid.Column="0"
 											  Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto" MinWidth="40" />
-												<ColumnDefinition Width="120" />
-												<ColumnDefinition Width="Auto" MinWidth="35" />
+												<!--<ColumnDefinition Width="Auto" MinWidth="40" />-->
+												<ColumnDefinition Width="140" />
+												<!--<ColumnDefinition Width="Auto" MinWidth="30" />-->
 												<ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
-											<Label x:Name="LabelSecondaryGroup"
+											<!--<Label x:Name="LabelSecondaryGroup"
 												   Grid.Row="0"
 												   Grid.Column="0"
                                                    Margin="0,8,0,4"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
-                                                   Content="Group" />
+                                                   Content="Group" />-->
                                             <ComboBox x:Name="ComboBoxSecondaryGroup"
                                                       Grid.Row="0"
-                                                      Grid.Column="1"
-                                                      Margin="8,8,8,4"
+                                                      Grid.Column="0"
+                                                      Margin="2,4,0,2"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
 													  IsEnabled="{Binding SecondaryGroupEnabled}"
@@ -1271,17 +1271,17 @@
                                                       SelectedValuePath="code"
                                                       ToolTipService.ShowOnDisabled="True" />
 
-                                            <Label x:Name="LabelSecondaryHabitat"
+                                            <!--<Label x:Name="LabelSecondaryHabitat"
                                                    Grid.Row="0"
                                                    Grid.Column="2"
                                                    Margin="0,2,0,4"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Center"
-                                                   Content="Habitat" />
+                                                   Content="Code" />-->
                                             <ComboBox x:Name="ComboBoxSecondaryHabitat"
                                                       Grid.Row="0"
-                                                      Grid.Column="3"
-                                                      Margin="8,2,8,4"
+                                                      Grid.Column="1"
+                                                      Margin="4,4,8,2"
                                                       VerticalAlignment="Center"
                                                       DisplayMemberPath="description"
 													  IsEnabled="{Binding SecondaryHabitatEnabled}"
@@ -1308,7 +1308,7 @@
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
-												Margin="0,4,0,0"
+												Margin="0,5,0,2"
 												HorizontalAlignment="Right"
 												VerticalAlignment="Top"
 												Command="{Binding AddSecondaryHabitatCommand}"
@@ -1327,7 +1327,7 @@
                                                        Grid.Row="3"
                                                        Grid.Column="0"
                                                        Grid.ColumnSpan="2"
-                                                       Margin="2,2,6,0"
+                                                       Margin="2,4,6,0"
                                                        AutoGenerateColumns="False"
                                                        BorderBrush="Black"
                                                        BorderThickness="1"
@@ -1359,7 +1359,7 @@
                                                                          Header="INCID"
                                                                          IsReadOnly="True"
                                                                          Visibility="Collapsed" />
-                                                <hlu:DataGridComboBoxColumnWithBinding Width="90"
+                                                <hlu:DataGridComboBoxColumnWithBinding Width="117"
 																					   IsReadOnly="True"
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
@@ -1381,7 +1381,7 @@
                                                                                        CanUserResize="True"
                                                                                        DisplayMemberPath="description"
                                                                                        EditingElementStyle="{DynamicResource ComboBoxStyle}"
-                                                                                       Header="Habitat"
+                                                                                       Header="Code"
 																					   SortDirection="Ascending"
                                                                                        ItemsSource="{Binding DataContext.SecondaryHabitatCodesAll,
 																											 ConverterParameter=code^description^sort_order,
@@ -1405,7 +1405,7 @@
 												Grid.Column="2"
 												Width="20"
 												MaxHeight="20"
-												Margin="0,5,0,0"
+												Margin="0,3,0,0"
 												HorizontalAlignment="Right"
 												VerticalAlignment="Top"
 												Command="{Binding AddSecondaryHabitatListCommand}"
